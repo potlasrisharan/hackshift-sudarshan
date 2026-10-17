@@ -701,9 +701,40 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
     setCurrentScreenIndex(4); // Screen Token
     speakText('Emergency Triage Activated! Please do not move. Nursing and ER staff has been alerted.');
     try {
+      // 1. Ensure valid patient record in database
+      let patientId = currentPatient.id;
+      const existingPatients = await dataService.list('patients', {
+        filters: [{ column: 'contact_number', operator: 'eq', value: emergPatient.phone }]
+      });
+      if (existingPatients && existingPatients.length > 0) {
+        patientId = existingPatients[0].id;
+      } else {
+        const createdPat = await dataService.create('patients', {
+          full_name: emergPatient.name,
+          name: emergPatient.name,
+          age: emergPatient.age,
+          gender: emergPatient.gender,
+          contact_number: emergPatient.phone,
+          phone: emergPatient.phone,
+          city: emergPatient.city,
+          address: emergPatient.city,
+          abha_id: emergPatient.abhaId,
+          abha_address: emergPatient.abhaAddress,
+          pmjay_eligible: false,
+          status: 'active'
+        });
+        patientId = createdPat.id;
+      }
+
+      // 2. Create encounter record in database
       await dataService.create('encounters', {
         token_number: '#E-045',
+        patient_id: patientId,
         patient_name: emergPatient.name,
+        age: emergPatient.age,
+        gender: emergPatient.gender,
+        phone: emergPatient.phone,
+        abha_id: emergPatient.abhaId,
         chief_complaint: emergPatient.englishTranslation,
         triage_priority: 'EMERGENCY_RED',
         pmjay_eligible: false,
@@ -761,9 +792,40 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
     speakText(dict.tokenVoice || `Your intake is complete. Your token number is 42.`);
 
     try {
+      // 1. Ensure valid patient record in database
+      let patientId = currentPatient.id;
+      const existingPatients = await dataService.list('patients', {
+        filters: [{ column: 'contact_number', operator: 'eq', value: currentPatient.phone }]
+      });
+      if (existingPatients && existingPatients.length > 0) {
+        patientId = existingPatients[0].id;
+      } else {
+        const createdPat = await dataService.create('patients', {
+          full_name: currentPatient.name,
+          name: currentPatient.name,
+          age: currentPatient.age,
+          gender: currentPatient.gender,
+          contact_number: currentPatient.phone,
+          phone: currentPatient.phone,
+          city: currentPatient.city,
+          address: currentPatient.city,
+          abha_id: currentPatient.abhaId,
+          abha_address: currentPatient.abhaAddress,
+          pmjay_eligible: currentPatient.hasPmjay,
+          status: 'active'
+        });
+        patientId = createdPat.id;
+      }
+
+      // 2. Create encounter record in database
       await dataService.create('encounters', {
         token_number: tokenStr,
+        patient_id: patientId,
         patient_name: currentPatient.name,
+        age: currentPatient.age,
+        gender: currentPatient.gender,
+        phone: currentPatient.phone,
+        abha_id: currentPatient.abhaId,
         chief_complaint: currentPatient.englishTranslation || currentPatient.selectedSymptom,
         triage_priority: currentPatient.isEmergency ? 'EMERGENCY_RED' : 'ROUTINE',
         pmjay_eligible: currentPatient.hasPmjay,
