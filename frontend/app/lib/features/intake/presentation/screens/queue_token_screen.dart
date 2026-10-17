@@ -1,102 +1,90 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/localization/app_strings.dart';
-import '../../domain/entities/intake_flow_state.dart';
-import '../providers/core_providers.dart';
-import '../widgets/kiosk_shell.dart';
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:go_router/go_router.dart";
+import "package:kiosk_app/core/constants/app_colors.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
+import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
-import 'converse_screen.dart';
-import '../providers/speech_providers.dart';
-
-class QueueTokenScreen extends ConsumerStatefulWidget {
+class QueueTokenScreen extends ConsumerWidget {
   const QueueTokenScreen({super.key});
-  @override
-  ConsumerState<QueueTokenScreen> createState() => _QueueTokenScreenState();
-}
-
-class _QueueTokenScreenState extends ConsumerState<QueueTokenScreen> {
-  Timer? _timer;
-  late DateTime _deadline;
-  DateTime _now() => ref.read(kioskClockProvider)();
-  int _seconds = 60;
-  @override
-  void initState() {
-    super.initState();
-    _deadline = _now().add(const Duration(seconds: 60));
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      final seconds = (_deadline.difference(_now()).inMilliseconds / 1000)
-          .ceil();
-      if (seconds <= 0) {
-        _reset();
-        return;
-      }
-      if (mounted) setState(() => _seconds = seconds);
-    });
-  }
-
-  void _touch() {
-    _deadline = _now().add(const Duration(seconds: 60));
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    ref.invalidate(voiceControllerProvider);
-    ref.read(intakeFlowProvider.notifier).reset();
-    ref.invalidate(preferencesProvider);
-    context.go('/');
-  }
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(intakeProvider);
 
-  @override
-  Widget build(BuildContext context) {
-    final s = AppStrings.of(context);
-    final value = ref.watch(intakeFlowProvider).valueOrNull;
-    if (value is! IntakeComplete) return const SizedBox.shrink();
-    return Listener(
-      onPointerDown: (_) => _touch(),
-      onPointerSignal: (_) => _touch(),
-      child: Focus(
-        onKeyEvent: (_, event) {
-          _touch();
-          return KeyEventResult.ignored;
-        },
-        child: KioskShell(
-          title: s.receiptTitle,
-          bottom: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                '${s.resetCountdown}: $_seconds',
-                key: const Key('reset-countdown'),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 550),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: AyuSetuLogoBadge(
+                          height: 32,
+                          borderRadius: 12,
+                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        ),
+                      ),
+                      const Icon(Icons.check_circle, color: AppColors.success, size: 64),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "Intake Complete & Token Issued",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "All India Institute of Ayurveda (AIIA) - OPD Room 4",
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                      const Divider(height: 32),
+                      const Text(
+                        "YOUR OPD TOKEN NUMBER",
+                        style: TextStyle(color: AppColors.textMuted, fontSize: 12, letterSpacing: 1.5),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        state.tokenNumber,
+                        style: const TextStyle(fontSize: 52, fontWeight: FontWeight.bold, color: AppColors.primaryLight),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        decoration: BoxDecoration(color: AppColors.pmjayGold.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
+                        child: const Text(
+                          "PM-JAY Beneficiary • Cashless Approved",
+                          style: TextStyle(color: AppColors.pmjayGold, fontWeight: FontWeight.bold, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Your case summary has been sent directly to the doctor consultation screen.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                        onPressed: () => context.go("/"),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text("Start Next Patient Intake"),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-          children: [
-            if (value.receipt.emergency)
-              EmergencyNotice(text: s.informStaff)
-            else
-              Text(s.routineReceived),
-            const SizedBox(height: 24),
-            Text(s.reference),
-            Text(
-              value.receipt.id,
-              key: const Key('encounter-reference'),
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 16),
-            Text(s.consentRecorded),
-            Text(s.tokenUnavailable),
-            const SizedBox(height: 24),
-            const SizedBox(height: 16),
-            KioskAction(label: s.newPatient, onPressed: _reset),
-          ],
         ),
       ),
     );

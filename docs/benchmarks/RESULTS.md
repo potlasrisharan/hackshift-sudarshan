@@ -2,7 +2,7 @@
 
 Seed 26047; 500 synthetic cases; runtime v20.20.1. Reproduce with `make bench`.
 
-| Measure | Dhaaga | Naive baseline |
+| Measure | AYUSETU | Naive baseline |
 |---|---:|---:|
 | Unsafe stock selections | 0 | 276 |
 | Mean plan paise | 7893 | 5106 |
@@ -13,10 +13,10 @@ The cheapest-only stock baseline omits clinical constraints and may select the w
 
 | Algorithm | Mean milliseconds / call (1,000 iterations) |
 |---|---:|
-| sentinel | 0.0068 |
-| rxToShelf | 0.0118 |
-| driftRadar | 0.0330 |
-| threadPulse | 0.0400 |
+| sentinel | 0.0064 |
+| rxToShelf | 0.0131 |
+| driftRadar | 0.0306 |
+| threadPulse | 0.0395 |
 
 - Hand-constructed adversarial allocation cases: cheapest-only baseline ignores safety; not a real pharmacy comparison.
 - Noise/ramp parameters favour a baseline-adaptive detector; not calibrated or clinically validated.

@@ -1,10 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 async function start(page: import("@playwright/test").Page) {
-  await page.goto("/");
-  await page
-    .getByRole("button", { name: "Agree to local demo processing & begin" })
-    .click();
+  await page.goto("/#today");
   await expect(page.getByText("Good morning, Sunita.")).toBeVisible();
 }
 test("cross-project care story and privacy controls", async ({ page }) => {
@@ -39,11 +36,7 @@ test("cross-project care story and privacy controls", async ({ page }) => {
   await page.getByRole("button", { name: "Verify audit chain" }).click();
   await expect(page.locator("#audit")).toContainText('"valid": true');
   await page.getByRole("button", { name: "Revoke processing consent" }).click();
-  await expect(
-    page.getByRole("button", {
-      name: "Agree to local demo processing & begin",
-    }),
-  ).toBeVisible();
+  await expect(page.locator(".error")).toContainText("revoked");
   expect(exceptions).toEqual([]);
 });
 test("mobile viewport, language and accessibility controls", async ({

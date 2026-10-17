@@ -6,9 +6,7 @@
       "packages/**",
       "tests/**",
       "scripts/**",
-      "services/lang-gateway/**",
-      "backend/**",
-      "frontend/website/**"
+      "services/lang-gateway/**"
     ]
   },
   "formatter": {

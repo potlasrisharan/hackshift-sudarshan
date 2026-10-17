@@ -1,54 +1,223 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Ref;
-import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../features/intake/domain/entities/intake_flow_state.dart';
-import '../../features/intake/presentation/providers/core_providers.dart';
-import '../../features/intake/presentation/screens/language_screen.dart';
-import '../../features/intake/presentation/screens/identify_screen.dart';
-import '../../features/intake/presentation/screens/converse_screen.dart';
-import '../../features/intake/presentation/screens/summarize_screen.dart';
-import '../../features/intake/presentation/screens/queue_token_screen.dart';
-part 'app_router.g.dart';
+import "package:go_router/go_router.dart";
+import "../../features/portal/presentation/screens/portal_selection_screen.dart";
+import "../../features/intake/presentation/screens/language_screen.dart";
+import "../../features/intake/presentation/screens/identify_screen.dart";
+import "../../features/intake/presentation/screens/converse_screen.dart";
+import "../../features/intake/presentation/screens/scan_screen.dart";
+import "../../features/intake/presentation/screens/summarize_screen.dart";
+import "../../features/intake/presentation/screens/queue_token_screen.dart";
+import "../../features/doctor/presentation/screens/doctor_consultation_screen.dart";
+import "../../features/nurse/presentation/screens/nurse_triage_screen.dart";
+import "../../features/headquarters/presentation/screens/headquarters_screen.dart";
+import "../../features/clinical_mgmt/presentation/screens/clinical_management_screen.dart";
+import "../../features/yoga/presentation/screens/yoga_prescription_screen.dart";
+import "../../features/longevity/presentation/screens/longevity_screen.dart";
+import "../../features/womens_health/presentation/screens/womens_health_screen.dart";
+import "../../features/her/presentation/screens/her_hub_screen.dart";
+import "../../features/her/presentation/screens/her_cycle_screen.dart";
+import "../../features/her/presentation/screens/her_symptom_journal_screen.dart";
+import "../../features/her/presentation/screens/her_questionnaire_screen.dart";
+import "../../features/her/presentation/screens/her_wellness_studio_screen.dart";
+import "../../features/her/presentation/screens/her_doctor_summary_screen.dart";
+import "../../features/her/presentation/screens/her_wearable_screen.dart";
 
-@Riverpod(keepAlive: true)
-GoRouter appRouter(Ref<Object?> ref) {
-  final refresh = ValueNotifier<int>(0);
-  ref.listen(intakeFlowProvider, (_, next) {
-    refresh.value++;
-  });
-  final router = GoRouter(
-    initialLocation: '/',
-    refreshListenable: refresh,
-    redirect: (context, state) {
-      final flow = ref.read(intakeFlowProvider);
-      final target = flow.isLoading
-          ? '/identify'
-          : switch (flow.valueOrNull) {
-              ChoosingLanguage() || null => '/',
-              AwaitingIdentity() || IntakeBlocked() => '/identify',
-              EditingIntake(:final step) => switch (step) {
-                IntakeStep.identity => '/identify',
-                IntakeStep.converse => '/converse',
-                IntakeStep.summary => '/summary',
-              },
-              SubmittingIntake() => '/summary',
-              IntakeComplete() => '/queue',
-            };
-      return state.uri.path == target ? null : target;
-    },
-    routes: [
-      GoRoute(path: '/', builder: (_, state) => const LanguageScreen()),
-      GoRoute(path: '/identify', builder: (_, state) => const IdentifyScreen()),
-      GoRoute(path: '/converse', builder: (_, state) => const ConverseScreen()),
-      GoRoute(path: '/summary', builder: (_, state) => const SummaryScreen()),
-      GoRoute(path: '/queue', builder: (_, state) => const QueueTokenScreen()),
-      GoRoute(path: '/scan', redirect: (_, state) => '/summary'),
-    ],
-  );
-  ref.onDispose(() {
-    router.dispose();
-    refresh.dispose();
-  });
-  return router;
-}
+// AyuSetu Vitalis Module Screens
+import "../../features/vitalis/presentation/screens/vitalis_dashboard_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_onboarding_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_questionnaire_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_healthspan_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_biomarkers_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_cardio_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_wearables_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_activity_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_nutrition_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_sleep_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_functional_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_preventive_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_simulator_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_trajectory_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_copilot_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_summary_screen.dart";
+import "../../features/vitalis/presentation/screens/vitalis_settings_screen.dart";
+import "../../features/prescription/presentation/screens/medicine_reminder_screen.dart";
+
+final appRouter = GoRouter(
+  initialLocation: "/",
+  routes: [
+    GoRoute(
+      path: "/",
+      builder: (context, state) => const PortalSelectionScreen(),
+    ),
+    // Patient Prescription & Medicine Reminder
+    GoRoute(
+      path: "/prescription",
+      builder: (context, state) => const MedicineReminderScreen(),
+    ),
+    // Patient Kiosk Flow
+    GoRoute(
+      path: "/kiosk",
+      builder: (context, state) => const LanguageScreen(),
+    ),
+    GoRoute(
+      path: "/identify",
+      builder: (context, state) => const IdentifyScreen(),
+    ),
+    GoRoute(
+      path: "/converse",
+      builder: (context, state) => const ConverseScreen(),
+    ),
+    GoRoute(
+      path: "/scan",
+      builder: (context, state) => const ScanScreen(),
+    ),
+    GoRoute(
+      path: "/summarize",
+      builder: (context, state) => const SummarizeScreen(),
+    ),
+    GoRoute(
+      path: "/queue",
+      builder: (context, state) => const QueueTokenScreen(),
+    ),
+    // Hospital & Clinic Operations
+    GoRoute(
+      path: "/doctor",
+      builder: (context, state) => const DoctorConsultationScreen(),
+    ),
+    GoRoute(
+      path: "/nurse",
+      builder: (context, state) => const NurseTriageScreen(),
+    ),
+    GoRoute(
+      path: "/hq",
+      builder: (context, state) => const HeadquartersScreen(),
+    ),
+    GoRoute(
+      path: "/clinical",
+      builder: (context, state) => const ClinicalManagementScreen(),
+    ),
+    // Wellness & Longevity Innovations
+    GoRoute(
+      path: "/yoga",
+      builder: (context, state) => const YogaPrescriptionScreen(),
+    ),
+    GoRoute(
+      path: "/longevity",
+      builder: (context, state) => const LongevityScreen(),
+    ),
+    GoRoute(
+      path: "/womens-health",
+      builder: (context, state) => const WomensHealthScreen(),
+    ),
+    // AyuSetu HER Module Routes
+    GoRoute(
+      path: "/her",
+      builder: (context, state) => const HerHubScreen(),
+    ),
+    GoRoute(
+      path: "/her/cycle-calendar",
+      builder: (context, state) => const HerCycleScreen(),
+    ),
+    GoRoute(
+      path: "/her/symptom-journal",
+      builder: (context, state) => const HerSymptomJournalScreen(),
+    ),
+    GoRoute(
+      path: "/her/questionnaire",
+      builder: (context, state) => const HerQuestionnaireScreen(),
+    ),
+    GoRoute(
+      path: "/her/wellness-studio",
+      builder: (context, state) => const HerWellnessStudioScreen(),
+    ),
+    GoRoute(
+      path: "/her/doctor-summary",
+      builder: (context, state) => const HerDoctorSummaryScreen(),
+    ),
+    GoRoute(
+      path: "/her/wearables",
+      builder: (context, state) => const HerWearableScreen(),
+    ),
+
+    // AyuSetu Vitalis Module Routes
+    GoRoute(
+      path: "/vitalis",
+      builder: (context, state) => const VitalisDashboardScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/onboarding",
+      builder: (context, state) => const VitalisOnboardingScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/questionnaire",
+      builder: (context, state) => const VitalisQuestionnaireScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/healthspan",
+      builder: (context, state) => const VitalisHealthspanScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/biomarkers",
+      builder: (context, state) => const VitalisBiomarkersScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/cardio",
+      builder: (context, state) => const VitalisCardioScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/wearables",
+      builder: (context, state) => const VitalisWearablesScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/activity",
+      builder: (context, state) => const VitalisActivityScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/nutrition",
+      builder: (context, state) => const VitalisNutritionScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/sleep",
+      builder: (context, state) => const VitalisSleepScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/functional",
+      builder: (context, state) => const VitalisFunctionalScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/functional-health",
+      builder: (context, state) => const VitalisFunctionalScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/preventive",
+      builder: (context, state) => const VitalisPreventiveScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/preventive-care",
+      builder: (context, state) => const VitalisPreventiveScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/simulator",
+      builder: (context, state) => const VitalisSimulatorScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/scenarios",
+      builder: (context, state) => const VitalisSimulatorScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/trajectory",
+      builder: (context, state) => const VitalisTrajectoryScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/copilot",
+      builder: (context, state) => const VitalisCopilotScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/summary",
+      builder: (context, state) => const VitalisSummaryScreen(),
+    ),
+    GoRoute(
+      path: "/vitalis/settings",
+      builder: (context, state) => const VitalisSettingsScreen(),
+    ),
+  ],
+);

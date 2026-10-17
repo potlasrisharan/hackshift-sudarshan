@@ -24,7 +24,7 @@ const operation = (summary: string, schema?: z.ZodType, secure = true) => ({
 export const openapi = {
   openapi: "3.1.0",
   info: {
-    title: "Dhaaga synthetic integration API",
+    title: "AYUSETU synthetic integration API",
     version: "0.1.0",
     description:
       "Synthetic fixtures only. Live upstream identity, persistence and providers are pending.",

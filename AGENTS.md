@@ -1,4 +1,4 @@
-# AGENTS.md — DHAAGA Architecture & Execution Rules
+# AGENTS.md — AYUSETU Architecture & Execution Rules
 
 > **Single Source of Truth:** `docs/PRD.md`. Always check specs, algorithms, and schemas there before implementing.
 
@@ -23,3 +23,6 @@
 4. **Zero PHI Leaks:** Redaction gate strips all identifiers before any external AI call.
 5. **Money = Integer Paise:** Zero floating point math for prices or ledger entries.
 6. **Multi-Tenancy:** All D1 queries scoped with `org_id` via `tenantDb(ctx)`.
+7. **Cloudflare Native Only:** Use Cloudflare Workers, Cloudflare Pages, D1 SQL, Durable Objects, KV, and R2 across the entire system. Supabase is completely eradicated.
+8. **Zero Secrets in Code/Git:** Never commit, hardcode, or push API keys, credentials, or secrets to GitHub. Secrets must strictly use Wrangler bindings or gitignored environment variables.
+

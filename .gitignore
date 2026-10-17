@@ -4,6 +4,8 @@ dist/
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
 *.db
 *.db-*
 *.sqlite*
@@ -15,13 +17,6 @@ __pycache__/
 coverage/
 test-results/
 playwright-report/
-# Duplicate imports retained locally; canonical originals are hackshift/projects/.
-/HOSPITAL-MANAGEMENT-main/
-/medikiosk-sih2026-main/
-# Historical authenticated tokens and captured logs are not publication assets.
-hackshift/projects/project-1/pentest/
-hackshift/projects/project-1/pentest_result*.txt
-hackshift/projects/project-1/*_output.txt
 
 # Native build outputs and local privacy assets
 apps/mobile/android/.gradle/

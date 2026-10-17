@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./frontend/website/src/*"]
+    }
+  },
+  "include": [
+    "packages/design/**/*.ts",
+    "apps/web/src/main.ts",
+    "frontend/website/src/main.tsx",
+    "frontend/website/src/components/VoiceInput.tsx",
+    "frontend/website/src/components/ProductTour.tsx",
+    "frontend/website/src/tourSteps.ts"
+  ],
+  "exclude": ["**/* 2.*", "**/node_modules/**"]
+}

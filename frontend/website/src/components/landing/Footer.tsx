@@ -1,0 +1,63 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+
+const Footer: React.FC = () => {
+  return (
+    <footer className="bg-slate-50 border-t border-slate-200 text-slate-600 py-16 pb-24 md:pb-16 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-12 mb-16">
+          <div className="lg:col-span-2">
+            <Link to="/" className="flex items-center gap-2 mb-6">
+              <img
+                src="/assets/ayusetu_logo.png"
+                alt="AyuSetu Healthcare"
+                className="h-9 w-auto object-contain"
+              />
+            </Link>
+            <p className="text-slate-600 max-w-xs mb-8 leading-relaxed">
+              Revolutionizing healthcare management through integrated technology. Empowering providers, improving lives.
+            </p>
+            <Link to="/contact" className="text-sm font-semibold text-primary">Contact the team</Link>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 font-bold mb-6">Solutions</h4>
+            <ul className="space-y-4 text-sm">
+              <li><Link to="/clinic-operations" className="text-slate-600 hover:text-primary transition-colors">Clinic Interface</Link></li>
+              <li><Link to="/hospital-command-center" className="text-slate-600 hover:text-primary transition-colors">Hospital Interface</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 font-bold mb-6">Company</h4>
+            <ul className="space-y-4 text-sm">
+              <li><Link to="/about" className="text-slate-600 hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link to="/careers" className="text-slate-600 hover:text-primary transition-colors">Careers</Link></li>
+              <li><Link to="/news" className="text-slate-600 hover:text-primary transition-colors">News & Press</Link></li>
+              <li><Link to="/contact" className="text-slate-600 hover:text-primary transition-colors">Contact</Link></li>
+              <li><Link to="/privacy" className="text-slate-600 hover:text-primary transition-colors">Privacy Policy</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 font-bold mb-6">Connect</h4>
+            <ul className="space-y-4 text-sm">
+              <li><Link to="/support" className="text-slate-600 hover:text-primary transition-colors">Support Portal</Link></li>
+              <li><Link to="/support" className="text-slate-600 hover:text-primary transition-colors">Help Center</Link></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="text-center pt-8 border-t border-slate-200">
+          <p className="text-xs text-slate-500">
+            &copy; 2026 AyuSetu. All rights reserved. A Healthcare Solutions Company.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

@@ -1,192 +1,209 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/localization/app_strings.dart';
-import '../../domain/entities/intake_draft.dart';
-import '../../domain/entities/intake_flow_state.dart';
-import '../providers/core_providers.dart';
-import '../widgets/kiosk_shell.dart';
-
-import 'package:flutter/foundation.dart';
-import '../providers/speech_providers.dart';
-import 'identify_screen.dart';
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:go_router/go_router.dart";
+import "package:kiosk_app/core/constants/app_colors.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
+import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
 class ConverseScreen extends ConsumerStatefulWidget {
   const ConverseScreen({super.key});
+
   @override
   ConsumerState<ConverseScreen> createState() => _ConverseScreenState();
 }
 
 class _ConverseScreenState extends ConsumerState<ConverseScreen> {
-  final _text = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    final value = ref.read(intakeFlowProvider).valueOrNull;
-    if (value is EditingIntake) _text.text = value.draft.complaint;
-  }
-
-  @override
-  void dispose() {
-    _text.clear();
-    _text.dispose();
-    super.dispose();
+    Future.microtask(() {
+      ref.read(intakeProvider.notifier).sendPatientSpeech("Namaste doctor, mujhe ghutno mein dard hai.");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = AppStrings.of(context);
-    final flow = ref.watch(intakeFlowProvider).valueOrNull;
-    final voice = ref.watch(voiceControllerProvider).valueOrNull;
-    ref.listen(voiceControllerProvider, (_, next) {
-      final value = next.valueOrNull;
-      if (value != null && value.transcript != _text.text) {
-        _text.value = TextEditingValue(
-          text: value.transcript,
-          selection: TextSelection.collapsed(offset: value.transcript.length),
-        );
-        final current = ref.read(intakeFlowProvider).valueOrNull;
-        if (current is EditingIntake) {
-          ref
-              .read(intakeFlowProvider.notifier)
-              .edit(current.draft.copyWith(complaint: value.transcript));
-        }
-      }
-    });
-    if (flow is! EditingIntake) return const SizedBox.shrink();
-    final listening =
-        voice?.status == VoiceStatus.listening ||
-        voice?.status == VoiceStatus.starting;
-    final symptomLabels = <Symptom, String>{
-      Symptom.chestPain: s.chestPain,
-      Symptom.breathless: s.breathless,
-      Symptom.fainting: s.fainting,
-      Symptom.fever: s.fever,
-      Symptom.cough: s.cough,
-      Symptom.fatigue: s.fatigue,
-      Symptom.thirst: s.thirst,
-    };
-    return KioskShell(
-      title: s.converseTitle,
-      children: [
-        Text(kIsWeb ? s.webTyped : s.speechNotice),
-        if (!kIsWeb)
-          KioskAction(
-            label: listening ? s.stopSpeech : s.speak,
-            onPressed: voice?.status == VoiceStatus.starting
-                ? null
-                : () => unawaited(
-                    listening
-                        ? ref.read(voiceControllerProvider.notifier).stop()
-                        : ref
-                              .read(voiceControllerProvider.notifier)
-                              .start(
-                                '${flow.draft.language.name}-IN',
-                                _text.text,
-                              ),
-                  ),
+    final state = ref.watch(intakeProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Step 2: Voice Interview",
+          overflow: TextOverflow.ellipsis,
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.canPop() ? context.pop() : context.go("/identify"),
+        ),
+        actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: AyuSetuLogoBadge(height: 20),
           ),
-        if (voice?.status == VoiceStatus.typedFallback) Text(s.typedFallback),
-        if (listening) ...[
-          Text(s.listening),
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: voice?.level ?? 0),
-            duration: const Duration(milliseconds: 120),
-            builder: (context, value, child) => LinearProgressIndicator(
-              value: value,
-              semanticsLabel: s.listening,
+          IconButton(
+            icon: const Icon(Icons.document_scanner),
+            tooltip: "Proceed to Document Scan",
+            onPressed: () => context.push("/scan"),
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          if (state.redFlagTriggered)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              color: AppColors.error,
+              child: Row(
+                children: const [
+                  Icon(Icons.warning, color: Colors.white, size: 28),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      "EMERGENCY RED-FLAG INTERCEPTED (<150ms): Acute cardiac/chest pain symptom detected. Priority triage alerted.",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const Text("Clinical Ontology: ", style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text("Hybrid (SOCRATES + Dashavidha)"),
+                  selected: state.systemType == "HYBRID",
+                  onSelected: (val) => ref.read(intakeProvider.notifier).setSystemType("HYBRID"),
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text("Ayurvedic (Dashavidha)"),
+                  selected: state.systemType == "AYURVEDIC",
+                  onSelected: (val) => ref.read(intakeProvider.notifier).setSystemType("AYURVEDIC"),
+                ),
+                const SizedBox(width: 16),
+                const Icon(Icons.record_voice_over, color: AppColors.primaryLight, size: 16),
+                const SizedBox(width: 6),
+                const Text("Sarvam Saaras v3", style: TextStyle(fontSize: 12, color: AppColors.primaryLight)),
+              ],
             ),
           ),
-        ],
-        KioskField(
-          controller: _text,
-          label: s.complaint,
-          fieldKey: 'complaint',
-          lines: 5,
-          enabled: !listening,
-          onChanged: (v) => ref
-              .read(intakeFlowProvider.notifier)
-              .edit(flow.draft.copyWith(complaint: v)),
-        ),
-        Text(s.redFlagHelp),
-        for (final symptom in Symptom.values)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: DropdownButtonFormField<Answer>(
-              key: Key('answer-${symptom.name}'),
-              initialValue: flow.draft.answers[symptom],
-              isExpanded: true,
-              decoration: InputDecoration(labelText: symptomLabels[symptom]),
-              items: [
-                for (final answer in Answer.values)
-                  DropdownMenuItem(
-                    value: answer,
-                    child: Text(switch (answer) {
-                      Answer.yes => s.yes,
-                      Answer.no => s.no,
-                      Answer.unsure => s.unsure,
-                    }),
-                  ),
-              ],
-              onChanged: (answer) {
-                if (answer != null) {
-                  ref
-                      .read(intakeFlowProvider.notifier)
-                      .edit(
-                        flow.draft.copyWith(
-                          answers: {...flow.draft.answers, symptom: answer},
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.chatMessages.length,
+              itemBuilder: (context, idx) {
+                final m = state.chatMessages[idx];
+                final isPatient = m["role"] == "patient";
+                return Align(
+                  alignment: isPatient ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    decoration: BoxDecoration(
+                      color: isPatient ? AppColors.primary : AppColors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: isPatient ? AppColors.primaryLight : AppColors.surfaceElevated),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isPatient ? "Patient (Voice/Touch)" : "AYUSETU Clinical Scribe",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: isPatient ? Colors.white70 : AppColors.primaryLight,
+                          ),
                         ),
-                      );
-                }
+                        const SizedBox(height: 4),
+                        Text(m["text"]!, style: const TextStyle(fontSize: 14, color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
           ),
-        if (flow.draft.danger) EmergencyNotice(text: s.informStaff),
-        KioskAction(
-          label: s.review,
-          onPressed: flow.draft.validComplaint && !listening
-              ? () {
-                  ref
-                      .read(intakeFlowProvider.notifier)
-                      .step(IntakeStep.summary);
-                  context.go('/summary');
-                }
-              : null,
-        ),
-        const SizedBox(height: 16),
-        KioskAction(
-          label: s.back,
-          outlined: true,
-          onPressed: () {
-            ref.invalidate(voiceControllerProvider);
-            ref.read(intakeFlowProvider.notifier).reset();
-            context.go('/');
-          },
-        ),
-      ],
+          if (state.currentOptions.isNotEmpty)
+            Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.currentOptions.length,
+                separatorBuilder: (_, index) => const SizedBox(width: 8),
+                itemBuilder: (context, idx) {
+                  final opt = state.currentOptions[idx];
+                  return ActionChip(
+                    label: Text(opt, style: const TextStyle(fontSize: 12)),
+                    onPressed: () {
+                      ref.read(intakeProvider.notifier).sendPatientSpeech(opt);
+                    },
+                  );
+                },
+              ),
+            ),
+          const SizedBox(height: 6),
+          SafeArea(
+            top: false,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              color: AppColors.surface,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      style: const TextStyle(fontSize: 13),
+                      decoration: InputDecoration(
+                        hintText: "Speak or type symptom...",
+                        hintStyle: const TextStyle(fontSize: 12),
+                        filled: true,
+                        fillColor: AppColors.background,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        prefixIcon: const Icon(Icons.mic, color: AppColors.primaryLight, size: 20),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.send, color: AppColors.primaryLight, size: 20),
+                          onPressed: () {
+                            if (_textController.text.trim().isNotEmpty) {
+                              ref.read(intakeProvider.notifier).sendPatientSpeech(_textController.text);
+                              _textController.clear();
+                            }
+                          },
+                        ),
+                      ),
+                      onSubmitted: (val) {
+                        if (val.trim().isNotEmpty) {
+                          ref.read(intakeProvider.notifier).sendPatientSpeech(val);
+                          _textController.clear();
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.ayushGreen,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    ),
+                    onPressed: () => context.push("/scan"),
+                    child: const Text("Next ➔", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
-}
-
-class EmergencyNotice extends StatelessWidget {
-  final String text;
-  const EmergencyNotice({super.key, required this.text});
-  @override
-  Widget build(BuildContext context) => Semantics(
-    container: true,
-    liveRegion: true,
-    child: Card(
-      color: Theme.of(context).colorScheme.error,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onError,
-          ),
-        ),
-      ),
-    ),
-  );
 }

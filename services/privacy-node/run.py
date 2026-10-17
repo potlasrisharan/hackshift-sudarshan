@@ -13,7 +13,7 @@ import socket
 import tempfile
 import time
 
-ROOT = Path(os.environ.get('PRIVACY_NODE_DATA_DIR') or tempfile.mkdtemp(prefix='dhaaga-private-')).resolve()
+ROOT = Path(os.environ.get('PRIVACY_NODE_DATA_DIR') or tempfile.mkdtemp(prefix='ayusetu-private-')).resolve()
 ROOT.mkdir(mode=0o700,parents=True,exist_ok=True)
 # Set BEFORE importing Cognee so defaults cannot select a cloud inference backend.
 for key,value in {
@@ -23,8 +23,8 @@ for key,value in {
  'EMBEDDING_PROVIDER':'ollama','EMBEDDING_MODEL':'nomic-embed-text:latest',
  'EMBEDDING_ENDPOINT':'http://127.0.0.1:11434/api/embed','EMBEDDING_DIMENSIONS':'768',
  'HUGGINGFACE_TOKENIZER':'nomic-ai/nomic-embed-text-v1.5','HF_HUB_OFFLINE':'1',
- 'HF_HOME':os.environ.get('DHAAGA_MODEL_CACHE','/tmp/dhaaga-model-cache')+'/hf',
- 'TIKTOKEN_CACHE_DIR':os.environ.get('DHAAGA_MODEL_CACHE','/tmp/dhaaga-model-cache')+'/tiktoken',
+ 'HF_HOME':os.environ.get('AYUSETU_MODEL_CACHE',os.environ.get('DHAAGA_MODEL_CACHE','/tmp/ayusetu-model-cache'))+'/hf',
+ 'TIKTOKEN_CACHE_DIR':os.environ.get('AYUSETU_MODEL_CACHE',os.environ.get('DHAAGA_MODEL_CACHE','/tmp/ayusetu-model-cache'))+'/tiktoken',
  'GRAPH_DATABASE_PROVIDER':'ladybug','GRAPH_DATASET_DATABASE_HANDLER':'ladybug',
  'VECTOR_DB_PROVIDER':'lancedb','DB_PROVIDER':'sqlite',
  'GRAPH_DATABASE_SUBPROCESS_ENABLED':'false',
@@ -68,8 +68,8 @@ async def main():
     began=time.perf_counter()
     # MOCK: synthetic record for reproducible local graph extraction.
     text='Sunita is a synthetic demo patient. Her clinic recorded systolic blood pressure of 124 mmHg. Her intake recorded systolic blood pressure of 128 mmHg. Both observations belong to the same synthetic record. No diagnosis is made.'
-    await cognee.remember(text,dataset_name='dhaaga_synthetic',self_improvement=False)
-    results=await cognee.recall(query_text='Which systolic blood pressure readings were recorded for Sunita?',query_type=SearchType.GRAPH_COMPLETION,datasets=['dhaaga_synthetic'])
+    await cognee.remember(text,dataset_name='ayusetu_synthetic',self_improvement=False)
+    results=await cognee.recall(query_text='Which systolic blood pressure readings were recorded for Sunita?',query_type=SearchType.GRAPH_COMPLETION,datasets=['ayusetu_synthetic'])
     report={'synthetic':True,'cognee':'1.6.5','storage':str(ROOT),'graph':'ladybug','vectors':'lancedb','metadata':'sqlite','llm':os.environ['LLM_MODEL'],'embedding':'nomic-embed-text:latest','elapsedSeconds':round(time.perf_counter()-began,3),'blockedPythonConnections':len(blocked),'networkProof':'Python socket guard only; not system-wide egress proof','recall':[str(getattr(r,'text',r)) for r in results]}
     (ROOT/'verification.json').write_text(json.dumps(report,indent=2))
     print(json.dumps(report,indent=2))

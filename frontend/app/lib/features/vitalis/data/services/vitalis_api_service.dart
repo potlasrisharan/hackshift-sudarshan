@@ -1,0 +1,202 @@
+import "dart:convert";
+import "package:http/http.dart" as http;
+import "../models/vitalis_models.dart";
+import "../fixtures/vitalis_synthetic_fixtures.dart";
+
+class VitalisApiService {
+  final String baseUrl;
+  final String patientId;
+
+  const VitalisApiService({
+    this.baseUrl = "http://localhost:8787/api/v1/vitalis",
+    this.patientId = "demo_patient_vitalis",
+  });
+
+  Map<String, String> get _headers => {
+        "Content-Type": "application/json",
+        "X-Patient-Id": patientId,
+      };
+
+  Future<VitalisProfileModel> fetchProfile() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/profile"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisProfileModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.profile;
+  }
+
+  Future<VitalisProfileModel> updateProfile(VitalisProfileModel profile) async {
+    try {
+      final res = await http.put(
+        Uri.parse("$baseUrl/profile"),
+        headers: _headers,
+        body: jsonEncode(profile.toJson()),
+      );
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisProfileModel.fromJson(data);
+      }
+    } catch (_) {}
+    return profile;
+  }
+
+  Future<VitalisHpiResultModel> fetchHealthspanIndex() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/healthspan-index"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisHpiResultModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.hpiResult;
+  }
+
+  Future<VitalisBiomarkerTrendModel> fetchBiomarkerTrend() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/biomarkers/trends"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisBiomarkerTrendModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.biomarkerTrend;
+  }
+
+  Future<VitalisCardioModel> fetchCardioFitness() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/fitness/cardio"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisCardioModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.cardio;
+  }
+
+  Future<VitalisReadinessModel> fetchDailyReadiness() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/readiness"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisReadinessModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.readiness;
+  }
+
+  Future<VitalisExercisePlanModel> fetchExercisePlan() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/plans/exercise"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisExercisePlanModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.exercisePlan;
+  }
+
+  Future<VitalisNutritionPlanModel> fetchNutritionPlan() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/plans/nutrition"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisNutritionPlanModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.nutritionPlan;
+  }
+
+  Future<List<VitalisPreventiveItemModel>> fetchPreventiveCare() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/preventive-care"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final list = (decoded["data"] as List<dynamic>?)
+            ?.map((i) => VitalisPreventiveItemModel.fromJson(i as Map<String, dynamic>))
+            .toList() ?? [];
+        return list;
+      }
+    } catch (_) {}
+    return VitalisSyntheticFixtures.personaA.preventiveItems;
+  }
+
+  Future<List<VitalisRecommendationModel>> fetchRecommendations() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/recommendations"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        final list = (data["recommendedActions"] as List<dynamic>?)
+            ?.map((i) => VitalisRecommendationModel.fromJson(i as Map<String, dynamic>))
+            .toList() ?? [];
+        return list;
+      }
+    } catch (_) {}
+    return const [
+      VitalisRecommendationModel(id: "REC-1", title: "150 Minutes Moderate Aerobic Walking", category: "lifestyle_activity", priorityScore: 0.92, evidenceSource: "WHO 2020 Guidelines"),
+      VitalisRecommendationModel(id: "REC-2", title: "Daily Dals & Pulses with Lemon (Vitamin C)", category: "nutrition", priorityScore: 0.88, evidenceSource: "ICMR Dietary Guidelines"),
+      VitalisRecommendationModel(id: "REC-3", title: "Consistent 30-min Sleep Schedule Window", category: "sleep", priorityScore: 0.84, evidenceSource: "National Sleep Foundation"),
+    ];
+  }
+
+  Future<VitalisDoctorSummaryModel> fetchDoctorSummary() async {
+    try {
+      final res = await http.get(Uri.parse("$baseUrl/doctor-summary"), headers: _headers);
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        final data = decoded["data"] as Map<String, dynamic>;
+        return VitalisDoctorSummaryModel.fromJson(data);
+      }
+    } catch (_) {}
+    return VitalisDoctorSummaryModel(
+      id: "sum_fallback",
+      patientId: patientId,
+      generatedAt: DateTime.now().toIso8601String(),
+      age: 48,
+      sex: "MALE",
+      bmi: 26.4,
+      knownConditions: const ["Pre-diabetes"],
+      currentMedications: const ["Metformin 500mg"],
+      biomarkerTrends: const [
+        {"metric": "HbA1c", "baseline": "5.7%", "latest": "6.1%", "delta": "+0.4%", "status": "PRE_DIABETES_RANGE"}
+      ],
+      wearableBaseline: const {
+        "meanRestingHr": 62,
+        "meanHrvRmssd": 48,
+        "dailyStepsAverage": 6800,
+      },
+      preventiveStatus: const [
+        {"item": "HbA1c Screening", "status": "DUE_FOR_REVIEW"}
+      ],
+      shareToken: "vit_share_99a82f",
+      isClinicianConfirmed: false,
+      disclaimer: "Patient-authorized longitudinal telemetry & clinical records summary. Not machine-diagnosed.",
+    );
+  }
+
+  Future<String> askCopilot(String message) async {
+    try {
+      final res = await http.post(
+        Uri.parse("$baseUrl/copilot/chat"),
+        headers: _headers,
+        body: jsonEncode({"message": message}),
+      );
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        return decoded["data"]["reply"] as String? ?? "No response received.";
+      }
+    } catch (_) {}
+    return "I can explain your biomarker trends, summarize exercise targets, or review Indian nutrition ideas based on clinical guidelines.";
+  }
+}

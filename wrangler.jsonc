@@ -1,12 +1,58 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "dhaaga-api",
-  "main": "apps/api/worker.ts",
-  "compatibility_date": "2026-10-17",
+  "name": "ayusetu-api",
+  "main": "backend/src/index.ts",
+  "compatibility_date": "2024-12-30",
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dhaaga-db",
+      "database_id": "65320ab1-5c2a-4031-9928-994e5042540e",
+      "migrations_dir": "backend/migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "cb97d755d3da4d79ab334749741d4904"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CLINIC_INVENTORY",
+        "class_name": "ClinicInventory"
+      },
+      {
+        "name": "CLINIC_HUB",
+        "class_name": "ClinicHub"
+      },
+      {
+        "name": "TRIAGE_SESSION",
+        "class_name": "TriageSession"
+      },
+      {
+        "name": "ORG_AUDIT",
+        "class_name": "OrgAudit"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "ClinicInventory",
+        "ClinicHub",
+        "TriageSession",
+        "OrgAudit"
+      ]
+    }
+  ],
   "vars": {
-    "ENVIRONMENT": "production"
+    "ENVIRONMENT": "production",
+    "API_VERSION": "v1"
   }
 }

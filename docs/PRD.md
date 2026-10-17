@@ -1,4 +1,4 @@
-# DHAAGA — The Continuity-of-Care Operating System
+# AYUSETU (आयुसेतु) — The Continuity-of-Care Operating System
 ### *One thread from first symptom to full recovery.*
 
 **HackShift 2026 · IIIT Delhi · Theme: Healthcare & Well-being — "Reimagining Healthcare Through Technology"**
@@ -108,14 +108,14 @@
 
 ### 0.5 Unified product vision — "1 + 1 = 3"
 
-**Dhaaga** (Hindi: *thread*) is a continuity-of-care OS. Every patient gets a **Patient Thread** — a single, consented, FHIR-aligned timeline — that three modules weave:
+**AYUSETU** (आयुसेतु) is a continuity-of-care OS. Every patient gets a **Patient Thread** — a single, consented, FHIR-aligned timeline — that three modules weave:
 
 | Module | Name | Origin | Role |
 |---|---|---|---|
-| Front door | **Dhaaga Intake** | Project 2 | Voice triage + document OCR + SOAP |
-| Engine room | **Dhaaga Ops** | Project 1 | Multi-clinic POS, inventory, wards, procurement, ledger |
-| Back door (**new**) | **Dhaaga Home** | Theme gap | Remote monitoring + refill/continuity via WhatsApp |
-| Brain | **Dhaaga Engine** | Bridge | 4 custom algorithms + AI gateway + consent/audit |
+| Front door | **AYUSETU Intake** | Project 2 | Voice triage + document OCR + SOAP |
+| Engine room | **AYUSETU Ops** | Project 1 | Multi-clinic POS, inventory, wards, procurement, ledger |
+| Back door (**new**) | **AYUSETU Home** | Theme gap | Remote monitoring + refill/continuity via WhatsApp |
+| Brain | **AYUSETU Engine** | Bridge | 4 custom algorithms + AI gateway + consent/audit |
 
 **Why 1+1=3** — capabilities that exist *only* because both are connected:
 
@@ -142,15 +142,15 @@
 
 ### 0.7 Integration story (the narrative to pitch)
 
-> **Sunita, 52, Bhiwani** (diabetes + hypertension) speaks Hindi to a kiosk at *Dhaaga Clinic North*. Sentinel asks 9 adaptive questions, spots no red flags, and photographs her old prescription. Dr. Arjun gets a source-linked SOAP in 10 seconds. His prescription flows to **Rx-to-Shelf**, which finds metformin 500 in stock at North with a batch that outlives her 30-day course, suggests a ₹-cheaper generic *with her doctor's consent*, and reserves it. The POS dispenses via FEFO; the ledger posts revenue and COGS. At home, **Dhaaga Home** WhatsApps her daily: she sends a voice note and a photo of her BP monitor. **Drift Radar** notices her baseline shifting *for her*, and puts her at the top of nurse Farzana's call list. Day 26, **ThreadPulse** predicts her refill and warns procurement that North will run short for 14 similar patients. The loop closes — and her next intake already knows her history.
+> **Sunita, 52, Bhiwani** (diabetes + hypertension) speaks Hindi to a kiosk at *AYUSETU Clinic North*. Sentinel asks 9 adaptive questions, spots no red flags, and photographs her old prescription. Dr. Arjun gets a source-linked SOAP in 10 seconds. His prescription flows to **Rx-to-Shelf**, which finds metformin 500 in stock at North with a batch that outlives her 30-day course, suggests a ₹-cheaper generic *with her doctor's consent*, and reserves it. The POS dispenses via FEFO; the ledger posts revenue and COGS. At home, **AYUSETU Home** WhatsApps her daily: she sends a voice note and a photo of her BP monitor. **Drift Radar** notices her baseline shifting *for her*, and puts her at the top of nurse Farzana's call list. Day 26, **ThreadPulse** predicts her refill and warns procurement that North will run short for 14 similar patients. The loop closes — and her next intake already knows her history.
 
 ```mermaid
 flowchart LR
-    subgraph INTAKE["Dhaaga Intake (P2)"]
+    subgraph INTAKE["AYUSETU Intake (P2)"]
         V["Voice + OCR intake"] --> S["Triage Sentinel"]
         S --> SOAP["Source-linked SOAP + FHIR"]
     end
-    subgraph OPS["Dhaaga Ops (P1)"]
+    subgraph OPS["AYUSETU Ops (P1)"]
         RX["Prescription"] --> R2S["Rx-to-Shelf"]
         R2S --> POS["POS + FEFO dispense"]
         POS --> LED["Ledger and P&L"]
@@ -158,7 +158,7 @@ flowchart LR
         POS --> INV
         PO["Procurement + GRN"] --> INV
     end
-    subgraph HOME["Dhaaga Home"]
+    subgraph HOME["AYUSETU Home"]
         WA["WhatsApp check-ins"] --> DR["Drift Radar"]
         DR --> Q["Nurse call queue"]
     end
@@ -182,7 +182,7 @@ flowchart LR
 | **Theme standalone** | `/home` + `/nurse` with `MODE=HOME_ONLY` | WhatsApp sim, Drift Radar vs fixed thresholds | 3 |
 | **Combined** | default | The Sunita story with the three "bridge" moments | 6 |
 
-Implementation: one env var `DHAAGA_MODE` hides nav items; all three modes ship from one build. Seed script supports `--profile intake|ops|home|all`.
+Implementation: one env var `AYUSETU_MODE` hides nav items; all three modes ship from one build. Seed script supports `--profile intake|ops|home|all`.
 
 ---
 
@@ -190,10 +190,10 @@ Implementation: one env var `DHAAGA_MODE` hides nav items; all three modes ship 
 
 ### A1. Executive summary
 
-* **Name:** **Dhaaga** *(run a trademark/domain check; alternates: "Anubandh", "Setu-Care", "Sutra Health")*
+* **Name:** **AYUSETU (आयुसेतु)** *(alternates: "Setu-Care", "Sutra Health")*
 * **Tagline:** *One thread from first symptom to full recovery.*
-* **Pitch (paragraph):** In India, care breaks at every hand-off: a patient who speaks Bhojpuri gets two minutes with a doctor; the prescription is illegible; the pharmacy is out of stock; the patient stops taking the drug on day 12 and returns sicker. Dhaaga stitches those hand-offs into one consented Patient Thread: voice-first AI intake in the patient's language, an operations OS that turns prescriptions into expiry-safe, cost-optimised dispensing across a clinic network, and a WhatsApp-native home module that watches each patient against *their own* baseline and tells nurses whom to call first. Four original algorithms — not a chatbot wrapper — make the loop auditable and safe.
-* **30-second elevator:** *"Health systems fail at hand-offs, not at hospitals. Dhaaga is the thread: Hindi voice intake that triages safely, a clinic OS that turns the prescription into the right medicine at the lowest safe cost, and WhatsApp monitoring that spots a patient getting worse before they know it — all on one consented record. We built four custom algorithms so every AI decision is explainable, and we run on ₹-level cost per patient."*
+* **Pitch (paragraph):** In India, care breaks at every hand-off: a patient who speaks Bhojpuri gets two minutes with a doctor; the prescription is illegible; the pharmacy is out of stock; the patient stops taking the drug on day 12 and returns sicker. AYUSETU stitches those hand-offs into one consented Patient Thread: voice-first AI intake in the patient's language, an operations OS that turns prescriptions into expiry-safe, cost-optimised dispensing across a clinic network, and a WhatsApp-native home module that watches each patient against *their own* baseline and tells nurses whom to call first. Four original algorithms — not a chatbot wrapper — make the loop auditable and safe.
+* **30-second elevator:** *"Health systems fail at hand-offs, not at hospitals. AYUSETU is the thread: Hindi voice intake that triages safely, a clinic OS that turns the prescription into the right medicine at the lowest safe cost, and WhatsApp monitoring that spots a patient getting worse before they know it — all on one consented record. We built four custom algorithms so every AI decision is explainable, and we run on ₹-level cost per patient."*
 
 ### A2. Problem deep-dive
 
@@ -236,7 +236,7 @@ Implementation: one env var `DHAAGA_MODE` hides nav items; all three modes ship 
 
 **Journey map (Sunita):**
 
-| Stage | Today | With Dhaaga | Touchpoint | Emotion |
+| Stage | Today | With AYUSETU | Touchpoint | Emotion |
 |---|---|---|---|---|
 | Arrive | Queue, paper form in English | Taps "हिंदी", speaks | Kiosk | Anxious → at ease |
 | Intake | Doctor asks 2-min history | 9 adaptive questions, red-flag safe | Voice AI | Heard |
@@ -283,7 +283,7 @@ Implementation: one env var `DHAAGA_MODE` hides nav items; all three modes ship 
 
 **Feature matrix (✓ strong · ◐ partial · ✗ none; based on public marketing — verify):**
 
-| Feature | Practo | Eka | Bahmni | Infermedica | Dozee | **Dhaaga** |
+| Feature | Practo | Eka | Bahmni | Infermedica | Dozee | **AYUSETU** |
 |---|---|---|---|---|---|---|
 | Indic voice-first intake | ✗ | ◐ | ✗ | ◐ | ✗ | **✓** |
 | Adaptive, auditable triage math | ✗ | ✗ | ✗ | ✓ | ✗ | **✓** |
@@ -312,12 +312,12 @@ quadrantChart
     Infermedica: [0.82, 0.12]
     Ada Health: [0.78, 0.08]
     Dozee: [0.65, 0.2]
-    Dhaaga: [0.88, 0.86]
+    AYUSETU: [0.88, 0.86]
 ```
 
 ### A6. Market gap analysis
 
-| Gap | Why it exists | Dhaaga exploit |
+| Gap | Why it exists | AYUSETU exploit |
 |---|---|---|
 | G1: Triage tools don't know stock/capacity | Sold to payers/telehealth, not clinics | Sentinel output includes "where can this be treated/dispensed now" |
 | G2: ERPs don't know clinical need | Built for billing | ThreadPulse uses patient-level need |
@@ -369,7 +369,7 @@ At 600 intakes/mo → ₹1.5k–3.2k variable + ~₹0.5k infra ⇒ at the ₹4,9
 PART B — PRODUCT SPECIFICATION
 Legend: P0 = flawless in demo; P1 = build if on schedule; P2 = roadmap/stub. Each feature has acceptance criteria (AC) and edge cases (EC); the user story is in the feature name.
 B1. Feature list
-Module I — Dhaaga Intake (Project 2)
+Module I — AYUSETU Intake (Project 2)
 ID
 Feature
 P
@@ -419,7 +419,7 @@ I-09
 FHIR R4 Bundle export
 P1
 Patient, Encounter, Condition (ICD-10 hint), Observation, MedicationRequest, Consent, DocumentReference; passes HAPI profile check in CI
-Missing code: text-only CodeableConcept; no ABHA: dhaaga-temp identifier
+Missing code: text-only CodeableConcept; no ABHA: ayusetu-temp identifier
 I-10
 Offline kiosk mode
 P1
@@ -435,7 +435,7 @@ Patient-readable visit summary
 P1
 Plain language, translated, voice-playable; links to Rx-to-Shelf plan
 Grade-5 sentence-length check
-Module II — Dhaaga Ops (Project 1)
+Module II — AYUSETU Ops (Project 1)
 ID
 Feature
 P
@@ -506,7 +506,7 @@ Staff roster; equipment registry
 P2
 Stub screens, seeded
 Roadmap
-Module III — Bridge (Dhaaga Engine)
+Module III — Bridge (AYUSETU Engine)
 ID
 Feature
 P
@@ -552,7 +552,7 @@ Escalation to capacity link
 P1
 High-risk alert gives request-bed action with live availability
 No beds: nearest clinic
-Module IV — Dhaaga Home (remote monitoring)
+Module IV — AYUSETU Home (remote monitoring)
 ID
 Feature
 P
@@ -637,7 +637,7 @@ Sentry, metrics, /healthz, Algorithm Lab
 S-07
 Demo mode & seed loader
 P0
-DHAAGA_MODE, POST /admin/seed?profile=; scripted Sunita patient
+AYUSETU_MODE, POST /admin/seed?profile=; scripted Sunita patient
 —
 B2. Differentiator features (13)
 #
@@ -821,7 +821,7 @@ Needs sandbox + WASA; we claim aligned, not certified
 B5. UX specification
 Design direction: calm clinical-modern. Off-white #FAF8F5, deep teal #0F766E, saffron accent #E8890C (the thread), danger #B42318, success #157F3D. Inter + Noto Sans Devanagari/Gurmukhi/Tamil; kiosk min 18 px body and 56 px touch targets. Animated saffron thread line shows progress (Framer Motion, reduced-motion respected). Dark mode on consoles, off on kiosk. Icons always with text; urgency never by colour alone. WCAG 2.2 AA; focus rings; screen-reader labels; lang per element.
 flowchart TD
-  ROOT[dhaaga.app] --> KIOSK[/kiosk patient/]
+  ROOT[ayusetu.app] --> KIOSK[/kiosk patient/]
   ROOT --> HOMEWEB[/home simulator + PWA/]
   ROOT --> CLIN[/clinician/]
   ROOT --> NURSE[/nurse/]
@@ -882,7 +882,7 @@ LAB
 4 algorithm tabs with sliders and live charts
 Seeded RNG
 +--------------------------------------------------------------+
-| < Language   Dhaaga                    (speaker)  o o o . . . |
+| < Language   AYUSETU                   (speaker)  o o o . . . |
 |--------------------------------------------------------------|
 |   Do you have chest pain?  (Hindi shown in script)           |
 |   ~~~~~~ live waveform ~~~~~~                                |
@@ -922,7 +922,7 @@ Clinical-safety design:
 5. Hallucination controls: constrained JSON, provenance-required text, no free-form clinical generation, deterministic fallbacks.
 6. Fairness: evaluate Sentinel and Drift Radar by language, sex and age band on synthetic cohorts; log STT confidence by language; button + audio path reaches the same triage outcome; document known gaps.
 7. Near misses logged to safety_events and reviewed.
-Responsible-AI statement (slide): Dhaaga uses AI to listen, read and explain, never to decide alone. Clinical and operational decisions are made by transparent algorithms whose maths is shown on screen; a clinician or pharmacist confirms anything that touches treatment. We use only synthetic data in this demonstration, show patients what is shared and let them revoke it, and publish where our system is weak.
+Responsible-AI statement (slide): AYUSETU uses AI to listen, read and explain, never to decide alone. Clinical and operational decisions are made by transparent algorithms whose maths is shown on screen; a clinician or pharmacist confirms anything that touches treatment. We use only synthetic data in this demonstration, show patients what is shared and let them revoke it, and publish where our system is weak.
 Synthetic data strategy: Synthea-style generator with Indian names/locales, chronic profiles (T2DM, HTN, COPD, post-MI), seeded RNG; vitals = per-patient baseline + AR(1) noise + injected deterioration + 25% missingness; about 120-SKU hand-built catalogue of common Indian generics (synthetic prices); 25–30 handwritten-style prescription images made by the team. Public references (check licences): WHO ICD-10, LOINC, Synthea (Apache-2.0), NLEM salt names. No real patient data.
 PART C — CUSTOM ALGORITHMS (OUR TECHNICAL USP)
 Four original algorithms, benchmarked on synthetic data (seeded Python prototypes in reference/, ported to TypeScript in packages/engine). Results are a mechanism benchmark, not clinical validation.
@@ -1084,7 +1084,7 @@ ThreadPulse
 reorder.suggested
 Procurement
 clinic, sku, qty, risk, named patients
-Dhaaga PRD — Parts D–I (completes your Parts 0, A, B, C)
+AYUSETU PRD — Parts D–I (completes your Parts 0, A, B, C)
 Stack decision: everything on Cloudflare. Web app + mobile app, one TypeScript monorepo. This overrides earlier mentions of AWS, Cognito, FastAPI and Postgres RLS in Parts 0–C (S-01, O-01, O-03, O-11). Free-tier numbers are from memory — verify on Cloudflare pricing pages today.
 Assumptions (I1)
 1. Code is written fresh during the 24 h (organiser check pending, flag 1 in Part 0).
@@ -1536,7 +1536,7 @@ jobs:
 Branching: trunk-based, short branches p1/…, p2/…, bridge/…, web/…; each member owns directories (F1/G1); migrations prefixed by owner (0003_ops_*.sql).
 PART F — AGENT-READY BUILD BLUEPRINT
 F1. Monorepo
-dhaaga/
+ayusetu/
   AGENTS.md  CLAUDE.md             # master rules (F5)
   apps/
     api/       # Hono Worker: src/modules/{intake,ops,bridge,home,platform}, src/do/{ClinicInventory,ClinicHub,TriageSession,OrgAudit}.ts
@@ -1556,7 +1556,7 @@ dhaaga/
 F2. Environment (.env.example, then wrangler secret put)
 JWT_SECRET=            # 32+ random bytes
 FIELD_ENC_KEY=         # base64 32 bytes (AES-GCM)
-DHAAGA_MODE=all        # all | INTAKE_ONLY | OPS_ONLY | HOME_ONLY
+AYUSETU_MODE=all       # all | INTAKE_ONLY | OPS_ONLY | HOME_ONLY
 AI_ENABLED=true
 SARVAM_API_KEY=
 GEMINI_API_KEY=
@@ -1571,16 +1571,16 @@ AI_BUDGET_SARVAM_INR=300
 AI_BUDGET_GEMINI_CALLS=800
 Bindings in wrangler.jsonc: DB (D1), KV, R2, AI, VECTORIZE, DO classes, Queues, cron 0 2 * * *.
 F3. Setup commands
-pnpm create turbo@latest dhaaga && cd dhaaga
+pnpm create turbo@latest ayusetu && cd ayusetu
 pnpm i -D typescript @biomejs/biome vitest wrangler
 npx wrangler login
-npx wrangler d1 create dhaaga-db
+npx wrangler d1 create ayusetu-db
 npx wrangler kv namespace create KV
-npx wrangler r2 bucket create dhaaga-files
+npx wrangler r2 bucket create ayusetu-files
 npx wrangler queues create wa-dispatch
 npx wrangler vectorize create drugs --dimensions=1024 --metric=cosine
 pnpm --filter api drizzle-kit generate
-npx wrangler d1 migrations apply dhaaga-db --local
+npx wrangler d1 migrations apply ayusetu-db --local
 pnpm --filter api dev       # wrangler dev (local D1 + DOs)
 pnpm --filter web dev       # vite
 pnpm --filter mobile start  # expo
@@ -1596,7 +1596,7 @@ Home. WhatsApp webhook and simulator hit the same route. Pipeline per D7. Nurse 
 Platform. Auth, RBAC, tenantDb, redact() (ABHA 14-digit, Aadhaar 12-digit, phone, PIN regexes plus name dictionary incl. Hinglish names), consent service, observability.
 F5. Agent prompts
 Master rules (AGENTS.md / CLAUDE.md):
-You are building Dhaaga, a continuity-of-care OS, from docs/PRD.md. Rules:
+You are building AYUSETU, a continuity-of-care OS, from docs/PRD.md. Rules:
 1. TypeScript strict. No `any`. Zod-validate all I/O. Biome must pass.
 2. Platform: Cloudflare Workers + D1 + Durable Objects + KV + R2 + Queues. No Node-only APIs.
 3. Algorithms decide, AI translates. An LLM never chooses a question, tier, drug, batch or alert.

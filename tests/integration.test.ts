@@ -1,8 +1,9 @@
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { LocalDatabase } from "../backend/local/database";
+import { migrateLocal } from "../backend/local/migrate";
 import { demoPassword, seedDemo } from "../backend/local/seed";
 import { tenantDb } from "../backend/src/database";
 import { createIntegrationApp } from "../backend/src/index";
@@ -74,7 +75,7 @@ async function create(token: string, body: unknown = input) {
   return encounterSchema.parse(await response.json());
 }
 beforeAll(async () => {
-  db.raw.exec(readFileSync("backend/migrations/0001_intake.sql", "utf8"));
+  migrateLocal(db);
   await seedDemo(db);
 });
 beforeEach(async () => {

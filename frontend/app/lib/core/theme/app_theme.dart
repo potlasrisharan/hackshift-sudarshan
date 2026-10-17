@@ -1,108 +1,46 @@
-import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import "package:flutter/material.dart";
+import "package:google_fonts/google_fonts.dart";
+import "../constants/app_colors.dart";
 
-abstract final class AppTheme {
-  static ThemeData dark({bool elderMode = false}) {
-    final background = elderMode
-        ? AppColors.elderBackground
-        : AppColors.background;
-    final surface = elderMode ? AppColors.elderSurface : AppColors.surface;
-    final text = elderMode ? AppColors.elderText : AppColors.text;
-    final primary = elderMode ? AppColors.elderPrimary : AppColors.primary;
-    final scheme = ColorScheme.dark(
-      primary: primary,
-      onPrimary: AppColors.onPrimary,
-      surface: surface,
-      onSurface: text,
-      onSurfaceVariant: elderMode ? AppColors.elderText : AppColors.muted,
-      error: AppColors.error,
-      onError: AppColors.onError,
-      outline: elderMode ? AppColors.elderText : AppColors.outline,
-    );
-    final base = ThemeData(
+class AppTheme {
+  static ThemeData get darkTheme {
+    return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: scheme,
-      scaffoldBackgroundColor: background,
-      fontFamily: 'NotoSans',
-      fontFamilyFallback: const [
-        'NotoSansDevanagari',
-        'NotoSansGurmukhi',
-        'NotoSansTamil',
-      ],
-      visualDensity: VisualDensity.standard,
-      materialTapTargetSize: MaterialTapTargetSize.padded,
-    );
-    return base.copyWith(
-      textTheme: base.textTheme.copyWith(
-        bodyLarge: base.textTheme.bodyLarge?.copyWith(
-          fontSize: elderMode ? 24 : 20,
-          height: 1.6,
-        ),
-        bodyMedium: base.textTheme.bodyMedium?.copyWith(
-          fontSize: elderMode ? 22 : 18,
-          height: 1.6,
-        ),
-        labelLarge: base.textTheme.labelLarge?.copyWith(
-          fontSize: elderMode ? 22 : 18,
-          height: 1.5,
-        ),
-        titleLarge: base.textTheme.titleLarge?.copyWith(
-          fontSize: elderMode ? 28 : 24,
-          height: 1.5,
-        ),
+      scaffoldBackgroundColor: AppColors.background,
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.primary,
+        secondary: AppColors.secondary,
+        surface: AppColors.surface,
+        error: AppColors.error,
       ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(56, 56),
-          padding: const EdgeInsets.all(20),
-          textStyle: TextStyle(
-            fontFamily: 'NotoSans',
-            fontFamilyFallback: const [
-              'NotoSansDevanagari',
-              'NotoSansGurmukhi',
-              'NotoSansTamil',
-            ],
-            fontSize: elderMode ? 22 : 18,
-            height: 1.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
+      textTheme: GoogleFonts.poppinsTextTheme(
+        ThemeData(brightness: Brightness.dark).textTheme,
       ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primary,
-          minimumSize: const Size(56, 56),
-          padding: const EdgeInsets.all(20),
-          side: BorderSide(color: scheme.outline, width: 2),
-          textStyle: TextStyle(
-            fontFamily: 'NotoSans',
-            fontFamilyFallback: const [
-              'NotoSansDevanagari',
-              'NotoSansGurmukhi',
-              'NotoSansTamil',
-            ],
-            fontSize: elderMode ? 22 : 18,
-            height: 1.5,
-          ),
-        ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        centerTitle: true,
       ),
       cardTheme: CardThemeData(
-        color: surface,
-        margin: EdgeInsets.zero,
+        color: AppColors.surface,
+        elevation: 4,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: scheme.outline, width: elderMode ? 2 : 1),
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: AppColors.surfaceElevated, width: 1),
         ),
       ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: background,
-        foregroundColor: text,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 2,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
-      focusColor: primary.withValues(alpha: 0.3),
-      dividerTheme: DividerThemeData(color: scheme.outline),
     );
   }
 }

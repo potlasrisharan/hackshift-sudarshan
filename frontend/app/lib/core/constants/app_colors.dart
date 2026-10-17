@@ -1,17 +1,31 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
-abstract final class AppColors {
-  static const background = Color(0xFF0D1D22);
-  static const surface = Color(0xFF172D34);
-  static const primary = Color(0xFFFFD083);
-  static const onPrimary = Color(0xFF241800);
-  static const text = Color(0xFFF6F8F8);
-  static const muted = Color(0xFFD0DEE0);
-  static const outline = Color(0xFF9CB5BA);
-  static const error = Color(0xFFFFBCB3);
-  static const onError = Color(0xFF390700);
-  static const elderBackground = Color(0xFF000000);
-  static const elderSurface = Color(0xFF101010);
-  static const elderPrimary = Color(0xFFFFEB99);
-  static const elderText = Color(0xFFFFFFFF);
+class AppColors {
+  static const Color background = Color(0xFF0F172A);
+  static const Color surface = Color(0xFF1E293B);
+  static const Color surfaceElevated = Color(0xFF334155);
+  
+  static const Color primary = Color(0xFF0066CC);
+  static const Color primaryLight = Color(0xFF38BDF8);
+  static const Color secondary = Color(0xFF8B5CF6);
+  
+  static const Color textPrimary = Color(0xFFF8FAFC);
+  static const Color textSecondary = Color(0xFF94A3B8);
+  static const Color textMuted = Color(0xFF64748B);
+  
+  static const Color success = Color(0xFF10B981);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color error = Color(0xFFEF4444);
+  
+  static const Color ayushGreen = Color(0xFF059669);
+  static const Color pmjayGold = Color(0xFFD97706);
+  
+  static const Color wellnessPink = Color(0xFFEC4899);
+  static const Color longevityCyan = Color(0xFF06B6D4);
+  static const Color yogaAmber = Color(0xFFF59E0B);
+  
+  static const Color vitalisTeal = Color(0xFF14B8A6);
+  static const Color vitalisEmerald = Color(0xFF10B981);
+  static const Color vitalisIndigo = Color(0xFF6366F1);
 }
+

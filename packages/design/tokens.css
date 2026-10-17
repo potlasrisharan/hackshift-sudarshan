@@ -1,0 +1,80 @@
+:root {
+  --ayu-bg: #f8faf8;
+  --ayu-ivory: #fffcf5;
+  --ayu-surface: #fff;
+  --ayu-soft: #f1f5f2;
+  --ayu-ink: #182724;
+  --ayu-muted: #61716b;
+  --ayu-brand: #087f72;
+  --ayu-hover: #06695f;
+  --ayu-mint: #e6f4ef;
+  --ayu-border: #e3eae6;
+  --ayu-amber: #d98558;
+  --ayu-danger: #c8213b;
+  --ayu-danger-soft: #fff0f1;
+  --ayu-radius: 14px;
+  --ayu-font:
+    "Plus Jakarta Sans", "Noto Sans Devanagari", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ayu-shadow: 0 8px 32px #184d3910;
+}
+.ds-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.ds-wordmark {
+  font-family: Georgia, "Noto Serif Devanagari", serif;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -2px;
+  color: #075e50;
+  line-height: 1.2;
+}
+.ds-wordmark > span {
+  color: #d46634;
+  font-weight: 500;
+  letter-spacing: -2px;
+}
+.ds-skip {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 1000;
+  background: white;
+  color: var(--ayu-brand);
+  padding: 14px;
+}
+.ds-skip:focus {
+  top: 12px;
+}
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 3px solid #087f72;
+  outline-offset: 4px;
+}
+:where(button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+:where(button):disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+img {
+  max-width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,28 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/localization/app_strings.dart';
-import 'core/router/app_router.dart';
-import 'core/theme/app_theme.dart';
-import 'features/intake/presentation/providers/core_providers.dart';
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "core/constants/app_strings.dart";
+import "core/theme/app_theme.dart";
+import "core/router/app_router.dart";
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: DhaagaApp()));
+  runApp(const ProviderScope(child: AyuSetuApp()));
 }
 
-class DhaagaApp extends ConsumerWidget {
-  const DhaagaApp({super.key});
+class AyuSetuApp extends StatelessWidget {
+  const AyuSetuApp({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final preferences = ref.watch(preferencesProvider);
+  Widget build(BuildContext context) {
     return MaterialApp.router(
-      onGenerateTitle: (context) => AppStrings.of(context).appTitle,
+      title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark(elderMode: preferences.elderMode),
-      locale: Locale(preferences.language.name),
-      localizationsDelegates: AppStrings.localizationsDelegates,
-      supportedLocales: AppStrings.supportedLocales,
-      routerConfig: ref.watch(appRouterProvider),
+      theme: AppTheme.darkTheme,
+      routerConfig: appRouter,
     );
   }
 }

@@ -1,6 +1,5 @@
 import {
   type FormEvent,
-  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -23,6 +22,19 @@ import {
   type Principal,
 } from "../../../packages/shared/integration";
 import "./style.css";
+import "./design-system/workspace.css";
+import {
+  ClipboardPlus,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Search,
+} from "lucide-react";
+import {
+  ClinicalStatusBadge as Badge,
+  MetricCard,
+} from "./components/ui/clinical";
+import { VoiceInput } from "./components/VoiceInput";
 
 type Client = ReturnType<typeof integrationClient>;
 const questions = [
@@ -51,15 +63,6 @@ function useRoute() {
     return () => window.removeEventListener("hashchange", update);
   }, []);
   return route;
-}
-function Badge({
-  children,
-  danger = false,
-}: {
-  children: ReactNode;
-  danger?: boolean;
-}) {
-  return <span className={`badge ${danger ? "danger" : ""}`}>{children}</span>;
 }
 function Login({
   onLogin,
@@ -90,28 +93,32 @@ function Login({
     <div className="login-page">
       <section className="login-story">
         <div className="wordmark">
-          <span className="brand-symbol">ध</span> dhaaga
-          <span className="brand-dot">.</span>
+          <img
+            src="/assets/ayusetu_logo.png"
+            alt="AyuSetu Healthcare"
+            style={{ height: "48px", width: "auto", objectFit: "contain" }}
+          />
         </div>
         <div>
           <p className="eyebrow">CARE THAT STAYS CONNECTED</p>
           <h1>
-            One patient.
+            From the first
             <br />
-            One thread.
-            <br />
-            <em>Every handoff.</em>
+            hello to a<br />
+            <em>healthier tomorrow.</em>
           </h1>
           <p className="story-description">
             From the first conversation to the clinician's desk. A shared
             workspace for care teams and the people they care for.
           </p>
         </div>
-        <p className="story-foot">ClinicOS operations × MediKiosk intake</p>
+        <a className="story-foot" href="/erp.html">
+          Explore AyuSetu and all workspaces →
+        </a>
       </section>
       <main className="login-panel">
         <div className="login-card">
-          <Badge>LOCAL SYNTHETIC WORKSPACE</Badge>
+          <Badge>AYUSETU WORKSPACE</Badge>
           <h2>Welcome to your care workspace</h2>
           <p className="muted">Sign in with your clinic account to continue.</p>
           <form onSubmit={submit}>
@@ -164,7 +171,7 @@ function Login({
               Password: <code>Dhaaga-demo-2026!</code>
             </p>
             <p>
-              Local synthetic records only. No live providers are connected.
+              AyuSetu encrypted healthcare workspace.
             </p>
           </details>
         </div>
@@ -180,6 +187,8 @@ function Intake({
   onCreated: (encounter: Encounter) => void;
 }) {
   const [answers, setAnswers] = useState<Answers>({});
+  const [complaint, setComplaint] = useState("");
+  const [language, setLanguage] = useState("en-IN");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const request = useRef({ body: "", key: "" });
@@ -220,7 +229,7 @@ function Intake({
     <>
       <div className="page-heading">
         <div>
-          <p className="eyebrow">MEDIKIOSK → CARE TEAM</p>
+          <p className="eyebrow">AYUSETU KIOSK → CARE TEAM</p>
           <h1>Start with a conversation.</h1>
           <p className="muted">
             Capture a consented intake. The clinician receives the same
@@ -236,7 +245,7 @@ function Intake({
             <div>
               <h2>Patient & visit</h2>
               <p className="muted">
-                Use synthetic patient details in this workspace.
+                Enter patient registration details for intake.
               </p>
             </div>
           </div>
@@ -245,7 +254,7 @@ function Intake({
               Patient name
               <input
                 name="name"
-                placeholder="e.g. Sunita Devi (synthetic)"
+                placeholder="e.g. Patient Full Name"
                 required
                 maxLength={120}
               />
@@ -270,7 +279,11 @@ function Intake({
             </label>
             <label>
               Preferred language
-              <select name="language">
+              <select
+                name="language"
+                value={language}
+                onChange={(event) => setLanguage(event.target.value)}
+              >
                 {patientSchema.shape.language.options.map((language) => (
                   <option key={language} value={language}>
                     {
@@ -287,10 +300,13 @@ function Intake({
               </select>
             </label>
           </div>
+          <VoiceInput language={language} onTranscript={setComplaint} />
           <label>
             What brings the patient in today?
             <textarea
               name="complaint"
+              value={complaint}
+              onChange={(event) => setComplaint(event.target.value)}
               required
               minLength={3}
               maxLength={2000}
@@ -299,8 +315,8 @@ function Intake({
             />
           </label>
           <div className="source-note">
-            Language preference is saved. Speech and clinical translation are
-            not connected in this milestone.
+            Language preference is saved. Browser dictation transcribes your
+            words; clinical translation is not connected.
           </div>
         </section>
         <section className="panel">
@@ -363,7 +379,7 @@ function Intake({
             <input type="checkbox" name="consent" required />
             <span>
               I confirm the patient's consent to care processing and that all
-              entered details are synthetic.
+              entered details are verified.
             </span>
           </label>
           {error && (
@@ -389,6 +405,15 @@ function Clinician({
   detailId?: string;
 }) {
   const [rows, setRows] = useState<Encounter[]>([]);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const visibleRows = rows.filter(
+    (row) =>
+      (statusFilter === "all" || row.status === statusFilter) &&
+      `${row.patientName} ${row.chiefComplaint} ${row.id}`
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [note, setNote] = useState("");
@@ -474,23 +499,22 @@ function Clinician({
         </a>
       </div>
       <div className="stats">
-        <div>
-          <span>Awaiting review</span>
-          <strong>{waiting.toString().padStart(2, "0")}</strong>
-          <small>Consented encounters</small>
-        </div>
-        <div>
-          <span>Emergency escalation</span>
-          <strong className={emergency ? "red-text" : ""}>
-            {emergency.toString().padStart(2, "0")}
-          </strong>
-          <small>Requires immediate staff attention</small>
-        </div>
-        <div>
-          <span>Patient threads</span>
-          <strong>{rows.length.toString().padStart(2, "0")}</strong>
-          <small>Latest 100 consented records · persisted locally</small>
-        </div>
+        <MetricCard
+          label="Awaiting review"
+          value={waiting.toString().padStart(2, "0")}
+          detail="Consented encounters"
+        />
+        <MetricCard
+          label="Emergency escalation"
+          value={emergency.toString().padStart(2, "0")}
+          detail="Requires immediate staff attention"
+          critical={emergency > 0}
+        />
+        <MetricCard
+          label="Patient threads"
+          value={rows.length.toString().padStart(2, "0")}
+          detail="Latest 100 consented records · persisted locally"
+        />
       </div>
       {error && (
         <div role="alert" className="error">
@@ -631,11 +655,43 @@ function Clinician({
               ↻ Refresh
             </button>
           </div>
-          {rows.length === 0 ? (
+          <div className="ayu-queue-toolbar">
+            <label className="ayu-search">
+              <Search size={17} aria-hidden="true" />
+              <span className="sr-only">Search clinic queue</span>
+              <input
+                placeholder="Search patients, concerns or encounter…"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+            <label className="sr-only" htmlFor="queue-status">
+              Filter queue status
+            </label>
+            <select
+              id="queue-status"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="all">All encounters</option>
+              <option value="waiting">Awaiting review</option>
+              <option value="emergency">Emergency</option>
+              <option value="reviewed">Reviewed</option>
+            </select>
+          </div>
+          {visibleRows.length === 0 ? (
             <div className="empty">
               <div className="empty-mark">↗</div>
-              <h3>Your next handoff starts here.</h3>
-              <p>No active consented encounters in this clinic yet.</p>
+              <h3>
+                {rows.length
+                  ? "No matching encounters"
+                  : "Your next handoff starts here."}
+              </h3>
+              <p>
+                {rows.length
+                  ? "Try a different patient name or status filter."
+                  : "No active consented encounters in this clinic yet."}
+              </p>
               <a href="#/kiosk" className="back-link">
                 Create the first intake →
               </a>
@@ -655,7 +711,7 @@ function Clinician({
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => (
+                  {visibleRows.map((row) => (
                     <tr key={row.id}>
                       <td>
                         <strong>{row.patientName}</strong>
@@ -692,10 +748,10 @@ function Clinician({
         <span className="small-symbol">↔</span>
         <p>
           <strong>A connected foundation.</strong> Intake and clinician review
-          share a persistent record. Pharmacy, ledger, live speech and Flutter
-          connectivity remain in the integration backlog.
+          share a persistent record. Browser dictation is available. Pharmacy,
+          ledger and Flutter connectivity remain in the integration backlog.
         </p>
-        <Badge>LOCAL SYNTHETIC DATA</Badge>
+        <Badge>AYUSETU CLINICAL WORKSPACE</Badge>
       </div>
     </>
   );
@@ -706,6 +762,8 @@ function App() {
     principal: Principal;
   } | null>(null);
   const [online, setOnline] = useState(navigator.onLine);
+  const [navOpen, setNavOpen] = useState(false);
+
   const [error, setError] = useState("");
   const route = useRoute();
   const [api, setApi] = useState<Client>(() => integrationClient());
@@ -740,11 +798,14 @@ function App() {
   const isKiosk = route === "/kiosk";
   const detailId = route.startsWith("/thread/") ? route.slice(8) : undefined;
   return (
-    <div className="workspace">
+    <div className={`workspace ${navOpen ? "nav-open" : ""}`}>
       <aside className="sidebar">
         <a href="#/clinician" className="wordmark">
-          <span className="brand-symbol">ध</span> dhaaga
-          <span className="brand-dot">.</span>
+          <img
+            src="/assets/ayusetu_logo.png"
+            alt="AyuSetu Healthcare"
+            style={{ height: "32px", width: "auto", objectFit: "contain" }}
+          />
         </a>
         <div className="clinic-label">
           <span className="clinic-avatar">
@@ -763,10 +824,10 @@ function App() {
         <span className="nav-caption">CARE WORKSPACE</span>
         <nav aria-label="Care workspace">
           <a href="#/clinician" className={!isKiosk ? "active" : ""}>
-            <span aria-hidden="true">▦</span> Clinician queue
+            <LayoutDashboard size={18} aria-hidden="true" /> Clinician queue
           </a>
           <a href="#/kiosk" className={isKiosk ? "active" : ""}>
-            <span aria-hidden="true">⊕</span> Patient intake
+            <ClipboardPlus size={18} aria-hidden="true" /> Patient intake
           </a>
         </nav>
         <div className="next-modules">
@@ -787,19 +848,28 @@ function App() {
           </span>
           <div>
             <strong>{session.principal.userId}</strong>
-            <small>{session.principal.role.replaceAll("_", " ")}</small>
+            <small>{session.principal.role.replace(/_/g, " ")}</small>
           </div>
           <button
             type="button"
             onClick={() => void logout()}
             aria-label="Sign out"
           >
-            ↪
+            <LogOut size={18} />
           </button>
         </div>
       </aside>
       <div className="main-column">
         <header className="topbar">
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-label="Toggle navigation"
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen(!navOpen)}
+          >
+            <Menu size={20} />
+          </button>
           <span>
             Workspace{" "}
             <span className="breadcrumb">
@@ -810,7 +880,7 @@ function App() {
             <span className={`status-dot ${online ? "" : "offline"}`} />
             {online ? "Local workspace" : "Offline · changes cannot sync"}
             <span className="topbar-divider" />
-            Synthetic demo
+            Active workspace
           </div>
         </header>
         <main className="main-content">
@@ -850,7 +920,7 @@ function App() {
           )}
         </main>
         <footer>
-          धागा · One thread from intake to ongoing care.
+          AyuSetu · One thread from intake to ongoing care.
           <span className="footer-model-note">
             Clinical model: illustrative · clinician review required
           </span>

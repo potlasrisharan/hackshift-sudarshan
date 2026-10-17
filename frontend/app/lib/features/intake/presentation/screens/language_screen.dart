@@ -1,168 +1,163 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/error/failure.dart';
-import '../../../../core/error/localized_failure.dart';
-import '../../../../core/localization/app_strings.dart';
-import '../../domain/entities/intake_flow_state.dart';
-import '../providers/core_providers.dart';
-import '../widgets/kiosk_shell.dart';
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:go_router/go_router.dart";
+import "package:kiosk_app/core/constants/app_colors.dart";
+import "package:kiosk_app/core/constants/app_strings.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
+import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
 class LanguageScreen extends ConsumerWidget {
   const LanguageScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final strings = AppStrings.of(context);
-    final selected = ref.watch(preferencesProvider).language;
-    final health = ref.watch(healthControllerProvider);
-    final languageLabels = <KioskLanguage, String>{
-      KioskLanguage.hi: strings.languageHindi,
-      KioskLanguage.en: strings.languageEnglish,
-      KioskLanguage.pa: strings.languagePunjabi,
-      KioskLanguage.ta: strings.languageTamil,
-    };
-    return KioskShell(
-      title: strings.chooseLanguage,
-      children: [
-        Text(strings.languageHint),
-        const SizedBox(height: 20),
-        LayoutBuilder(
+    final languages = [
+      {"name": "Hindi", "native": "हिन्दी", "code": "hi"},
+      {"name": "English", "native": "English", "code": "en"},
+      {"name": "Telugu", "native": "తెలుగు", "code": "te"},
+      {"name": "Tamil", "native": "தமிழ்", "code": "ta"},
+      {"name": "Marathi", "native": "मराठी", "code": "mr"},
+      {"name": "Bengali", "native": "বাংলা", "code": "bn"},
+      {"name": "Kannada", "native": "ಕನ್ನಡ", "code": "kn"},
+      {"name": "Gujarati", "native": "ગુજરાતી", "code": "gu"},
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          tooltip: "Back to Portals",
+          onPressed: () => context.canPop() ? context.pop() : context.go("/"),
+        ),
+        title: const Text("Select Language / भाषा चुनें"),
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
           builder: (context, constraints) {
-            final twoColumns =
-                constraints.maxWidth >= 650 &&
-                MediaQuery.textScalerOf(context).scale(1) < 1.8;
-            final width = twoColumns
-                ? (constraints.maxWidth - 16) / 2
-                : constraints.maxWidth;
-            return Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                for (final language in KioskLanguage.values)
-                  SizedBox(
-                    width: width,
-                    child: Semantics(
-                      container: true,
-                      button: true,
-                      selected: selected == language,
-                      label: languageLabels[language],
-                      excludeSemantics: true,
-                      onTap: () => ref
-                          .read(preferencesProvider.notifier)
-                          .language(language),
-                      child: OutlinedButton(
-                        key: Key('language-${language.name}'),
-                        onPressed: () => ref
-                            .read(preferencesProvider.notifier)
-                            .language(language),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                selected == language
-                                    ? Icons.radio_button_checked
-                                    : Icons.radio_button_unchecked,
+            final isWide = constraints.maxWidth > 800;
+            final crossAxisCount = isWide ? 4 : 2;
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 8),
+                              child: AyuSetuLogoBadge(
+                                height: 28,
+                                borderRadius: 10,
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Text(
-                                  languageLabels[language] ??
-                                      strings.languageEnglish,
-                                  style: TextStyle(
-                                    fontFamily: switch (language) {
-                                      KioskLanguage.hi => 'NotoSansDevanagari',
-                                      KioskLanguage.pa => 'NotoSansGurmukhi',
-                                      KioskLanguage.ta => 'NotoSansTamil',
-                                      KioskLanguage.en => 'NotoSans',
-                                    },
-                                    fontSize:
-                                        ref.watch(preferencesProvider).elderMode
-                                        ? 28
-                                        : 24,
-                                  ),
-                                ),
+                            ),
+                            Text(
+                              AppStrings.hospitalName,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textSecondary,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.mic, color: AppColors.primaryLight, size: 16),
+                            SizedBox(width: 6),
+                            Text("Sarvam Voice AI", style: TextStyle(fontSize: 11, color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-              ],
+                  const SizedBox(height: 24),
+                  const Icon(Icons.record_voice_over, size: 54, color: AppColors.primaryLight),
+                  const SizedBox(height: 12),
+                  Text(
+                    "कृपया अपनी पसंदीदा भाषा चुनें",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    "Select your preferred language to begin voice case-taking",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  ),
+                  const SizedBox(height: 20),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: isWide ? 2.2 : 2.0,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: languages.length,
+                    itemBuilder: (context, idx) {
+                      final l = languages[idx];
+                      return InkWell(
+                        onTap: () {
+                          ref.read(intakeProvider.notifier).setLanguage(l["name"]!);
+                          context.push("/identify");
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.surfaceElevated, width: 1.5),
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(l["native"]!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                                Text(l["name"]!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.security, size: 14, color: AppColors.textMuted),
+                      SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          "DPDPA 2023 Compliant • 100% In-Country Voice Processing",
+                          style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             );
           },
         ),
-        const SizedBox(height: 20),
-        KioskAction(
-          key: const Key('continue'),
-          label: strings.next,
-          onPressed: () {
-            ref.read(intakeFlowProvider.notifier).chooseLanguage(selected);
-            context.go('/identify');
-          },
-        ),
-        const SizedBox(height: 28),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  strings.connectionTitle,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 12),
-                health.when(
-                  loading: () => Semantics(
-                    container: true,
-                    liveRegion: true,
-                    child: Column(
-                      children: [
-                        const LinearProgressIndicator(),
-                        const SizedBox(height: 12),
-                        Text(strings.checking),
-                      ],
-                    ),
-                  ),
-                  error: (error, _) => Semantics(
-                    container: true,
-                    liveRegion: true,
-                    child: Text(
-                      localizedFailure(
-                        error is Failure ? error : const UnknownFailure(),
-                        strings,
-                      ),
-                    ),
-                  ),
-                  data: (value) => Semantics(
-                    container: true,
-                    liveRegion: true,
-                    child: Text(
-                      value == null ? strings.notChecked : strings.connected,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(strings.demoNotice),
-                const SizedBox(height: 16),
-                KioskAction(
-                  key: const Key('check-connection'),
-                  label: strings.checkConnection,
-                  outlined: true,
-                  onPressed: health.isLoading
-                      ? null
-                      : () => unawaited(
-                          ref.read(healthControllerProvider.notifier).check(),
-                        ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

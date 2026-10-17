@@ -104,7 +104,7 @@ export function fhirBundle(patient: Patient, observations: Observation[]) {
     type: "collection",
     entry: [
       {
-        fullUrl: `urn:dhaaga:Patient:${patient.id}`,
+        fullUrl: `urn:ayusetu:Patient:${patient.id}`,
         resource: {
           resourceType: "Patient",
           id: patient.id,
@@ -114,12 +114,12 @@ export function fhirBundle(patient: Patient, observations: Observation[]) {
         },
       },
       ...observations.map((o) => ({
-        fullUrl: `urn:dhaaga:Observation:${o.id}`,
+        fullUrl: `urn:ayusetu:Observation:${o.id}`,
         resource: {
           resourceType: "Observation",
           id: o.id,
           status: "final",
-          subject: { reference: `urn:dhaaga:Patient:${patient.id}` },
+          subject: { reference: `urn:ayusetu:Patient:${patient.id}` },
           code: { coding: [{ system: "http://loinc.org", code: o.code }] },
           effectiveDateTime: o.sampledAt,
           valueQuantity: {

@@ -1,7 +1,8 @@
 # Discovery — 17 October 2026
 
 The Git root initially held only README.md. Two duplicated imports were present;
-canonical originals are `hackshift/projects/project-1/` and `project-2/`.
+canonical originals were initially at `hackshift/projects/project-1/` and `project-2/`
+(which have since been retired and removed from the active repository).
 `prompts.md` was pushed first in e302141. Original publishable sources were then
 committed and tagged `baseline-untouched`. No source modifications are allowed.
 See [SOURCE_INVENTORY.md](SOURCE_INVENTORY.md) for extracted routes, tables,

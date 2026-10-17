@@ -9,19 +9,4 @@ services:
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
     restart: unless-stopped
-  hospital:
-    profiles: ["upstreams"]
-    build:
-      context: ..
-      dockerfile: infra/upstreams/hospital.Dockerfile
-    ports: ["127.0.0.1:5173:5173"]
-  kiosk:
-    profiles: ["upstreams"]
-    build:
-      context: ..
-      dockerfile: infra/upstreams/kiosk.Dockerfile
-    ports: ["127.0.0.1:8000:8000"]
-    environment:
-      SUPABASE_URL: ${SUPABASE_URL:-http://host.docker.internal:54321}
-      SUPABASE_KEY: ${SUPABASE_KEY:-}
-      SARVAM_API_KEY: ${SARVAM_API_KEY:-}
+

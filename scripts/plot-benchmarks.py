@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 r=json.loads(Path('docs/benchmarks/results.json').read_text())
 fig,axes=plt.subplots(1,2,figsize=(10,4),layout='constrained')
-axes[0].bar(['Dhaaga','Cheapest-only baseline'],[r['allocation']['oursUnsafe'],r['allocation']['baselineUnsafe']],color=['#397e70','#b67c51'])
+axes[0].bar(['AYUSETU','Cheapest-only baseline'],[r['allocation']['oursUnsafe'],r['allocation']['baselineUnsafe']],color=['#397e70','#b67c51'])
 axes[0].set_ylabel('Unsafe stock selections / 500 constructed cases')
 axes[0].set_title('Synthetic allocation constraints')
 labels=[x['algorithm'] for x in r['latency']]

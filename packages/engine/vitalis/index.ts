@@ -1,0 +1,18 @@
+export { vitalisSafetyGate } from "./v0_safety_gate";
+export { vitalisHealthspanIndex } from "./v1_healthspan_index";
+export { vitalisPreventiveRanker } from "./v2_preventive_ranker";
+export { vitalisExerciseProgression } from "./v3_exercise_progression";
+export { vitalisBiomarkerTrends } from "./v4_biomarker_trends";
+export { vitalisLifestyleCorrelations } from "./v5_lifestyle_correlations";
+export { vitalisRecommendationSelector } from "./v6_recommendation_selector";
+export {
+  estimateNonExerciseVO2max,
+  evaluateVO2maxRecord,
+} from "./v7_vo2_provenance";
+export { vitalisRollingBaseline } from "./v8_rolling_baseline";
+export { vitalisSleepRegularity } from "./v9_sleep_regularity";
+export { vitalisDailyReadiness } from "./v10_daily_readiness";
+export { vitalisFunctionalCapacity } from "./v11_functional_capacity";
+export { vitalisIngestAndDeduplicate } from "./v12_time_series_dedup";
+export { vitalisPreventiveEligibility } from "./v13_preventive_eligibility";
+export { vitalisBehaviorSimulator } from "./v14_behavior_simulator";

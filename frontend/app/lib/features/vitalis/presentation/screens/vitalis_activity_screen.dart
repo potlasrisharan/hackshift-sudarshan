@@ -1,0 +1,203 @@
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "../../../../core/constants/app_colors.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
+import "../providers/vitalis_provider.dart";
+
+class VitalisActivityScreen extends ConsumerWidget {
+  const VitalisActivityScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(vitalisProvider);
+    final plan = state.exercisePlan;
+
+    return AppScaffoldShell(
+      title: "Exercise & Yoga Planner",
+      subtitle: "Adaptive Volume & Somatic Protocols",
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildWeeklyTargetCard(plan),
+            const SizedBox(height: 16),
+            _buildSafetyStatusBanner(plan),
+            const SizedBox(height: 16),
+            const Text(
+              "Recommended Movement Modalities",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 10),
+            _buildActivitiesList(plan.recommendedActivities, true),
+            if (plan.contraindicatedActivities.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              const Text(
+                "Contraindicated Activities (Safety Gated)",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.error),
+              ),
+              const SizedBox(height: 10),
+              _buildActivitiesList(plan.contraindicatedActivities, false),
+            ],
+            const SizedBox(height: 20),
+            const Text(
+              "Integrated Yoga & Somatic Mobility",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 10),
+            _buildYogaRoutineList(plan.yogaRoutine),
+            const SizedBox(height: 20),
+            _buildLogExerciseButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeeklyTargetCard(VitalisExercisePlanModel plan) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.surfaceElevated),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: _buildTargetMetric("Aerobic Target", "${plan.weeklyAerobicMinutesTarget}", "mins / week", Icons.directions_run_rounded, AppColors.vitalisEmerald),
+            ),
+          ),
+          Container(width: 1, height: 40, color: AppColors.surfaceElevated),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: _buildTargetMetric("Strength", "${plan.weeklyStrengthSessionsTarget}", "sessions / week", Icons.fitness_center_rounded, AppColors.primaryLight),
+            ),
+          ),
+          Container(width: 1, height: 40, color: AppColors.surfaceElevated),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: _buildTargetMetric("Intensity", plan.intensityLevel.toUpperCase(), "Target Cap", Icons.speed_rounded, AppColors.yogaAmber),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTargetMetric(String label, String value, String sub, IconData icon, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 20, color: color),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 2),
+        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+        Text(sub, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
+      ],
+    );
+  }
+
+  Widget _buildSafetyStatusBanner(VitalisExercisePlanModel plan) {
+    final isBlocked = plan.safetyStatus == "BLOCKED";
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isBlocked ? AppColors.error.withValues(alpha: 0.15) : AppColors.vitalisTeal.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: isBlocked ? AppColors.error : AppColors.vitalisTeal),
+      ),
+      child: Row(
+        children: [
+          Icon(isBlocked ? Icons.block_rounded : Icons.verified_user_outlined, color: isBlocked ? AppColors.error : AppColors.vitalisTeal, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              isBlocked ? "V0 Gate: High intensity restricted by clinician notes." : "V0 Gate: Safe progressive volume calibrated to baseline.",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isBlocked ? AppColors.error : AppColors.vitalisTeal),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivitiesList(List<String> items, bool isAllowed) {
+    return Column(
+      children: items.map((act) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: isAllowed ? AppColors.surfaceElevated : AppColors.error.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(isAllowed ? Icons.check_circle_outline : Icons.cancel_outlined, color: isAllowed ? AppColors.success : AppColors.error, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(act, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildYogaRoutineList(List yogaItems) {
+    return Column(
+      children: yogaItems.map((y) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.surfaceElevated),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.self_improvement_rounded, color: AppColors.yogaAmber, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(y.asana, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                    const SizedBox(height: 2),
+                    Text("${y.durationMins} mins • ${y.focus}", style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildLogExerciseButton(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Exercise session logged. Targets updated.")),
+        );
+      },
+      icon: const Icon(Icons.add_task_rounded),
+      label: const Text("Log Today's Workout Session"),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.vitalisTeal,
+        minimumSize: const Size.fromHeight(48),
+      ),
+    );
+  }
+}

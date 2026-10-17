@@ -1,9 +1,9 @@
 {
   "seed": 26047,
   "cases": 500,
-  "generatedAt": "2026-10-17T10:34:15.718Z",
+  "generatedAt": "2026-10-17T18:35:48.865Z",
   "runtime": "v20.20.1",
-  "durationMs": 145.51941699999998,
+  "durationMs": 144.29095800000002,
   "allocation": {
     "oursUnsafe": 0,
     "baselineUnsafe": 276,
@@ -19,19 +19,19 @@
   "latency": [
     {
       "algorithm": "sentinel",
-      "meanMs": 0.0068121249999999805
+      "meanMs": 0.006363249999999994
     },
     {
       "algorithm": "rxToShelf",
-      "meanMs": 0.011771584000000019
+      "meanMs": 0.013109207999999968
     },
     {
       "algorithm": "driftRadar",
-      "meanMs": 0.033004334
+      "meanMs": 0.030604709000000015
     },
     {
       "algorithm": "threadPulse",
-      "meanMs": 0.03997979099999998
+      "meanMs": 0.039468957999999985
     }
   ],
   "limitations": [

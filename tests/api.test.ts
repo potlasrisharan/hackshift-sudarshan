@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createApp } from "../apps/api/app";
+import backendApp from "../backend/src/index";
 import { demoPlan } from "../packages/shared/demo";
 
 const app = createApp();
@@ -207,4 +208,147 @@ it("bounds streaming request bodies without trusting content-length", async () =
       })
     ).status,
   ).toBe(413);
+});
+
+describe("Unified Cloudflare Worker API & Frontends Integration", () => {
+  it("verifies ABHA for Flutter Patient/Kiosk app", async () => {
+    const res = await backendApp.request("/api/v1/abdm/abha/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ abha_number: "91-4829-1029-4821" }),
+    });
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as {
+      patient_id: string;
+      abha_number: string;
+      name: string;
+    };
+    expect(data.patient_id).toBe("pat-048291");
+    expect(data.abha_number).toBe("91-4829-1029-4821");
+    expect(data.name).toBe("Ramesh Chandra");
+  });
+
+  it("checks PM-JAY coverage eligibility for Flutter App", async () => {
+    const res = await backendApp.request(
+      "/api/v1/insurance/coverage-eligibility/check",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          abha_number: "91-4829-1029-4821",
+          patient_id: "pat-048291",
+        }),
+      },
+    );
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as {
+      eligible: boolean;
+      scheme_name: string;
+      coverage_amount_inr: number;
+    };
+    expect(data.eligible).toBe(true);
+    expect(data.scheme_name).toBe("Ayushman Bharat PM-JAY");
+    expect(data.coverage_amount_inr).toBe(500000.0);
+  });
+
+  it("handles conversational triage and detects red flag symptoms", async () => {
+    // Normal input
+    const normalRes = await backendApp.request("/api/v1/intake/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        encounter_id: "enc-0042",
+        current_input: "Mujhe halke sar dard ki shikayat hai",
+        system_type: "ALLOPATHY",
+      }),
+    });
+    expect(normalRes.status).toBe(200);
+    const normalData = (await normalRes.json()) as {
+      red_flag: { is_triggered: boolean };
+    };
+    expect(normalData.red_flag.is_triggered).toBe(false);
+
+    // Emergency red-flag input (chest pain)
+    const redFlagRes = await backendApp.request("/api/v1/intake/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        encounter_id: "enc-0042",
+        current_input: "Severe chest pain and shortness of breath",
+        system_type: "ALLOPATHY",
+      }),
+    });
+    expect(redFlagRes.status).toBe(200);
+    const redFlagData = (await redFlagRes.json()) as {
+      reply_text: string;
+      red_flag: { is_triggered: boolean; trigger_symptoms: string[] };
+    };
+    expect(redFlagData.red_flag.is_triggered).toBe(true);
+    expect(redFlagData.red_flag.trigger_symptoms).toContain("chest pain");
+    expect(redFlagData.reply_text).toContain("EMERGENCY ALERT");
+  });
+
+  it("extracts structured medications and lab results from documents/ocr", async () => {
+    const res = await backendApp.request("/api/v1/documents/ocr", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ encounter_id: "enc-0042" }),
+    });
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as {
+      medications: { name: string }[];
+      lab_results: { test_name: string }[];
+      confidence_score: number;
+    };
+    expect(data.medications.length).toBeGreaterThan(0);
+    expect(data.lab_results.length).toBeGreaterThan(0);
+    expect(data.confidence_score).toBe(0.96);
+  });
+
+  it("serves demo and legacy compatibility endpoints on unified worker", async () => {
+    // Session creation
+    const sessRes = await backendApp.request("/api/v1/demo/session", {
+      method: "POST",
+    });
+    expect(sessRes.status).toBe(201);
+    const { token } = (await sessRes.json()) as { token: string };
+    const h = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    // Consent
+    const consentRes = await backendApp.request("/api/v1/consent", {
+      method: "POST",
+      headers: h,
+      body: JSON.stringify({ granted: true }),
+    });
+    expect(consentRes.status).toBe(200);
+
+    // Record
+    const recordRes = await backendApp.request("/api/v1/record", {
+      headers: h,
+    });
+    expect(recordRes.status).toBe(200);
+
+    // FHIR
+    const fhirRes = await backendApp.request("/api/v1/record/fhir", {
+      headers: h,
+    });
+    expect(fhirRes.status).toBe(200);
+
+    // Summary
+    const summaryRes = await backendApp.request("/api/v1/summary", {
+      headers: h,
+    });
+    expect(summaryRes.status).toBe(200);
+
+    // Audit verify
+    const auditRes = await backendApp.request("/api/v1/audit/verify", {
+      headers: h,
+    });
+    expect(auditRes.status).toBe(200);
+    const auditData = (await auditRes.json()) as { valid: boolean };
+    expect(auditData.valid).toBe(true);
+  });
 });
