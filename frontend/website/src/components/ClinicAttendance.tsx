@@ -1,6 +1,7 @@
 import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect } from 'react'
-import { Loader2, Clock, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { Clock, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { Skeleton } from '@/components/ui/basic'
 import { dataService as db } from '@/lib/dataService'
 import { useHospital } from '@/context/HospitalContext'
 import { toast } from '@/components/ui/use-toast'
@@ -230,8 +231,33 @@ export function ClinicAttendance({ clinicId, onNavigate }: ClinicAttendanceProps
 
     if (loading) {
         return (
-            <div className="flex h-64 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 space-y-6 animate-pulse">
+                <div className="flex justify-between items-center pb-4 border-b border-slate-100">
+                    <div className="space-y-1.5">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-4 w-72" />
+                    </div>
+                    <div className="flex gap-2">
+                        <Skeleton className="h-9 w-28 rounded-lg" />
+                        <Skeleton className="h-9 w-28 rounded-lg" />
+                    </div>
+                </div>
+                <div className="space-y-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="flex justify-between items-center py-3 border-b border-slate-50">
+                            <div className="flex items-center gap-3">
+                                <Skeleton className="h-9 w-9 rounded-full" />
+                                <div className="space-y-1">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-3 w-20" />
+                                </div>
+                            </div>
+                            <Skeleton className="h-6 w-20 rounded-full" />
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-8 w-24 rounded-lg" />
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }

@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { dataService as db } from '@/lib/dataService';
 import { getStartOfTodayIST } from '@/lib/utils';
 import { useHospital } from '@/context/HospitalContext';
-import { Loader2, TrendingUp, Download, Building2, Stethoscope, Pill, Search, FileSpreadsheet } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/basic';
+import { TrendingUp, Download, Building2, Stethoscope, Pill, Search, FileSpreadsheet } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui/basic';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 import { Button } from '@/components/ui/basic';
@@ -377,8 +377,35 @@ export function EarningsDashboard() {
             </div>
 
             {loading ? (
-                <div className="flex justify-center items-center py-20">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <div className="space-y-8 animate-in fade-in duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-7 w-7 rounded-md" />
+                                </div>
+                                <Skeleton className="h-9 w-28" />
+                                <Skeleton className="h-3.5 w-44" />
+                            </div>
+                        ))}
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                        <div className="flex justify-between items-center mb-2">
+                            <Skeleton className="h-6 w-44" />
+                            <Skeleton className="h-8 w-24 rounded-lg" />
+                        </div>
+                        <div className="space-y-3">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="flex justify-between items-center py-3 border-b border-slate-100">
+                                    <Skeleton className="h-4 w-36" />
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-4 w-16" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             ) : searchQuery.trim() ? (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

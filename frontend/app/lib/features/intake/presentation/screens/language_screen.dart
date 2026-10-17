@@ -23,13 +23,26 @@ class LanguageScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
+      backgroundColor: AppColors.clinicalBg,
       appBar: AppBar(
+        backgroundColor: AppColors.clinicalCard,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.clinicalTextPrimary),
+        titleTextStyle: const TextStyle(
+          color: AppColors.clinicalTextPrimary,
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           tooltip: "Back to Portals",
           onPressed: () => context.canPop() ? context.pop() : context.go("/"),
         ),
         title: const Text("Select Language / भाषा चुनें"),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: Divider(height: 1, thickness: 1, color: AppColors.clinicalBorder),
+        ),
       ),
       body: SafeArea(
         child: LayoutBuilder(
@@ -50,18 +63,19 @@ class LanguageScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(
-                              padding: EdgeInsets.only(bottom: 8),
+                              padding: EdgeInsets.only(bottom: 6),
                               child: AyuSetuLogoBadge(
-                                height: 28,
+                                height: 26,
                                 borderRadius: 10,
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               ),
                             ),
                             Text(
                               AppStrings.hospitalName,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textSecondary,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.clinicalTextMuted,
                               ),
                             ),
                           ],
@@ -71,33 +85,52 @@ class LanguageScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceElevated,
+                          color: AppColors.medicalTeal.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.medicalTeal.withValues(alpha: 0.2)),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.mic, color: AppColors.primaryLight, size: 16),
+                          children: [
+                            Icon(Icons.mic, color: AppColors.medicalTeal, size: 15),
                             SizedBox(width: 6),
-                            Text("Sarvam Voice AI", style: TextStyle(fontSize: 11, color: Colors.white)),
+                            Text(
+                              "Sarvam Voice AI",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.medicalTeal,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  const Icon(Icons.record_voice_over, size: 54, color: AppColors.primaryLight),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.medicalTeal.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.record_voice_over_rounded, size: 40, color: AppColors.medicalTeal),
+                  ),
                   const SizedBox(height: 12),
-                  Text(
+                  const Text(
                     "कृपया अपनी पसंदीदा भाषा चुनें",
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.clinicalTextPrimary,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   const Text(
                     "Select your preferred language to begin voice case-taking",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                    style: TextStyle(color: AppColors.clinicalTextMuted, fontSize: 13),
                   ),
                   const SizedBox(height: 20),
                   GridView.builder(
@@ -120,16 +153,38 @@ class LanguageScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: AppColors.clinicalCard,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.surfaceElevated, width: 1.5),
+                            border: Border.all(color: AppColors.clinicalBorder, width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(l["native"]!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                                Text(l["name"]!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                Text(
+                                  l["native"]!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.clinicalTextPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  l["name"]!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.medicalTeal,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -138,15 +193,15 @@ class LanguageScreen extends ConsumerWidget {
                     },
                   ),
                   const SizedBox(height: 24),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.security, size: 14, color: AppColors.textMuted),
+                    children: [
+                      Icon(Icons.security, size: 14, color: AppColors.clinicalTextMuted),
                       SizedBox(width: 6),
                       Flexible(
                         child: Text(
                           "DPDPA 2023 Compliant • 100% In-Country Voice Processing",
-                          style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                          style: TextStyle(fontSize: 11, color: AppColors.clinicalTextMuted),
                           textAlign: TextAlign.center,
                         ),
                       ),

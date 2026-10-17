@@ -2,8 +2,8 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import nock from 'nock';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mock.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'mock-anon-key';
 const ADMIN_A_JWT = 'MOCK_ADMIN_A_JWT';
 
 describe('Concurrency & Load Balancing', () => {

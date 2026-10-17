@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/vitalis_provider.dart";
 import "../widgets/vitalis_explainability_sheet.dart";
@@ -51,17 +50,22 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
     final projectedHpi = (baselineHpi + projectedHpiDelta).clamp(10.0, 99.0).round();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("What-If Behavior Simulator"),
-        backgroundColor: AppColors.surface,
+        title: const Text(
+          "What-If Behavior Simulator",
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: Color(0xFF0F172A)),
+        ),
+        backgroundColor: const Color(0xFFFFFFFF),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
         actions: [
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
             child: AyuSetuLogoBadge(height: 20),
           ),
           IconButton(
-            icon: const Icon(Icons.info_outline, color: AppColors.vitalisTeal),
+            icon: const Icon(Icons.info_outline, color: Color(0xFF059669)),
             onPressed: () {
               VitalisExplainabilitySheet.show(
                 context,
@@ -92,14 +96,17 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
                 const Expanded(
                   child: Text(
                     "Modifiable Lifestyle Levers",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 TextButton.icon(
                   onPressed: () => _resetToBaseline(state),
-                  icon: const Icon(Icons.refresh, size: 16, color: AppColors.vitalisTeal),
-                  label: const Text("Reset", style: TextStyle(color: AppColors.vitalisTeal, fontSize: 12)),
+                  icon: const Icon(Icons.refresh, size: 16, color: Color(0xFF059669)),
+                  label: const Text(
+                    "Reset",
+                    style: TextStyle(color: Color(0xFF059669), fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
                 ),
               ],
             ),
@@ -154,8 +161,9 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
               icon: Icons.smoke_free_rounded,
               onChanged: (val) => setState(() => _smokeFree = val),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             _buildDomainBreakdown(cardioDelta, functionalDelta, sleepDelta, nutritionDelta),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -164,21 +172,21 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
 
   Widget _buildSafetyCallout() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        color: const Color(0xFFF0FDFA),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF99F6E4)),
       ),
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.shield_outlined, color: AppColors.primaryLight, size: 20),
+          Icon(Icons.shield_outlined, color: Color(0xFF0D9488), size: 20),
           SizedBox(width: 10),
           Expanded(
             child: Text(
               "STRICT RESEARCH BOUNDARY: Simulations illustrate potential directional impact on domain scores. AyuSetu strictly does NOT calculate 'years of life gained' or claim biological age reversal.",
-              style: TextStyle(fontSize: 11, color: AppColors.textSecondary, height: 1.4, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 11.5, color: Color(0xFF134E4A), height: 1.4, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -189,59 +197,69 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
   Widget _buildProjectionCard(int baseline, int projected, double delta) {
     final isPositive = delta >= 0;
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.vitalisTeal.withValues(alpha: 0.3)),
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             "Projected Healthspan Progress Index (HPI)",
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 12.5, color: Color(0xFF64748B), fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Current Baseline", style: TextStyle(fontSize: 11, color: AppColors.textMuted), overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 2),
-                    Text("$baseline", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textSecondary)),
+                    const Text("Current Baseline", style: TextStyle(fontSize: 11, color: Color(0xFF64748B)), overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    Text("$baseline", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF475569))),
                   ],
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Icon(Icons.arrow_forward_rounded, color: AppColors.vitalisTeal, size: 20),
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(Icons.arrow_forward_rounded, color: Color(0xFF059669), size: 22),
               ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text("Projected", style: TextStyle(fontSize: 11, color: AppColors.vitalisTeal, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 2),
+                    const Text("Projected", style: TextStyle(fontSize: 11, color: Color(0xFF059669), fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text("$projected", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                        const SizedBox(width: 4),
+                        Text("$projected", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                        const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(
-                            color: (isPositive ? AppColors.ayushGreen : AppColors.warning).withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(4),
+                            color: isPositive ? const Color(0xFFE6F7F2) : const Color(0xFFFFFBEB),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: isPositive ? const Color(0xFFA7F3D0) : const Color(0xFFFDE68A),
+                            ),
                           ),
                           child: Text(
                             "${isPositive ? '+' : ''}${delta.toStringAsFixed(1)}",
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 11,
                               fontWeight: FontWeight.w800,
-                              color: isPositive ? AppColors.ayushGreen : AppColors.warning,
+                              color: isPositive ? const Color(0xFF059669) : const Color(0xFFD97706),
                             ),
                           ),
                         ),
@@ -268,11 +286,18 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
     required ValueChanged<double> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,12 +308,19 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
               Expanded(
                 child: Row(
                   children: [
-                    Icon(icon, size: 18, color: AppColors.vitalisTeal),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE6F7F2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, size: 16, color: const Color(0xFF059669)),
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -296,16 +328,27 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
                 ),
               ),
               const SizedBox(width: 8),
-              Text("${value.toInt()} $unit", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.vitalisTeal)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6F7F2),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  "${value.toInt()} $unit",
+                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: Color(0xFF059669)),
+                ),
+              ),
             ],
           ),
+          const SizedBox(height: 4),
           Slider(
             value: value,
             min: min,
             max: max,
             divisions: divisions,
-            activeColor: AppColors.vitalisTeal,
-            inactiveColor: AppColors.surfaceElevated,
+            activeColor: const Color(0xFF059669),
+            inactiveColor: const Color(0xFFE2E8F0),
             onChanged: onChanged,
           ),
         ],
@@ -320,11 +363,18 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
     required ValueChanged<bool> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -332,12 +382,19 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
           Expanded(
             child: Row(
               children: [
-                Icon(icon, size: 18, color: AppColors.vitalisTeal),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE6F7F2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 16, color: const Color(0xFF059669)),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -347,7 +404,7 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
           const SizedBox(width: 8),
           Switch(
             value: value,
-            activeTrackColor: AppColors.vitalisTeal,
+            activeTrackColor: const Color(0xFF059669),
             onChanged: onChanged,
           ),
         ],
@@ -357,20 +414,27 @@ class _VitalisSimulatorScreenState extends ConsumerState<VitalisSimulatorScreen>
 
   Widget _buildDomainBreakdown(double cardio, double functional, double sleep, double nutrition) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             "Projected Domain Trajectory",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           _DomainBar(label: "Cardiovascular Fitness", delta: cardio),
           _DomainBar(label: "Functional Reserve", delta: functional),
           _DomainBar(label: "Circadian Stability", delta: sleep),
@@ -391,16 +455,23 @@ class _DomainBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPos = delta >= 0;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary))),
-          Text(
-            "${isPos ? '+' : ''}${delta.toStringAsFixed(1)} pts",
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: isPos ? AppColors.ayushGreen : AppColors.warning,
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: Color(0xFF475569)))),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: isPos ? const Color(0xFFE6F7F2) : const Color(0xFFFFFBEB),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              "${isPos ? '+' : ''}${delta.toStringAsFixed(1)} pts",
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: isPos ? const Color(0xFF059669) : const Color(0xFFD97706),
+              ),
             ),
           ),
         ],

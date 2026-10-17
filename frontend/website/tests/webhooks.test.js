@@ -3,8 +3,8 @@ import request from 'supertest';
 import { createHmac } from 'node:crypto';
 import nock from 'nock';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET;
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mock.supabase.co';
+const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || 'mock_secret_key';
 
 const generateSignature = (body, secret) => {
     return createHmac('sha256', secret).update(JSON.stringify(body)).digest('hex');

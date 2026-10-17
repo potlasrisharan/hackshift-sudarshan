@@ -92,6 +92,7 @@ class DomainScoreModel {
   final int? score;
   final double weight;
   final bool observed;
+  final String provenance;
   final String rationale;
 
   const DomainScoreModel({
@@ -100,6 +101,7 @@ class DomainScoreModel {
     this.score,
     required this.weight,
     required this.observed,
+    this.provenance = "unavailable",
     required this.rationale,
   });
 
@@ -110,6 +112,7 @@ class DomainScoreModel {
       score: (json["score"] as num?)?.toInt(),
       weight: (json["weight"] as num?)?.toDouble() ?? 1.0,
       observed: json["observed"] as bool? ?? false,
+      provenance: json["provenance"] as String? ?? "unavailable",
       rationale: json["rationale"] as String? ?? "",
     );
   }
@@ -342,6 +345,7 @@ class VitalisExercisePlanModel {
   final String intensityLevel;
   final List<YogaAsanaItem> yogaRoutine;
   final String safetyStatus;
+  final String progressionAction;
   final List<String> safetyNotes;
 
   const VitalisExercisePlanModel({
@@ -353,6 +357,7 @@ class VitalisExercisePlanModel {
     required this.intensityLevel,
     required this.yogaRoutine,
     required this.safetyStatus,
+    this.progressionAction = "UNKNOWN",
     this.safetyNotes = const [],
   });
 
@@ -370,6 +375,7 @@ class VitalisExercisePlanModel {
       intensityLevel: json["intensityLevel"] as String? ?? "moderate",
       yogaRoutine: asanas,
       safetyStatus: json["safetyStatus"] as String? ?? "ALLOWED",
+      progressionAction: json["progressionAction"] as String? ?? "UNKNOWN",
       safetyNotes: (json["safetyNotes"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }

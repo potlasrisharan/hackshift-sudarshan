@@ -27,6 +27,7 @@ export const herProfileSchema = z.object({
     ])
     .default("none"),
   knownConditions: z.array(z.string()).default([]).optional(),
+  mobilityRestrictions: z.array(z.string()).default([]).optional(),
   medications: z.array(z.string()).default([]).optional(),
   dietPreference: z
     .union([

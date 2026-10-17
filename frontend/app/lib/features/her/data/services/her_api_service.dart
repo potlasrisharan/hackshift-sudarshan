@@ -155,9 +155,12 @@ class HerApiService {
     ];
   }
 
-  Future<List<HerWellnessItemModel>> fetchWellness() async {
+  Future<List<HerWellnessItemModel>> fetchWellness({String? category}) async {
     try {
-      final res = await http.get(Uri.parse("$baseUrl/wellness"), headers: _headers);
+      final uri = Uri.parse("$baseUrl/wellness").replace(
+        queryParameters: category == null ? null : {"category": category},
+      );
+      final res = await http.get(uri, headers: _headers);
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as Map<String, Object?>;
         final list = (data["recommendations"] as List<Object?>? ?? [])

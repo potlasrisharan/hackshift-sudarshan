@@ -11,7 +11,10 @@ export interface TenantContext {
 export interface PatientRecord {
   id: string;
   org_id: string;
+  name: string | null;
   phone_hash: string;
+  abha_number: string | null;
+  abha_address: string | null;
   dob: string | null;
   sex: string | null;
   preferred_lang: string;
@@ -106,20 +109,27 @@ export class TenantDb {
 
     create: async (data: {
       id: string;
+      name: string;
       phoneHash: string;
+      abhaNumber?: string | null;
+      abhaAddress?: string | null;
       dob?: string | null;
       sex?: string | null;
       preferredLang?: string;
     }): Promise<D1Response> => {
       return this.db
         .prepare(
-          `INSERT INTO patients (id, org_id, phone_hash, dob, sex, preferred_lang)
-           VALUES (?, ?, ?, ?, ?, ?)`
+          `INSERT INTO patients
+            (id, org_id, name, phone_hash, abha_number, abha_address, dob, sex, preferred_lang)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           data.id,
           this.orgId,
+          data.name,
           data.phoneHash,
+          data.abhaNumber ?? null,
+          data.abhaAddress ?? null,
           data.dob ?? null,
           data.sex ?? null,
           data.preferredLang ?? "hi"

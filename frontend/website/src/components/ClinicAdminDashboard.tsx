@@ -26,6 +26,7 @@ import { dataService as db } from '@/lib/dataService'
 import { getStartOfTodayIST } from '@/lib/utils'
 import { useHospital } from '@/context/HospitalContext'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Skeleton } from '@/components/ui/basic'
 import { ReceiptModal } from '@/components/ui/ReceiptModal'
 import {
     AreaChart,
@@ -67,6 +68,34 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
     const [clinicData, setClinicData] = useState<any>(managedClinic || null)
     const [managerName, setManagerName] = useState<string>('Unassigned')
     const [lastSyncTime, setLastSyncTime] = useState<string>('Just now')
+
+    // Live Backend Ops & Radar Telemetry States
+    const [opsRadar, setOpsRadar] = useState<{
+        clinicStockUnits?: number;
+        hqGroupStockUnits?: number;
+        expiringBatches?: any[];
+        lowStockItems?: string[];
+        inventoryRadar?: any[];
+        rebalancing?: {
+            sourceHub: string;
+            targetClinic: string;
+            recommendedTransferUnits: number;
+            estimatedTransitDays: number;
+        };
+    } | null>(null);
+
+    const [ledgerSummary, setLedgerSummary] = useState<{
+        revenuePaise?: number;
+        cogsPaise?: number;
+        operatingExpensesPaise?: number;
+        netProfitPaise?: number;
+        debitPaise?: number;
+        creditPaise?: number;
+        isBalanced?: boolean;
+        journalsCount?: number;
+        salesCount?: number;
+        explanation?: string;
+    } | null>(null);
 
     // Search and Filters
     const [searchQuery, setSearchQuery] = useState('')
@@ -354,6 +383,19 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                 setManagerName(managers[0].full_name || managers[0].email || 'Clinic Lead');
             }
 
+            // 5. Connect to live inventory radar & ops double-entry ledger summary
+            try {
+                const targetClinic = clinicId || 'clinic-delhi-01';
+                const [radarData, ledgerData] = await Promise.all([
+                    db.getInventoryRadar ? db.getInventoryRadar({ clinicId: targetClinic }) : fetch(`/api/v1/ops/inventory/radar?clinic_id=${targetClinic}`).then(r => r.ok ? r.json() : null).catch(() => null),
+                    db.getOpsLedgerSummary ? db.getOpsLedgerSummary({ clinicId: targetClinic }) : fetch(`/api/v1/ops/ledger/summary?clinic_id=${targetClinic}`).then(r => r.ok ? r.json() : null).catch(() => null)
+                ]);
+                if (radarData) setOpsRadar(radarData);
+                if (ledgerData) setLedgerSummary(ledgerData);
+            } catch (opsErr) {
+                console.warn('Ops telemetry fetch notice:', opsErr);
+            }
+
             const now = new Date();
             setLastSyncTime(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }));
 
@@ -408,14 +450,56 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
 
     if (loading) {
         return (
-            <div className="flex flex-col h-[75vh] items-center justify-center gap-4">
-                <div className="relative flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin" />
-                    <Building2 className="w-6 h-6 text-blue-600 absolute" />
+            <div className="space-y-8 animate-in fade-in duration-300 max-w-[1600px] mx-auto pb-12">
+                {/* 1. Cockpit Header Skeleton */}
+                <div className="relative bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 lg:p-7 shadow-sm">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <Skeleton className="h-6 w-32 rounded-full" />
+                                <Skeleton className="h-6 w-24 rounded-full" />
+                            </div>
+                            <Skeleton className="h-8 w-64" />
+                            <Skeleton className="h-4 w-96 max-w-full" />
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="h-10 w-28 rounded-xl" />
+                            <Skeleton className="h-10 w-36 rounded-xl" />
+                        </div>
+                    </div>
                 </div>
-                <div className="text-center space-y-1">
-                    <p className="text-sm font-bold text-slate-800">Calibrating Clinic Telemetry...</p>
-                    <p className="text-xs text-slate-400">Loading Cloudflare D1 real-time operations data</p>
+
+                {/* 2. KPI Cards Skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="p-6 rounded-3xl border border-slate-200/80 bg-white shadow-sm space-y-3">
+                            <div className="flex justify-between items-center">
+                                <Skeleton className="h-4 w-28" />
+                                <Skeleton className="h-10 w-10 rounded-2xl" />
+                            </div>
+                            <Skeleton className="h-8 w-32" />
+                            <Skeleton className="h-3.5 w-48" />
+                        </div>
+                    ))}
+                </div>
+
+                {/* 3. Main Operational Panels Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-8 p-6 lg:p-7 rounded-3xl border border-slate-200/80 bg-white shadow-sm space-y-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-8 w-32 rounded-lg" />
+                        </div>
+                        <Skeleton className="h-72 w-full rounded-2xl" />
+                    </div>
+                    <div className="lg:col-span-4 p-6 lg:p-7 rounded-3xl border border-slate-200/80 bg-white shadow-sm space-y-4">
+                        <Skeleton className="h-6 w-36" />
+                        <Skeleton className="h-48 w-full rounded-2xl" />
+                        <div className="space-y-2 pt-2">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-5/6" />
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -600,9 +684,23 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                                 <div className="space-y-1">
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Revenue</p>
                                     <h3 className="text-3xl font-black text-slate-900 tracking-tight">
-                                        ₹{stats.revenue.toLocaleString('en-IN')}
+                                        ₹{(ledgerSummary?.revenuePaise ? Math.round(ledgerSummary.revenuePaise / 100) : stats.revenue).toLocaleString('en-IN')}
                                     </h3>
-                                    <p className="text-[11px] text-slate-400 font-medium">Net settled collections today</p>
+                                    <p className="text-[11px] text-slate-400 font-medium">
+                                        {ledgerSummary ? `${ledgerSummary.revenuePaise?.toLocaleString('en-IN')} paise · D1 Double-Entry Ledger` : 'Net settled collections today'}
+                                    </p>
+                                    {ledgerSummary && (
+                                        <div className="pt-2 flex flex-col gap-1 border-t border-slate-100 mt-2">
+                                            <div className="flex items-center justify-between text-[10px]">
+                                                <span className="text-slate-500">Gross Margin:</span>
+                                                <strong className="text-emerald-700 font-mono">₹{Math.round((ledgerSummary.netProfitPaise || 0) / 100).toLocaleString('en-IN')}</strong>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-[10px] text-emerald-700 font-semibold">
+                                                <ShieldCheck className="w-3 h-3 text-emerald-600 shrink-0" />
+                                                <span>Double-Entry Balanced: {ledgerSummary.isBalanced ? 'Audit Ready' : 'Pending'}</span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
@@ -1062,6 +1160,37 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         </button>
                     </div>
                 </div>
+
+                {opsRadar?.rebalancing && (
+                    <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50/90 to-indigo-50/90 border border-blue-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                <Package className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h4 className="text-xs font-bold text-slate-900">
+                                        HQ Central Depot AI Rebalance Radar: {opsRadar.rebalancing.recommendedTransferUnits > 0 ? `${opsRadar.rebalancing.recommendedTransferUnits} units recommended for dispatch` : 'Safety Buffers Optimal'}
+                                    </h4>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                                        Live Telemetry
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 mt-0.5">
+                                    Source: <strong>{opsRadar.rebalancing.sourceHub}</strong> → Target Clinic: <strong>{opsRadar.rebalancing.targetClinic}</strong> · Est. Transit: {opsRadar.rebalancing.estimatedTransitDays} day
+                                </p>
+                            </div>
+                        </div>
+                        {opsRadar.rebalancing.recommendedTransferUnits > 0 && (
+                            <button
+                                onClick={() => onNavigate?.('inventory-dashboard')}
+                                className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm shrink-0"
+                            >
+                                Request Dispatch
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* PANEL A: NEAR-EXPIRY BATCHES (<30 DAYS) */}

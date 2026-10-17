@@ -44,8 +44,8 @@ export function AppLayout({
         if (view === 'patient-kiosk') {
             return {
                 number: '01',
-                name: 'Patient Health Portal & Kiosk',
-                badge: 'PORTAL 1 · PERSONAL RECORDS & KIOSK',
+                name: 'Patient Intake System & Kiosk',
+                badge: 'PORTAL 1 · PATIENT INTAKE SYSTEM',
                 badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
                 dotClass: 'bg-amber-500'
             };
@@ -297,6 +297,12 @@ export function AppLayout({
                                 label="Clinic Operations Hub"
                                 active={(view as string) === 'clinic-admin'}
                                 onClick={() => setView('clinic-admin')}
+                            />
+                            <NavItem
+                                icon="how_to_reg"
+                                label="Patient Intake (Kiosk)"
+                                active={(view as string) === 'patient-kiosk'}
+                                onClick={() => setView('patient-kiosk')}
                             />
                             <NavItem
                                 icon="point_of_sale"

@@ -13,10 +13,10 @@ The cheapest-only stock baseline omits clinical constraints and may select the w
 
 | Algorithm | Mean milliseconds / call (1,000 iterations) |
 |---|---:|
-| sentinel | 0.0064 |
-| rxToShelf | 0.0131 |
-| driftRadar | 0.0306 |
-| threadPulse | 0.0395 |
+| sentinel | 0.0061 |
+| rxToShelf | 0.0133 |
+| driftRadar | 0.0314 |
+| threadPulse | 0.0402 |
 
 - Hand-constructed adversarial allocation cases: cheapest-only baseline ignores safety; not a real pharmacy comparison.
 - Noise/ramp parameters favour a baseline-adaptive detector; not calibrated or clinically validated.

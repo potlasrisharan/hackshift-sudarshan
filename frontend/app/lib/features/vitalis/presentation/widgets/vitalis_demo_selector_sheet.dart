@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../providers/vitalis_provider.dart";
 
 class VitalisDemoSelectorSheet extends ConsumerWidget {
@@ -11,15 +10,26 @@ class VitalisDemoSelectorSheet extends ConsumerWidget {
     final active = ref.watch(vitalisProvider).activePersona;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: const BoxDecoration(
-        color: AppColors.surface,
+        color: Color(0xFFFFFFFF),
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -28,19 +38,19 @@ class VitalisDemoSelectorSheet extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: Color(0xFF0F172A),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                icon: const Icon(Icons.close, color: Color(0xFF64748B)),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           const Text(
             "Quickly test clinical safety gates, biomarker trajectories, and data missingness.",
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
           ),
           const SizedBox(height: 16),
           for (final persona in VitalisSyntheticFixtures.allPersonas)
@@ -49,24 +59,41 @@ class VitalisDemoSelectorSheet extends ConsumerWidget {
                 ref.read(vitalisProvider.notifier).switchPersona(persona);
                 Navigator.pop(context);
               },
+              borderRadius: BorderRadius.circular(16),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: active.id == persona.id
-                      ? AppColors.vitalisTeal.withValues(alpha: 0.15)
-                      : AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(12),
+                      ? const Color(0xFFE6F7F2)
+                      : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: active.id == persona.id ? AppColors.vitalisTeal : Colors.transparent,
+                    color: active.id == persona.id
+                        ? const Color(0xFF059669)
+                        : const Color(0xFFE2E8F0),
+                    width: active.id == persona.id ? 1.5 : 1.0,
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      active.id == persona.id ? Icons.check_circle_rounded : Icons.person_outline_rounded,
-                      color: active.id == persona.id ? AppColors.vitalisTeal : AppColors.textSecondary,
-                      size: 20,
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: active.id == persona.id
+                            ? const Color(0xFF059669).withValues(alpha: 0.15)
+                            : const Color(0xFFE2E8F0),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        active.id == persona.id
+                            ? Icons.check_circle_rounded
+                            : Icons.person_outline_rounded,
+                        color: active.id == persona.id
+                            ? const Color(0xFF059669)
+                            : const Color(0xFF64748B),
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -78,13 +105,19 @@ class VitalisDemoSelectorSheet extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: active.id == persona.id ? AppColors.vitalisTeal : AppColors.textPrimary,
+                              color: active.id == persona.id
+                                  ? const Color(0xFF059669)
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             persona.description,
-                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              color: Color(0xFF64748B),
+                              height: 1.3,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),

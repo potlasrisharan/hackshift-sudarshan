@@ -3,61 +3,108 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
+import "../../../her/data/models/her_models.dart";
 import "../../../her/presentation/providers/her_provider.dart";
 
-class YogaPrescriptionScreen extends ConsumerWidget {
+class YogaPrescriptionScreen extends ConsumerStatefulWidget {
   const YogaPrescriptionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<YogaPrescriptionScreen> createState() => _YogaPrescriptionScreenState();
+}
+
+class _YogaPrescriptionScreenState extends ConsumerState<YogaPrescriptionScreen> {
+  late Future<List<HerWellnessItemModel>> _yogaFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _yogaFuture = ref.read(herApiServiceProvider).fetchWellness(category: "yoga_movement");
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final her = ref.watch(herProvider);
-    final yogaItems = her.wellnessItems
-        .where((item) => item.category.toUpperCase() == "SOMATIC_YOGA" || item.category.toUpperCase() == "YOGA_MOVEMENT")
-        .toList();
 
     return AppScaffoldShell(
       title: AppStrings.yogaHeader,
       subtitle: "Safety screened and personalized by AyuSetu algorithms",
-      child: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          if (her.activeSafetyAlert?.isUrgent == true)
-            _NoticeCard(
-              icon: Icons.health_and_safety_rounded,
-              color: const Color(0xFFB42318),
-              title: "Movement recommendations paused",
-              body: her.activeSafetyAlert?.emergencyGuidance ?? "Please seek timely medical care before exercise.",
-            )
-          else if (her.isLoading && yogaItems.isEmpty)
-            const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()))
-          else if (yogaItems.isEmpty)
-            const _NoticeCard(
-              icon: Icons.self_improvement_rounded,
-              color: Color(0xFF087D71),
-              title: "No personalized movements yet",
-              body: "Complete your health profile to receive safety-screened recommendations.",
-            )
-          else ...[
-            const _NoticeCard(
-              icon: Icons.verified_user_outlined,
-              color: Color(0xFF087D71),
-              title: "Personalized recommendations",
-              body: "The HER wellness ranker filters contraindications and prioritizes suitable options. These movements do not diagnose or treat a condition.",
-            ),
-            const SizedBox(height: 14),
-            for (final item in yogaItems)
+      child: FutureBuilder<List<HerWellnessItemModel>>(
+        future: _yogaFuture,
+        builder: (context, snapshot) {
+          final yogaItems = snapshot.data ?? const <HerWellnessItemModel>[];
+          return ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              if (her.activeSafetyAlert?.isUrgent == true)
+                _NoticeCard(
+                  icon: Icons.health_and_safety_rounded,
+                  color: const Color(0xFFB42318),
+                  title: "Movement recommendations paused",
+                  body: her.activeSafetyAlert?.emergencyGuidance ?? "Please seek timely medical care before exercise.",
+                )
+              else if (snapshot.hasError)
+                const _NoticeCard(
+                  icon: Icons.cloud_off_rounded,
+                  color: Color(0xFF9A6700),
+                  title: "Personalized movements could not load",
+                  body: "Reconnect and try again to get recommendations based on your health profile.",
+                )
+              else if (snapshot.connectionState == ConnectionState.waiting)
+                const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()))
+              else if (yogaItems.isEmpty)
+                const _NoticeCard(
+                  icon: Icons.self_improvement_rounded,
+                  color: Color(0xFF087D71),
+                  title: "No personalized movements yet",
+                  body: "Complete your health profile to receive safety-screened recommendations.",
+                )
+              else ...[
+                const _NoticeCard(
+                  icon: Icons.verified_user_outlined,
+                  color: Color(0xFF087D71),
+                  title: "Personalized recommendations",
+                  body: "AyuSetu ranks gentle movement options against your recorded health information and safety limits. These movements do not diagnose or treat a condition.",
+                ),
+                const SizedBox(height: 14),
+                for (final (index, item) in yogaItems.indexed)
               Card(
                 margin: const EdgeInsets.only(bottom: 12),
+                clipBehavior: Clip.antiAlias,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF087D71).withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Icon(_movementIcon(item.id), color: const Color(0xFF087D71)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("MOVEMENT ${index + 1}", style: const TextStyle(fontSize: 10, letterSpacing: 1.1, fontWeight: FontWeight.w700, color: Color(0xFF087D71))),
+                                const SizedBox(height: 3),
+                                Text(item.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
                       Text(item.description),
                       if (item.rationale.isNotEmpty) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 9),
                         Text(item.rationale, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                       if (item.contraindications.isNotEmpty) ...[
@@ -68,11 +115,21 @@ class YogaPrescriptionScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-          ],
-        ],
+              ],
+            ],
+          );
+        },
       ),
     );
   }
+}
+
+IconData _movementIcon(String id) {
+  if (id.contains("rest") || id.contains("supta")) return Icons.self_improvement_rounded;
+  if (id.contains("breath") || id.contains("nadi")) return Icons.air_rounded;
+  if (id.contains("cat-cow")) return Icons.accessibility_new_rounded;
+  if (id.contains("mountain")) return Icons.chair_alt_rounded;
+  return Icons.spa_rounded;
 }
 
 class _NoticeCard extends StatelessWidget {

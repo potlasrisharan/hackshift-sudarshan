@@ -8,6 +8,8 @@ class HerProfileModel {
   final bool isPregnantOrLactating;
   final bool hormonalContraception;
   final String dietPreference;
+  final List<String> knownConditions;
+  final List<String> mobilityRestrictions;
   final List<String> allergies;
   final List<String> lifestyleGoals;
 
@@ -18,6 +20,8 @@ class HerProfileModel {
     this.isPregnantOrLactating = false,
     this.hormonalContraception = false,
     this.dietPreference = "vegetarian",
+    this.knownConditions = const [],
+    this.mobilityRestrictions = const [],
     this.allergies = const [],
     this.lifestyleGoals = const [],
   });
@@ -32,6 +36,8 @@ class HerProfileModel {
       isPregnantOrLactating: json["isPregnantOrLactating"] as bool? ?? false,
       hormonalContraception: json["hormonalContraception"] as bool? ?? false,
       dietPreference: json["dietPreference"] as String? ?? "vegetarian",
+      knownConditions: (json["knownConditions"] as List<Object?>?)?.cast<String>() ?? const [],
+      mobilityRestrictions: (json["mobilityRestrictions"] as List<Object?>?)?.cast<String>() ?? const [],
       allergies: (json["allergies"] as List<Object?>?)?.cast<String>() ?? const [],
       lifestyleGoals: (json["lifestyleGoals"] as List<Object?>?)?.cast<String>() ?? const [],
     );
@@ -44,6 +50,8 @@ class HerProfileModel {
         "isPregnantOrLactating": isPregnantOrLactating,
         "hormonalContraception": hormonalContraception,
         "dietPreference": dietPreference,
+        "knownConditions": knownConditions,
+        "mobilityRestrictions": mobilityRestrictions,
         "allergies": allergies,
         "lifestyleGoals": lifestyleGoals,
       };

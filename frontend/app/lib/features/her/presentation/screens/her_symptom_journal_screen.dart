@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/her_provider.dart";
 
@@ -54,23 +53,30 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          backgroundColor: AppColors.surface,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFFDA4AF)),
+          ),
           title: const Row(
             children: [
-              Icon(Icons.warning, color: AppColors.error),
+              Icon(Icons.warning, color: Color(0xFFE11D48)),
               SizedBox(width: 8),
-              Text("Urgent Clinical Review", style: TextStyle(color: AppColors.error, fontSize: 16)),
+              Text("Urgent Clinical Review", style: TextStyle(color: Color(0xFF9F1239), fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
           content: Text(
             alert.emergencyGuidance ?? "Acute symptoms flagged by safety gate.",
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+            style: const TextStyle(color: Color(0xFF0F172A), fontSize: 13),
           ),
           actions: [
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE11D48),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
               onPressed: () => Navigator.pop(ctx),
-              child: const Text("I Understand", style: TextStyle(color: Colors.white)),
+              child: const Text("I Understand", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -79,7 +85,7 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Daily symptom journal logged successfully."),
-          backgroundColor: AppColors.success,
+          backgroundColor: Color(0xFF059669),
         ),
       );
     }
@@ -90,100 +96,106 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
     return AppScaffoldShell(
       title: "Daily Symptom Journal",
       subtitle: "Deterministic Wellbeing & Safety Check",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Energy Level
-            _buildSliderCard(
-              title: "Energy & Vitality Level",
-              value: _energyLevel,
-              min: 1,
-              max: 10,
-              divisions: 9,
-              display: "${_energyLevel.toInt()} / 10",
-              onChanged: (v) => setState(() => _energyLevel = v),
-            ),
-            const SizedBox(height: 12),
-
-            // Mood Selector
-            _buildMoodCard(),
-            const SizedBox(height: 12),
-
-            // Acne Severity Selector
-            _buildAcneCard(),
-            const SizedBox(height: 12),
-
-            // Pelvic Discomfort
-            _buildSliderCard(
-              title: "Pelvic / Cramp Discomfort",
-              value: _pelvicPain,
-              min: 0,
-              max: 10,
-              divisions: 10,
-              display: "${_pelvicPain.toInt()} / 10",
-              activeColor: _pelvicPain > 6 ? AppColors.error : AppColors.wellnessPink,
-              onChanged: (v) => setState(() => _pelvicPain = v),
-            ),
-            const SizedBox(height: 12),
-
-            // Bloating & Headache Sliders
-            Row(
-              children: [
-                Expanded(
-                  child: _buildMiniSliderCard(
-                    title: "Bloating (0-5)",
-                    value: _bloating,
-                    max: 5,
-                    display: "${_bloating.toInt()}",
-                    onChanged: (v) => setState(() => _bloating = v),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _buildMiniSliderCard(
-                    title: "Headache (0-5)",
-                    value: _headache,
-                    max: 5,
-                    display: "${_headache.toInt()}",
-                    onChanged: (v) => setState(() => _headache = v),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Red Flag Checkboxes
-            _buildAcuteRedFlagsCard(),
-            const SizedBox(height: 12),
-
-            // Sleep Hours Slider
-            _buildSliderCard(
-              title: "Night Sleep Duration",
-              value: _sleepHours,
-              min: 4,
-              max: 12,
-              divisions: 16,
-              display: "${_sleepHours.toStringAsFixed(1)} hrs",
-              activeColor: AppColors.longevityCyan,
-              onChanged: (v) => setState(() => _sleepHours = v),
-            ),
-            const SizedBox(height: 16),
-
-            // Submit Button
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                minimumSize: const Size.fromHeight(48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        color: const Color(0xFFFFF1F3),
+        width: double.infinity,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Energy Level
+              _buildSliderCard(
+                title: "Energy & Vitality Level",
+                value: _energyLevel,
+                min: 1,
+                max: 10,
+                divisions: 9,
+                display: "${_energyLevel.toInt()} / 10",
+                onChanged: (v) => setState(() => _energyLevel = v),
               ),
-              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-              label: const Text("Save Journal & Run Safety Check", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              onPressed: _submitJournal,
-            ),
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 12),
+
+              // Mood Selector
+              _buildMoodCard(),
+              const SizedBox(height: 12),
+
+              // Acne Severity Selector
+              _buildAcneCard(),
+              const SizedBox(height: 12),
+
+              // Pelvic Discomfort
+              _buildSliderCard(
+                title: "Pelvic / Cramp Discomfort",
+                value: _pelvicPain,
+                min: 0,
+                max: 10,
+                divisions: 10,
+                display: "${_pelvicPain.toInt()} / 10",
+                activeColor: _pelvicPain > 6 ? const Color(0xFFE11D48) : const Color(0xFFEC4899),
+                onChanged: (v) => setState(() => _pelvicPain = v),
+              ),
+              const SizedBox(height: 12),
+
+              // Bloating & Headache Sliders
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMiniSliderCard(
+                      title: "Bloating (0-5)",
+                      value: _bloating,
+                      max: 5,
+                      display: "${_bloating.toInt()}",
+                      onChanged: (v) => setState(() => _bloating = v),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildMiniSliderCard(
+                      title: "Headache (0-5)",
+                      value: _headache,
+                      max: 5,
+                      display: "${_headache.toInt()}",
+                      onChanged: (v) => setState(() => _headache = v),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Red Flag Checkboxes
+              _buildAcuteRedFlagsCard(),
+              const SizedBox(height: 12),
+
+              // Sleep Hours Slider
+              _buildSliderCard(
+                title: "Night Sleep Duration",
+                value: _sleepHours,
+                min: 4,
+                max: 12,
+                divisions: 16,
+                display: "${_sleepHours.toStringAsFixed(1)} hrs",
+                activeColor: const Color(0xFFE11D48),
+                onChanged: (v) => setState(() => _sleepHours = v),
+              ),
+              const SizedBox(height: 16),
+
+              // Submit Button
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE11D48),
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 2,
+                ),
+                icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+                label: const Text("Save Journal & Run Safety Check", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                onPressed: _submitJournal,
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -196,15 +208,22 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
     required double max,
     required int divisions,
     required String display,
-    Color activeColor = AppColors.primaryLight,
+    Color activeColor = const Color(0xFFE11D48),
     required ValueChanged<double> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +234,7 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
+                  style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -230,6 +249,7 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
             max: max,
             divisions: divisions,
             activeColor: activeColor,
+            inactiveColor: const Color(0xFFFCE7EC),
             onChanged: onChanged,
           ),
         ],
@@ -245,11 +265,18 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
     required ValueChanged<double> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,13 +287,13 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                  style: const TextStyle(color: Color(0xFF475569), fontSize: 11, fontWeight: FontWeight.w600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 4),
-              Text(display, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 11)),
+              Text(display, style: const TextStyle(color: Color(0xFFE11D48), fontWeight: FontWeight.bold, fontSize: 12)),
             ],
           ),
           Slider(
@@ -274,7 +301,8 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
             min: 0,
             max: max,
             divisions: max.toInt(),
-            activeColor: AppColors.primaryLight,
+            activeColor: const Color(0xFFE11D48),
+            inactiveColor: const Color(0xFFFCE7EC),
             onChanged: onChanged,
           ),
         ],
@@ -286,17 +314,24 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
     final moods = ["calm", "anxious", "irritable", "fatigue", "focused"];
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Predominant Mental State", style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
-          const SizedBox(height: 8),
+          const Text("Predominant Mental State", style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             children: moods.map((m) {
@@ -304,11 +339,13 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
               return ChoiceChip(
                 label: Text(m[0].toUpperCase() + m.substring(1)),
                 selected: isSelected,
-                selectedColor: AppColors.wellnessPink,
-                backgroundColor: AppColors.surfaceElevated,
+                selectedColor: const Color(0xFFE11D48),
+                backgroundColor: const Color(0xFFFFF1F3),
+                side: BorderSide(color: isSelected ? const Color(0xFFE11D48) : const Color(0xFFFDA4AF)),
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color: isSelected ? Colors.white : const Color(0xFF0F172A),
                   fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
                 onSelected: (_) => setState(() => _selectedMood = m),
               );
@@ -323,17 +360,24 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
     final severities = ["none", "mild", "moderate", "severe"];
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Acne / Skin Flares", style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
-          const SizedBox(height: 8),
+          const Text("Acne / Skin Flares", style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             children: severities.map((sev) {
@@ -341,11 +385,13 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
               return ChoiceChip(
                 label: Text(sev[0].toUpperCase() + sev.substring(1)),
                 selected: isSelected,
-                selectedColor: AppColors.wellnessPink,
-                backgroundColor: AppColors.surfaceElevated,
+                selectedColor: const Color(0xFFE11D48),
+                backgroundColor: const Color(0xFFFFF1F3),
+                side: BorderSide(color: isSelected ? const Color(0xFFE11D48) : const Color(0xFFFDA4AF)),
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color: isSelected ? Colors.white : const Color(0xFF0F172A),
                   fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
                 onSelected: (_) => setState(() => _acneSeverity = sev),
               );
@@ -358,23 +404,30 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
 
   Widget _buildAcuteRedFlagsCard() {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        color: const Color(0xFFFFF1F2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFFDA4AF), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFE11D48).withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.crisis_alert, color: AppColors.error, size: 18),
+              Icon(Icons.crisis_alert, color: Color(0xFFE11D48), size: 18),
               SizedBox(width: 8),
               Expanded(
                 child: Text(
                   "Acute Safety Gate Triggers",
-                  style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(color: Color(0xFF9F1239), fontWeight: FontWeight.bold, fontSize: 13),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -384,16 +437,16 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
           CheckboxListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            activeColor: AppColors.error,
-            title: const Text("Sudden severe pain unlike normal cramps", style: TextStyle(color: AppColors.textPrimary, fontSize: 12)),
+            activeColor: const Color(0xFFE11D48),
+            title: const Text("Sudden severe pain unlike normal cramps", style: TextStyle(color: Color(0xFF0F172A), fontSize: 12, fontWeight: FontWeight.w500)),
             value: _suddenSeverePain,
             onChanged: (val) => setState(() => _suddenSeverePain = val ?? false),
           ),
           CheckboxListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            activeColor: AppColors.error,
-            title: const Text("Severe dizziness, lightheadedness or syncope", style: TextStyle(color: AppColors.textPrimary, fontSize: 12)),
+            activeColor: const Color(0xFFE11D48),
+            title: const Text("Severe dizziness, lightheadedness or syncope", style: TextStyle(color: Color(0xFF0F172A), fontSize: 12, fontWeight: FontWeight.w500)),
             value: _faintingOrSyncope,
             onChanged: (val) => setState(() => _faintingOrSyncope = val ?? false),
           ),

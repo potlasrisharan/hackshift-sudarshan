@@ -4,7 +4,7 @@ import { Loader2, Plus, Pencil, Trash2, Clock, Users, AlertTriangle } from 'luci
 import { dataService as db } from '@/lib/dataService'
 import { useHospital } from '@/context/HospitalContext'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Button, Input, Label } from '@/components/ui/basic'
+import { Button, Input, Label, Skeleton } from '@/components/ui/basic'
 import { useToast } from '@/components/ui/use-toast'
 
 interface Shift {
@@ -219,8 +219,29 @@ export function ShiftManagement({ clinicId }: ShiftManagementProps) {
 
     if (loading) {
         return (
-            <div className="flex h-64 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <div className="space-y-6 animate-pulse">
+                <div className="flex justify-between items-center pb-4 border-b border-slate-200">
+                    <div className="space-y-1.5">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-4 w-72" />
+                    </div>
+                    <Skeleton className="h-10 w-36 rounded-xl" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="p-6 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4">
+                            <div className="flex justify-between items-center">
+                                <Skeleton className="h-5 w-32" />
+                                <Skeleton className="h-6 w-16 rounded-full" />
+                            </div>
+                            <Skeleton className="h-4 w-40" />
+                            <div className="pt-2 border-t border-slate-100 flex gap-2">
+                                <Skeleton className="h-8 w-20 rounded-lg" />
+                                <Skeleton className="h-8 w-20 rounded-lg" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }

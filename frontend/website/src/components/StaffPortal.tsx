@@ -1,7 +1,7 @@
 import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect, useMemo } from 'react'
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog'
-import { Button, Input, Label } from '@/components/ui/basic'
+import { Button, Input, Label, Skeleton } from '@/components/ui/basic'
 import { Plus, Key, Banknote } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import { useHospital } from '@/context/HospitalContext'
@@ -584,9 +584,24 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {isLoading ? (
-                                <tr>
-                                    <td colSpan={isHospitalAdmin ? 6 : 4} className="py-20 text-center text-slate-400">Loading staff data...</td>
-                                </tr>
+                                Array.from({ length: 5 }).map((_, idx) => (
+                                    <tr key={idx} className="animate-pulse">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                                                <div className="space-y-1.5 flex-1">
+                                                    <Skeleton className="h-4 w-32" />
+                                                    <Skeleton className="h-3 w-40" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4"><Skeleton className="h-6 w-20 rounded-full" /></td>
+                                        <td className="px-6 py-4"><Skeleton className="h-4 w-28" /></td>
+                                        <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
+                                        {isHospitalAdmin && <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>}
+                                        {isHospitalAdmin && <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-16 ml-auto rounded-lg" /></td>}
+                                    </tr>
+                                ))
                             ) : filteredStaff.length === 0 ? (
                                 <tr>
                                     <td colSpan={isHospitalAdmin ? 6 : 4} className="py-20 text-center text-slate-400 bg-slate-50/50">
@@ -919,7 +934,15 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
 
                             <div className="max-h-[300px] overflow-y-auto pr-2">
                                 {isHistoryLoading ? (
-                                    <div className="py-8 text-center text-slate-500">Loading history...</div>
+                                    <div className="space-y-2 py-4">
+                                        {Array.from({ length: 4 }).map((_, i) => (
+                                            <div key={i} className="flex justify-between items-center py-2 border-b border-slate-100">
+                                                <Skeleton className="h-4 w-24" />
+                                                <Skeleton className="h-4 w-16 rounded-full" />
+                                                <Skeleton className="h-4 w-12" />
+                                            </div>
+                                        ))}
+                                    </div>
                                 ) : attendanceHistory.length === 0 ? (
                                     <div className="py-8 text-center text-slate-500">No attendance records found yet.</div>
                                 ) : (

@@ -2,84 +2,121 @@ import { expect, test } from "@playwright/test";
 
 async function start(page: import("@playwright/test").Page) {
   await page.goto("/#today");
-  await expect(page.getByText("Good morning, Sunita.")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Choose your language" }),
+  ).toBeVisible();
 }
-test("cross-project care story and privacy controls", async ({ page }) => {
+
+test("patient intake replaces personal patient view on web and redirects #today", async ({
+  page,
+}) => {
   const exceptions: string[] = [];
   page.on("pageerror", (e) => exceptions.push(e.message));
+
   await start(page);
+  await expect(page).toHaveURL(/.*\/erp\.html#\/app\?view=patient-kiosk/);
+  await expect(page.getByText("EMERGENCY / STAT")).toBeVisible();
+
+  // Screen 1 -> Screen 2 via Language Selection
   await page
-    .getByRole("button", { name: "Medicine access", exact: true })
+    .getByRole("button", { name: "English · English", exact: true })
     .click();
-  await expect(page.getByText("₹64", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Explain allocation" }).click();
-  await expect(page.locator("#allocation")).toContainText("north-expiring");
-  await page
-    .getByRole("button", { name: "Your health thread", exact: true })
-    .click();
-  await expect(page.getByText(/project-1 • LOINC/)).toBeVisible();
-  await expect(page.getByText(/project-2 • LOINC/)).toBeVisible();
-  await page
-    .getByRole("button", { name: "Create source-linked summary" })
-    .click();
-  await expect(page.locator("#summary")).toContainText("citations");
-  await page
-    .getByRole("button", { name: "Algorithm lab", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Test chest-pain red flag" }).click();
-  await expect(page.locator(".triage-status")).toContainText(
-    "Seek emergency help now",
-  );
-  await page.getByRole("button", { name: "Compare with API result" }).click();
-  await expect(page.locator("#server-result")).toContainText('"matches": true');
-  await page.getByRole("button", { name: "Privacy", exact: true }).click();
-  await page.getByRole("button", { name: "Verify audit chain" }).click();
-  await expect(page.locator("#audit")).toContainText('"valid": true');
-  await page.getByRole("button", { name: "Revoke processing consent" }).click();
-  await expect(page.locator(".error")).toContainText("revoked");
+  await expect(page.locator(".ayu-kiosk")).toHaveAttribute("data-screen", "1");
+
+  // Verify Patient Identification options exist
+  await expect(page.getByText("Mobile Number")).toBeVisible();
+  await expect(page.getByText("Scan ABHA QR")).toBeVisible();
+  await expect(page.getByText("14-Digit ABHA ID")).toBeVisible();
+  await expect(page.getByText("Aadhaar Card")).toBeVisible();
+  await expect(page.getByText("New Patient?")).toBeVisible();
+
   expect(exceptions).toEqual([]);
 });
-test("mobile viewport, language and accessibility controls", async ({
+
+test("patient intake emergency detection and red-flag banner", async ({
+  page,
+}) => {
+  await start(page);
+  await page.getByText("EMERGENCY / STAT").click();
+  await expect(
+    page.getByText("EMERGENCY SYMPTOM DETECTED (Safety screen)"),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Dismiss" }).click();
+  await expect(
+    page.getByText("EMERGENCY SYMPTOM DETECTED (Safety screen)"),
+  ).toHaveCount(0);
+});
+
+test("mobile viewport and accessibility controls on patient intake", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await start(page);
-  await page.getByLabel("Language", { exact: true }).selectOption("hi-IN");
   await expect(
-    page.getByRole("heading", { name: "हर दिन, थोड़ा ख्याल।" }),
+    page.getByRole("heading", { name: "Choose your language" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Toggle large text" }).click();
-  await expect(page.locator("body")).toHaveClass(/elder/);
-  await page.getByRole("button", { name: "Toggle dark mode" }).click();
-  await expect(page.locator("body")).toHaveClass(/dark/);
+  await page.getByRole("button", { name: "Toggle high contrast" }).click();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
 });
-test("algorithm screen works offline after first load", async ({
+
+test("real-time clinical translation converts vernacular input into clinical English", async ({
   page,
-  context,
 }) => {
   await start(page);
   await page
-    .getByRole("button", { name: "Algorithm lab", exact: true })
+    .getByRole("navigation", { name: "Intake progress" })
+    .getByRole("button", { name: /Voice/ })
     .click();
-  await context.setOffline(true);
-  await page.getByRole("button", { name: "Test chest-pain red flag" }).click();
-  await expect(page.locator(".triage-status")).toContainText(
-    "Seek emergency help now",
-  );
-  await expect(page.getByText(/Offline. The algorithm lab/)).toBeVisible();
-  await context.setOffline(false);
+  await expect(page.locator(".ayu-kiosk")).toHaveAttribute("data-screen", "2");
+
+  await page
+    .getByRole("button", { name: /टाइप करें|Type/ })
+    .first()
+    .click();
+  const textarea = page.locator("textarea").first();
+  await textarea.fill("मेरा पेट में बहुत दर्द हो रहा है और");
+
+  await expect(page.getByText('"मेरा पेट में बहुत दर्द हो रहा है और"')).toBeVisible();
+
+  await expect(
+    page.getByText(
+      "Severe acute epigastric and abdominal pain with visceral tenderness and gastrointestinal irritation.",
+    ),
+  ).toBeVisible();
 });
-test("unconfigured speech provider gives a visible fallback", async ({
+
+test("patient intake updates doctor consultation queue and emergency triage in real time", async ({
   page,
 }) => {
   await start(page);
-  await page.getByRole("button", { name: "Listen to welcome" }).click();
-  await expect(page.locator("#speech-status")).toContainText(
-    "Sarvam is not configured",
-  );
+
+  // Trigger emergency override at kiosk
+  await page.getByRole("button", { name: /EMERGENCY \/ STAT/ }).click();
+  await expect(page.locator(".ayu-kiosk")).toHaveAttribute("data-screen", "4");
+  await expect(page.getByText("#E-045").first()).toBeVisible();
+
+  // Navigate to Doctor Consultation Cockpit
+  await page.goto("/erp.html#/app?view=doctor-consultation");
+  await expect(
+    page.getByRole("heading", { name: /Doctor Consultation \(OPD\)/ }),
+  ).toBeVisible();
+
+  // Verify the intake patient appears in Doctor queue and is active with STAT alert
+  await expect(page.getByText("#E-045").first()).toBeVisible();
+  await expect(
+    page
+      .getByText("Priority 1 Acute Undifferentiated Medical Emergency")
+      .first(),
+  ).toBeVisible();
+
+  // Navigate to Emergency Triage (STAT)
+  await page.goto("/erp.html#/app?view=emergency-triage");
+  await expect(
+    page.getByRole("heading", { name: "Casualty Resus Bay 1" }),
+  ).toBeVisible();
+  await expect(page.getByText("#E-045").first()).toBeVisible();
 });

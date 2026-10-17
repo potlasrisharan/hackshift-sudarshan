@@ -24,7 +24,7 @@ import {
     XCircle,
     Plus
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/components/ui/basic';
+import { Card, CardContent, CardHeader, CardTitle, Badge, Skeleton } from '@/components/ui/basic';
 import { Button } from '@/components/ui/basic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
@@ -580,8 +580,47 @@ export function CAFinancialSuite() {
 
     if (loading && !plData) {
         return (
-            <div className="flex items-center justify-center p-24">
-                <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
+            <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in duration-300">
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/60">
+                    <div className="space-y-2">
+                        <Skeleton className="h-8 w-64" />
+                        <Skeleton className="h-4 w-96 max-w-full" />
+                    </div>
+                    <div className="flex gap-3">
+                        <Skeleton className="h-10 w-28 rounded-xl" />
+                        <Skeleton className="h-10 w-32 rounded-xl" />
+                    </div>
+                </header>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="p-6 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-3">
+                            <div className="flex justify-between items-center">
+                                <Skeleton className="h-4 w-28" />
+                                <Skeleton className="h-8 w-8 rounded-lg" />
+                            </div>
+                            <Skeleton className="h-8 w-32" />
+                            <Skeleton className="h-3.5 w-40" />
+                        </div>
+                    ))}
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-8 w-32 rounded-lg" />
+                    </div>
+                    <div className="space-y-3">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="flex justify-between items-center py-3 border-b border-slate-100">
+                                <Skeleton className="h-4 w-44" />
+                                <Skeleton className="h-4 w-28" />
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-4 w-20" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }

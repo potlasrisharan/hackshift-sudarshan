@@ -103,6 +103,26 @@ class HerNotifier extends StateNotifier<HerState> {
     await loadAll();
   }
 
+  Future<void> updateProfile(HerProfileModel updated) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final saved = await _apiService.updateProfile(updated);
+      final (cycles, analysis) = await _apiService.fetchCycles();
+      final findings = await _apiService.evaluateScreening();
+      final wellness = await _apiService.fetchWellness();
+      state = state.copyWith(
+        isLoading: false,
+        profile: saved,
+        cycles: cycles,
+        cycleAnalysis: analysis,
+        findings: findings,
+        wellnessItems: wellness,
+      );
+    } catch (_) {
+      state = state.copyWith(isLoading: false, profile: updated);
+    }
+  }
+
   Future<void> logCycle(HerCycleModel cycle) async {
     state = state.copyWith(isLoading: true);
     await _apiService.logCycle(cycle);

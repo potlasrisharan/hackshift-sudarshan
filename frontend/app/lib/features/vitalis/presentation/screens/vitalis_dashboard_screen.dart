@@ -244,292 +244,56 @@ class _VitalisDashboardScreenState extends ConsumerState<VitalisDashboardScreen>
 
   Widget _buildHpiScoreCard(BuildContext context, VitalisState state) {
     final hpi = state.hpiResult;
-    final hasScore = hpi.hpiScore != null;
-    final score = hpi.hpiScore ?? 78;
-    final chronoAge = state.profile.age > 0 ? state.profile.age : 48;
-    // Clinical bio-reserve equivalence heuristic without pseudo-scientific mortality claim
-    final bioAgeEquiv = (chronoAge - ((score - 50) * 0.1)).round();
-    final ageDelta = bioAgeEquiv - chronoAge;
-    final isDeltaFavorable = ageDelta <= 0;
+    final score = hpi.hpiScore;
+    final hasScore = score != null;
+    final coveragePercent = (hpi.coverage * 100).round();
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: const [
-                    AyuSetuLogoBadge(
-                      height: 16,
-                      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        AppStrings.healthspanIndex,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF475569),
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.3,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6F7F2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFA7F3D0)),
-                ),
-                child: const Text(
-                  "Deterministic V1",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF059669),
-                  ),
-                ),
-              ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Icon(Icons.spa_rounded, color: Color(0xFF059669), size: 19),
+          const SizedBox(width: 8),
+          const Expanded(child: Text("Healthspan Progress", style: TextStyle(fontSize: 15, color: Color(0xFF334155), fontWeight: FontWeight.w700))),
+          Text(hpi.algorithmVersion, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+        ]),
+        const SizedBox(height: 16),
+        Row(children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(hasScore ? "$score / 100" : "Baseline in progress", style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+            const SizedBox(height: 6),
+            Text("$coveragePercent% of healthspan domains observed", style: const TextStyle(fontSize: 12, color: Color(0xFF475569))),
+            if (!hasScore) ...[
+              const SizedBox(height: 5),
+              const Text("A score appears after at least 40% coverage. Missing data is never estimated.", style: TextStyle(fontSize: 11, height: 1.35, color: Color(0xFF64748B))),
             ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            hasScore ? "$score" : "N/A",
-                            style: const TextStyle(
-                              fontSize: 42,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF0F172A),
-                              letterSpacing: -1,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            "/ 100",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    // Biological vs Chronological age comparison pill
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.timer_outlined, size: 13, color: Color(0xFF64748B)),
-                            const SizedBox(width: 5),
-                            Text(
-                              "Age: $chronoAge yrs",
-                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 6),
-                              child: Text("·", style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w900)),
-                            ),
-                            Text(
-                              "Bio-Reserve: $bioAgeEquiv yrs eq.",
-                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF059669)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Prominent Longevity Age Delta Badge
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: isDeltaFavorable ? const Color(0xFFE6F7F2) : const Color(0xFFFFFBEB),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isDeltaFavorable ? const Color(0xFFA7F3D0) : const Color(0xFFFDE68A),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              isDeltaFavorable ? Icons.trending_down_rounded : Icons.trending_up_rounded,
-                              size: 14,
-                              color: isDeltaFavorable ? const Color(0xFF059669) : const Color(0xFFD97706),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              isDeltaFavorable
-                                  ? "Longevity Delta: ${ageDelta.abs()} Yrs (Favorable Bio-Age)"
-                                  : "Longevity Delta: +$ageDelta Yrs (Ageing Acceleration Risk)",
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: isDeltaFavorable ? const Color(0xFF059669) : const Color(0xFFB45309),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: hasScore ? const Color(0xFFE6F7F2) : const Color(0xFFFFFBEB),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: hasScore ? const Color(0xFFA7F3D0) : const Color(0xFFFDE68A),
-                          ),
-                        ),
-                        child: Text(
-                          hasScore
-                              ? "Coverage: ${(hpi.coverage * 100).round()}% (Adequate Telemetry)"
-                              : "Insufficient Streams (<40% Coverage)",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: hasScore ? const Color(0xFF059669) : const Color(0xFFB45309),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        width: 82,
-                        height: 82,
-                        child: CircularProgressIndicator(
-                          value: hasScore ? (score / 100) : 0.05,
-                          strokeWidth: 8,
-                          backgroundColor: const Color(0xFFE6F7F2),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF059669)),
-                        ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            hasScore ? "$score%" : "0%",
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF0F172A),
-                            ),
-                          ),
-                          const Text(
-                            "HPI Score",
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "Behavioral Index",
-                    style: TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const Divider(color: Color(0xFFE2E8F0), height: 1),
-          const SizedBox(height: 10),
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            runAlignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              InkWell(
-                onTap: () => context.push("/vitalis/trajectory"),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.timeline_rounded, size: 15, color: Color(0xFF059669)),
-                    SizedBox(width: 4),
-                    Text(
-                      "Longevity Trajectory",
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF059669)),
-                    ),
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () => context.push("/vitalis/healthspan"),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Healthspan Breakdown",
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF059669)),
-                    ),
-                    Icon(Icons.chevron_right, size: 16, color: Color(0xFF059669)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+          ])),
+          const SizedBox(width: 12),
+          SizedBox(width: 70, height: 70, child: Stack(alignment: Alignment.center, children: [
+            CircularProgressIndicator(value: hpi.coverage.clamp(0.0, 1.0), strokeWidth: 7, backgroundColor: const Color(0xFFE6F7F2), valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF059669))),
+            Text("$coveragePercent%", style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+          ])),
+        ]),
+        const SizedBox(height: 14),
+        const Divider(color: Color(0xFFE2E8F0), height: 1),
+        const SizedBox(height: 12),
+        Wrap(alignment: WrapAlignment.spaceBetween, runSpacing: 10, children: [
+          InkWell(onTap: () => context.push("/vitalis/trajectory"), child: const Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(Icons.timeline_rounded, size: 15, color: Color(0xFF059669)), SizedBox(width: 4),
+            Text("Healthspan signals", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF059669))),
+          ])),
+          InkWell(onTap: () => context.push("/vitalis/healthspan"), child: const Row(mainAxisSize: MainAxisSize.min, children: [
+            Text("Domain breakdown", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF059669))),
+            Icon(Icons.chevron_right, size: 16, color: Color(0xFF059669)),
+          ])),
+        ]),
+      ]),
     );
   }
 

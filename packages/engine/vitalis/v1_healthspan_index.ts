@@ -2,6 +2,7 @@ export interface DomainObservation {
   score: number | null; // 0-100 or null if not observed
   observed: boolean;
   rawMetricSummary?: string;
+  provenance?: "verified" | "self_reported";
 }
 
 export interface HealthspanIndexInput {
@@ -28,6 +29,7 @@ export interface HealthspanIndexResult {
       score: number | null;
       weight: number;
       observed: boolean;
+      provenance: "verified" | "self_reported" | "unavailable";
       rationale: string;
     }
   >;
@@ -86,8 +88,9 @@ export function vitalisHealthspanIndex(
       score: scoreVal,
       weight,
       observed: isObserved,
+      provenance: isObserved ? (obs?.provenance ?? "verified") : "unavailable",
       rationale: isObserved
-        ? `Observed data recorded. Domain normalized score: ${scoreVal}/100.`
+        ? `${obs?.provenance === "self_reported" ? "Self-reported" : "Verified"} data recorded. Domain normalized score: ${scoreVal}/100.${obs?.rawMetricSummary ? ` ${obs.rawMetricSummary}` : ""}`
         : "Insufficient recent observations to calibrate this wellness factor.",
     };
   }

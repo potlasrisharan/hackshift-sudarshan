@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../data/models/prescription_models.dart";
 
@@ -48,10 +47,18 @@ class _ReminderSettingsSheetState extends State<ReminderSettingsSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -59,29 +66,53 @@ class _ReminderSettingsSheetState extends State<ReminderSettingsSheet> {
         children: [
           Center(
             child: Container(
-              width: 40,
+              width: 44,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            AppStrings.reminderSettingsTitle,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6F7F2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.alarm_rounded,
+                    size: 20, color: Color(0xFF087D71)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      AppStrings.reminderSettingsTitle,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      "Sync alert times with your daily routine",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
-          const Text(
-            "Sync your medication alerts with your daily wake-up, meal, and bed schedules.",
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
 
           _buildTimeRow(
             label: AppStrings.morningAlarmLabel,
@@ -105,35 +136,62 @@ class _ReminderSettingsSheetState extends State<ReminderSettingsSheet> {
             onTap: () => _pickTime(context, _night, (t) => setState(() => _night = t)),
           ),
 
-          const SizedBox(height: 16),
-          const Divider(color: AppColors.surfaceElevated),
-          const SizedBox(height: 8),
-
-          SwitchListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            title: const Text(AppStrings.soundAlertsLabel,
-                style: TextStyle(fontSize: 13, color: AppColors.textPrimary)),
-            value: _sound,
-            activeThumbColor: AppColors.primary,
-            onChanged: (val) => setState(() => _sound = val),
-          ),
-          SwitchListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            title: const Text(AppStrings.vibrationAlertsLabel,
-                style: TextStyle(fontSize: 13, color: AppColors.textPrimary)),
-            value: _vibration,
-            activeThumbColor: AppColors.primary,
-            onChanged: (val) => setState(() => _vibration = val),
-          ),
-
           const SizedBox(height: 18),
+          const Divider(color: Color(0xFFE2E8F0), height: 1),
+          const SizedBox(height: 14),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: Column(
+              children: [
+                SwitchListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.volume_up_rounded,
+                      size: 18, color: Color(0xFF087D71)),
+                  title: const Text(AppStrings.soundAlertsLabel,
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0F172A))),
+                  value: _sound,
+                  activeThumbColor: const Color(0xFF087D71),
+                  activeTrackColor: const Color(0xFFE6F7F2),
+                  onChanged: (val) => setState(() => _sound = val),
+                ),
+                const Divider(color: Color(0xFFE2E8F0), height: 1),
+                SwitchListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.vibration_rounded,
+                      size: 18, color: Color(0xFF087D71)),
+                  title: const Text(AppStrings.vibrationAlertsLabel,
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0F172A))),
+                  value: _vibration,
+                  activeThumbColor: const Color(0xFF087D71),
+                  activeTrackColor: const Color(0xFFE6F7F2),
+                  onChanged: (val) => setState(() => _vibration = val),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: const Color(0xFF087D71),
+              foregroundColor: Colors.white,
+              elevation: 0,
               minimumSize: const Size.fromHeight(48),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: () {
               final updated = widget.currentRoutine.copyWith(
@@ -164,35 +222,56 @@ class _ReminderSettingsSheetState extends State<ReminderSettingsSheet> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.surfaceElevated),
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: AppColors.primaryLight),
-            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE6F7F2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, size: 16, color: const Color(0xFF087D71)),
+            ),
+            const SizedBox(width: 12),
             Expanded(
-              child: Text(label,
-                  style: const TextStyle(fontSize: 13, color: AppColors.textPrimary)),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFFE6F7F2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFB2E8DC)),
               ),
-              child: Text(
-                time.format(context),
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primaryLight,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    time.format(context),
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF087D71),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.edit_rounded, size: 12, color: Color(0xFF087D71)),
+                ],
               ),
             ),
           ],

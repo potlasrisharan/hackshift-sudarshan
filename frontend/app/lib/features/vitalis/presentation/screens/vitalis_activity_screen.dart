@@ -109,22 +109,25 @@ class VitalisActivityScreen extends ConsumerWidget {
   }
 
   Widget _buildSafetyStatusBanner(VitalisExercisePlanModel plan) {
-    final isBlocked = plan.safetyStatus == "BLOCKED";
+    final isBlocked = plan.safetyStatus == "BLOCKED" || plan.safetyStatus == "REVIEW";
+    final hasBaseline = plan.safetyStatus == "ALLOWED" || plan.safetyStatus == "REVIEW";
+    final tint = isBlocked ? AppColors.error : hasBaseline ? AppColors.vitalisTeal : AppColors.textMuted;
+    final summary = plan.safetyNotes.isEmpty ? "No progression reason returned." : plan.safetyNotes.first;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isBlocked ? AppColors.error.withValues(alpha: 0.15) : AppColors.vitalisTeal.withValues(alpha: 0.15),
+        color: tint.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isBlocked ? AppColors.error : AppColors.vitalisTeal),
+        border: Border.all(color: tint.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
-          Icon(isBlocked ? Icons.block_rounded : Icons.verified_user_outlined, color: isBlocked ? AppColors.error : AppColors.vitalisTeal, size: 20),
+          Icon(isBlocked ? Icons.block_rounded : hasBaseline ? Icons.verified_user_outlined : Icons.info_outline, color: tint, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              isBlocked ? "V0 Gate: High intensity restricted by clinician notes." : "V0 Gate: Safe progressive volume calibrated to baseline.",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isBlocked ? AppColors.error : AppColors.vitalisTeal),
+              "V3 ${plan.progressionAction}: $summary",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tint),
             ),
           ),
         ],

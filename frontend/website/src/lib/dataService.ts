@@ -21,6 +21,24 @@ export interface DataService {
     getFinancialLedger: (hospitalId: string, options: { startDate?: string; endDate?: string; clinicId?: string }) => Promise<any[]>;
     getFinancialStatement: (hospitalId: string, type: 'PL' | 'BS', date: string) => Promise<any>;
     updateAuditLock: (hospitalId: string, lockDate: string) => Promise<void>;
+    getIntakeQueue?: (options?: { status?: string; clinicId?: string }) => Promise<any[]>;
+    submitEncounter?: (encounterData: any) => Promise<any>;
+    updateEncounterStatus?: (id: string, updateData: { status?: string; bay?: string | null; assigned_doctor?: string | null; [key: string]: any }) => Promise<any>;
+    submitPrescription?: (prescriptionData: any) => Promise<any>;
+    getPrescriptions?: (options?: { status?: string; clinicId?: string }) => Promise<any[]>;
+    submitPosSale?: (saleData: {
+        clinicId?: string;
+        prescriptionId?: string;
+        encounterId?: string;
+        patientId?: string;
+        items?: any[];
+        paymentMethod?: string;
+        units?: number;
+        totalSalePaise?: number;
+        [key: string]: any;
+    }) => Promise<any>;
+    getInventoryRadar?: (options?: { clinicId?: string; stock?: number }) => Promise<any>;
+    getOpsLedgerSummary?: (options?: { clinicId?: string }) => Promise<any>;
 }
 
 // Normalize filters
@@ -123,6 +141,30 @@ class CloudflareDataService implements DataService {
         };
         records.push(newRecord);
         this.setLocalData(table, records);
+
+        if (table === 'encounters') {
+            try {
+                const res = await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newRecord)
+                });
+                if (res.ok) {
+                    const serverJson = await res.json();
+                    if (serverJson?.encounter) {
+                        const idx = records.findIndex(r => r.id === newRecord.id);
+                        if (idx !== -1) {
+                            records[idx] = { ...newRecord, ...serverJson.encounter };
+                            this.setLocalData(table, records);
+                            return records[idx];
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('Backend encounter sync notice:', err);
+            }
+        }
+
         return newRecord;
     }
 
@@ -140,10 +182,23 @@ class CloudflareDataService implements DataService {
 
     async update(table: string, id: string, data: any) {
         const records = this.getLocalData(table);
-        const idx = records.findIndex(r => r.id === id);
+        const idx = records.findIndex(r => r.id === id || r.patient_id === id || r.token === id || r.token_number === id);
         if (idx !== -1) {
             records[idx] = { ...records[idx], ...data, updated_at: new Date().toISOString() };
             this.setLocalData(table, records);
+
+            if (table === 'encounters') {
+                try {
+                    fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(id)}/status`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    }).catch(() => {});
+                } catch {
+                    // Ignore network error in fallback
+                }
+            }
+
             return records[idx];
         }
         return null;
@@ -237,8 +292,17 @@ class CloudflareDataService implements DataService {
                 callback({ table, timestamp: new Date().toISOString() });
             }
         };
+        const storageHandler = (e: StorageEvent) => {
+            if (e.key === this.getStorageKey(table)) {
+                callback({ table, timestamp: new Date().toISOString() });
+            }
+        };
         window.addEventListener('cf_table_change', handler);
-        return () => window.removeEventListener('cf_table_change', handler);
+        window.addEventListener('storage', storageHandler);
+        return () => {
+            window.removeEventListener('cf_table_change', handler);
+            window.removeEventListener('storage', storageHandler);
+        };
     }
 
     async getFinancialLedger(hospitalId: string, options: { startDate?: string; endDate?: string; clinicId?: string }) {
@@ -276,6 +340,204 @@ class CloudflareDataService implements DataService {
             }
         });
         this.setLocalData('financial_ledger', ledger);
+    }
+
+    async getIntakeQueue(options?: { status?: string; clinicId?: string }) {
+        try {
+            const params = new URLSearchParams();
+            if (options?.status) params.set('status', options.status);
+            if (options?.clinicId) params.set('clinic_id', options.clinicId);
+            const queryStr = params.toString() ? `?${params.toString()}` : '';
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/intake/queue${queryStr}`);
+            if (res.ok) {
+                const data = await res.json();
+                const queue = data.queue || data.encounters || [];
+                if (Array.isArray(queue) && queue.length > 0) {
+                    const localRecords = this.getLocalData('encounters');
+                    const merged = [...queue];
+                    for (const loc of localRecords) {
+                        if (!merged.some(m => m.id === loc.id || m.token === loc.token || m.token_number === loc.token_number)) {
+                            merged.push(loc);
+                        }
+                    }
+                    this.setLocalData('encounters', merged);
+                    return queue;
+                }
+            }
+        } catch (e) {
+            console.warn('Backend queue fetch notice:', e);
+        }
+        let local = this.getLocalData('encounters');
+        if (options?.status) {
+            const statuses = options.status.split(',').map(s => s.trim().toUpperCase());
+            local = local.filter((e: any) => statuses.includes(String(e.status).toUpperCase()));
+        }
+        return local;
+    }
+
+    async submitEncounter(encounterData: any) {
+        return this.create('encounters', encounterData);
+    }
+
+    async updateEncounterStatus(id: string, updateData: { status?: string; bay?: string | null; assigned_doctor?: string | null; [key: string]: any }) {
+        let serverResult = null;
+        try {
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(id)}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData)
+            });
+            if (res.ok) {
+                const json = await res.json();
+                serverResult = json.encounter;
+            }
+        } catch (e) {
+            console.warn('Network updateEncounterStatus notice:', e);
+        }
+        const updated = await this.update('encounters', id, updateData);
+        return serverResult || updated;
+    }
+
+    async submitPrescription(prescriptionData: any) {
+        let serverResult = null;
+        try {
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/prescriptions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(prescriptionData)
+            });
+            if (res.ok) {
+                serverResult = await res.json();
+            }
+        } catch (e) {
+            console.warn('Backend prescription submission failed, saving locally:', e);
+        }
+        const localRx = await this.create('prescriptions', {
+            ...prescriptionData,
+            status: prescriptionData.status || 'SIGNED'
+        });
+        return serverResult || localRx;
+    }
+
+    async getPrescriptions(options?: { status?: string; clinicId?: string }): Promise<any[]> {
+        const targetStatus = options?.status || 'SIGNED';
+        const targetClinic = options?.clinicId || 'clinic-delhi-01';
+        try {
+            const params = new URLSearchParams();
+            if (targetStatus) params.set('status', targetStatus);
+            if (targetClinic) params.set('clinic_id', targetClinic);
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/prescriptions?${params.toString()}`);
+            if (res.ok) {
+                const data = await res.json();
+                const rxList = data.prescriptions || data.items || [];
+                if (Array.isArray(rxList) && rxList.length > 0) {
+                    const local = this.getLocalData('prescriptions');
+                    const merged = [...rxList];
+                    for (const loc of local) {
+                        if (!merged.some(m => m.id === loc.id)) {
+                            merged.push(loc);
+                        }
+                    }
+                    this.setLocalData('prescriptions', merged);
+                    return rxList;
+                }
+            }
+        } catch (e) {
+            console.warn('Backend prescriptions fetch notice:', e);
+        }
+        let local = this.getLocalData('prescriptions');
+        if (targetStatus && targetStatus !== 'ALL') {
+            local = local.filter((r: any) => !r.status || String(r.status).toUpperCase() === targetStatus.toUpperCase());
+        }
+        if (targetClinic && targetClinic !== 'all') {
+            local = local.filter((r: any) => !r.clinicId && !r.clinic_id || r.clinicId === targetClinic || r.clinic_id === targetClinic);
+        }
+        return local;
+    }
+
+    async submitPosSale(saleData: {
+        clinicId?: string;
+        prescriptionId?: string;
+        encounterId?: string;
+        patientId?: string;
+        items?: any[];
+        paymentMethod?: string;
+        units?: number;
+        totalSalePaise?: number;
+        [key: string]: any;
+    }): Promise<any> {
+        let serverResult = null;
+        try {
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/ops/pos/sale`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(saleData)
+            });
+            if (res.ok) {
+                serverResult = await res.json();
+            }
+        } catch (e) {
+            console.warn('Backend POS sale submission notice:', e);
+        }
+
+        const localSale = await this.create('sales', {
+            id: serverResult?.saleId || saleData.saleId || `sale_${Date.now()}`,
+            clinic_id: saleData.clinicId || 'clinic-delhi-01',
+            prescription_id: saleData.prescriptionId,
+            encounter_id: saleData.encounterId,
+            patient_id: saleData.patientId,
+            sale_type: 'PHARMACY',
+            payment_mode: saleData.paymentMethod || 'Cash',
+            amount: typeof saleData.totalSalePaise === 'number' ? saleData.totalSalePaise / 100 : (saleData.amount || 0),
+            amount_paise: saleData.totalSalePaise,
+            timestamp: new Date().toISOString(),
+            status: 'completed'
+        });
+
+        if (saleData.prescriptionId) {
+            const rxList = this.getLocalData('prescriptions');
+            const targetRx = rxList.find((r: any) => r.id === saleData.prescriptionId);
+            if (targetRx) {
+                targetRx.status = 'DISPENSED';
+                targetRx.dispensed_at = new Date().toISOString();
+                this.setLocalData('prescriptions', rxList);
+            }
+        }
+
+        return serverResult || localSale;
+    }
+
+    async getInventoryRadar(options?: { clinicId?: string; stock?: number }): Promise<any> {
+        const clinicId = options?.clinicId || 'clinic-delhi-01';
+        try {
+            const params = new URLSearchParams();
+            params.set('clinic_id', clinicId);
+            if (typeof options?.stock === 'number') params.set('stock', String(options.stock));
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/ops/inventory/radar?${params.toString()}`);
+            if (res.ok) {
+                return await res.json();
+            }
+        } catch (e) {
+            console.warn('Backend inventory radar notice:', e);
+        }
+        return null;
+    }
+
+    async getOpsLedgerSummary(options?: { clinicId?: string }): Promise<any> {
+        try {
+            const params = new URLSearchParams();
+            if (options?.clinicId && options.clinicId !== 'all') {
+                params.set('clinic_id', options.clinicId);
+            }
+            const queryStr = params.toString() ? `?${params.toString()}` : '';
+            const res = await fetch(`${CLOUDFLARE_API_BASE}/ops/ledger/summary${queryStr}`);
+            if (res.ok) {
+                return await res.json();
+            }
+        } catch (e) {
+            console.warn('Backend ops ledger summary notice:', e);
+        }
+        return null;
     }
 }
 

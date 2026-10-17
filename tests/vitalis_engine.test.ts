@@ -309,3 +309,107 @@ describe("AyuSetu Vitalis — Algorithm V14: Behavior Simulator", () => {
     );
   });
 });
+
+describe("AyuSetu Vitalis — Algorithm V6: Recommendation Selector", () => {
+  it("selects evidence-backed actions aligned with user profile and filters out safety violations", () => {
+    const res = vitalisRecommendationSelector({
+      age: 45,
+      sex: "FEMALE",
+      diagnosedConditions: ["Hypertension"],
+      medications: ["Telmisartan 40mg"],
+      dietPreference: "vegetarian",
+      clinicianRestrictedExertion: true, // Restricts high exertion!
+      primaryGoals: ["strength", "sleep"],
+    });
+
+    expect(res.recommendedActions.length).toBeGreaterThan(0);
+    // HIIT should be suppressed due to clinician restriction
+    expect(
+      res.suppressedActions.some((a) => a.id.toLowerCase().includes("hiit")),
+    ).toBe(true);
+    expect(res.safetyStatus).toBe("FILTERED_FOR_SAFETY");
+  });
+});
+
+describe("AyuSetu Vitalis — Algorithm V9: Sleep Regularity Index", () => {
+  it("calculates circular consistency score and category across multi-night sleep schedules", () => {
+    const intervals = [
+      {
+        date: "2026-10-10",
+        bedtimeMinuteOfDay: 1380,
+        wakeMinuteOfDay: 420,
+        durationMinutes: 480,
+      }, // 11:00 PM
+      {
+        date: "2026-10-11",
+        bedtimeMinuteOfDay: 1390,
+        wakeMinuteOfDay: 430,
+        durationMinutes: 480,
+      }, // 11:10 PM
+      {
+        date: "2026-10-12",
+        bedtimeMinuteOfDay: 1375,
+        wakeMinuteOfDay: 415,
+        durationMinutes: 480,
+      }, // 10:55 PM
+    ];
+
+    const res = vitalisSleepRegularity(intervals);
+    expect(res.score).toBeGreaterThanOrEqual(80);
+    expect(["EXCELLENT", "MODERATE"]).toContain(res.consistencyCategory);
+    expect(res.meanBedtimeFormatted).toContain("PM");
+    expect(res.sleepDurationAverageHours).toBe(8.0);
+  });
+
+  it("identifies high variability in irregular shift-work sleep patterns", () => {
+    const intervals = [
+      {
+        date: "2026-10-10",
+        bedtimeMinuteOfDay: 1320,
+        wakeMinuteOfDay: 360,
+        durationMinutes: 480,
+      }, // 10:00 PM
+      {
+        date: "2026-10-11",
+        bedtimeMinuteOfDay: 180,
+        wakeMinuteOfDay: 660,
+        durationMinutes: 480,
+      }, // 3:00 AM
+      {
+        date: "2026-10-12",
+        bedtimeMinuteOfDay: 1400,
+        wakeMinuteOfDay: 440,
+        durationMinutes: 480,
+      }, // 11:20 PM
+    ];
+
+    const res = vitalisSleepRegularity(intervals);
+    expect(res.score).toBeLessThan(75);
+    expect(res.bedtimeVariabilityMinutes).toBeGreaterThan(60);
+  });
+});
+
+describe("AyuSetu Vitalis — Algorithm V13: Preventive Care Eligibility", () => {
+  it("determines due dates and guidelines for metabolic and cardiovascular screening", () => {
+    const evaluations = vitalisPreventiveEligibility({
+      age: 48,
+      sex: "MALE",
+      diagnosedConditions: ["Pre-diabetes"],
+      familyHistory: ["diabetes", "cad"],
+      lastCompletedDates: {
+        "PREV-DIABETES-HBA1C": "2024-01-01", // > 12 months ago -> due
+        "PREV-BLOOD-PRESSURE": "2026-09-01", // recent -> completed
+      },
+    });
+
+    const hba1c = evaluations.find((e) => e.ruleId === "PREV-DIABETES-HBA1C");
+    const bp = evaluations.find((e) => e.ruleId === "PREV-BLOOD-PRESSURE");
+
+    expect(hba1c).toBeDefined();
+    expect(hba1c?.status).toBe("due");
+    expect(hba1c?.recommendedIntervalMonths).toBe(12);
+
+    expect(bp).toBeDefined();
+    expect(bp?.status).toBe("completed");
+  });
+});

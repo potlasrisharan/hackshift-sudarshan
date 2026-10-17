@@ -1,8 +1,12 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
+  computeLedger,
+  dispensingPlan,
   driftRadar,
+  predictRefillWarning,
   rxToShelf,
+  savingsMeter,
   sentinel,
   threadPulse,
 } from "../packages/engine";
@@ -262,4 +266,253 @@ it("rejects conflicting reuse of a source observation identity", () => {
   expect(() => mergeRecord([r, { ...r, value: 140 }])).toThrow(
     /correction review/,
   );
+});
+
+describe("Savings Meter (Generic Optimization)", () => {
+  const sampleBatches = [
+    {
+      id: "b-generic-1",
+      brand: "Jan Aushadhi Generic Metformin",
+      salt: "metformin",
+      strengthMg: 500,
+      form: "tablet" as const,
+      stock: 100,
+      pricePaise: 120, // ₹1.20 vs Branded ₹4.00 (70% savings)
+      expiry: "2027-12-31",
+    },
+    {
+      id: "b-generic-expired",
+      brand: "Short-dated Generic",
+      salt: "metformin",
+      strengthMg: 500,
+      form: "tablet" as const,
+      stock: 50,
+      pricePaise: 80,
+      expiry: "2026-10-20", // Fails 14-day post-course buffer
+    },
+  ];
+
+  it("calculates exact percentage and rupee savings against eligible generic salts", () => {
+    const res = savingsMeter({
+      prescription: {
+        brandName: "Glucophage 500",
+        salt: "metformin",
+        strengthMg: 500,
+        form: "tablet",
+        units: 30,
+        courseEnd: "2026-11-01",
+        brandedPricePaise: 400,
+      },
+      genericBatches: sampleBatches,
+      allergies: [],
+    });
+
+    expect(res.status).toBe("GENERIC_AVAILABLE");
+    expect(res.substitutionAllowed).toBe(true);
+    expect(res.brandedTotalPaise).toBe(12000); // 30 * 400
+    expect(res.genericTotalPaise).toBe(3600); // 30 * 120
+    expect(res.savingsPaise).toBe(8400); // ₹84 savings
+    expect(res.savingsPercentage).toBe(70);
+    expect(res.chosenBatch?.id).toBe("b-generic-1");
+  });
+
+  it("blocks generic substitution when patient has a recorded allergy", () => {
+    const res = savingsMeter({
+      prescription: {
+        salt: "metformin",
+        strengthMg: 500,
+        form: "tablet",
+        units: 30,
+        courseEnd: "2026-11-01",
+        brandedPricePaise: 400,
+      },
+      genericBatches: sampleBatches,
+      allergies: ["Metformin"],
+    });
+
+    expect(res.status).toBe("BLOCKED_BY_ALLERGY");
+    expect(res.substitutionAllowed).toBe(false);
+    expect(res.savingsPaise).toBe(0);
+  });
+
+  it("blocks substitution on Narrow Therapeutic Index (NTI) drugs", () => {
+    const res = savingsMeter({
+      prescription: {
+        salt: "warfarin",
+        strengthMg: 5,
+        form: "tablet",
+        units: 30,
+        courseEnd: "2026-11-01",
+        brandedPricePaise: 500,
+        nti: true,
+      },
+      genericBatches: [
+        {
+          id: "w1",
+          brand: "Generic Warfarin",
+          salt: "warfarin",
+          strengthMg: 5,
+          form: "tablet",
+          stock: 60,
+          pricePaise: 200,
+          expiry: "2027-12-31",
+        },
+      ],
+    });
+
+    expect(res.status).toBe("BLOCKED_NTI");
+    expect(res.substitutionAllowed).toBe(false);
+  });
+
+  it("rejects generic batches that violate the courseEnd + 14 day safety buffer", () => {
+    const res = savingsMeter({
+      prescription: {
+        salt: "metformin",
+        strengthMg: 500,
+        form: "tablet",
+        units: 30,
+        courseEnd: "2026-11-01",
+        brandedPricePaise: 400,
+      },
+      genericBatches: [sampleBatches[1]!], // only expired one
+    });
+
+    expect(res.status).toBe("NO_ELIGIBLE_STOCK");
+    expect(res.substitutionAllowed).toBe(false);
+  });
+});
+
+describe("Double-Entry Financial Ledger Algorithm", () => {
+  it("enforces balanced debits and credits and computes profit in integer paise", () => {
+    const res = computeLedger({
+      journals: [
+        {
+          id: "j1",
+          referenceId: "sale-101",
+          date: "2026-10-18",
+          lines: [
+            { account: "cash", type: "debit", amountPaise: 45000 },
+            { account: "revenue", type: "credit", amountPaise: 45000 },
+          ],
+        },
+        {
+          id: "j2",
+          referenceId: "sale-101",
+          date: "2026-10-18",
+          lines: [
+            { account: "cogs", type: "debit", amountPaise: 22000 },
+            { account: "inventory", type: "credit", amountPaise: 22000 },
+          ],
+        },
+        {
+          id: "j3",
+          referenceId: "exp-201",
+          date: "2026-10-18",
+          lines: [
+            { account: "operating_expense", type: "debit", amountPaise: 5000 },
+            { account: "cash", type: "credit", amountPaise: 5000 },
+          ],
+        },
+      ],
+    });
+
+    expect(res.balanced).toBe(true);
+    expect(res.debitPaise).toBe(72000);
+    expect(res.creditPaise).toBe(72000);
+    expect(res.revenuePaise).toBe(45000);
+    expect(res.cogsPaise).toBe(22000);
+    expect(res.operatingExpensesPaise).toBe(5000);
+    expect(res.profitPaise).toBe(18000); // 45000 - 22000 - 5000
+  });
+
+  it("detects unbalanced double-entry transactions", () => {
+    const res = computeLedger({
+      journals: [
+        {
+          id: "j-unbalanced",
+          referenceId: "err-01",
+          date: "2026-10-18",
+          lines: [
+            { account: "cash", type: "debit", amountPaise: 10000 },
+            { account: "revenue", type: "credit", amountPaise: 8000 },
+          ],
+        },
+      ],
+    });
+
+    expect(res.balanced).toBe(false);
+    expect(res.explanation.balancedStatus).toBe("DISCREPANCY_DETECTED");
+  });
+
+  it("throws on fractional or negative money values to eliminate IEEE-754 drift", () => {
+    expect(() =>
+      computeLedger({
+        journals: [
+          {
+            id: "j-err",
+            referenceId: "err",
+            date: "2026-10-18",
+            lines: [
+              { account: "cash", type: "debit", amountPaise: 100.5 }, // fractional!
+              { account: "revenue", type: "credit", amountPaise: 100.5 },
+            ],
+          },
+        ],
+      }),
+    ).toThrow(/non-integer/);
+  });
+});
+
+describe("Proactive Refill Warnings Algorithm", () => {
+  it("triggers critical stockout alert when scheduled patient cohort will exhaust stock within 3 days", () => {
+    const res = predictRefillWarning({
+      currentStockUnits: 20,
+      leadTimeDays: 3,
+      patients: [
+        // Patient 1 has 2 units left, consumes 2/day -> exhausts in 1 day, needs 60 units for 30d
+        {
+          patientId: "p1",
+          drugSalt: "metformin",
+          strengthMg: 500,
+          dailyDoseUnits: 2,
+          remainingUnits: 2,
+        },
+        // Patient 2 has 4 units left, consumes 2/day -> exhausts in 2 days
+        {
+          patientId: "p2",
+          drugSalt: "metformin",
+          strengthMg: 500,
+          dailyDoseUnits: 2,
+          remainingUnits: 4,
+        },
+      ],
+    });
+
+    expect(res.isRefillWarningActive).toBe(true);
+    expect(res.stockStatus).toBe("CRITICAL_STOCKOUT_RISK");
+    expect(res.predictedStockoutDay).toBeLessThanOrEqual(3);
+    expect(res.urgentRefillPatients.length).toBe(2);
+    expect(res.recommendedReservationUnits).toBeGreaterThan(0);
+  });
+
+  it("reports adequate status when current stock comfortably exceeds upcoming refill cohort demand", () => {
+    const res = predictRefillWarning({
+      currentStockUnits: 500,
+      leadTimeDays: 3,
+      patients: [
+        {
+          patientId: "p1",
+          drugSalt: "metformin",
+          strengthMg: 500,
+          dailyDoseUnits: 1,
+          remainingUnits: 30,
+        },
+      ],
+    });
+
+    expect(res.isRefillWarningActive).toBe(false);
+    expect(res.stockStatus).toBe("ADEQUATE");
+    expect(res.urgentRefillPatients.length).toBe(0);
+    expect(res.recommendedReservationUnits).toBe(0);
+  });
 });

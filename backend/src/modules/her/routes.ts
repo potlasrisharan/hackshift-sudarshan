@@ -388,15 +388,32 @@ herRouter.get("/wellness", async (c) => {
   const hasPcos = findings.some((f) => f.domain === "PCOS_FEATURES" && f.category !== "NO_CURRENT_SCREENING_FLAGS");
   const hasEndo = findings.some((f) => f.domain === "ENDOMETRIOSIS_PELVIC_PAIN");
   const hasBleeding = findings.some((f) => f.domain === "HEAVY_BLEEDING_ANEMIA");
+  const knownConditions = profile?.knownConditions || [];
+  const normalizedConditions = knownConditions.map((condition) => condition.toLowerCase());
+  const hasPcosContext = hasPcos || normalizedConditions.some((condition) => condition.includes("pcos"));
+  const hasEndoContext = hasEndo || normalizedConditions.some((condition) => condition.includes("endometriosis"));
+  const hasPelvicPain = (latestSymptom?.pelvicPain ?? 0) > 0 || hasEndoContext ||
+    normalizedConditions.some((condition) => condition.includes("pelvic pain"));
+  const hasFatigue = (latestSymptom?.energyLevel ?? 10) <= 2 ||
+    (latestSymptom?.tags || []).some((tag: string) => tag.toLowerCase() === "fatigue") ||
+    normalizedConditions.some((condition) => condition.includes("fatigue"));
+  const requestedCategory = c.req.query("category");
+  const categoryFocus = requestedCategory === "yoga_movement" ? "yoga_movement" : undefined;
 
   const recommendations = herWellnessRanker({
     dietPreference: profile?.dietPreference || "vegetarian",
     allergies: profile?.allergies || [],
+    mobilityRestrictions: profile?.mobilityRestrictions || [],
     currentCyclePhase: "luteal",
-    hasPcosFeatures: hasPcos,
-    hasPelvicPainFeatures: hasEndo,
-    hasHeavyBleedingFeatures: hasBleeding,
-    acuteSafetyRedFlag: safetyResult.isUrgent,
+    healthConditions: knownConditions,
+    hasPcosFeatures: hasPcosContext,
+    hasPelvicPain: hasPelvicPain,
+    hasPelvicPainFeatures: hasEndoContext,
+    hasHeavyBleedingFeatures: hasBleeding || normalizedConditions.some((condition) => condition.includes("heavy bleeding")),
+    hasFatigue,
+    activeRedFlags: safetyResult.suppressWellnessAdvice,
+    isPregnantOrLactating: profile?.isPregnantOrLactating,
+    categoryFocus,
   });
 
   return c.json({

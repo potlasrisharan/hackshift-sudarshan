@@ -29,6 +29,7 @@ const SuperAdminDashboard = lazyWithRetry(() => import("@/components/SuperAdminD
 const HospitalDashboard = lazyWithRetry(() => import("@/components/HospitalDashboard").then(module => ({ default: module.HospitalDashboard })));
 const ClinicAdminDashboard = lazyWithRetry(() => import("@/components/ClinicAdminDashboard").then(module => ({ default: module.ClinicAdminDashboard })));
 import { AppLayout } from "@/components/layout/AppLayout";
+import { WebsiteLanguageSelect, WebsiteLocalizationRuntime } from "@/components/WebsiteLanguageSelect";
 const InventoryDashboard = lazyWithRetry(() => import("@/components/InventoryDashboard").then(module => ({ default: module.InventoryDashboard })));
 const AdminSetup = lazyWithRetry(() => import("@/components/AdminSetup").then(module => ({ default: module.AdminSetup })));
 import { HospitalProvider, useHospital } from '@/context/HospitalContext';
@@ -68,8 +69,8 @@ import { logPageView } from '@/lib/analytics';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageVariants } from '@/lib/transitions';
 
-import { Loader2, Shield, RefreshCw, AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/basic'
+import { Shield, RefreshCw, AlertTriangle } from 'lucide-react'
+import { Button, WorkspaceSkeleton, DashboardSkeleton } from '@/components/ui/basic'
 import { Toaster } from '@/components/ui/toaster'
 import { authService } from '@/lib/authService'
 import { dataService } from '@/lib/dataService'
@@ -328,8 +329,9 @@ function AppContent() {
             selectedClinicId={selectedClinicId}
             onSelectClinicId={setSelectedClinicId}
         >
-            <AnimatePresence mode="wait">
-                <PageWrapper key={view}>
+            <Suspense fallback={<DashboardSkeleton />}>
+                <AnimatePresence mode="wait">
+                    <PageWrapper key={view}>
                     {/* ERROR STATE: Locked out if no Role */}
                     {view === 'selection' && !loading && profile && !['ADMIN', 'CLINIC_STAFF', 'SUPER_ADMIN', 'HOSPITAL_ADMIN', 'CLINIC_ADMIN', 'DOCTOR'].includes(profile?.role || '') && (
                         <div className="flex flex-col items-center justify-center p-12 text-center h-full">
@@ -540,6 +542,7 @@ function AppContent() {
                     )}
                 </PageWrapper>
             </AnimatePresence>
+            </Suspense>
 
             <Toaster />
         </AppLayout>
@@ -645,11 +648,7 @@ function AppRouter() {
     const location = useLocation();
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-            </div>
-        )
+        return <WorkspaceSkeleton />
     }
 
     const isResetPath = window.location.hash.startsWith('#/reset-password');
@@ -747,10 +746,12 @@ class WorkspaceErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundary
 function Main() {
     return (
         <Router>
+            <WebsiteLocalizationRuntime />
+            <WebsiteLanguageSelect />
             <TourProvider>
                 <ProductTour />
                 <WorkspaceErrorBoundary>
-                    <Suspense fallback={<div className="p-8 text-center text-slate-500" role="status">Opening your workspace…</div>}>
+                    <Suspense fallback={<WorkspaceSkeleton />}>
                         <AppRouter />
                     </Suspense>
                 </WorkspaceErrorBoundary>

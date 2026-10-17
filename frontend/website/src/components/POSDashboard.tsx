@@ -12,12 +12,18 @@ import { ReceiptModal } from '@/components/ui/ReceiptModal'
 type POSView = 'pharmacy' | 'consultation' | 'ipd';
 
 export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (view: any) => void, currentClinicId?: string }) {
-    const { profile, clinics, inventory, billing } = useHospital();
+    const { profile, clinics, inventory, billing, updateInventoryItem, refreshData } = useHospital();
     const { toast } = useToast();
 
     // Context & Routing
     const [view, setView] = useState<POSView>('pharmacy');
     const [selectedClinicId, setSelectedClinicId] = useState<string | null>(currentClinicId || null);
+
+    // Pending Prescription Queue States
+    const [pendingPrescriptions, setPendingPrescriptions] = useState<any[]>([]);
+    const [activeRxId, setActiveRxId] = useState<string | null>(null);
+    const [activeEncounterId, setActiveEncounterId] = useState<string | null>(null);
+    const [isLoadingRx, setIsLoadingRx] = useState(false);
 
     // Form States
     const [patientName, setPatientName] = useState('');
@@ -139,6 +145,107 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
             fetchIPDData();
         }
     }, [view, profile?.hospital_id]);
+
+    const fetchPendingPrescriptions = async () => {
+        setIsLoadingRx(true);
+        try {
+            const clinic = selectedClinicId || 'clinic-delhi-01';
+            let rxList: any[] = [];
+            if (db.getPrescriptions) {
+                rxList = await db.getPrescriptions({ status: 'SIGNED', clinicId: clinic });
+            } else {
+                const res = await fetch(`/api/v1/prescriptions?status=SIGNED&clinic_id=${clinic}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    rxList = json.prescriptions || json.items || [];
+                }
+            }
+            if (!rxList || rxList.length === 0) {
+                const local = await db.list('prescriptions', {
+                    filters: [
+                        { field: 'status', operator: '==', value: 'SIGNED' }
+                    ]
+                });
+                rxList = local || [];
+            }
+            setPendingPrescriptions(rxList);
+        } catch (e) {
+            console.warn('Error fetching prescriptions:', e);
+            const local = await db.list('prescriptions', {
+                filters: [
+                    { field: 'status', operator: '==', value: 'SIGNED' }
+                ]
+            });
+            setPendingPrescriptions(local || []);
+        } finally {
+            setIsLoadingRx(false);
+        }
+    };
+
+    useEffect(() => {
+        if (view === 'pharmacy') {
+            fetchPendingPrescriptions();
+        }
+    }, [view, selectedClinicId]);
+
+    const loadPrescriptionIntoCart = (rx: any) => {
+        setPatientName(rx.patient_name || rx.patientId || '');
+        if (rx.patient_phone) setPatientPhone(rx.patient_phone);
+        if (rx.doctor_name) setDoctorName(rx.doctor_name);
+        setActiveRxId(rx.id);
+        setActiveEncounterId(rx.encounter_id || rx.encounterId || null);
+
+        const items = Array.isArray(rx.items) ? rx.items : (typeof rx.items_json === 'string' ? JSON.parse(rx.items_json || '[]') : []);
+        if (!items || items.length === 0) {
+            toast({ title: 'Prescription Selected', description: `Linked Rx #${rx.id?.slice(0, 8)} for ${rx.patient_name || 'Patient'}.` });
+            return;
+        }
+
+        const newCartItems: any[] = [];
+        for (const item of items) {
+            const itemName = item.name || item.brand || item.salt || 'Medicine';
+            const matchingInventory = clinicInventory.find(i =>
+                i.item_name.toLowerCase().includes(itemName.toLowerCase()) ||
+                (item.salt && i.item_name.toLowerCase().includes(item.salt.toLowerCase()))
+            );
+
+            if (matchingInventory) {
+                const upp = matchingInventory.units_per_pack || 1;
+                const unitsReq = item.units || 1;
+                const isLoose = unitsReq < upp && unitsReq > 0;
+                const price = isLoose ? (matchingInventory.mrp || 0) / upp : (matchingInventory.mrp || 0);
+                newCartItems.push({
+                    id: matchingInventory.id,
+                    name: matchingInventory.item_name,
+                    price,
+                    quantity: unitsReq,
+                    maxQty: matchingInventory.quantity,
+                    unitsPerPack: upp,
+                    isLoose,
+                    totalTablets: isLoose ? unitsReq : unitsReq * upp
+                });
+            } else {
+                const pricePerUnit = item.unitPricePaise ? item.unitPricePaise / 100 : (item.price || 15);
+                newCartItems.push({
+                    id: `rx_item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+                    name: itemName,
+                    price: pricePerUnit,
+                    quantity: item.units || 1,
+                    maxQty: 999,
+                    unitsPerPack: 1,
+                    isLoose: false,
+                    totalTablets: item.units || 1
+                });
+            }
+        }
+
+        setCart(newCartItems);
+        toast({
+            title: 'Prescription Loaded',
+            description: `Loaded ${newCartItems.length} items for ${rx.patient_name || 'Patient'} into cart.`,
+            className: 'bg-indigo-50 border-indigo-200 text-indigo-900'
+        });
+    };
 
     const handleTokenSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -511,7 +618,69 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
 
             const { sale_id: saleId } = result;
 
-            toast({ title: 'Success', description: 'Pharmacy Checkout Complete.', className: 'bg-green-50 border-green-200 text-green-900' });
+            // 3. Submit sale transaction to POST /api/v1/ops/pos/sale with paise amounts
+            const amountPaise = Math.round(finalAmount * 100);
+            const unitsTotal = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const opsItems = cart.map(c => ({
+                name: c.name,
+                units: c.totalTablets,
+                pricePaise: Math.round(c.price * 100),
+                costPaise: Math.round(c.price * 53.33),
+                inventoryId: c.id
+            }));
+
+            if (db.submitPosSale) {
+                try {
+                    await db.submitPosSale({
+                        clinicId: selectedClinicId || 'clinic-delhi-01',
+                        clinic_id: selectedClinicId || 'clinic-delhi-01',
+                        prescriptionId: activeRxId || undefined,
+                        prescription_id: activeRxId || undefined,
+                        encounterId: activeEncounterId || undefined,
+                        encounter_id: activeEncounterId || undefined,
+                        patientId: pId || undefined,
+                        patient_id: pId || undefined,
+                        patientName,
+                        doctorName,
+                        paymentMethod: paymentMode,
+                        units: unitsTotal,
+                        totalSalePaise: amountPaise,
+                        items: opsItems,
+                        saleId: saleId || `sale_${Date.now()}`
+                    });
+                } catch (posErr) {
+                    console.warn('Ops POS sale API notification:', posErr);
+                }
+            }
+
+            // 4. Call POST /api/v1/intake/encounter/:id/status to mark encounter as DISPENSED
+            if (activeEncounterId) {
+                try {
+                    if (db.updateEncounterStatus) {
+                        await db.updateEncounterStatus(activeEncounterId, { status: 'DISPENSED' });
+                    }
+                } catch (encErr) {
+                    console.warn('Encounter status update notice:', encErr);
+                }
+            }
+
+            // 5. Update local stock and inventory state
+            try {
+                for (const item of cart) {
+                    const currentInv = inventory.find(i => i.id === item.id);
+                    if (currentInv && updateInventoryItem) {
+                        const newQty = Math.max(0, currentInv.quantity - item.totalTablets);
+                        await updateInventoryItem(item.id, { quantity: newQty });
+                    }
+                }
+                if (refreshData) {
+                    await refreshData();
+                }
+            } catch (invErr) {
+                console.warn('Local stock update notice:', invErr);
+            }
+
+            toast({ title: 'Success', description: 'Pharmacy Checkout Complete & Dispensed.', className: 'bg-green-50 border-green-200 text-green-900' });
 
             const recordedSale = { 
                 id: saleId, 
@@ -533,6 +702,9 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
             setIsReceiptOpen(true);
 
             setCart([]); setPatientName(''); setPatientAddress(''); setDoctorName(''); setPharmacyDiscountPercent(''); setPharmacyDiscountedTotal('');
+            setActiveRxId(null);
+            setActiveEncounterId(null);
+            fetchPendingPrescriptions();
 
         } catch (error: any) {
             toast({ title: 'Error', description: error.message, variant: 'destructive' });
@@ -707,6 +879,102 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                     {/* PHARMACY VIEW (Grid) */}
                     {view === 'pharmacy' && (
                         <>
+                            {/* PENDING PRESCRIPTION DISPENSING QUEUE */}
+                            <div className="p-3 sm:p-6 pb-0">
+                                <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                                                <SymbolIcon className="material-symbols-outlined text-[20px]">prescriptions</SymbolIcon>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                                    Pending Prescriptions Queue
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                                                        {pendingPrescriptions.length} Ready
+                                                    </span>
+                                                </h3>
+                                                <p className="text-[11px] text-slate-500">Live doctor signed orders waiting for pharmacy fulfillment</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={fetchPendingPrescriptions}
+                                            disabled={isLoadingRx}
+                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 bg-indigo-50/60 hover:bg-indigo-100/60 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100"
+                                        >
+                                            <SymbolIcon className={`material-symbols-outlined text-[16px] ${isLoadingRx ? 'animate-spin' : ''}`}>sync</SymbolIcon>
+                                            Refresh Queue
+                                        </button>
+                                    </div>
+
+                                    {pendingPrescriptions.length === 0 ? (
+                                        <div className="py-3 px-4 bg-slate-50 rounded-xl text-center text-xs text-slate-400 border border-dashed border-slate-200">
+                                            Zero pending doctor prescriptions. New signed consultations will automatically populate here.
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                                            {pendingPrescriptions.map((rx: any) => {
+                                                const isLoaded = activeRxId === rx.id;
+                                                const items = Array.isArray(rx.items) ? rx.items : (typeof rx.items_json === 'string' ? JSON.parse(rx.items_json || '[]') : []);
+                                                return (
+                                                    <div
+                                                        key={rx.id}
+                                                        className={`p-3 rounded-xl border transition-all ${
+                                                            isLoaded
+                                                                ? 'bg-indigo-50/80 border-indigo-300 shadow-sm ring-1 ring-indigo-200'
+                                                                : 'bg-slate-50/60 border-slate-200/80 hover:border-indigo-200 hover:bg-white'
+                                                        }`}
+                                                    >
+                                                        <div className="flex justify-between items-start gap-2 mb-2">
+                                                            <div>
+                                                                <h4 className="font-bold text-slate-900 text-xs sm:text-sm">
+                                                                    {rx.patient_name || rx.patientId || 'Patient'}
+                                                                </h4>
+                                                                <p className="text-[10px] text-slate-500 flex items-center gap-1">
+                                                                    <SymbolIcon className="material-symbols-outlined text-[12px] text-slate-400">stethoscope</SymbolIcon>
+                                                                    Dr. {rx.doctor_name || rx.doctorId || 'Consulting Physician'}
+                                                                </p>
+                                                            </div>
+                                                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                                                                {rx.status || 'SIGNED'}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="text-[11px] text-slate-600 mb-3 space-y-0.5 bg-white/70 p-2 rounded-lg border border-slate-100">
+                                                            {items.slice(0, 2).map((it: any, i: number) => (
+                                                                <div key={i} className="flex justify-between items-center text-[10px]">
+                                                                    <span className="font-medium text-slate-700 truncate max-w-[140px]">{it.name || it.salt}</span>
+                                                                    <span className="text-slate-500 font-mono">{it.dosage || `${it.units || 1} units`}</span>
+                                                                </div>
+                             ))}
+                                                            {items.length > 2 && (
+                                                                <p className="text-[9px] text-slate-400 italic">+{items.length - 2} more items</p>
+                                                            )}
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => loadPrescriptionIntoCart(rx)}
+                                                            className={`w-full py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                                                                isLoaded
+                                                                    ? 'bg-emerald-600 text-white shadow-sm'
+                                                                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-600/10'
+                                                            }`}
+                                                        >
+                                                            <SymbolIcon className="material-symbols-outlined text-[16px]">
+                                                                {isLoaded ? 'check' : 'add_shopping_cart'}
+                                                            </SymbolIcon>
+                                                            {isLoaded ? 'Cart Loaded' : 'Load into Cart (1-Click)'}
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             <div className="p-3 sm:p-6 pb-2 flex items-center justify-between shrink-0">
                                 <h2 className="text-base sm:text-xl font-bold text-slate-800">Available Products</h2>
                                 <div className="flex gap-2">
@@ -1041,6 +1309,22 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                 <h2 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2"><SymbolIcon className="material-symbols-outlined text-emerald-600 text-[18px] sm:text-[24px]">receipt</SymbolIcon> Current Bill</h2>
                                 <button onClick={() => setCart([])} className="text-[10px] sm:text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition-colors">Clear</button>
                             </div>
+
+                            {activeRxId && (
+                                <div className="mb-3 bg-indigo-50/90 border border-indigo-200 text-indigo-950 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs">
+                                    <span className="flex items-center gap-1.5 truncate">
+                                        <SymbolIcon className="material-symbols-outlined text-[16px] text-indigo-600">prescriptions</SymbolIcon>
+                                        Linked Rx #{activeRxId.slice(0, 10)}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setActiveRxId(null); setActiveEncounterId(null); }}
+                                        className="text-indigo-500 hover:text-indigo-800 text-[10px] uppercase font-bold tracking-wider ml-2"
+                                    >
+                                        Unlink
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="space-y-2 sm:space-y-3">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

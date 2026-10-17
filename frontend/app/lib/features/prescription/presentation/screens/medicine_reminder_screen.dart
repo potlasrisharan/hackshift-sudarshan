@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../../data/models/prescription_models.dart";
@@ -21,86 +20,93 @@ class MedicineReminderScreen extends ConsumerWidget {
     return AppScaffoldShell(
       title: AppStrings.prescriptionHeader,
       subtitle: AppStrings.prescriptionSubtitle,
-      child: RefreshIndicator(
-        color: AppColors.primary,
-        onRefresh: () => notifier.loadPrescription(),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
-            }
+      child: Container(
+        color: const Color(0xFFF8FAFC),
+        width: double.infinity,
+        height: double.infinity,
+        child: RefreshIndicator(
+          color: const Color(0xFF087D71),
+          onRefresh: () => notifier.loadPrescription(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (state.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF087D71)),
+                );
+              }
 
-            if (state.errorMessage != null) {
-              return _buildErrorState(context, state.errorMessage!, notifier);
-            }
+              if (state.errorMessage != null) {
+                return _buildErrorState(context, state.errorMessage!, notifier);
+              }
 
-            if (state.medicines.isEmpty) {
-              return _buildEmptyState(context);
-            }
+              if (state.medicines.isEmpty) {
+                return _buildEmptyState(context);
+              }
 
-            final isWide = constraints.maxWidth >= 720;
+              final isWide = constraints.maxWidth >= 720;
 
-            if (isWide) {
+              if (isWide) {
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(24),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (state.doctorAdvice != null) ...[
+                              DoctorAdviceCard(advice: state.doctorAdvice!),
+                              const SizedBox(height: 16),
+                            ],
+                            AdherenceSummaryCard(
+                              takenCount: state.takenCount,
+                              totalCount: state.totalCount,
+                              streakDays: state.streakDays,
+                              progress: state.adherenceProgress,
+                              onConfigureRoutine: () =>
+                                  _openRoutineSheet(context, ref),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Expanded(
+                        flex: 6,
+                        child: _buildTimelineSection(context, ref, state),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // Mobile Single Column
               return SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                child: Row(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      flex: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (state.doctorAdvice != null)
-                            DoctorAdviceCard(advice: state.doctorAdvice!),
-                          const SizedBox(height: 16),
-                          AdherenceSummaryCard(
-                            takenCount: state.takenCount,
-                            totalCount: state.totalCount,
-                            streakDays: state.streakDays,
-                            progress: state.adherenceProgress,
-                            onConfigureRoutine: () =>
-                                _openRoutineSheet(context, ref),
-                          ),
-                        ],
-                      ),
+                    AdherenceSummaryCard(
+                      takenCount: state.takenCount,
+                      totalCount: state.totalCount,
+                      streakDays: state.streakDays,
+                      progress: state.adherenceProgress,
+                      onConfigureRoutine: () => _openRoutineSheet(context, ref),
                     ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      flex: 6,
-                      child: _buildTimelineSection(context, ref, state),
-                    ),
+                    const SizedBox(height: 16),
+                    if (state.doctorAdvice != null) ...[
+                      DoctorAdviceCard(advice: state.doctorAdvice!),
+                      const SizedBox(height: 20),
+                    ],
+                    _buildTimelineSection(context, ref, state),
                   ],
                 ),
               );
-            }
-
-            // Mobile Single Column
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AdherenceSummaryCard(
-                    takenCount: state.takenCount,
-                    totalCount: state.totalCount,
-                    streakDays: state.streakDays,
-                    progress: state.adherenceProgress,
-                    onConfigureRoutine: () => _openRoutineSheet(context, ref),
-                  ),
-                  const SizedBox(height: 16),
-                  if (state.doctorAdvice != null)
-                    DoctorAdviceCard(advice: state.doctorAdvice!),
-                  const SizedBox(height: 20),
-                  _buildTimelineSection(context, ref, state),
-                ],
-              ),
-            );
-          },
+            },
+          ),
         ),
       ),
     );
@@ -120,7 +126,7 @@ class MedicineReminderScreen extends ConsumerWidget {
             medicines: state.morningMedicines,
           ),
           const SizedBox(height: 8),
-          for (final med in state.morningMedicines)
+          for (final med in state.morningMedicines) ...[
             MedicineCard(
               medicine: med,
               onToggleTaken: (_) =>
@@ -129,7 +135,9 @@ class MedicineReminderScreen extends ConsumerWidget {
                   .read(prescriptionProvider.notifier)
                   .toggleReminder(med.id),
             ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 10),
+          ],
+          const SizedBox(height: 12),
         ],
         if (state.afternoonMedicines.isNotEmpty) ...[
           _buildSlotHeader(
@@ -140,7 +148,7 @@ class MedicineReminderScreen extends ConsumerWidget {
             medicines: state.afternoonMedicines,
           ),
           const SizedBox(height: 8),
-          for (final med in state.afternoonMedicines)
+          for (final med in state.afternoonMedicines) ...[
             MedicineCard(
               medicine: med,
               onToggleTaken: (_) =>
@@ -149,7 +157,9 @@ class MedicineReminderScreen extends ConsumerWidget {
                   .read(prescriptionProvider.notifier)
                   .toggleReminder(med.id),
             ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 10),
+          ],
+          const SizedBox(height: 12),
         ],
         if (state.nightMedicines.isNotEmpty) ...[
           _buildSlotHeader(
@@ -160,7 +170,7 @@ class MedicineReminderScreen extends ConsumerWidget {
             medicines: state.nightMedicines,
           ),
           const SizedBox(height: 8),
-          for (final med in state.nightMedicines)
+          for (final med in state.nightMedicines) ...[
             MedicineCard(
               medicine: med,
               onToggleTaken: (_) =>
@@ -169,7 +179,9 @@ class MedicineReminderScreen extends ConsumerWidget {
                   .read(prescriptionProvider.notifier)
                   .toggleReminder(med.id),
             ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 10),
+          ],
+          const SizedBox(height: 12),
         ],
       ],
     );
@@ -184,60 +196,113 @@ class MedicineReminderScreen extends ConsumerWidget {
   }) {
     final allDone = medicines.every((m) => m.isTaken);
 
-    return Row(
-      children: [
-        Icon(slot.icon, size: 18, color: AppColors.primaryLight),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceElevated,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            slot.label.split("(").last.replaceAll(")", ""),
-            style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textMuted,
-            ),
-          ),
-        ),
-        const Spacer(),
-        if (!allDone) ...[
-          const SizedBox(width: 4),
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              visualDensity: VisualDensity.compact,
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            ),
-            icon: const Icon(Icons.done_all_rounded,
-                size: 14, color: AppColors.primaryLight),
-            label: const Text(
-              AppStrings.markSlotDone,
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primaryLight,
-              ),
-            ),
-            onPressed: () =>
-                ref.read(prescriptionProvider.notifier).markSlotDone(slot),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8, top: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
-      ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE6F7F2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(slot.icon, size: 16, color: const Color(0xFF087D71)),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        slot.label.split("(").last.replaceAll(")", ""),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          if (!allDone) ...[
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                backgroundColor: const Color(0xFFE6F7F2),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              icon: const Icon(Icons.done_all_rounded,
+                  size: 13, color: Color(0xFF087D71)),
+              label: const Text(
+                AppStrings.markSlotDone,
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF087D71),
+                ),
+              ),
+              onPressed: () =>
+                  ref.read(prescriptionProvider.notifier).markSlotDone(slot),
+            ),
+          ] else ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFF86EFAC)),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF16A34A)),
+                  SizedBox(width: 4),
+                  Text(
+                    "All Taken",
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF16A34A),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -250,19 +315,22 @@ class MedicineReminderScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.error_outline_rounded,
-                color: AppColors.error, size: 48),
+                color: Color(0xFFDC2626), size: 48),
             const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: const TextStyle(color: Color(0xFF475569), fontSize: 13),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF087D71),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
               onPressed: () => notifier.loadPrescription(),
               child: const Text(AppStrings.retryButton,
-                  style: TextStyle(color: Colors.white)),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -278,21 +346,21 @@ class MedicineReminderScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Icon(Icons.medication_liquid_rounded,
-                color: AppColors.textMuted, size: 54),
+                color: Color(0xFF94A3B8), size: 54),
             SizedBox(height: 14),
             Text(
               AppStrings.emptyPrescriptionTitle,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: Color(0xFF0F172A),
               ),
             ),
             SizedBox(height: 6),
             Text(
               AppStrings.emptyPrescriptionDesc,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
             ),
           ],
         ),

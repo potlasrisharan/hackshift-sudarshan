@@ -2,6 +2,7 @@ import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useEffect, useState, useMemo } from 'react'
 import { dataService as db } from '@/lib/dataService'
 import { useToast } from '@/components/ui/use-toast'
+import { Skeleton } from '@/components/ui/basic'
 import { GlobalSearch } from './GlobalSearch'
 
 interface HospitalsRegistryProps {
@@ -201,14 +202,24 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {loading && filteredHospitals.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
-                                            <div className="flex flex-col items-center justify-center gap-3">
-                                                <SymbolIcon className="material-symbols-outlined animate-spin text-4xl">sync</SymbolIcon>
-                                                <span className="text-sm font-medium">Loading Hospitals...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    Array.from({ length: 5 }).map((_, i) => (
+                                        <tr key={i} className="animate-pulse">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
+                                                    <div className="space-y-1.5 flex-1">
+                                                        <Skeleton className="h-4 w-36" />
+                                                        <Skeleton className="h-3 w-48" />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4"><Skeleton className="h-6 w-20 rounded-full" /></td>
+                                            <td className="px-6 py-4 text-center"><Skeleton className="h-4 w-28 mx-auto" /></td>
+                                            <td className="px-6 py-4 text-center"><Skeleton className="h-4 w-16 mx-auto" /></td>
+                                            <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full" /></td>
+                                            <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-20 ml-auto rounded-lg" /></td>
+                                        </tr>
+                                    ))
                                 ) : filteredHospitals.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="px-6 py-16 text-center text-slate-400">

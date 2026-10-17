@@ -31,10 +31,10 @@ export function landingMarkup(d: LandingDestinations): string {
   const workspaces = [
     [
       "intake",
-      "Patient portal & kiosk",
-      "A welcoming first step. Your language, your health, your care.",
+      "Patient intake system",
+      "A welcoming first step. Voice symptom input, ABHA verification and queue tokens.",
       d.patient,
-      "Begin your care journey",
+      "Begin patient intake",
       "featured",
     ],
     [
@@ -54,20 +54,20 @@ export function landingMarkup(d: LandingDestinations): string {
       "",
     ],
     [
-      "operations",
-      "Clinic operations",
-      "Keep pharmacy, inventory and daily work in step.",
-      d.operations,
-      "Open operations",
-      "",
-    ],
-    [
       "emergency",
       "Emergency triage",
       "Clear priorities when every moment matters.",
       d.emergency,
       "Open emergency workspace",
       "urgent",
+    ],
+    [
+      "operations",
+      "Clinic operations",
+      "Keep pharmacy, inventory and daily work in step.",
+      d.operations,
+      "Open operations",
+      "",
     ],
   ] as const;
   return `<div class="ds-site"><a class="ds-skip" href="#ds-content">Skip to content</a>

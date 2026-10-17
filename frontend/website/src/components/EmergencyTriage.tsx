@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { 
+import {
   Siren, Flame, Clock, CheckCircle2, Bed, ArrowRight,
   Activity, Heart, Zap, Volume2, VolumeX, Stethoscope,
   RefreshCw, Sparkles, Gauge, Sun, Moon,
@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { dataService as db } from '@/lib/dataService';
 import { useHospital } from '@/context/HospitalContext';
+import { CLOUDFLARE_API_BASE } from '@/lib/supabase';
 
 export interface EmergencyCase {
   id: string;
@@ -193,7 +194,7 @@ const playAudioTone = (type: 'STAT_ALERT' | 'DISPATCH' | 'STABILIZE', enabled: b
       osc.frequency.setValueAtTime(880, now);
       osc.frequency.setValueAtTime(659.25, now + 0.15);
       osc.frequency.setValueAtTime(880, now + 0.3);
-      
+
       gain.gain.setValueAtTime(0.12, now);
       gain.gain.linearRampToValueAtTime(0.08, now + 0.35);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.52);
@@ -248,7 +249,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
   const [selectedBayFilter, setSelectedBayFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE_STAT' | 'DISPATCHED' | 'STABILIZED'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
+
   // Real-time telemetry clock & alerts
   const [currentTime, setCurrentTime] = useState<string>(() => new Date().toLocaleTimeString());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -278,6 +279,91 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Real-time synchronization with Kiosk Patient Intake & Cloudflare D1 Store
+  useEffect(() => {
+    const loadEmergencyCases = async () => {
+      try {
+        let liveQueue: any[] = [];
+        try {
+          const res = await fetch(`${CLOUDFLARE_API_BASE}/intake/queue?status=STAT_ALERT`);
+          if (res.ok) {
+            const data = await res.json();
+            liveQueue = data.queue || data.encounters || [];
+          }
+        } catch (netErr) {
+          console.warn('Live backend emergency queue fetch failed, falling back to local queue:', netErr);
+        }
+
+        const storedEncounters = await db.list('encounters', { sort: { column: 'created_at', ascending: false } });
+
+        // Merge liveQueue with storedEncounters
+        const allEncounters = [...liveQueue];
+        for (const st of storedEncounters) {
+          if (!allEncounters.some(e => e.id === st.id || e.token === st.token || e.token_number === st.token_number)) {
+            allEncounters.push(st);
+          }
+        }
+
+        const emergencyEncounters = allEncounters.filter(
+          enc => enc.triage_priority === 'EMERGENCY_RED' || enc.status === 'EMERGENCY_TRIAGE' || enc.status === 'STAT_ALERT' || enc.is_emergency
+        );
+
+        if (emergencyEncounters.length > 0) {
+          const mappedEmergencies: EmergencyCase[] = emergencyEncounters.map((enc, idx) => ({
+            id: enc.id || enc.patient_id || `em-${Date.now()}-${idx}`,
+            token: enc.token_number || enc.token || '#E-045',
+            patientName: enc.patient_name || enc.name || 'Emergency Casualty Patient',
+            age: enc.age || 52,
+            gender: ((enc.gender || 'MALE').toUpperCase() === 'FEMALE' ? 'FEMALE' : 'MALE') as 'MALE' | 'FEMALE' | 'OTHER',
+            chiefComplaint: enc.chief_complaint || enc.english_translation || 'Acute Medical Emergency (STAT Triage)',
+            triggerCondition: enc.trigger_condition || 'Cardiorespiratory / High-Risk Acute Collapse',
+            detectionLatencyMs: enc.detection_latency_ms || 11.4,
+            status: enc.status === 'STABILIZED' ? 'STABILIZED' : (enc.status === 'IN_CONSULT' || enc.status === 'DISPATCHED' ? 'DISPATCHED' : 'ACTIVE_STAT'),
+            detectedAt: enc.check_in_time || new Date(enc.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            vitals: enc.vitals || { bp: '158/96 mmHg', pulse: 104, spo2: 95, temp: '36.8°C', rr: 22 },
+            recommendedAction: enc.recommended_action || 'STAT 12-lead ECG (<5 min), O2 support, Crash Cart standby, IV access',
+            resuscitationBay: enc.bay || `Casualty Resus Bay ${(idx % 2) + 1}`,
+            hashSignature: `0x${(enc.id || 'hash').slice(0, 8).toUpperCase()}...41E2`,
+            triageLevel: 'ESI-1 Resuscitation'
+          }));
+
+          setEmergencies(() => {
+            const combined = [...mappedEmergencies];
+            for (const init of INITIAL_EMERGENCIES) {
+              if (!combined.some(c => c.id === init.id || c.token === init.token)) {
+                combined.push(init);
+              }
+            }
+            return combined;
+          });
+
+          // Also update Resus Bay
+          setBays(prevBays => {
+            const updated = [...prevBays];
+            if (mappedEmergencies[0] && updated[0]) {
+              updated[0] = {
+                ...updated[0],
+                status: mappedEmergencies[0].status === 'STABILIZED' ? 'AVAILABLE' : 'CODE_ACTIVE',
+                assignedCaseId: mappedEmergencies[0].id,
+                assignedToken: mappedEmergencies[0].token,
+                assignedPatient: mappedEmergencies[0].patientName
+              };
+            }
+            return updated;
+          });
+        }
+      } catch (e) {
+        console.warn('Emergency triage storage sync notice:', e);
+      }
+    };
+
+    loadEmergencyCases();
+    const unsubscribe = db.subscribe('encounters', () => {
+      loadEmergencyCases();
+    });
+    return () => unsubscribe();
   }, []);
 
   // Summary counts
@@ -347,12 +433,12 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
   }, []);
 
   // Action: Dispatch Crash Cart & Code Team
-  const handleDispatchCrashCart = (id: string, bayName: string) => {
+  const handleDispatchCrashCart = async (id: string, bayName: string) => {
     const targetCase = emergencies.find(e => e.id === id);
     const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    setEmergencies(prev => prev.map(e => e.id === id ? { 
-      ...e, 
+    setEmergencies(prev => prev.map(e => e.id === id ? {
+      ...e,
       status: 'DISPATCHED',
       dispatchedAt: nowTime
     } : e));
@@ -385,15 +471,33 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
     setTimeout(() => {
       setToastMessage(null);
     }, 4000);
+
+    // Backend synchronization: call POST /api/v1/intake/encounter/:id/status
+    try {
+      const updatePayload = {
+        status: 'IN_CONSULT',
+        bay: bayName,
+        bay_assigned: bayName,
+        assigned_doctor: 'Code Blue Trauma Team'
+      };
+      await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(id)}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
+      await db.update('encounters', id, updatePayload);
+    } catch (err) {
+      console.warn('Dispatch backend update notice:', err);
+    }
   };
 
   // Action: Stabilize & Clear
-  const handleStabilize = (id: string) => {
+  const handleStabilize = async (id: string) => {
     const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const targetCase = emergencies.find(e => e.id === id);
 
-    setEmergencies(prev => prev.map(e => e.id === id ? { 
-      ...e, 
+    setEmergencies(prev => prev.map(e => e.id === id ? {
+      ...e,
       status: 'STABILIZED',
       stabilizedAt: nowTime
     } : e));
@@ -412,6 +516,22 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
     playAudioTone('STABILIZE', soundEnabled);
     setToastMessage(`✅ Patient ${targetCase?.patientName || ''} stabilized. ${targetCase?.resuscitationBay} cleared & primed.`);
     setTimeout(() => setToastMessage(null), 3500);
+
+    // Backend synchronization: call POST /api/v1/intake/encounter/:id/status
+    try {
+      const updatePayload = {
+        status: 'STABILIZED',
+        bay: null
+      };
+      await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(id)}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
+      await db.update('encounters', id, updatePayload);
+    } catch (err) {
+      console.warn('Stabilize backend update notice:', err);
+    }
   };
 
   // Action: Emergency Bed Admission (IPD)
@@ -428,10 +548,26 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
         admission_date: new Date().toISOString(),
         status: 'admitted',
         reason_for_admission: `STAT Emergency Handoff: ${em.triggerCondition} | From ${em.resuscitationBay}`,
-        advance_paid: 0
+        advance_paid: 0 // integer paise
       });
     } catch (err) {
       console.warn('IPD admission local save:', err);
+    }
+
+    // Backend synchronization: call POST /api/v1/intake/encounter/:id/status
+    try {
+      const updatePayload = {
+        status: 'ADMITTED_IPD',
+        bay: em.resuscitationBay
+      };
+      await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(em.id)}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
+      await db.update('encounters', em.id, updatePayload);
+    } catch (err) {
+      console.warn('Admit IPD backend update notice:', err);
     }
 
     // Clear bay occupancy for transferred patient
@@ -503,6 +639,27 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
     // Audio alarm
     playAudioTone('STAT_ALERT', soundEnabled);
+
+    // Persist simulated encounter to backend and local store
+    db.create('encounters', {
+      id: newId,
+      token: newToken,
+      token_number: newToken,
+      patient_id: `pat_${Date.now()}`,
+      patient_name: scenario.patientName,
+      name: scenario.patientName,
+      age: scenario.age,
+      gender: scenario.gender,
+      chief_complaint: scenario.chiefComplaint,
+      triage_priority: 'EMERGENCY_RED',
+      status: 'STAT_ALERT',
+      is_emergency: true,
+      bay: availableBay.name,
+      trigger_condition: scenario.triggerCondition,
+      recommended_action: scenario.recommendedAction,
+      vitals: scenario.vitals,
+      clinic_id: 'clinic-delhi-01'
+    }).catch(() => {});
 
     // High impact notification
     setToastMessage(`🚨 LIVE STAT ALERT: ${scenario.patientName} (<${scenario.detectionLatencyMs}ms Sentinel Latency) assigned to ${availableBay.name}!`);
@@ -594,7 +751,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
               </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setActiveDispatchAlert(null)}
             className="p-1.5 hover:bg-white/20 rounded-lg text-white/80 hover:text-white transition"
           >
@@ -613,18 +770,18 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
       {/* MASTER ER COMMAND HUD HEADER */}
       <div className={`p-5 sm:p-6 rounded-3xl border transition-all ${
-        isDark 
-          ? 'bg-[#111827] border-slate-800/80 shadow-2xl shadow-black/40' 
+        isDark
+          ? 'bg-[#111827] border-slate-800/80 shadow-2xl shadow-black/40'
           : 'bg-white border-slate-200 shadow-md'
       }`}>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          
+
           {/* Left: Brand & Pulsing Beacon */}
           <div className="flex items-start sm:items-center gap-4">
             <div className="relative">
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-2xl border shadow-inner ${
-                activeCount > 0 
-                  ? 'bg-red-500/20 text-red-500 border-red-500/40 shadow-[0_0_25px_rgba(239,68,68,0.4)]' 
+                activeCount > 0
+                  ? 'bg-red-500/20 text-red-500 border-red-500/40 shadow-[0_0_25px_rgba(239,68,68,0.4)]'
                   : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
               }`}>
                 <Siren className={`w-8 h-8 ${activeCount > 0 ? 'animate-pulse text-red-500' : 'text-emerald-500'}`} />
@@ -644,7 +801,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                 }`}>
                   Casualty ER & STAT Red-Flag Triage
                 </h1>
-                
+
                 {/* Pulsing Beacon Pill */}
                 {activeCount > 0 ? (
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500/15 border border-red-500/40 rounded-full text-red-400 text-xs font-black uppercase tracking-wider animate-pulse">
@@ -680,7 +837,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
-                soundEnabled 
+                soundEnabled
                   ? isDark ? 'bg-slate-800 text-emerald-400 border-slate-700' : 'bg-slate-100 text-emerald-700 border-slate-200'
                   : isDark ? 'bg-slate-800/50 text-slate-400 border-slate-800' : 'bg-slate-100 text-slate-400 border-slate-200'
               }`}
@@ -694,8 +851,8 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
             <button
               onClick={() => setIsDark(!isDark)}
               className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
-                isDark 
-                  ? 'bg-slate-800 text-[#FFA530] border-slate-700 hover:bg-slate-700' 
+                isDark
+                  ? 'bg-slate-800 text-[#FFA530] border-slate-700 hover:bg-slate-700'
                   : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
               }`}
               title="Toggle Dark / Light Theme"
@@ -704,7 +861,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
             </button>
 
             {/* Simulate STAT Alert Button */}
-            <button 
+            <button
               onClick={handleSimulateNewAlert}
               className="px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl text-xs font-black shadow-lg shadow-red-900/30 hover:shadow-red-700/50 flex items-center gap-2 transition active:scale-95 border border-red-400/40"
             >
@@ -719,8 +876,8 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
       {/* SENTINEL RULE-ENGINE TELEMETRY BADGE & SLA HUD */}
       <div className={`p-4 sm:p-5 rounded-3xl border transition-all ${
-        isDark 
-          ? 'bg-gradient-to-r from-[#111827] via-[#0F172A] to-[#111827] border-cyan-900/40' 
+        isDark
+          ? 'bg-gradient-to-r from-[#111827] via-[#0F172A] to-[#111827] border-cyan-900/40'
           : 'bg-gradient-to-r from-cyan-50 via-white to-blue-50 border-cyan-200'
       }`}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -763,8 +920,8 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
               onClick={handleRunBenchmark}
               disabled={isBenchmarking}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border ${
-                isDark 
-                  ? 'bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border-cyan-700/50' 
+                isDark
+                  ? 'bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border-cyan-700/50'
                   : 'bg-cyan-100 hover:bg-cyan-200 text-cyan-900 border-cyan-300'
               }`}
             >
@@ -791,7 +948,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
               Occupancy: {occupiedBaysCount} / {bays.length} Bays Active
             </span>
             {selectedBayFilter && (
-              <button 
+              <button
                 onClick={() => setSelectedBayFilter(null)}
                 className="text-[11px] font-bold text-[#FFA530] hover:underline flex items-center gap-1"
               >
@@ -810,13 +967,13 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
             const isSelected = selectedBayFilter === bay.name;
 
             return (
-              <div 
+              <div
                 key={bay.id}
                 onClick={() => setSelectedBayFilter(isSelected ? null : bay.name)}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
-                  isSelected 
-                    ? 'ring-2 ring-[#FFA530] border-[#FFA530]' 
-                    : isCodeActive 
+                  isSelected
+                    ? 'ring-2 ring-[#FFA530] border-[#FFA530]'
+                    : isCodeActive
                       ? isDark ? 'bg-red-950/20 border-red-500/50 shadow-lg shadow-red-950/30' : 'bg-red-50/80 border-red-300'
                       : isOccupied
                         ? isDark ? 'bg-amber-950/20 border-amber-500/40' : 'bg-amber-50/80 border-amber-300'
@@ -835,7 +992,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                   </div>
 
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 ${
-                    isCodeActive 
+                    isCodeActive
                       ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse'
                       : isOccupied
                         ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
@@ -857,7 +1014,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
                 {/* Patient Occupancy Chip */}
                 <div className={`mt-3 p-2.5 rounded-xl text-xs ${
-                  isAvailable 
+                  isAvailable
                     ? isDark ? 'bg-slate-900/60 text-slate-400 border border-slate-800/80' : 'bg-slate-50 text-slate-500 border border-slate-100'
                     : isDark ? 'bg-red-900/20 text-red-200 border border-red-800/40' : 'bg-red-100/60 text-red-900 border border-red-200'
                 }`}>
@@ -946,8 +1103,8 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search patient, token, complaint, bay..."
             className={`w-full pl-9 pr-3.5 py-1.5 rounded-xl text-xs font-medium border transition focus:outline-none focus:ring-1 focus:ring-red-500 ${
-              isDark 
-                ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500' 
+              isDark
+                ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500'
                 : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
             }`}
           />
@@ -985,11 +1142,11 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
               const vitalsAnalysis = parseVitalsAlerts(em.vitals);
 
               return (
-                <div 
+                <div
                   key={em.id}
                   className={`p-5 sm:p-6 rounded-3xl border-2 transition-all relative overflow-hidden shadow-lg ${
-                    isStat 
-                      ? isDark 
+                    isStat
+                      ? isDark
                         ? 'border-red-500/90 bg-gradient-to-br from-red-950/40 via-[#111827] to-[#111827] shadow-[0_0_30px_rgba(239,68,68,0.25)] ring-1 ring-red-500/30'
                         : 'border-red-500 bg-red-50/50 ring-2 ring-red-400/20 shadow-red-100'
                       : isDispatched
@@ -1009,7 +1166,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                       <span className={`text-xs font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {em.age}Y • {em.gender}
                       </span>
-                      
+
                       {/* Sub-15ms Sentinel Latency Badge */}
                       <span className="text-[10px] bg-red-500/15 text-red-400 font-mono font-bold px-2.5 py-0.5 rounded-lg border border-red-500/30 flex items-center gap-1">
                         <Zap className="w-3 h-3 text-red-400" />
@@ -1030,10 +1187,10 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                       </span>
 
                       <span className={`text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 ${
-                        isStat 
-                          ? 'bg-red-600 text-white animate-pulse shadow-md shadow-red-900/40' 
-                          : isDispatched 
-                            ? 'bg-amber-600 text-white' 
+                        isStat
+                          ? 'bg-red-600 text-white animate-pulse shadow-md shadow-red-900/40'
+                          : isDispatched
+                            ? 'bg-amber-600 text-white'
                             : 'bg-emerald-600 text-white'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${isStat ? 'bg-white animate-ping' : 'bg-white/80'}`} />
@@ -1044,7 +1201,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
                   {/* Body Content Grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 py-5 text-xs">
-                    
+
                     {/* Column 1: Chief Complaint & Red Flag Trigger */}
                     <div className="space-y-2">
                       <span className="text-slate-400 font-black block text-[10px] uppercase tracking-wider">
@@ -1053,7 +1210,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                       <p className={`font-semibold text-sm leading-snug ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                         {em.chiefComplaint}
                       </p>
-                      
+
                       <div className="pt-1">
                         <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
                           Sentinel Red-Flag Trigger Condition
@@ -1171,7 +1328,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
                   {/* Actions & Cryptographic Audit Footer */}
                   <div className="flex flex-wrap items-center justify-between pt-4 border-t border-slate-700/40 gap-4">
-                    
+
                     {/* Cryptographic Hash Chain Seal */}
                     <div className="flex items-center gap-2 text-xs">
                       <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -1186,7 +1343,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                     <div className="flex items-center gap-2.5 flex-wrap">
                       {/* 1. Dispatch Crash Cart & Code Team */}
                       {isStat && (
-                        <button 
+                        <button
                           onClick={() => handleDispatchCrashCart(em.id, em.resuscitationBay)}
                           className="px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-black rounded-xl shadow-lg shadow-red-900/40 flex items-center gap-2 transition active:scale-95 border border-red-400/40"
                         >
@@ -1197,7 +1354,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
 
                       {/* 2. Stabilize & Clear */}
                       {(isStat || isDispatched) && (
-                        <button 
+                        <button
                           onClick={() => handleStabilize(em.id)}
                           className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-950/40 active:scale-95"
                         >
@@ -1207,7 +1364,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                       )}
 
                       {/* 3. Emergency Bed Admission (IPD) */}
-                      <button 
+                      <button
                         onClick={() => handleAdmitToIpd(em)}
                         className="px-4 py-2.5 bg-[#223D79] hover:bg-[#1a2f5e] text-white text-xs font-black rounded-xl shadow-md shadow-blue-950/40 flex items-center gap-2 transition active:scale-95 border border-blue-400/20"
                       >

@@ -2,6 +2,7 @@ import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useEffect, useState, useMemo } from 'react'
 import { dataService as db } from '@/lib/dataService'
 import { useToast } from '@/components/ui/use-toast'
+import { Skeleton } from '@/components/ui/basic'
 
 export function AuditLogs() {
     const { toast } = useToast()
@@ -218,9 +219,19 @@ export function AuditLogs() {
                             {/* Table Body (List) */}
                             <div className="divide-y divide-slate-100 flex-1 overflow-y-auto">
                                 {loading && filteredLogs.length === 0 ? (
-                                    <div className="p-12 text-center text-slate-400 flex flex-col items-center">
-                                        <SymbolIcon className="material-symbols-outlined animate-spin text-4xl mb-4">sync</SymbolIcon>
-                                        <p className="text-sm font-medium">Loading Audit Logs...</p>
+                                    <div className="divide-y divide-slate-100">
+                                        {Array.from({ length: 6 }).map((_, i) => (
+                                            <div key={i} className="grid grid-cols-1 md:grid-cols-[60px_3fr_1.5fr_100px_160px] items-start md:items-center gap-3 md:gap-4 px-6 py-4 animate-pulse">
+                                                <Skeleton className="h-6 w-12 rounded-full" />
+                                                <div className="space-y-1.5">
+                                                    <Skeleton className="h-4 w-48" />
+                                                    <Skeleton className="h-3 w-72" />
+                                                </div>
+                                                <Skeleton className="h-4 w-28" />
+                                                <Skeleton className="h-6 w-16 rounded-full" />
+                                                <Skeleton className="h-4 w-28 ml-auto" />
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : filteredLogs.length === 0 ? (
                                     <div className="p-16 text-center text-slate-400 flex flex-col items-center">

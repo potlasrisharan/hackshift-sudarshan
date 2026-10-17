@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/her_provider.dart";
 
@@ -103,7 +102,7 @@ class _HerQuestionnaireScreenState extends ConsumerState<HerQuestionnaireScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Adaptive questionnaire evaluated with deterministic evidence."),
-        backgroundColor: AppColors.success,
+        backgroundColor: Color(0xFF059669),
       ),
     );
 
@@ -117,90 +116,105 @@ class _HerQuestionnaireScreenState extends ConsumerState<HerQuestionnaireScreen>
     return AppScaffoldShell(
       title: "Adaptive Questionnaire",
       subtitle: "Deterministic Clinical Questioning",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Domain Segmented Buttons
-            Row(
-              children: [
-                _buildDomainTab("PCOS", "Hormonal (PCOS)"),
-                const SizedBox(width: 8),
-                _buildDomainTab("ENDO", "Pelvic Pain (Endo)"),
-                const SizedBox(width: 8),
-                _buildDomainTab("CORE", "Heavy Bleeding"),
-              ],
-            ),
-            const SizedBox(height: 16),
+      child: Container(
+        color: const Color(0xFFFFF1F3),
+        width: double.infinity,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Domain Segmented Buttons
+              Row(
+                children: [
+                  _buildDomainTab("PCOS", "Hormonal (PCOS)"),
+                  const SizedBox(width: 8),
+                  _buildDomainTab("ENDO", "Pelvic Pain (Endo)"),
+                  const SizedBox(width: 8),
+                  _buildDomainTab("CORE", "Heavy Bleeding"),
+                ],
+              ),
+              const SizedBox(height: 16),
 
-            // Questions Card List
-            ...questions.map((q) {
-              final id = q["id"] as String;
-              final prompt = q["question"] as String;
-              final options = q["options"] as List<String>;
-              final selected = _answers[id];
+              // Questions Card List
+              ...questions.map((q) {
+                final id = q["id"] as String;
+                final prompt = q["question"] as String;
+                final options = q["options"] as List<String>;
+                final selected = _answers[id];
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 14),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.surfaceElevated),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      prompt,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFFDA4AF)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: options.map((opt) {
-                        final isSelected = selected == opt;
-                        return ChoiceChip(
-                          label: Text(opt[0].toUpperCase() + opt.substring(1)),
-                          selected: isSelected,
-                          selectedColor: AppColors.primary,
-                          backgroundColor: AppColors.surfaceElevated,
-                          labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : AppColors.textPrimary,
-                            fontSize: 12,
-                          ),
-                          onSelected: (_) => setState(() => _answers[id] = opt),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              );
-            }),
-            const SizedBox(height: 16),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        prompt,
+                        style: const TextStyle(
+                          color: Color(0xFF0F172A),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: options.map((opt) {
+                          final isSelected = selected == opt;
+                          return ChoiceChip(
+                            label: Text(opt[0].toUpperCase() + opt.substring(1)),
+                            selected: isSelected,
+                            selectedColor: const Color(0xFFE11D48),
+                            backgroundColor: const Color(0xFFFFF1F3),
+                            side: BorderSide(color: isSelected ? const Color(0xFFE11D48) : const Color(0xFFFDA4AF)),
+                            labelStyle: TextStyle(
+                              color: isSelected ? Colors.white : const Color(0xFF0F172A),
+                              fontSize: 12,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                            onSelected: (_) => setState(() => _answers[id] = opt),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
 
-            // Submit Button
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                minimumSize: const Size.fromHeight(48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              // Submit Button
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE11D48),
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 2,
+                ),
+                icon: const Icon(Icons.analytics_outlined, color: Colors.white),
+                label: const Text(
+                  "Run Deterministic Evaluation",
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                onPressed: _submitAnswers,
               ),
-              icon: const Icon(Icons.analytics_outlined, color: Colors.white),
-              label: const Text(
-                "Run Deterministic Evaluation",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              onPressed: _submitAnswers,
-            ),
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -210,19 +224,29 @@ class _HerQuestionnaireScreenState extends ConsumerState<HerQuestionnaireScreen>
     final isSelected = _selectedDomain == code;
     return Expanded(
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         onTap: () => setState(() => _selectedDomain = code),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.wellnessPink : AppColors.surfaceElevated,
-            borderRadius: BorderRadius.circular(10),
+            color: isSelected ? const Color(0xFFE11D48) : const Color(0xFFFCE7EC),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: isSelected ? const Color(0xFFE11D48) : const Color(0xFFFDA4AF)),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFFE11D48).withValues(alpha: 0.25),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           alignment: Alignment.center,
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+              color: isSelected ? Colors.white : const Color(0xFF9F1239),
               fontSize: 11,
               fontWeight: FontWeight.bold,
             ),

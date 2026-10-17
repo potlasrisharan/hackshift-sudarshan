@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 
@@ -59,19 +58,24 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
     return AppScaffoldShell(
       title: AppStrings.womensHealthHeader,
       subtitle: "Cycle, Medicine & Symptom Solver",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHerModuleLauncher(),
-            const SizedBox(height: 16),
-            _buildCycleTrackerCard(),
-            const SizedBox(height: 20),
-            _buildMedicationTracker(),
-            const SizedBox(height: 20),
-            _buildSymptomSolver(solution),
-          ],
+      child: Container(
+        color: const Color(0xFFFFF1F3),
+        width: double.infinity,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHerModuleLauncher(),
+              const SizedBox(height: 16),
+              _buildCycleTrackerCard(),
+              const SizedBox(height: 20),
+              _buildMedicationTracker(),
+              const SizedBox(height: 20),
+              _buildSymptomSolver(solution),
+            ],
+          ),
         ),
       ),
     );
@@ -82,12 +86,19 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF831843), Color(0xFF1E293B)],
+          colors: [Color(0xFFFFF1F3), Color(0xFFFCE7EC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.wellnessPink.withValues(alpha: 0.6), width: 1.5),
+        border: Border.all(color: const Color(0xFFFDA4AF), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,12 +121,12 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: AppColors.wellnessPink,
+                        color: Color(0xFF9F1239),
                       ),
                     ),
                     Text(
                       "Hormonal Wellness, Screening Radar & Doctor Sharing",
-                      style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
                     ),
                   ],
                 ),
@@ -125,13 +136,14 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
           const SizedBox(height: 12),
           const Text(
             "Evidence-informed screening flags (PCOS, dysmenorrhea, heavy bleeding), deterministic safety gates, phase-matched somatic yoga, and patient-controlled clinical summaries.",
-            style: TextStyle(fontSize: 12, color: AppColors.textPrimary, height: 1.35),
+            style: TextStyle(fontSize: 12, color: Color(0xFF0F172A), height: 1.35),
           ),
           const SizedBox(height: 14),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.wellnessPink,
-              minimumSize: const Size.fromHeight(40),
+              backgroundColor: const Color(0xFFE11D48),
+              minimumSize: const Size.fromHeight(42),
+              elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             icon: const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
@@ -150,16 +162,16 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.wellnessPink.withValues(alpha: 0.2),
-            AppColors.surface,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.wellnessPink.withValues(alpha: 0.3)),
+        border: Border.all(color: const Color(0xFFFDA4AF), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,18 +179,18 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       "Day 14 of 28 · Ovulatory Phase",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF9F1239)),
                     ),
                     SizedBox(height: 4),
                     Text(
                       "Estrogen peak · High energy & metabolic resilience",
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 12, color: Color(0xFF475569)),
                     ),
                   ],
                 ),
@@ -187,12 +199,13 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.wellnessPink.withValues(alpha: 0.2),
+                  color: const Color(0xFFFFF1F3),
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFDA4AF), width: 0.8),
                 ),
                 child: const Text(
                   "Fertile Window",
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.wellnessPink),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFE11D48)),
                 ),
               ),
             ],
@@ -203,18 +216,18 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
             child: const LinearProgressIndicator(
               value: 14 / 28,
               minHeight: 10,
-              backgroundColor: AppColors.surfaceElevated,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.wellnessPink),
+              backgroundColor: Color(0xFFFFF1F3),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE11D48)),
             ),
           ),
           const SizedBox(height: 12),
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Expanded(
                 child: Text(
                   "Last Period: 14 days ago",
-                  style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                  style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -223,7 +236,7 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
                 child: Text(
                   "Next Period: In 14 days",
                   textAlign: TextAlign.right,
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primaryLight),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF9F1239)),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -240,9 +253,16 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceElevated),
+        border: Border.all(color: const Color(0xFFFDA4AF), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,15 +270,15 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
+              const Expanded(
                 child: Row(
-                  children: const [
-                    Icon(Icons.medication_rounded, color: AppColors.primaryLight, size: 20),
+                  children: [
+                    Icon(Icons.medication_rounded, color: Color(0xFFE11D48), size: 20),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         "Daily Medication Timetable",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF9F1239)),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -266,9 +286,17 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                "$takenCount / ${_medications.length} Done",
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.success),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFFA7F3D0)),
+                ),
+                child: Text(
+                  "$takenCount / ${_medications.length} Done",
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF059669)),
+                ),
               ),
             ],
           ),
@@ -278,15 +306,17 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: const Color(0xFFFFF1F3),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.surfaceElevated),
+                border: Border.all(color: const Color(0xFFFDA4AF).withValues(alpha: 0.5)),
               ),
               child: Row(
                 children: [
                   Checkbox(
                     value: _medications[i]["taken"] as bool,
-                    activeColor: AppColors.success,
+                    activeColor: const Color(0xFFE11D48),
+                    checkColor: Colors.white,
+                    side: const BorderSide(color: Color(0xFFFDA4AF), width: 1.5),
                     onChanged: (val) {
                       setState(() {
                         _medications[i]["taken"] = val ?? false;
@@ -302,13 +332,13 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: _medications[i]["taken"] as bool ? AppColors.textMuted : AppColors.textPrimary,
+                            color: _medications[i]["taken"] as bool ? const Color(0xFF94A3B8) : const Color(0xFF0F172A),
                             decoration: _medications[i]["taken"] as bool ? TextDecoration.lineThrough : null,
                           ),
                         ),
                         Text(
                           _medications[i]["dosage"] as String,
-                          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                          style: const TextStyle(fontSize: 11, color: Color(0xFF475569)),
                         ),
                       ],
                     ),
@@ -325,38 +355,56 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceElevated),
+        border: Border.all(color: const Color(0xFFFDA4AF), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
-              Icon(Icons.psychology_alt_rounded, color: AppColors.wellnessPink, size: 22),
+          const Row(
+            children: [
+              Icon(Icons.psychology_alt_rounded, color: Color(0xFFE11D48), size: 22),
               SizedBox(width: 8),
               Expanded(
                 child: Text(
                   "Health Issue & Solution Engine",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF9F1239)),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text("Select Current Issue / Symptom", style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          const Text("Select Current Issue / Symptom", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569))),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
             isExpanded: true,
             initialValue: _selectedSymptom,
-            dropdownColor: AppColors.surfaceElevated,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+            dropdownColor: Colors.white,
+            style: const TextStyle(color: Color(0xFF0F172A), fontSize: 13, fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               filled: true,
-              fillColor: AppColors.background,
+              fillColor: const Color(0xFFFFF1F3),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFFDA4AF)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFFDA4AF)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFE11D48), width: 1.5),
+              ),
             ),
             items: _symptomSolutions.keys
                 .map((e) => DropdownMenuItem(value: e, child: Text(e, overflow: TextOverflow.ellipsis)))
@@ -366,25 +414,49 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _buildSolutionCard("Herbal / Clinical Remedy", solution["herbalSolution"], AppColors.success),
+          _buildSolutionCard(
+            "Herbal / Clinical Remedy",
+            solution["herbalSolution"] as String,
+            const Color(0xFF059669),
+            const Color(0xFFECFDF5),
+            const Color(0xFFA7F3D0),
+          ),
           const SizedBox(height: 8),
-          _buildSolutionCard("Somatic & Lifestyle Guidance", solution["lifestyle"], AppColors.primaryLight),
+          _buildSolutionCard(
+            "Somatic & Lifestyle Guidance",
+            solution["lifestyle"] as String,
+            const Color(0xFF0284C7),
+            const Color(0xFFF0F9FF),
+            const Color(0xFFBAE6FD),
+          ),
           const SizedBox(height: 8),
-          _buildSolutionCard("Dietary Exclusions", solution["avoid"], AppColors.warning),
+          _buildSolutionCard(
+            "Dietary Exclusions",
+            solution["avoid"] as String,
+            const Color(0xFFD97706),
+            const Color(0xFFFFFBEB),
+            const Color(0xFFFDE68A),
+          ),
           const SizedBox(height: 8),
-          _buildSolutionCard("Clinical Red-Flag Warning", solution["redFlag"], AppColors.error),
+          _buildSolutionCard(
+            "Clinical Red-Flag Warning",
+            solution["redFlag"] as String,
+            const Color(0xFFE11D48),
+            const Color(0xFFFFF1F2),
+            const Color(0xFFFECDD3),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSolutionCard(String title, String content, Color accent) {
+  Widget _buildSolutionCard(String title, String content, Color accent, Color bgColor, Color borderColor) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: bgColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: accent.withValues(alpha: 0.3)),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -396,7 +468,7 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
           const SizedBox(height: 4),
           Text(
             content,
-            style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, height: 1.3),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF0F172A), height: 1.35),
           ),
         ],
       ),

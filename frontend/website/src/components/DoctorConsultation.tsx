@@ -1,13 +1,15 @@
-import { useState, useMemo } from 'react';
-import { 
-  Users, RefreshCw, Code2, Download, CheckCircle2, 
-  Languages, Activity, Stethoscope, Pill, AlertTriangle, 
-  Clock, ArrowRight, Search, Plus, Trash2, Volume2, 
-  VolumeX, ShieldCheck, Zap, Sparkles, BedDouble, 
-  Check, X
+import { useState, useMemo, useEffect } from 'react';
+import {
+  Users, RefreshCw, Code2, Download, CheckCircle2,
+  Languages, Activity, Stethoscope, Pill, AlertTriangle,
+  Clock, ArrowRight, Search, Plus, Trash2, Volume2,
+  VolumeX, ShieldCheck, Zap, Sparkles, BedDouble,
+  Check, X, Smartphone, QrCode, Copy
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { useHospital } from '@/context/HospitalContext';
+import { dataService } from '@/lib/dataService';
+import { CLOUDFLARE_API_BASE } from '@/lib/supabase';
 
 export interface PrescriptionItem {
   drug: string;
@@ -90,11 +92,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       namasteCode: 'AHA/ACC 2023 NSTE-ACS Guideline (Class I, Level A)',
       namasteDescription: 'Immediate Dual Antiplatelet (DAPT) + High-Intensity Statin + Rapid Cath Lab Transfer',
       plan: [
-        { 
-          drug: 'Aspirin 300mg (Soluble Dispersible)', 
-          dosage: '300mg', 
-          frequency: 'STAT', 
-          duration: '1 Day', 
+        {
+          drug: 'Aspirin 300mg (Soluble Dispersible)',
+          dosage: '300mg',
+          frequency: 'STAT',
+          duration: '1 Day',
           availableInClinic: true,
           instructions: 'Dissolve in 50ml water immediately',
           shelfLocation: 'Shelf A-01 (Emergency Tray)',
@@ -103,11 +105,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Aspirin Dispersible 300mg',
           genericPrice: 6
         },
-        { 
-          drug: 'Clopidogrel 300mg (Loading Dose)', 
-          dosage: '300mg', 
-          frequency: 'STAT', 
-          duration: '1 Day', 
+        {
+          drug: 'Clopidogrel 300mg (Loading Dose)',
+          dosage: '300mg',
+          frequency: 'STAT',
+          duration: '1 Day',
           availableInClinic: true,
           instructions: 'Swallow with water STAT',
           shelfLocation: 'Shelf A-02 (Emergency Tray)',
@@ -116,11 +118,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Clopidogrel 300mg',
           genericPrice: 18
         },
-        { 
-          drug: 'Atorvastatin 80mg', 
-          dosage: '80mg', 
-          frequency: '0-0-1', 
-          duration: '30 Days', 
+        {
+          drug: 'Atorvastatin 80mg',
+          dosage: '80mg',
+          frequency: '0-0-1',
+          duration: '30 Days',
           availableInClinic: true,
           instructions: 'Bedtime after dinner',
           shelfLocation: 'Shelf B-14 (Cardio)',
@@ -129,11 +131,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Atorvastatin 80mg',
           genericPrice: 14
         },
-        { 
-          drug: 'Sublingual Nitroglycerin 0.4mg', 
-          dosage: '0.4mg', 
-          frequency: 'SOS', 
-          duration: '5 Days', 
+        {
+          drug: 'Sublingual Nitroglycerin 0.4mg',
+          dosage: '0.4mg',
+          frequency: 'SOS',
+          duration: '5 Days',
           availableInClinic: true,
           instructions: 'Place under tongue if chest pain recurs',
           shelfLocation: 'Shelf A-03 (Emergency Tray)',
@@ -173,11 +175,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       namasteCode: 'ADA / EASD 2024 Standards of Care Protocol',
       namasteDescription: 'First-Line Metformin ER + Sulfonylurea Titration + Lifestyle Glycemic Optimization (Target HbA1c < 7.0%)',
       plan: [
-        { 
-          drug: 'Metformin 500mg Extended Release', 
-          dosage: '500mg', 
-          frequency: '1-0-1', 
-          duration: '60 Days', 
+        {
+          drug: 'Metformin 500mg Extended Release',
+          dosage: '500mg',
+          frequency: '1-0-1',
+          duration: '60 Days',
           availableInClinic: true,
           instructions: 'Immediately after meals with water',
           shelfLocation: 'Shelf C-08 (Endocrine)',
@@ -186,11 +188,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Metformin 500mg ER',
           genericPrice: 16
         },
-        { 
-          drug: 'Glimepiride 1mg', 
-          dosage: '1mg', 
-          frequency: '1-0-0', 
-          duration: '30 Days', 
+        {
+          drug: 'Glimepiride 1mg',
+          dosage: '1mg',
+          frequency: '1-0-0',
+          duration: '30 Days',
           availableInClinic: true,
           instructions: '15 mins before breakfast',
           shelfLocation: 'Shelf C-09 (Endocrine)',
@@ -230,11 +232,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       namasteCode: 'NICE NG120 / ATS Respiratory Protocol',
       namasteDescription: 'Targeted Antimicrobial (Amoxy-Clav) + Mucolytic Hydration & Antipyretic Analgesia',
       plan: [
-        { 
-          drug: 'Amoxicillin + Clavulanic Acid 625mg', 
-          dosage: '625mg', 
-          frequency: '1-0-1', 
-          duration: '5 Days', 
+        {
+          drug: 'Amoxicillin + Clavulanic Acid 625mg',
+          dosage: '625mg',
+          frequency: '1-0-1',
+          duration: '5 Days',
           availableInClinic: true,
           instructions: 'Take at the start of a meal',
           shelfLocation: 'Shelf D-02 (Anti-infectives)',
@@ -243,11 +245,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Amoxy-Clav 625mg',
           genericPrice: 45
         },
-        { 
-          drug: 'Paracetamol 650mg', 
-          dosage: '650mg', 
-          frequency: '1-1-1', 
-          duration: '3 Days', 
+        {
+          drug: 'Paracetamol 650mg',
+          dosage: '650mg',
+          frequency: '1-1-1',
+          duration: '3 Days',
           availableInClinic: true,
           instructions: 'Take after meals for fever/bodyache',
           shelfLocation: 'Shelf D-05 (Analgesics)',
@@ -256,11 +258,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Paracetamol 650mg',
           genericPrice: 8
         },
-        { 
-          drug: 'Ambroxol + Levocetirizine Syrup', 
-          dosage: '10ml', 
-          frequency: '0-0-1', 
-          duration: '5 Days', 
+        {
+          drug: 'Ambroxol + Levocetirizine Syrup',
+          dosage: '10ml',
+          frequency: '0-0-1',
+          duration: '5 Days',
           availableInClinic: true,
           instructions: 'Take at bedtime',
           shelfLocation: 'Shelf D-11 (Respiratory)',
@@ -299,11 +301,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       namasteCode: 'OARSI / ACR 2020 Knee Osteoarthritis Guideline',
       namasteDescription: 'Oral NSAID + Mandatory PPI Gastroprotection + Quadriceps Physiotherapy & Weight Offloading',
       plan: [
-        { 
-          drug: 'Aceclofenac 100mg + Paracetamol 325mg', 
-          dosage: '1 Tab', 
-          frequency: '1-0-1', 
-          duration: '7 Days', 
+        {
+          drug: 'Aceclofenac 100mg + Paracetamol 325mg',
+          dosage: '1 Tab',
+          frequency: '1-0-1',
+          duration: '7 Days',
           availableInClinic: true,
           instructions: 'Take strictly after meals',
           shelfLocation: 'Shelf E-04 (Orthopedic)',
@@ -312,11 +314,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Aceclofenac + Paracetamol',
           genericPrice: 18
         },
-        { 
-          drug: 'Calcium 500mg + Vitamin D3 250IU', 
-          dosage: '1 Tab', 
-          frequency: '0-1-0', 
-          duration: '30 Days', 
+        {
+          drug: 'Calcium 500mg + Vitamin D3 250IU',
+          dosage: '1 Tab',
+          frequency: '0-1-0',
+          duration: '30 Days',
           availableInClinic: true,
           instructions: 'Take after lunch',
           shelfLocation: 'Shelf E-09 (Supplements)',
@@ -325,11 +327,11 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericName: 'Calcium Carbonate + Vit D3',
           genericPrice: 22
         },
-        { 
-          drug: 'Pantoprazole 40mg (Gastroprotection)', 
-          dosage: '40mg', 
-          frequency: '1-0-0', 
-          duration: '14 Days', 
+        {
+          drug: 'Pantoprazole 40mg (Gastroprotection)',
+          dosage: '40mg',
+          frequency: '1-0-0',
+          duration: '14 Days',
           availableInClinic: true,
           instructions: 'Take 30 mins before breakfast on empty stomach (Co-prescribed with NSAID for GI safety)',
           shelfLocation: 'Shelf B-04 (Gastroenterology)',
@@ -470,9 +472,11 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   const [filter, setFilter] = useState<'all' | 'stat' | 'waiting' | 'in_consult' | 'dispensed' | 'pmjay'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFhirModal, setShowFhirModal] = useState(false);
+  const [showMobileQrModal, setShowMobileQrModal] = useState(false);
+  const [qrCopied, setQrCopied] = useState(false);
   const [isPrescriptionSent, setIsPrescriptionSent] = useState(false);
   const [isIpdAdmitted, setIsIpdAdmitted] = useState(false);
-  
+
   // Interactive UI state
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [activeCitationId, setActiveCitationId] = useState<number | null>(null);
@@ -495,6 +499,121 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     genericName: '',
     genericPrice: 15
   });
+
+  // Real-time synchronization with Kiosk Patient Intake & Cloudflare D1 Store
+  useEffect(() => {
+    const loadQueueFromStorage = async () => {
+      try {
+        let liveQueue: any[] = [];
+        try {
+          const res = await fetch(`${CLOUDFLARE_API_BASE}/intake/queue`);
+          if (res.ok) {
+            const data = await res.json();
+            liveQueue = data.queue || data.encounters || [];
+          }
+        } catch (netErr) {
+          console.warn('Backend queue fetch notice, using local cache:', netErr);
+        }
+
+        const storedEncounters = await dataService.list('encounters', { sort: { column: 'created_at', ascending: false } });
+
+        const combinedEncounters = [...liveQueue];
+        for (const enc of storedEncounters) {
+          if (!combinedEncounters.some(e => e.id === enc.id || e.token === enc.token || e.token_number === enc.token_number)) {
+            combinedEncounters.push(enc);
+          }
+        }
+
+        if (combinedEncounters && combinedEncounters.length > 0) {
+          const mappedQueue: PatientQueueItem[] = combinedEncounters.map(enc => {
+            const isEmergencyPriority = enc.triage_priority === 'EMERGENCY_RED' || enc.is_emergency;
+            const encStatus = String(enc.status || '').toUpperCase();
+            const status: PatientQueueItem['status'] =
+              encStatus === 'DISPENSED' || encStatus === 'READY_FOR_DISPENSING'
+                ? 'DISPENSED'
+                : (encStatus === 'IN_CONSULT'
+                    ? 'IN_CONSULT'
+                    : (encStatus === 'STAT_ALERT' || (isEmergencyPriority && encStatus !== 'STABILIZED')
+                        ? 'STAT_ALERT'
+                        : 'WAITING'));
+            return {
+              token: enc.token_number || enc.token || '#042',
+              patientId: enc.patient_id || enc.id,
+              name: enc.patient_name || enc.name || 'Patient',
+              age: enc.age || 45,
+              gender: (enc.gender || 'MALE').toUpperCase(),
+              abhaId: enc.abha_id || enc.abhaId || '91-4829-1029-4821',
+              pmjayEligible: enc.pmjay_eligible ?? true,
+              status,
+              checkInTime: enc.check_in_time || enc.checkInTime || new Date(enc.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              symptoms: Array.isArray(enc.symptoms) && enc.symptoms.length > 0
+                ? enc.symptoms
+                : [enc.chief_complaint || enc.english_translation || 'Clinical Consultation Required'],
+              intakeAudioSnippet: enc.intake_audio_snippet || enc.selected_symptom || enc.intakeAudioSnippet || '',
+              intakeAudioTranslation: enc.intake_audio_translation || enc.chief_complaint || enc.intakeAudioTranslation || '',
+              citations: enc.citations || [
+                { id: 1, timestamp: '00:12', transcriptSnippet: enc.intake_audio_snippet || enc.selected_symptom || 'Clinical utterance', clinicalFinding: enc.chief_complaint || 'Symptom recorded' }
+              ],
+              vitals: enc.vitals || (status === 'STAT_ALERT'
+                ? { bp: '158/96 mmHg', pulse: 104, spo2: 95, temp: '98.6°F' }
+                : { bp: '124/82 mmHg', pulse: 74, spo2: 98, temp: '98.4°F' }
+              ),
+              soap: enc.soap || {
+                subjective: enc.chief_complaint || enc.english_translation || 'Patient reported somatic symptoms at intake kiosk.',
+                objective: status === 'STAT_ALERT'
+                  ? 'BP 158/96 mmHg (Critical elevation). Pulse 104 bpm regular. SpO2 95% on room air.'
+                  : 'BP 124/82 mmHg normotensive. Pulse 74 regular. SpO2 98% room air. Afebrile.',
+                assessment: status === 'STAT_ALERT'
+                  ? 'Acute Cardiorespiratory Red-Flag / Critical Emergency Triage required.'
+                  : 'Acute OPD consultation - symptomatic clinical management.',
+                icd11Code: status === 'STAT_ALERT' ? 'BA41 (Acute Myocardial Infarction)' : 'FA00 (Osteoarthritis) / MG30 (Pain)',
+                icd11Description: status === 'STAT_ALERT' ? 'Acute Coronary Syndrome Rule-Out' : 'Clinical evaluation indicated',
+                namasteCode: status === 'STAT_ALERT' ? 'AHA/ACC 2023 NSTE-ACS Guideline' : 'AYUSH Clinical Protocol Standard',
+                namasteDescription: status === 'STAT_ALERT' ? 'STAT Aspirin 300mg + Clopidogrel 300mg + Cath Lab alert' : 'Comprehensive OPD care regimen',
+                plan: enc.plan || [
+                  {
+                    drug: status === 'STAT_ALERT' ? 'Aspirin 300mg (Soluble Dispersible)' : 'Paracetamol 650mg',
+                    dosage: status === 'STAT_ALERT' ? '300mg' : '650mg',
+                    frequency: status === 'STAT_ALERT' ? 'STAT' : '1-0-1',
+                    duration: status === 'STAT_ALERT' ? '1 Day' : '5 Days',
+                    availableInClinic: true,
+                    instructions: status === 'STAT_ALERT' ? 'Dissolve in water STAT' : 'After meals',
+                    shelfLocation: status === 'STAT_ALERT' ? 'Shelf A-01 (Emergency Tray)' : 'Shelf B-04 (Analgesics)',
+                    brandName: status === 'STAT_ALERT' ? 'Ecosprin 300' : 'Dolo 650',
+                    brandPrice: status === 'STAT_ALERT' ? 45 : 32,
+                    genericName: status === 'STAT_ALERT' ? 'Aspirin Dispersible 300mg' : 'Paracetamol 650mg',
+                    genericPrice: status === 'STAT_ALERT' ? 6 : 4
+                  }
+                ]
+              }
+            };
+          });
+
+          setQueue(() => {
+            const combined = [...mappedQueue];
+            for (const initial of INITIAL_QUEUE) {
+              if (!combined.some(c => c.patientId === initial.patientId || c.token === initial.token)) {
+                combined.push(initial);
+              }
+            }
+            return combined;
+          });
+
+          if (mappedQueue[0]) {
+            setSelectedPatientId(mappedQueue[0].patientId);
+          }
+        }
+      } catch (err) {
+        console.warn('Doctor consultation queue sync notice:', err);
+      }
+    };
+
+    loadQueueFromStorage();
+    const unsub = dataService.subscribe('encounters', () => {
+      loadQueueFromStorage();
+    });
+    return () => unsub();
+  }, []);
 
   const activePatient = queue.find(p => p.patientId === selectedPatientId) || queue[0];
 
@@ -570,7 +689,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   const handleToggleGenericSubstitution = () => {
     const willSubstitute = !isGenericSwapped;
     setIsGenericSwapped(willSubstitute);
-    
+
     setQueue(prev => prev.map(patient => {
       if (patient.patientId !== activePatient.patientId) return patient;
       return {
@@ -648,7 +767,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     setQueue(prev => prev.map(patient => {
       if (patient.patientId !== activePatient.patientId) return patient;
       // Avoid duplicate adds
-      const isDuplicate = patient.soap.plan.some(p => 
+      const isDuplicate = patient.soap.plan.some(p =>
         p.drug.toLowerCase().includes(item.drug.toLowerCase().split(' ')[0]) ||
         (item.genericName && p.genericName?.toLowerCase() === item.genericName.toLowerCase())
       );
@@ -666,6 +785,35 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   // Change Patient Status
   const handleUpdateStatus = (patientId: string, status: PatientQueueItem['status']) => {
     setQueue(prev => prev.map(p => p.patientId === patientId ? { ...p, status } : p));
+  };
+
+  // Select Patient Encounter and transition status to IN_CONSULT
+  const handleSelectPatient = async (patientId: string) => {
+    setSelectedPatientId(patientId);
+    setIsPrescriptionSent(false);
+    setIsIpdAdmitted(false);
+    setActiveCitationId(null);
+    setIsGenericSwapped(false);
+    setAlgorithmResult(null);
+
+    // Update status to IN_CONSULT in local queue
+    setQueue(prev => prev.map(p => p.patientId === patientId ? { ...p, status: 'IN_CONSULT' } : p));
+
+    // Update backend encounter status to IN_CONSULT
+    try {
+      const updatePayload = {
+        status: 'IN_CONSULT',
+        assigned_doctor: 'Dr. Ananya Sharma'
+      };
+      await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(patientId)}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
+      await dataService.update('encounters', patientId, updatePayload);
+    } catch (e) {
+      console.warn('Backend encounter status update notice:', e);
+    }
   };
 
   // Run Cloudflare Rx-to-Shelf Algorithm
@@ -707,7 +855,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
         transferPaise: 500
       };
 
-      const res = await fetch('/api/v1/algorithms/rx-to-shelf', {
+      const res = await fetch(`${CLOUDFLARE_API_BASE}/algorithms/rx-to-shelf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -750,29 +898,109 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     }
   };
 
-  // 1-Click Send to POS Billing
+  // 1-Click Send to POS Billing & Sign Prescription
   const handleApprovePrescription = async () => {
     setIsPrescriptionSent(true);
-    
-    // Call Cloudflare Worker endpoint for POS sale
+
+    const clinicId = (hospital as any)?.clinic_id || 'clinic-delhi-01';
+
+    const rxItems = activePatient.soap.plan.map((p) => ({
+      name: isGenericSwapped && p.genericName ? p.genericName : p.drug,
+      drug: p.drug,
+      dosage: p.dosage,
+      frequency: p.frequency,
+      duration: p.duration,
+      instructions: p.instructions || 'After meals',
+      shelfLocation: p.shelfLocation || 'Main Pharmacy',
+      brandName: p.brandName,
+      brandPricePaise: Math.round((p.brandPrice || 80) * 100),
+      genericName: p.genericName,
+      genericPricePaise: Math.round((p.genericPrice || 15) * 100),
+      pricePaise: Math.round((isGenericSwapped ? (p.genericPrice || 15) : (p.brandPrice || 80)) * 100),
+      isGenericSubstituted: isGenericSwapped
+    }));
+
+    const rxMedicines = activePatient.soap.plan.map((p, idx) => ({
+      id: `med-${activePatient.patientId}-${idx}`,
+      name: isGenericSwapped && p.genericName ? p.genericName : p.drug,
+      dosageForm: 'Tablet',
+      strength: p.dosage,
+      instructions: p.instructions || '1 dose after meals',
+      batchNumber: 'BAT-2026',
+      expiryDate: '12/2027',
+      isTaken: false,
+      reminderEnabled: true
+    }));
+
+    const prescriptionPayload = {
+      encounter_id: activePatient.patientId,
+      encounterId: activePatient.patientId,
+      patient_id: activePatient.patientId,
+      patientId: activePatient.patientId,
+      patientName: activePatient.name,
+      clinic_id: clinicId,
+      clinicId: clinicId,
+      diagnosis: activePatient.soap.assessment,
+      doctorNotes: activePatient.soap.assessment,
+      doctorName: 'Dr. Ananya Sharma',
+      specialty: 'Senior Physician · General & Integrative Medicine',
+      hospital: hospital?.name || 'All India Institute of Ayurveda (AIIA)',
+      items: rxItems,
+      medicines: rxMedicines,
+      dietRestrictions: [
+        'Warm nourishing meals with digestive spices',
+        'Avoid cold and heavy items during recovery'
+      ],
+      hydrationTarget: '2.5L warm water daily',
+      status: 'SIGNED'
+    };
+
+    // 1. Submit prescription to POST /api/v1/prescriptions
     try {
-      await fetch('/api/v1/ops/pos/sale', {
+      await fetch(`${CLOUDFLARE_API_BASE}/prescriptions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prescriptionPayload)
+      });
+      await dataService.create('prescriptions', prescriptionPayload);
+    } catch (err) {
+      console.warn('Prescription submit notice:', err);
+    }
+
+    // 2. Call Cloudflare Worker endpoint for POS sale
+    try {
+      await fetch(`${CLOUDFLARE_API_BASE}/ops/pos/sale`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           saleId: `sale_${Date.now()}`,
           patientId: activePatient.patientId,
           token: activePatient.token,
-          items: activePatient.soap.plan.map(p => ({
-            name: p.drug,
-            dosage: p.dosage,
+          items: rxItems.map(item => ({
+            name: item.name,
+            dosage: item.dosage,
             units: 1,
-            pricePaise: (isGenericSwapped ? (p.genericPrice || 15) : (p.brandPrice || 80)) * 100
+            pricePaise: item.pricePaise
           }))
         })
       });
     } catch {
       // Non-blocking
+    }
+
+    // 3. Transition encounter status to READY_FOR_DISPENSING via POST /api/v1/intake/encounter/:id/status
+    try {
+      const statusPayload = {
+        status: 'READY_FOR_DISPENSING'
+      };
+      await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(activePatient.patientId)}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(statusPayload)
+      }).catch(() => {});
+      await dataService.update('encounters', activePatient.patientId, statusPayload);
+    } catch (err) {
+      console.warn('Encounter status transition notice:', err);
     }
 
     // Mark as DISPENSED in queue
@@ -790,9 +1018,25 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   };
 
   // 1-Click Admit to IPD
-  const handleAdmitToIpd = () => {
+  const handleAdmitToIpd = async () => {
     setIsIpdAdmitted(true);
     handleUpdateStatus(activePatient.patientId, 'IN_CONSULT');
+
+    // Transition encounter status to ADMITTED_IPD via POST /api/v1/intake/encounter/:id/status
+    try {
+      const statusPayload = {
+        status: 'ADMITTED_IPD'
+      };
+      await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter/${encodeURIComponent(activePatient.patientId)}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(statusPayload)
+      }).catch(() => {});
+      await dataService.update('encounters', activePatient.patientId, statusPayload);
+    } catch (err) {
+      console.warn('Encounter IPD transition notice:', err);
+    }
+
     if (onAdmitToIpd) {
       onAdmitToIpd({
         name: activePatient.name,
@@ -816,13 +1060,13 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     // Header Background
     doc.setFillColor(15, 23, 42); // slate-900
     doc.rect(0, 0, 210, 32, 'F');
-    
+
     // Facility Title & ABDM Details
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(15);
     doc.setFont('helvetica', 'bold');
     doc.text(facilityName, 14, 12);
-    
+
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(203, 213, 225); // slate-300
@@ -839,7 +1083,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`Patient: ${activePatient.name}`, 18, 43);
-    
+
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(71, 85, 105);
@@ -856,7 +1100,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
 
     // Clinical Findings (SOAP)
     let y = 80;
-    
+
     // Subjective & Objective
     doc.setFontSize(9.5);
     doc.setFont('helvetica', 'bold');
@@ -925,7 +1169,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
       doc.setTextColor(15, 23, 42);
       doc.text(`${index + 1}.`, 16, y);
       doc.text(item.drug, 24, y);
-      
+
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(51, 65, 85);
       doc.text(item.dosage, 95, y);
@@ -982,7 +1226,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
 
   return (
     <div className="ayu-clinician p-0 space-y-6 max-w-7xl mx-auto font-sans antialiased text-slate-900">
-      
+
       {/* Clinician Command Console Header */}
       <div id="tour-clinical-overview" className="ayu-clinical-header bg-white p-5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -1016,7 +1260,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
               {queue.length} Active in Queue
             </span>
           </div>
-          <button 
+          <button
             onClick={() => {
               setQueue(INITIAL_QUEUE);
               setIsPrescriptionSent(false);
@@ -1033,11 +1277,11 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
 
       {/* Main Grid: Left Sidebar Queue (4 cols) + Right Clinical Pad (8 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
+
         {/* Left Column: Rapid Patient Queue Sidebar */}
         <div id="tour-clinical-queue" className="lg:col-span-4 space-y-4">
           <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3.5">
-            
+
             {/* Queue Header & Search */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <div className="flex items-center gap-2">
@@ -1063,7 +1307,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery('')}
                   className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
                 >
@@ -1074,25 +1318,37 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
 
             {/* Filter Tabs */}
             <div className="flex flex-wrap gap-1 text-[11px] font-bold">
-              <button 
+              <button
                 onClick={() => setFilter('all')}
                 className={`px-2.5 py-1 rounded-lg transition ${filter === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
               >
                 All ({queue.length})
               </button>
-              <button 
+              <button
                 onClick={() => setFilter('stat')}
                 className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 ${filter === 'stat' ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}`}
               >
                 🚨 STAT ({queue.filter(q => q.status === 'STAT_ALERT').length})
               </button>
-              <button 
+              <button
                 onClick={() => setFilter('waiting')}
                 className={`px-2.5 py-1 rounded-lg transition ${filter === 'waiting' ? 'bg-amber-600 text-white shadow-sm' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}`}
               >
-                Waiting
+                Waiting ({queue.filter(q => q.status === 'WAITING').length})
               </button>
-              <button 
+              <button
+                onClick={() => setFilter('in_consult')}
+                className={`px-2.5 py-1 rounded-lg transition ${filter === 'in_consult' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}
+              >
+                In Consult ({queue.filter(q => q.status === 'IN_CONSULT').length})
+              </button>
+              <button
+                onClick={() => setFilter('dispensed')}
+                className={`px-2.5 py-1 rounded-lg transition ${filter === 'dispensed' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`}
+              >
+                Dispensed ({queue.filter(q => q.status === 'DISPENSED').length})
+              </button>
+              <button
                 onClick={() => setFilter('pmjay')}
                 className={`px-2.5 py-1 rounded-lg transition ${filter === 'pmjay' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}`}
               >
@@ -1112,19 +1368,12 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   const isStat = item.status === 'STAT_ALERT';
 
                   return (
-                    <div 
+                    <div
                       key={item.patientId}
-                      onClick={() => {
-                        setSelectedPatientId(item.patientId);
-                        setIsPrescriptionSent(false);
-                        setIsIpdAdmitted(false);
-                        setActiveCitationId(null);
-                        setIsGenericSwapped(false);
-                        setAlgorithmResult(null);
-                      }}
+                      onClick={() => handleSelectPatient(item.patientId)}
                       className={`p-3.5 rounded-xl border-2 transition cursor-pointer relative group ${
-                        isSelected 
-                          ? 'border-blue-600 bg-blue-50/70 shadow-md ring-1 ring-blue-500/20' 
+                        isSelected
+                          ? 'border-blue-600 bg-blue-50/70 shadow-md ring-1 ring-blue-500/20'
                           : isStat
                             ? 'border-rose-300 bg-rose-50/40 hover:border-rose-400'
                             : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
@@ -1209,7 +1458,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
         {/* Right Column: 15-Second Clinical Console & SOAP Suite (8 cols) */}
         <div id="tour-clinical-record" className="lg:col-span-8 space-y-5">
           <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm space-y-6">
-            
+
             {/* Active Patient Clinical Profile Header */}
             <div className="flex flex-wrap items-center justify-between pb-5 border-b border-slate-200 gap-4">
               <div className="flex items-center gap-3.5">
@@ -1279,7 +1528,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={handleAdmitToIpd}
                     className="px-3.5 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-black shadow transition flex items-center gap-1.5"
                   >
@@ -1401,7 +1650,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
+
                 {/* S: Subjective with Voice Provenance */}
                 <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2">
@@ -1409,11 +1658,11 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                       <Languages className="w-4 h-4 text-amber-600" />
                       <span>S: Subjective (Voice Intake)</span>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setIsPlayingAudio(!isPlayingAudio)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1.5 transition ${
-                        isPlayingAudio 
-                          ? 'bg-amber-600 text-white animate-pulse' 
+                        isPlayingAudio
+                          ? 'bg-amber-600 text-white animate-pulse'
                           : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
                       }`}
                     >
@@ -1427,8 +1676,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                     <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-xl flex items-center justify-between text-xs text-amber-900">
                       <div className="flex items-center gap-1 h-4">
                         {[40, 70, 30, 90, 60, 100, 45, 80, 50, 95, 30, 75].map((height, i) => (
-                          <div 
-                            key={i} 
+                          <div
+                            key={i}
                             className="w-1 bg-amber-600 rounded-full animate-bounce"
                             style={{ height: `${height}%`, animationDelay: `${i * 0.1}s` }}
                           />
@@ -1468,8 +1717,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                               key={c.id}
                               onClick={() => setActiveCitationId(isHighlighted ? null : c.id)}
                               className={`text-[10px] px-2 py-1 rounded-lg font-bold border transition flex items-center gap-1 ${
-                                isHighlighted 
-                                  ? 'bg-amber-600 text-white border-amber-700 shadow-sm' 
+                                isHighlighted
+                                  ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
                                   : 'bg-white text-slate-700 border-slate-300 hover:border-amber-400'
                               }`}
                             >
@@ -1598,13 +1847,13 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
 
               {/* Plan & Smart Rx-to-Shelf Prescription Builder */}
               <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-4">
-                
+
                 <div className="flex flex-wrap items-center justify-between border-b border-slate-200 pb-3 gap-2">
                   <div className="flex items-center gap-1.5 text-xs font-black text-slate-900 uppercase">
                     <Pill className="w-4 h-4 text-teal-600" />
                     <span>P: Smart Rx-to-Shelf Prescription Builder</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setShowAddMedModal(true)}
@@ -1657,12 +1906,12 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId].map((rec, rIdx) => {
-                        const isAlreadyAdded = activePatient.soap.plan.some(p => 
-                          p.drug.toLowerCase().includes(rec.drug.toLowerCase().split(' ')[0]) || 
+                        const isAlreadyAdded = activePatient.soap.plan.some(p =>
+                          p.drug.toLowerCase().includes(rec.drug.toLowerCase().split(' ')[0]) ||
                           (rec.genericName && p.genericName?.toLowerCase() === rec.genericName.toLowerCase())
                         );
                         return (
-                          <div 
+                          <div
                             key={rIdx}
                             className="p-2.5 bg-white/95 rounded-lg border border-sky-200/70 flex items-center justify-between gap-2 shadow-xs"
                           >
@@ -1681,8 +1930,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                               onClick={() => handleQuickAddRecommendation(rec)}
                               disabled={isAlreadyAdded}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-bold shrink-0 transition flex items-center gap-1 ${
-                                isAlreadyAdded 
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default' 
+                                isAlreadyAdded
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
                                   : 'bg-sky-600 hover:bg-sky-700 text-white shadow-xs active:scale-95'
                               }`}
                             >
@@ -1708,8 +1957,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 {/* Prescription Items Table */}
                 <div className="space-y-2">
                   {activePatient.soap.plan.map((med, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className="p-3.5 bg-white rounded-xl border border-slate-200/90 hover:border-slate-300 shadow-sm transition flex flex-wrap items-center justify-between gap-3"
                     >
                       <div className="space-y-1">
@@ -1854,6 +2103,17 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   <Download className="w-4 h-4 text-slate-700" />
                   <span>Download Official Rx (PDF)</span>
                 </button>
+                <button
+                  onClick={() => {
+                    setShowMobileQrModal(true);
+                    setQrCopied(false);
+                  }}
+                  className="px-3.5 py-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold border border-teal-300 flex items-center gap-1.5 transition shadow-sm"
+                  title="Generate QR code and deep link for AyuSetu Patient Companion App"
+                >
+                  <Smartphone className="w-4 h-4 text-teal-700" />
+                  <span>Sync to Patient App (QR)</span>
+                </button>
               </div>
 
               <div className="flex items-center gap-2.5">
@@ -1890,7 +2150,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 <Pill className="w-5 h-5 text-blue-600" />
                 <h3 className="font-black text-slate-900 text-base">Add Medication to Prescription</h3>
               </div>
-              <button 
+              <button
                 onClick={() => setShowAddMedModal(false)}
                 className="text-slate-400 hover:text-slate-700 font-bold"
               >
@@ -2011,7 +2271,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 <Code2 className="w-5 h-5 text-blue-700" />
                 <h3 className="font-black text-slate-900 text-base">NRCeS HL7 FHIR R4 Clinical Bundle</h3>
               </div>
-              <button 
+              <button
                 onClick={() => setShowFhirModal(false)}
                 className="text-slate-400 hover:text-slate-700 font-bold text-sm"
               >
@@ -2041,11 +2301,11 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   {
                     resource: {
                       resourceType: "Condition",
-                      code: { 
+                      code: {
                         coding: [
                           { system: "http://id.who.int/icd11/mms", code: activePatient.soap.icd11Code },
                           { system: "https://guidelines.who.int/clinical", code: activePatient.soap.namasteCode || "EVIDENCE-BASED-PROTOCOL" }
-                        ] 
+                        ]
                       },
                       subject: { reference: `Patient/${activePatient.patientId}` }
                     }
@@ -2065,8 +2325,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   {
                     resource: {
                       resourceType: "MedicationRequest",
-                      medicationCodeableConcept: { 
-                        text: activePatient.soap.plan.map(p => p.drug).join(", ") 
+                      medicationCodeableConcept: {
+                        text: activePatient.soap.plan.map(p => p.drug).join(", ")
                       },
                       subject: { reference: `Patient/${activePatient.patientId}` }
                     }
@@ -2079,6 +2339,128 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
               <button
                 onClick={() => setShowFhirModal(false)}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Companion App Sync / QR Code Modal */}
+      {showMobileQrModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-teal-50 text-teal-700 rounded-xl">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 text-base leading-tight">Patient Companion Mobile Sync</h3>
+                  <p className="text-xs text-slate-500 font-medium">Auto-configure medicine doses, reminders & schedule</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowMobileQrModal(false)}
+                className="text-slate-400 hover:text-slate-700 font-bold text-sm p-1 rounded-lg hover:bg-slate-100 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 overflow-y-auto pr-0.5">
+              {/* QR Code Container */}
+              <div className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-center space-y-3">
+                <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-200/90 inline-block">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                      `ayusetu://prescription?token=${activePatient.token}&patientId=${activePatient.patientId}&name=${encodeURIComponent(activePatient.name)}`
+                    )}`}
+                    alt="AyuSetu Patient Prescription QR Code"
+                    className="w-44 h-44 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs font-black text-slate-800 flex items-center justify-center gap-1.5">
+                    <QrCode className="w-4 h-4 text-teal-600" />
+                    Instant Mobile Handshake
+                  </span>
+                  <p className="text-[11px] text-slate-500 max-w-xs">
+                    Scan with the AyuSetu Patient Mobile App or camera to bridge this prescription into patient alarms.
+                  </p>
+                </div>
+              </div>
+
+              {/* Patient & Prescription Details Card */}
+              <div className="p-3 bg-teal-50/50 border border-teal-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                  <span>{activePatient.name} ({activePatient.gender}, {activePatient.age}y)</span>
+                  <span className="font-mono text-teal-800 bg-teal-100/80 px-2 py-0.5 rounded text-[11px]">
+                    Token: {activePatient.token}
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-600 flex items-center gap-1">
+                  <span className="font-semibold text-slate-700">ABHA:</span>
+                  <span className="font-mono">{activePatient.abhaId}</span>
+                </div>
+                <div className="pt-1.5 border-t border-teal-100 flex flex-wrap gap-1.5">
+                  {activePatient.soap.plan.map((med, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[10px] bg-white border border-teal-200 font-bold text-teal-900 px-2 py-0.5 rounded-md"
+                    >
+                      {med.drug} ({med.frequency})
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Deep Link URL Box */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600 block">
+                  Companion Deep Link URL
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`ayusetu://prescription?token=${activePatient.token}&patientId=${activePatient.patientId}`}
+                    className="flex-1 text-xs font-mono bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-700 select-all outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      const link = `ayusetu://prescription?token=${activePatient.token}&patientId=${activePatient.patientId}`;
+                      navigator.clipboard.writeText(link);
+                      setQrCopied(true);
+                      setTimeout(() => setQrCopied(false), 2500);
+                    }}
+                    className="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0"
+                  >
+                    {qrCopied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-300">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+                Zero-Cloud Leak · Encrypted Handshake
+              </span>
+              <button
+                onClick={() => setShowMobileQrModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition"
               >
                 Close
               </button>

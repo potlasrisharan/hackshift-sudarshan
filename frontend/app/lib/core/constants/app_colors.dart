@@ -54,5 +54,17 @@ class AppColors {
   static const Color vitalisTeal = Color(0xFF14B8A6);
   static const Color vitalisEmerald = Color(0xFF10B981);
   static const Color vitalisIndigo = Color(0xFF6366F1);
+
+  // Clean Light Website Theme (Clinical & Operations)
+  static const Color clinicalBg = Color(0xFFF8FAFC);
+  static const Color clinicalCard = Color(0xFFFFFFFF);
+  static const Color clinicalBorder = Color(0xFFE2E8F0);
+  static const Color clinicalBorderLight = Color(0xFFF1F5F9);
+  static const Color medicalTeal = Color(0xFF087D71);
+  static const Color medicalTealLight = Color(0xFF0D9488);
+  static const Color clinicalTextDark = Color(0xFF0F172A);
+  static const Color clinicalTextPrimary = Color(0xFF0F172A);
+  static const Color clinicalTextSub = Color(0xFF334155);
+  static const Color clinicalTextMuted = Color(0xFF64748B);
 }
 

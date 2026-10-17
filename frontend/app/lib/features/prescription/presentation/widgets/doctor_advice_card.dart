@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../data/models/prescription_models.dart";
 
@@ -21,34 +20,43 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.ayushGreen.withValues(alpha: 0.4),
-          width: 1.2,
-        ),
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.ayushGreen.withValues(alpha: 0.08),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              border: Border(
+                bottom: BorderSide(color: Color(0xFFE2E8F0)),
+              ),
             ),
             child: Row(
               children: [
+                // Medical teal stethoscope badge
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
-                    color: AppColors.ayushGreen.withValues(alpha: 0.2),
+                    color: const Color(0xFFE6F7F2),
                     shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFA7F3D0)),
                   ),
                   child: const Icon(
                     Icons.medical_services_rounded,
-                    color: AppColors.ayushGreen,
+                    color: Color(0xFF087D71),
                     size: 24,
                   ),
                 ),
@@ -64,26 +72,27 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                               advice.doctorName,
                               style: const TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF0F172A),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.ayushGreen,
-                              borderRadius: BorderRadius.circular(4),
+                              color: const Color(0xFFE6F7F2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: const Color(0xFFA7F3D0)),
                             ),
                             child: const Text(
                               "AYUSH VERIFIED",
                               style: TextStyle(
-                                fontSize: 8.5,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.white,
+                                color: Color(0xFF087D71),
+                                letterSpacing: 0.3,
                               ),
                             ),
                           ),
@@ -93,8 +102,9 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                       Text(
                         advice.specialty,
                         style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF087D71),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -102,8 +112,8 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                       Text(
                         "${advice.hospital} · ${advice.opdRoom}",
                         style: const TextStyle(
-                          fontSize: 10,
-                          color: AppColors.textMuted,
+                          fontSize: 11,
+                          color: Color(0xFF64748B),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -115,7 +125,7 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                     _isExpanded
                         ? Icons.keyboard_arrow_up_rounded
                         : Icons.keyboard_arrow_down_rounded,
-                    color: AppColors.textSecondary,
+                    color: const Color(0xFF64748B),
                   ),
                   onPressed: () => setState(() => _isExpanded = !_isExpanded),
                 ),
@@ -124,7 +134,7 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -133,19 +143,18 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                   children: [
                     Flexible(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppColors.background,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: AppColors.surfaceElevated),
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
                         child: Text(
                           "${AppStrings.rxIdLabel}: ${advice.rxId}",
                           style: const TextStyle(
-                            fontSize: 11,
+                            fontSize: 11.5,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.primaryLight,
+                            color: Color(0xFF087D71),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -156,8 +165,8 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                       child: Text(
                         "${AppStrings.validTillLabel}: ${advice.validTillDate}",
                         style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textMuted,
+                          fontSize: 11.5,
+                          color: Color(0xFF64748B),
                           fontWeight: FontWeight.w500,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -168,7 +177,7 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
 
                 if (_isExpanded) ...[
                   const SizedBox(height: 14),
-                  const Divider(color: AppColors.surfaceElevated, height: 1),
+                  const Divider(color: Color(0xFFE2E8F0), height: 1),
                   const SizedBox(height: 12),
 
                   const Text(
@@ -176,27 +185,28 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.warning,
+                      color: Color(0xFFD97706),
                       letterSpacing: 0.3,
                     ),
                   ),
                   const SizedBox(height: 6),
                   for (final restriction in advice.dietRestrictions)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.only(bottom: 5),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("• ",
-                              style: TextStyle(
-                                  color: AppColors.warning, fontSize: 13)),
+                          const Text(
+                            "• ",
+                            style: TextStyle(color: Color(0xFFD97706), fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
                           Expanded(
                             child: Text(
                               restriction,
                               style: const TextStyle(
-                                fontSize: 11.5,
-                                color: AppColors.textPrimary,
-                                height: 1.3,
+                                fontSize: 12,
+                                color: Color(0xFF1E293B),
+                                height: 1.35,
                               ),
                             ),
                           ),
@@ -204,22 +214,32 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                       ),
                     ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
 
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.vitalisTeal.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
+                      color: const Color(0xFFE6F7F2),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.vitalisTeal.withValues(alpha: 0.3),
+                        color: const Color(0xFFA7F3D0),
                       ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.water_drop_rounded,
-                            color: AppColors.vitalisTeal, size: 20),
-                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.water_drop_rounded,
+                            color: Color(0xFF087D71),
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,18 +247,18 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                               const Text(
                                 AppStrings.hydrationGoalTitle,
                                 style: TextStyle(
-                                  fontSize: 10.5,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.vitalisTeal,
+                                  color: Color(0xFF087D71),
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 advice.hydrationTarget,
                                 style: const TextStyle(
-                                  fontSize: 11.5,
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: Color(0xFF0F172A),
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -248,13 +268,12 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
 
                   Row(
                     children: [
-                      const Icon(Icons.event_available_rounded,
-                          size: 16, color: AppColors.primaryLight),
-                      const SizedBox(width: 6),
+                      const Icon(Icons.event_available_rounded, size: 16, color: Color(0xFF087D71)),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
@@ -262,17 +281,17 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                               const TextSpan(
                                 text: "${AppStrings.followUpScheduleTitle}: ",
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondary,
+                                  color: Color(0xFF475569),
                                 ),
                               ),
                               TextSpan(
                                 text: advice.followUpDate,
                                 style: const TextStyle(
-                                  fontSize: 11.5,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.primaryLight,
+                                  color: Color(0xFF087D71),
                                 ),
                               ),
                             ],
@@ -283,15 +302,23 @@ class _DoctorAdviceCardState extends State<DoctorAdviceCard> {
                     ],
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
-                  Text(
-                    advice.doctorNotes,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontStyle: FontStyle.italic,
-                      color: AppColors.textSecondary,
-                      height: 1.35,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Text(
+                      advice.doctorNotes,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFF475569),
+                        height: 1.35,
+                      ),
                     ),
                   ),
                 ],

@@ -49,8 +49,10 @@ export function vitalisPreventiveEligibility(
   }
 
   // 1. Diabetes / HbA1c Screening
-  const hasPreDiabetes = profile.diagnosedConditions.some((c) =>
-    c.toLowerCase().includes("prediabetes"),
+  const hasPreDiabetes = profile.diagnosedConditions.some(
+    (c) =>
+      c.toLowerCase().includes("prediabetes") ||
+      c.toLowerCase().includes("pre-diabetes"),
   );
   const familyDiabetes = profile.familyHistory.some((f) =>
     f.toLowerCase().includes("diabetes"),

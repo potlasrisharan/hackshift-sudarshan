@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../../data/models/her_models.dart";
 
@@ -13,7 +12,7 @@ class HerExplainabilitySheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       decoration: const BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
@@ -23,24 +22,24 @@ class HerExplainabilitySheet extends StatelessWidget {
           children: [
             Center(
               child: Container(
-                width: 40,
-                height: 4,
+                width: 44,
+                height: 5,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: AppColors.textMuted,
-                  borderRadius: BorderRadius.circular(2),
+                  color: const Color(0xFFFDA4AF),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
             ),
             Row(
               children: [
-                const Icon(Icons.info_outline, color: AppColors.primaryLight, size: 24),
+                const Icon(Icons.info_outline, color: Color(0xFFE11D48), size: 24),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     finding.title,
                     style: const TextStyle(
-                      color: AppColors.textPrimary,
+                      color: Color(0xFF9F1239),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -54,18 +53,19 @@ class HerExplainabilitySheet extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: const Color(0xFFFCE7EC),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFFDA4AF)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.verified_user_outlined, color: AppColors.ayushGreen, size: 18),
+                  const Icon(Icons.verified_user_outlined, color: Color(0xFFE11D48), size: 18),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       "Deterministic Algorithm ${finding.ruleVersion} (Not an autonomous diagnosis)",
                       style: const TextStyle(
-                        color: AppColors.ayushGreen,
+                        color: Color(0xFF9F1239),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -78,7 +78,7 @@ class HerExplainabilitySheet extends StatelessWidget {
             const Text(
               "Clinical Rationale",
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: Color(0xFF9F1239),
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -87,7 +87,7 @@ class HerExplainabilitySheet extends StatelessWidget {
             Text(
               finding.rationale,
               style: const TextStyle(
-                color: AppColors.textSecondary,
+                color: Color(0xFF475569),
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -96,14 +96,14 @@ class HerExplainabilitySheet extends StatelessWidget {
             const Text(
               "Supporting Evidence Gathered",
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: Color(0xFF9F1239),
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             if (finding.supportingEvidence.isEmpty)
-              const Text("No abnormal features logged.", style: TextStyle(color: AppColors.textMuted, fontSize: 13))
+              const Text("No abnormal features logged.", style: TextStyle(color: Color(0xFF64748B), fontSize: 13))
             else
               ...finding.supportingEvidence.map(
                 (e) => Padding(
@@ -114,13 +114,13 @@ class HerExplainabilitySheet extends StatelessWidget {
                       Icon(
                         e.verified ? Icons.check_circle : Icons.radio_button_checked,
                         size: 16,
-                        color: e.verified ? AppColors.success : AppColors.primaryLight,
+                        color: e.verified ? const Color(0xFF059669) : const Color(0xFFE11D48),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           "${e.label} (${e.verified ? 'Verified Lab' : 'Patient Log'})",
-                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+                          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 13),
                         ),
                       ),
                     ],
@@ -131,7 +131,7 @@ class HerExplainabilitySheet extends StatelessWidget {
             const Text(
               "Missing Diagnostic Information",
               style: TextStyle(
-                color: AppColors.warning,
+                color: Color(0xFFD97706),
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -142,12 +142,12 @@ class HerExplainabilitySheet extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
                   children: [
-                    const Icon(Icons.help_outline, size: 14, color: AppColors.warning),
+                    const Icon(Icons.help_outline, size: 14, color: Color(0xFFD97706)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         m,
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        style: const TextStyle(color: Color(0xFF475569), fontSize: 12),
                       ),
                     ),
                   ],
@@ -158,21 +158,22 @@ class HerExplainabilitySheet extends StatelessWidget {
             const Text(
               "Known Limitations",
               style: TextStyle(
-                color: AppColors.textMuted,
+                color: Color(0xFF64748B),
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 6),
             ...finding.limitations.map(
-              (l) => Text("• $l", style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+              (l) => Text("• $l", style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: const Color(0xFFE11D48),
                 minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 2,
               ),
               onPressed: () => Navigator.pop(context),
               child: const Text("Understood", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),

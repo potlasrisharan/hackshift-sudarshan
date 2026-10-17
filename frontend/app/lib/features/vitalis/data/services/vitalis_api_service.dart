@@ -46,6 +46,58 @@ class VitalisApiService {
     return profile;
   }
 
+  Future<bool> recordHealthspanCheckIn({
+    required double weeklyActivityMinutes,
+    required int weeklyStrengthSessions,
+    required double averageSleepHours,
+    required double activityAdherencePercent,
+    required int fatigueRating,
+    required bool symptomsDuringExercise,
+  }) async {
+    final now = DateTime.now().toUtc();
+    final observedAt = now.toIso8601String();
+    final weekStart = DateTime.utc(now.year, now.month, now.day - ((now.weekday + 6) % 7));
+    final timestamp = weekStart.millisecondsSinceEpoch;
+    final observations = <Map<String, Object?>>[
+      _behaviorObservation("weekly_activity_minutes", "Weekly activity minutes", weeklyActivityMinutes, "minutes/week", observedAt, timestamp),
+      _behaviorObservation("weekly_strength_sessions", "Weekly strength sessions", weeklyStrengthSessions.toDouble(), "sessions/week", observedAt, timestamp),
+      _behaviorObservation("sleep_hours_average", "Average sleep duration", averageSleepHours, "hours/night", observedAt, timestamp),
+      _behaviorObservation("activity_adherence_percent", "Activity plan adherence", activityAdherencePercent, "percent", observedAt, timestamp),
+      _behaviorObservation("fatigue_rating", "Recent fatigue rating", fatigueRating.toDouble(), "0-10", observedAt, timestamp),
+      _behaviorObservation("exercise_symptoms_reported", "Symptoms during exercise", symptomsDuringExercise ? 1 : 0, "boolean", observedAt, timestamp),
+    ];
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/observations"),
+        headers: _headers,
+        body: jsonEncode(observations),
+      );
+      return response.statusCode == 201 || response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Map<String, Object?> _behaviorObservation(
+    String metricCode,
+    String metricName,
+    double value,
+    String unit,
+    String observedAt,
+    int timestamp,
+  ) => {
+        "id": "vitalis_${patientId}_${metricCode}_$timestamp",
+        "metricCode": metricCode,
+        "metricName": metricName,
+        "valueNumeric": value,
+        "unit": unit,
+        "observedStartUtc": observedAt,
+        "ianaTimezone": "Asia/Kolkata",
+        "sourceType": "patient_reported",
+        "sourceId": "mobile_healthspan_check_in",
+        "quality": "unverified",
+      };
+
   Future<VitalisHpiResultModel> fetchHealthspanIndex() async {
     try {
       final res = await http.get(Uri.parse("$baseUrl/healthspan-index"), headers: _headers);
@@ -55,7 +107,13 @@ class VitalisApiService {
         return VitalisHpiResultModel.fromJson(data);
       }
     } catch (_) {}
-    return VitalisSyntheticFixtures.personaA.hpiResult;
+    return const VitalisHpiResultModel(
+      hpiScore: null,
+      coverage: 0,
+      status: "INSUFFICIENT_DATA",
+      domains: [],
+      limitations: ["Healthspan data could not be loaded. Reconnect and refresh to retrieve your observations."],
+    );
   }
 
   Future<VitalisBiomarkerTrendModel> fetchBiomarkerTrend() async {

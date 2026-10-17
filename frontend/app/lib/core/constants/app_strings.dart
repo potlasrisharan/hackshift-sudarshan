@@ -1,7 +1,7 @@
 class AppStrings {
   static const String appName = "AYUSETU";
   static const String tagline = "Continuity-of-Care Operating System & Wellness Suite";
-  static const String hospitalName = "All India Institute of Ayurveda (AIIA)";
+  static const String hospitalName = "AyuSetu Clinical Health Center";
   static const String problemStatementId = "HackShift 2026";
 
   // Portals
@@ -34,8 +34,8 @@ class AppStrings {
   static const String shiftRoster = "Duty Shift Management";
 
   // Yoga
-  static const String yogaHeader = "Ayurvedic & Somatic Yoga Therapy";
-  static const String doshaProfile = "Dosha & Symptom Assessment";
+  static const String yogaHeader = "Somatic Yoga & Mobility Therapy";
+  static const String doshaProfile = "Functional & Symptom Assessment";
   static const String recommendedAsanas = "Prescribed Asana Protocols";
 
   // Longevity

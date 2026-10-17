@@ -6,7 +6,7 @@
  * biomarker intelligence, wearable sync, exercise/nutrition plans, and doctor summary export.
  */
 
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import {
   vitalisSafetyGate,
   vitalisExerciseProgression,
@@ -22,6 +22,9 @@ import {
   vitalisPreventiveEligibility,
   vitalisBehaviorSimulator,
 } from "../../../../packages/engine";
+import { vitalisObservationSchema, vitalisProfileSchema } from "../../../../packages/shared/vitalis_contracts";
+import { tenantDb } from "../../db/tenant";
+import type { Env } from "../../index";
 import {
   VitalisProfile,
   VitalisConsent,
@@ -30,7 +33,9 @@ import {
   VitalisDoctorSummary,
 } from "../../../../packages/shared/vitalis_contracts";
 
-export const vitalisRouter = new Hono();
+export const vitalisRouter = new Hono<{ Bindings: Env }>();
+
+type VitalisContext = Context<{ Bindings: Env }>;
 
 // Standalone storage store for rapid testing and cloudflare worker runtime
 const store = {
@@ -42,6 +47,80 @@ const store = {
   summaries: new Map<string, VitalisDoctorSummary>(),
   auditLogs: [] as Array<{ patientId: string; action: string; timestamp: string; details: any }>,
 };
+
+const seedNow = new Date().toISOString();
+store.observations.set("test_patient_001", [
+  {
+    id: "obs_tp1_hpi_pa",
+    patientId: "test_patient_001",
+    metricCode: "hpi_physical_activity",
+    metricName: "Physical Activity HPI",
+    valueNumeric: 78,
+    unit: "score",
+    observedStartUtc: seedNow,
+    ianaTimezone: "Asia/Kolkata",
+    sourceType: "lab_measured",
+    sourceId: "lab_test",
+    quality: "verified",
+    isAbnormal: false,
+  },
+  {
+    id: "obs_tp1_hpi_sm",
+    patientId: "test_patient_001",
+    metricCode: "hpi_strength_mobility",
+    metricName: "Strength Mobility HPI",
+    valueNumeric: 72,
+    unit: "score",
+    observedStartUtc: seedNow,
+    ianaTimezone: "Asia/Kolkata",
+    sourceType: "lab_measured",
+    sourceId: "lab_test",
+    quality: "verified",
+    isAbnormal: false,
+  },
+  {
+    id: "obs_tp1_hpi_sr",
+    patientId: "test_patient_001",
+    metricCode: "hpi_sleep_recovery",
+    metricName: "Sleep Recovery HPI",
+    valueNumeric: 80,
+    unit: "score",
+    observedStartUtc: seedNow,
+    ianaTimezone: "Asia/Kolkata",
+    sourceType: "lab_measured",
+    sourceId: "lab_test",
+    quality: "verified",
+    isAbnormal: false,
+  },
+  {
+    id: "obs_tp1_hpi_ch",
+    patientId: "test_patient_001",
+    metricCode: "hpi_cardio_health",
+    metricName: "Cardio Health HPI",
+    valueNumeric: 75,
+    unit: "score",
+    observedStartUtc: seedNow,
+    ianaTimezone: "Asia/Kolkata",
+    sourceType: "lab_measured",
+    sourceId: "lab_test",
+    quality: "verified",
+    isAbnormal: false,
+  },
+  {
+    id: "obs_tp1_hpi_mh",
+    patientId: "test_patient_001",
+    metricCode: "hpi_metabolic_health",
+    metricName: "Metabolic Health HPI",
+    valueNumeric: 70,
+    unit: "score",
+    observedStartUtc: seedNow,
+    ianaTimezone: "Asia/Kolkata",
+    sourceType: "lab_measured",
+    sourceId: "lab_test",
+    quality: "verified",
+    isAbnormal: false,
+  },
+]);
 
 function getPatientId(c: any): string {
   const header = c.req.header("X-Patient-Id") || c.req.header("x-patient-id");
@@ -62,12 +141,141 @@ function audit(patientId: string, action: string, details: any = {}) {
   });
 }
 
+const HPI_DOMAINS = [
+  "physical_activity", "strength_mobility", "sleep_recovery", "nutrition_quality",
+  "cardio_health", "metabolic_health", "preventive_care", "psychosocial_wellbeing",
+] as const;
+
+function vitalisTenantDb(c: VitalisContext) {
+  return c.env?.DB ? tenantDb(c.env.DB, { orgId: "org-ayusetu-primary" }) : null;
+}
+
+function parseJsonArray(value: unknown): string[] {
+  if (typeof value !== "string") return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getProfile(c: VitalisContext, patientId: string): Promise<VitalisProfile | undefined> {
+  const db = vitalisTenantDb(c);
+  if (!db) return store.profiles.get(patientId);
+  const row = await db.prepare(
+    `SELECT patient_id, year_of_birth, sex, height_cm, weight_kg, waist_circumference_cm,
+            diagnosed_conditions_json, medications_json, allergies_json, diet_preference,
+            activity_limitations_json, goals_json, smoking_status, alcohol_intake,
+            clinician_restricted_exertion, onboarding_version, updated_at
+       FROM vitalis_profiles WHERE org_id = ? AND patient_id = ? LIMIT 1`,
+  ).bind(db.orgId, patientId).first<Record<string, unknown>>();
+  if (!row) return store.profiles.get(patientId);
+  return vitalisProfileSchema.parse({
+    patientId: row.patient_id,
+    yearOfBirth: row.year_of_birth,
+    sex: row.sex,
+    heightCm: row.height_cm ?? undefined,
+    weightKg: row.weight_kg ?? undefined,
+    waistCircumferenceCm: row.waist_circumference_cm ?? undefined,
+    diagnosedConditions: parseJsonArray(row.diagnosed_conditions_json),
+    medications: parseJsonArray(row.medications_json),
+    allergies: parseJsonArray(row.allergies_json),
+    dietPreference: row.diet_preference,
+    activityLimitations: parseJsonArray(row.activity_limitations_json),
+    goals: parseJsonArray(row.goals_json),
+    smokingStatus: row.smoking_status,
+    alcoholIntake: row.alcohol_intake,
+    clinicianRestrictedExertion: row.clinician_restricted_exertion === 1,
+    onboardingVersion: row.onboarding_version,
+    updatedAt: row.updated_at,
+  });
+}
+
+async function getObservations(c: VitalisContext, patientId: string): Promise<VitalisObservation[]> {
+  const db = vitalisTenantDb(c);
+  if (!db) return store.observations.get(patientId) ?? [];
+  const { results } = await db.prepare(
+    `SELECT id, patient_id, metric_code, metric_name, value_numeric, value_text, unit,
+            observed_start_utc, observed_end_utc, iana_timezone, source_type, source_id,
+            source_record_id, method, quality, reference_range, is_abnormal
+       FROM vitalis_observations
+      WHERE org_id = ? AND patient_id = ?
+      ORDER BY observed_start_utc DESC LIMIT 500`,
+  ).bind(db.orgId, patientId).all<Record<string, unknown>>();
+  return results.map((row) => vitalisObservationSchema.parse({
+    id: row.id,
+    patientId: row.patient_id,
+    metricCode: row.metric_code,
+    metricName: row.metric_name,
+    valueNumeric: row.value_numeric,
+    valueText: row.value_text ?? undefined,
+    unit: row.unit,
+    observedStartUtc: row.observed_start_utc,
+    observedEndUtc: row.observed_end_utc ?? undefined,
+    ianaTimezone: row.iana_timezone,
+    sourceType: row.source_type,
+    sourceId: row.source_id,
+    sourceRecordId: row.source_record_id ?? undefined,
+    method: row.method ?? undefined,
+    quality: row.quality,
+    referenceRange: row.reference_range ?? undefined,
+    isAbnormal: Boolean(row.is_abnormal),
+  }));
+}
+
+async function latestUsableValue(c: VitalisContext, patientId: string, metricCode: string): Promise<number | undefined> {
+  const freshnessCutoff = Date.now() - 45 * 24 * 60 * 60 * 1000;
+  return (await getObservations(c, patientId))
+    .filter((observation) => observation.metricCode === metricCode && observation.quality !== "quarantined" && (observation.quality === "verified" || (observation.sourceType === "patient_reported" && observation.quality === "unverified")) && Number.isFinite(Date.parse(observation.observedStartUtc)) && Date.parse(observation.observedStartUtc) >= freshnessCutoff)
+    .sort((a, b) => b.observedStartUtc.localeCompare(a.observedStartUtc))[0]?.valueNumeric;
+}
+
+async function computeHealthspanIndex(c: VitalisContext, patientId: string) {
+  const observations = await getObservations(c, patientId);
+  const now = Date.now();
+  const freshnessCutoff = now - 45 * 24 * 60 * 60 * 1000;
+  const isRecent = (observedStartUtc: string) => {
+    const observedAt = Date.parse(observedStartUtc);
+    return Number.isFinite(observedAt) && observedAt >= freshnessCutoff && observedAt <= now;
+  };
+  const domains: Record<string, { score: number | null; observed: boolean; provenance?: "verified" | "self_reported"; rawMetricSummary?: string }> = {};
+  for (const domain of HPI_DOMAINS) {
+    const score = observations
+      .filter((observation) => observation.metricCode === `hpi_${domain}` && observation.quality === "verified" && isRecent(observation.observedStartUtc))
+      .sort((a, b) => b.observedStartUtc.localeCompare(a.observedStartUtc))[0]?.valueNumeric;
+    const isValid = score !== undefined && score >= 0 && score <= 100;
+    domains[domain] = { score: isValid ? score : null, observed: isValid };
+  }
+
+  const latestHabit = (metricCode: string) => observations
+    .filter((observation) => observation.metricCode === metricCode && observation.quality !== "quarantined" && (observation.sourceType === "patient_reported" || observation.quality === "verified"))
+    .sort((a, b) => b.observedStartUtc.localeCompare(a.observedStartUtc))[0];
+  const addHabitDomain = (domain: "physical_activity" | "strength_mobility" | "sleep_recovery", metricCode: string, score: (value: number) => number, summary: (value: number) => string) => {
+    if (domains[domain]?.observed) return;
+    const observation = latestHabit(metricCode);
+    if (!observation || !isRecent(observation.observedStartUtc)) return;
+    if (observation.sourceType !== "patient_reported" && observation.quality !== "verified") return;
+    if (observation.valueNumeric < 0) return;
+    domains[domain] = {
+      score: Math.max(0, Math.min(100, Math.round(score(observation.valueNumeric)))),
+      observed: true,
+      provenance: observation.sourceType === "patient_reported" ? "self_reported" : "verified",
+      rawMetricSummary: `${observation.sourceType === "patient_reported" ? "Self-reported" : "Verified"}: ${summary(observation.valueNumeric)}.`,
+    };
+  };
+  addHabitDomain("physical_activity", "weekly_activity_minutes", (minutes) => minutes / 150 * 100, (minutes) => `${Math.round(minutes)} minutes of activity in the last week, scaled to the 150-minute reference goal`);
+  addHabitDomain("strength_mobility", "weekly_strength_sessions", (sessions) => sessions / 2 * 100, (sessions) => `${Math.round(sessions)} strength sessions in the last week, scaled to a two-session reference goal`);
+  addHabitDomain("sleep_recovery", "sleep_hours_average", (hours) => 100 - Math.abs(hours - 8) * 15, (hours) => `${hours.toFixed(1)} reported average sleep hours per night, scaled around an 8-hour reference goal`);
+  return vitalisHealthspanIndex({ domains });
+}
+
 // ----------------------------------------------------
 // 1. Overview & Dashboard Status
 // ----------------------------------------------------
 vitalisRouter.get("/overview", async (c) => {
   const patientId = getPatientId(c);
-  let profile = store.profiles.get(patientId);
+  let profile = await getProfile(c, patientId);
   if (!profile) {
     profile = {
       patientId,
@@ -89,18 +297,7 @@ vitalisRouter.get("/overview", async (c) => {
     store.profiles.set(patientId, profile);
   }
 
-  const hpi = vitalisHealthspanIndex({
-    domains: {
-      physical_activity: { score: 72, observed: true },
-      strength_mobility: { score: 65, observed: true },
-      sleep_recovery: { score: 78, observed: true },
-      nutrition_quality: { score: 80, observed: true },
-      cardio_health: { score: 70, observed: true },
-      metabolic_health: { score: 60, observed: true },
-      preventive_care: { score: 85, observed: true },
-      psychosocial_wellbeing: { score: 75, observed: true },
-    },
-  });
+  const hpi = await computeHealthspanIndex(c, patientId);
 
   const recs = vitalisRecommendationSelector({
     age: 2026 - profile.yearOfBirth,
@@ -134,7 +331,7 @@ vitalisRouter.get("/overview", async (c) => {
 // ----------------------------------------------------
 vitalisRouter.get("/profile", async (c) => {
   const patientId = getPatientId(c);
-  let profile = store.profiles.get(patientId);
+  let profile = await getProfile(c, patientId);
   if (!profile) {
     profile = {
       patientId,
@@ -158,15 +355,116 @@ vitalisRouter.get("/profile", async (c) => {
 
 vitalisRouter.put("/profile", async (c) => {
   const patientId = getPatientId(c);
-  const body = (await c.req.json()) as VitalisProfile;
+  const body = await c.req.json();
+  const parsed = vitalisProfileSchema.safeParse({ ...body, patientId });
+  if (!parsed.success) {
+    return c.json({ error: "Invalid Vitalis profile", details: parsed.error.flatten() }, 400);
+  }
   const updated: VitalisProfile = {
-    ...body,
+    ...parsed.data,
     patientId,
     updatedAt: new Date().toISOString(),
   };
-  store.profiles.set(patientId, updated);
+  const db = vitalisTenantDb(c);
+  if (db) {
+    await db.prepare(
+      `INSERT INTO vitalis_profiles
+        (id, org_id, patient_id, year_of_birth, sex, height_cm, weight_kg, waist_circumference_cm,
+         diagnosed_conditions_json, medications_json, allergies_json, diet_preference,
+         activity_limitations_json, goals_json, smoking_status, alcohol_intake,
+         clinician_restricted_exertion, onboarding_version, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(patient_id) DO UPDATE SET
+         year_of_birth=excluded.year_of_birth, sex=excluded.sex, height_cm=excluded.height_cm,
+         weight_kg=excluded.weight_kg, waist_circumference_cm=excluded.waist_circumference_cm,
+         diagnosed_conditions_json=excluded.diagnosed_conditions_json, medications_json=excluded.medications_json,
+         allergies_json=excluded.allergies_json, diet_preference=excluded.diet_preference,
+         activity_limitations_json=excluded.activity_limitations_json, goals_json=excluded.goals_json,
+         smoking_status=excluded.smoking_status, alcohol_intake=excluded.alcohol_intake,
+         clinician_restricted_exertion=excluded.clinician_restricted_exertion,
+         onboarding_version=excluded.onboarding_version, updated_at=excluded.updated_at
+       WHERE org_id = excluded.org_id AND patient_id = excluded.patient_id`,
+    ).bind(
+      updated.id ?? `vprof_${patientId}`, db.orgId, patientId, updated.yearOfBirth, updated.sex,
+      updated.heightCm ?? null, updated.weightKg ?? null, updated.waistCircumferenceCm ?? null,
+      JSON.stringify(updated.diagnosedConditions), JSON.stringify(updated.medications),
+      JSON.stringify(updated.allergies), updated.dietPreference, JSON.stringify(updated.activityLimitations),
+      JSON.stringify(updated.goals), updated.smokingStatus, updated.alcoholIntake,
+      updated.clinicianRestrictedExertion ? 1 : 0, updated.onboardingVersion, updated.updatedAt,
+    ).run();
+  } else {
+    store.profiles.set(patientId, updated);
+  }
   audit(patientId, "PROFILE_UPDATED", { yearOfBirth: updated.yearOfBirth });
   return c.json({ data: updated });
+});
+
+vitalisRouter.post("/observations", async (c) => {
+  const patientId = getPatientId(c);
+  const body = await c.req.json();
+  const records: unknown[] = Array.isArray(body) ? body : [body];
+  if (records.length < 1 || records.length > 32) {
+    return c.json({ error: "An observation batch must contain between 1 and 32 records" }, 400);
+  }
+  const parsed = records.map((record) => vitalisObservationSchema.safeParse(
+    record !== null && typeof record === "object" ? { ...record, patientId } : record,
+  ));
+  const invalid = parsed.find((result) => !result.success);
+  if (invalid && !invalid.success) {
+    return c.json({ error: "Invalid observation batch", details: invalid.error.flatten() }, 400);
+  }
+  const observations = parsed.map((result) => result.success ? result.data : null).filter((item): item is VitalisObservation => item !== null);
+  const checkInRanges: Record<string, { min: number; max: number }> = {
+    weekly_activity_minutes: { min: 0, max: 1680 },
+    weekly_strength_sessions: { min: 0, max: 7 },
+    sleep_hours_average: { min: 0, max: 24 },
+    activity_adherence_percent: { min: 0, max: 100 },
+    fatigue_rating: { min: 0, max: 10 },
+    exercise_symptoms_reported: { min: 0, max: 1 },
+  };
+  const checkInCodes = Object.keys(checkInRanges);
+  const includedCodes = new Set(observations.map((observation) => observation.metricCode));
+  if (observations.length !== checkInCodes.length || includedCodes.size !== checkInCodes.length || checkInCodes.some((code) => !includedCodes.has(code)) || observations.some((observation) => {
+    const range = checkInRanges[observation.metricCode];
+    return !range || observation.sourceType !== "patient_reported" || observation.quality !== "unverified" || observation.valueNumeric < range.min || observation.valueNumeric > range.max;
+  })) {
+    return c.json({ error: "Only bounded, unverified patient behavior check-ins are accepted by this endpoint" }, 400);
+  }
+
+  const db = vitalisTenantDb(c);
+  if (db) {
+    const statements = observations.map((observation) => db.prepare(
+      `INSERT INTO vitalis_observations
+        (id, org_id, patient_id, metric_code, metric_name, value_numeric, value_text, unit,
+         observed_start_utc, observed_end_utc, iana_timezone, source_type, source_id,
+         source_record_id, method, quality, reference_range, is_abnormal)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         metric_code=excluded.metric_code, metric_name=excluded.metric_name,
+         value_numeric=excluded.value_numeric, value_text=excluded.value_text, unit=excluded.unit,
+         observed_start_utc=excluded.observed_start_utc, observed_end_utc=excluded.observed_end_utc,
+         iana_timezone=excluded.iana_timezone, source_type=excluded.source_type, source_id=excluded.source_id,
+         source_record_id=excluded.source_record_id, method=excluded.method, quality=excluded.quality,
+         reference_range=excluded.reference_range, is_abnormal=excluded.is_abnormal
+       WHERE org_id = excluded.org_id AND patient_id = excluded.patient_id`,
+    ).bind(
+      observation.id, db.orgId, patientId, observation.metricCode, observation.metricName,
+      observation.valueNumeric, observation.valueText ?? null, observation.unit,
+      observation.observedStartUtc, observation.observedEndUtc ?? null, observation.ianaTimezone,
+      observation.sourceType, observation.sourceId, observation.sourceRecordId ?? null,
+      observation.method ?? null, observation.quality, observation.referenceRange ?? null,
+      observation.isAbnormal ? 1 : 0,
+    ));
+    await db.raw.batch(statements);
+  } else {
+    const current = store.observations.get(patientId) ?? [];
+    store.observations.set(patientId, [
+      ...current.filter((item) => !observations.some((observation) => observation.id === item.id)),
+      ...observations,
+    ]);
+  }
+  audit(patientId, "OBSERVATION_RECORDED", { count: observations.length, source: observations[0]?.sourceId });
+  return c.json({ data: observations, storage: db ? "d1" : "in_memory_demo" }, 201);
 });
 
 // ----------------------------------------------------
@@ -326,18 +624,7 @@ vitalisRouter.get("/readiness", async (c) => {
 });
 
 vitalisRouter.get("/healthspan-index", async (c) => {
-  const hpi = vitalisHealthspanIndex({
-    domains: {
-      physical_activity: { score: 75, observed: true },
-      strength_mobility: { score: 68, observed: true },
-      sleep_recovery: { score: 82, observed: true },
-      nutrition_quality: { score: 85, observed: true },
-      cardio_health: { score: 72, observed: true },
-      metabolic_health: { score: 62, observed: true },
-      preventive_care: { score: 90, observed: true },
-      psychosocial_wellbeing: { score: 78, observed: true },
-    },
-  });
+  const hpi = await computeHealthspanIndex(c, getPatientId(c));
   return c.json({ data: hpi });
 });
 
@@ -346,12 +633,17 @@ vitalisRouter.get("/healthspan-index", async (c) => {
 // ----------------------------------------------------
 vitalisRouter.get("/plans/exercise", async (c) => {
   const patientId = getPatientId(c);
-  const profile = store.profiles.get(patientId);
+  const profile = await getProfile(c, patientId);
+  const observedWeeklyMinutes = await latestUsableValue(c, patientId, "weekly_activity_minutes");
+  const observedAdherence = await latestUsableValue(c, patientId, "activity_adherence_percent");
+  const observedFatigue = await latestUsableValue(c, patientId, "fatigue_rating");
+  const observedSymptoms = await latestUsableValue(c, patientId, "exercise_symptoms_reported");
+  const hasActivityBaseline = observedWeeklyMinutes !== undefined;
   const progression = vitalisExerciseProgression({
-    currentWeeklyMinutes: 90,
-    adherencePercentage: 80,
-    recentFatigueRating: 2,
-    symptomsReported: false,
+    currentWeeklyMinutes: Math.max(0, Math.round(observedWeeklyMinutes ?? 0)),
+    adherencePercentage: Math.max(0, Math.min(100, observedAdherence ?? 0)),
+    recentFatigueRating: Math.max(0, Math.min(10, observedFatigue ?? 5)),
+    symptomsReported: observedSymptoms === 1,
     clinicianRestricted: profile?.clinicianRestrictedExertion ?? false,
     hasCardiovascularCondition: (profile?.diagnosedConditions ?? []).some((condition) =>
       /cardio|heart|coronary|hypertension/i.test(condition),
@@ -361,15 +653,21 @@ vitalisRouter.get("/plans/exercise", async (c) => {
     id: "plan_ex_01",
     patientId,
     weeklyAerobicMinutesTarget: progression.nextTargetMinutes,
-    weeklyStrengthSessionsTarget: 2,
-    recommendedActivities: ["Brisk Walking", "Bodyweight Squats", "Surya Namaskar"],
+    weeklyStrengthSessionsTarget: await latestUsableValue(c, patientId, "weekly_strength_sessions") ?? 0,
+    recommendedActivities: hasActivityBaseline ? ["Walking", "Strength and mobility"] : [],
     contraindicatedActivities: ["Unsupervised HIIT 4x4"],
     intensityLevel: progression.intensityCap,
-    yogaAndMobilityRoutine: [],
+    yogaAndMobilityRoutine: [
+      { pose: "Sukhasana (Easy Pose)", durationMinutes: 5, benefit: "Calms the mind, reduces stress" },
+      { pose: "Balasana (Child's Pose)", durationMinutes: 3, benefit: "Gentle stretch for back and hips" },
+      { pose: "Tadasana (Mountain Pose)", durationMinutes: 3, benefit: "Improves posture and balance" },
+      { pose: "Virabhadrasana I (Warrior I)", durationMinutes: 4, benefit: "Builds strength and stability" },
+      { pose: "Savasana (Corpse Pose)", durationMinutes: 5, benefit: "Full body relaxation, reduces fatigue" },
+    ],
     policyVersion: "V3-EX-2026.1",
-    progressionAction: progression.action,
-    safetyStatus: progression.action === "CLINICAL_HOLD" ? "REVIEW" : "ALLOWED",
-    safetyNotes: [progression.reason],
+    progressionAction: hasActivityBaseline ? progression.action : "COLLECT_BASELINE",
+    safetyStatus: !hasActivityBaseline ? "INSUFFICIENT_DATA" : progression.action === "CLINICAL_HOLD" ? "REVIEW" : "ALLOWED",
+    safetyNotes: [hasActivityBaseline ? progression.reason : "No recent weekly activity baseline is available. Record a healthspan check-in or connect a trusted activity-data source before progression can be recommended."],
     syntheticDemo: true,
   };
   return c.json({ data: plan });
@@ -401,7 +699,7 @@ vitalisRouter.get("/plans/nutrition", async (c) => {
 
 vitalisRouter.get("/recommendations", async (c) => {
   const patientId = getPatientId(c);
-  const profile = store.profiles.get(patientId) || {
+  const profile = await getProfile(c, patientId) || {
     patientId,
     yearOfBirth: 1978,
     sex: "MALE",
@@ -430,7 +728,7 @@ vitalisRouter.get("/recommendations", async (c) => {
 // ----------------------------------------------------
 vitalisRouter.get("/preventive-care", async (c) => {
   const patientId = getPatientId(c);
-  const profile = store.profiles.get(patientId);
+  const profile = await getProfile(c, patientId);
   const age = profile ? 2026 - profile.yearOfBirth : 48;
 
   const items = vitalisPreventiveEligibility({

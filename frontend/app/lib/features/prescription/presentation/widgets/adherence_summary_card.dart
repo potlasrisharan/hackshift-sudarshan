@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 
 class AdherenceSummaryCard extends StatelessWidget {
@@ -23,21 +22,18 @@ class AdherenceSummaryCard extends StatelessWidget {
     final pct = (progress * 100).toInt();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.22),
-            AppColors.surface,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.35),
-          width: 1.2,
-        ),
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,45 +49,59 @@ class AdherenceSummaryCard extends StatelessWidget {
                       AppStrings.adherenceHeader,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                        letterSpacing: -0.2,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       "$takenCount of $totalCount taken today ($pct%)",
                       style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF475569),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
+              // Circular streak indicator in medical teal Color(0xFF087D71)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: AppColors.yogaAmber.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xFFE6F7F2),
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: AppColors.yogaAmber.withValues(alpha: 0.4),
+                    color: const Color(0xFF087D71).withValues(alpha: 0.25),
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.local_fire_department_rounded,
-                        color: AppColors.yogaAmber, size: 18),
-                    const SizedBox(width: 4),
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF087D71),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.local_fire_department_rounded,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
                     Text(
                       "$streakDays ${AppStrings.adherenceStreakSuffix}",
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.yogaAmber,
+                        color: Color(0xFF087D71),
                       ),
                     ),
                   ],
@@ -99,54 +109,70 @@ class AdherenceSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 10,
-              backgroundColor: AppColors.surfaceElevated,
+              backgroundColor: const Color(0xFFE2E8F0),
               valueColor: AlwaysStoppedAnimation<Color>(
-                progress == 1.0 ? AppColors.success : AppColors.primaryLight,
+                progress == 1.0 ? const Color(0xFF059669) : const Color(0xFF087D71),
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            runSpacing: 4,
+          const SizedBox(height: 14),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                progress == 1.0
-                    ? AppStrings.allDosesCompleted
-                    : "Next dose reminder active",
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: progress == 1.0
-                      ? AppColors.success
-                      : AppColors.primaryLight,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      progress == 1.0 ? Icons.check_circle_rounded : Icons.alarm_on_rounded,
+                      size: 16,
+                      color: progress == 1.0 ? const Color(0xFF059669) : const Color(0xFF087D71),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        progress == 1.0
+                            ? AppStrings.allDosesCompleted
+                            : "Next timed dose active",
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: progress == 1.0
+                              ? const Color(0xFF059669)
+                              : const Color(0xFF087D71),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               InkWell(
                 onTap: onConfigureRoutine,
-                borderRadius: BorderRadius.circular(8),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Row(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.tune_rounded,
-                          size: 14, color: AppColors.textSecondary),
+                      Icon(Icons.tune_rounded, size: 14, color: Color(0xFF475569)),
                       SizedBox(width: 4),
                       Text(
                         AppStrings.configureRemindersButton,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
+                          color: Color(0xFF475569),
                         ),
                       ),
                     ],

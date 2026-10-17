@@ -52,22 +52,27 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
     return AppScaffoldShell(
       title: "Cycle & Menstrual History",
       subtitle: "Interval Statistics & Deviation Radar",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Next Cycle Window Spread Card
-            _buildWindowSpreadCard(analysis),
-            const SizedBox(height: 16),
+      child: Container(
+        color: const Color(0xFFFFF1F3),
+        width: double.infinity,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Next Cycle Window Spread Card
+              _buildWindowSpreadCard(analysis),
+              const SizedBox(height: 16),
 
-            // Log New Cycle Form
-            _buildLogCycleCard(),
-            const SizedBox(height: 20),
+              // Log New Cycle Form
+              _buildLogCycleCard(),
+              const SizedBox(height: 20),
 
-            // Cycle History Table
-            _buildCycleHistoryList(state.cycles),
-          ],
+              // Cycle History Table
+              _buildCycleHistoryList(state.cycles),
+            ],
+          ),
         ),
       ),
     );
@@ -75,24 +80,38 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
 
   Widget _buildWindowSpreadCard(HerCycleAnalysisModel analysis) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.wellnessPink.withValues(alpha: 0.3)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.show_chart, color: AppColors.wellnessPink, size: 20),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFF1F3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.show_chart, color: Color(0xFFE11D48), size: 18),
+              ),
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
                   "Statistical Interval Analytics",
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: Color(0xFF9F1239),
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
@@ -100,19 +119,24 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(6),
+                  color: const Color(0xFFFCE7EC),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFFDA4AF)),
                 ),
                 child: Text(
                   "${analysis.totalIntervals} intervals",
-                  style: const TextStyle(color: AppColors.primaryLight, fontSize: 11),
+                  style: const TextStyle(
+                    color: Color(0xFF9F1239),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -123,14 +147,15 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
               Expanded(child: _buildStat("Longest", analysis.longestCycleDays != null ? "${analysis.longestCycleDays}d" : "—")),
             ],
           ),
-          const SizedBox(height: 12),
-          if (analysis.caveats.isNotEmpty)
+          if (analysis.caveats.isNotEmpty) ...[
+            const SizedBox(height: 12),
             ...analysis.caveats.map(
               (c) => Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text("• $c", style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                child: Text("• $c", style: const TextStyle(color: Color(0xFF64748B), fontSize: 11)),
               ),
             ),
+          ],
         ],
       ),
     );
@@ -141,12 +166,12 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
       children: [
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(value, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
+          child: Text(value, style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold, fontSize: 13)),
         ),
         const SizedBox(height: 2),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+          child: Text(label, style: const TextStyle(color: Color(0xFF64748B), fontSize: 10)),
         ),
       ],
     );
@@ -154,11 +179,18 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
 
   Widget _buildLogCycleCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceElevated),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +198,7 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
           const Text(
             "Log Cycle Start",
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: Color(0xFF9F1239),
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
@@ -187,24 +219,25 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFFFFF1F3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFFDA4AF)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.calendar_today, size: 16, color: AppColors.primaryLight),
+                  const Icon(Icons.calendar_today, size: 16, color: Color(0xFFE11D48)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       "Start Date: ${_selectedDate.toIso8601String().split('T').first}",
-                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+                      style: const TextStyle(color: Color(0xFF0F172A), fontSize: 13, fontWeight: FontWeight.w600),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text("Change", style: TextStyle(color: AppColors.primaryLight, fontSize: 12)),
+                  const Text("Change", style: TextStyle(color: Color(0xFFE11D48), fontSize: 12, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -212,8 +245,8 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
           const SizedBox(height: 14),
 
           // Flow Intensity Chips
-          const Text("Flow Intensity", style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-          const SizedBox(height: 6),
+          const Text("Flow Intensity", style: TextStyle(color: Color(0xFF475569), fontSize: 12, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             children: ["spotting", "light", "medium", "heavy", "flooding"].map((flow) {
@@ -221,11 +254,13 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
               return ChoiceChip(
                 label: Text(flow[0].toUpperCase() + flow.substring(1)),
                 selected: isSelected,
-                selectedColor: AppColors.wellnessPink,
-                backgroundColor: AppColors.surfaceElevated,
+                selectedColor: const Color(0xFFE11D48),
+                backgroundColor: const Color(0xFFFFF1F3),
+                side: BorderSide(color: isSelected ? const Color(0xFFE11D48) : const Color(0xFFFDA4AF)),
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color: isSelected ? Colors.white : const Color(0xFF0F172A),
                   fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
                 onSelected: (_) => setState(() => _selectedFlow = flow),
               );
@@ -240,14 +275,18 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
               const Expanded(
                 child: Text(
                   "Cramp Severity (0-10)",
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                  style: TextStyle(color: Color(0xFF475569), fontSize: 12, fontWeight: FontWeight.w600),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 "${_crampSeverity.toInt()} / 10",
-                style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
+                style: TextStyle(
+                  color: _crampSeverity > 6 ? const Color(0xFFE11D48) : const Color(0xFF9F1239),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
@@ -256,7 +295,8 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
             min: 0,
             max: 10,
             divisions: 10,
-            activeColor: _crampSeverity > 6 ? AppColors.error : AppColors.wellnessPink,
+            activeColor: _crampSeverity > 6 ? const Color(0xFFE11D48) : const Color(0xFFEC4899),
+            inactiveColor: const Color(0xFFFCE7EC),
             onChanged: (val) => setState(() => _crampSeverity = val),
           ),
           const SizedBox(height: 12),
@@ -264,9 +304,10 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
           // Submit Button
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              minimumSize: const Size.fromHeight(44),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              backgroundColor: const Color(0xFFE11D48),
+              minimumSize: const Size.fromHeight(46),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 2,
             ),
             icon: const Icon(Icons.check, color: Colors.white, size: 18),
             label: const Text("Save Cycle Entry", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -282,7 +323,7 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(24),
-          child: Text("No recorded cycles yet. Log your first cycle above.", style: TextStyle(color: AppColors.textMuted)),
+          child: Text("No recorded cycles yet. Log your first cycle above.", style: TextStyle(color: Color(0xFF64748B))),
         ),
       );
     }
@@ -293,7 +334,7 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
         const Text(
           "Recorded Historical Cycles",
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: Color(0xFF9F1239),
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
@@ -307,16 +348,30 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
           itemBuilder: (context, idx) {
             final c = cycles[idx];
             return Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.surfaceElevated),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFFDA4AF)),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFDA4AF).withValues(alpha: 0.12),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.water_drop_outlined, color: AppColors.wellnessPink, size: 20),
-                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFF1F3),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.water_drop_outlined, color: Color(0xFFE11D48), size: 18),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +379,7 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
                         Text(
                           "Cycle Start: ${c.startDate}",
                           style: const TextStyle(
-                            color: AppColors.textPrimary,
+                            color: Color(0xFF0F172A),
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
                           ),
@@ -332,7 +387,7 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
                         const SizedBox(height: 2),
                         Text(
                           "Flow: ${c.flowIntensity} • Cramps: ${c.crampsSeverity}/10${c.cycleLengthDays != null ? ' • Length: ${c.cycleLengthDays}d' : ''}",
-                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                          style: const TextStyle(color: Color(0xFF475569), fontSize: 11),
                         ),
                       ],
                     ),

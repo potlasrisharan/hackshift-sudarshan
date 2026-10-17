@@ -35,6 +35,8 @@ import {
   MetricCard,
 } from "./components/ui/clinical";
 import { VoiceInput } from "./components/VoiceInput";
+import { WebsiteLanguageSelect } from "./components/WebsiteLanguageSelect";
+import { startWebsiteLocalization } from "../../../packages/i18n/website";
 
 type Client = ReturnType<typeof integrationClient>;
 const questions = [
@@ -91,6 +93,7 @@ function Login({
   }
   return (
     <div className="login-page">
+      <WebsiteLanguageSelect />
       <section className="login-story">
         <div className="wordmark">
           <img
@@ -767,6 +770,7 @@ function App() {
   const [error, setError] = useState("");
   const route = useRoute();
   const [api, setApi] = useState<Client>(() => integrationClient());
+  useEffect(() => startWebsiteLocalization(), []);
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     window.addEventListener("online", update);
@@ -799,6 +803,7 @@ function App() {
   const detailId = route.startsWith("/thread/") ? route.slice(8) : undefined;
   return (
     <div className={`workspace ${navOpen ? "nav-open" : ""}`}>
+      <WebsiteLanguageSelect />
       <aside className="sidebar">
         <a href="#/clinician" className="wordmark">
           <img

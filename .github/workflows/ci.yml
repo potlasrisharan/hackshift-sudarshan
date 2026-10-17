@@ -59,6 +59,12 @@ jobs:
       - name: Record deployed revision
         run: |
           node -e 'require("node:fs").writeFileSync("dist/web/deployment.json", JSON.stringify({revision: process.env.GITHUB_SHA, deployedAt: new Date().toISOString()}))'
+      - name: Apply Cloudflare D1 migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply dhaaga-db --remote --config wrangler.jsonc
       - name: Deploy Frontend to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

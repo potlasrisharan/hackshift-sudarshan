@@ -38,6 +38,11 @@ export interface WellnessUserContext {
   hasPelvicPainFeatures?: boolean;
   hasHeavyBleedingFeatures?: boolean;
   acuteSafetyRedFlag?: boolean;
+  /** Known patient-reported or screening-derived issues, normalized where possible. */
+  healthConditions?: string[];
+  /** Optional focused feed for a dedicated feature screen. */
+  categoryFocus?: WellnessCatalogItem["category"];
+  isPregnantOrLactating?: boolean;
 }
 
 const WELLNESS_CATALOG: WellnessCatalogItem[] = [
@@ -109,6 +114,65 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     utilityWeight: 80,
   },
   {
+    id: "yoga-03-seated-cat-cow",
+    category: "yoga_movement",
+    title: "Chair-Supported Cat-Cow",
+    description:
+      "A small, seated spinal movement paired with comfortable breathing. Keep the range easy and stop if it increases discomfort.",
+    evidenceGrade: "C",
+    evidenceSource:
+      "Traditional gentle mobility practice; use only within comfortable range",
+    contraindications: ["acute_spinal_injury", "movement_restricted"],
+    dietaryTags: [],
+    disclaimer:
+      "A gentle movement option, not treatment. Choose a supported position and follow any clinician restrictions.",
+    utilityWeight: 74,
+  },
+  {
+    id: "yoga-04-supported-rest",
+    category: "yoga_movement",
+    title: "Supported Side-Lying Rest",
+    description:
+      "Rest on your side with pillows supporting the head and knees; use slow, unforced breathing for a few minutes.",
+    evidenceGrade: "C",
+    evidenceSource: "Traditional restorative practice; comfort-led positioning",
+    contraindications: ["unable_to_transfer_safely"],
+    dietaryTags: [],
+    disclaimer:
+      "Comfort practice only. Skip if lying on your side is uncomfortable or difficult to do safely.",
+    utilityWeight: 76,
+  },
+  {
+    id: "yoga-05-chair-mountain",
+    category: "yoga_movement",
+    title: "Seated Mountain with Shoulder Rolls",
+    description:
+      "Sit with back support, lengthen gently through the spine, and make a few slow shoulder rolls without forcing the range.",
+    evidenceGrade: "C",
+    evidenceSource:
+      "Traditional gentle mobility practice; use only within comfortable range",
+    contraindications: ["acute_shoulder_injury", "movement_restricted"],
+    dietaryTags: [],
+    disclaimer:
+      "A low-effort mobility option, not treatment. Stop if symptoms worsen.",
+    utilityWeight: 73,
+  },
+  {
+    id: "yoga-06-restorative-breath",
+    category: "yoga_movement",
+    title: "Restorative Breathing Pause",
+    description:
+      "Choose a comfortable seated or reclined position and breathe naturally, with a slightly longer exhale only if it feels easy.",
+    evidenceGrade: "C",
+    evidenceSource:
+      "Traditional restorative breathing practice; no forced breath holds",
+    contraindications: ["acute_respiratory_distress"],
+    dietaryTags: [],
+    disclaimer:
+      "Keep breathing natural. Do not hold your breath; stop and seek care for new or severe breathlessness.",
+    utilityWeight: 78,
+  },
+  {
     id: "sleep-01-morning-light",
     category: "sleep_circadian",
     title: "Morning 15-Minute Solar Retinal Exposure",
@@ -139,20 +203,50 @@ export function herWellnessRanker(
   context: WellnessUserContext,
 ): WellnessCatalogItem[] {
   // If active urgent safety red flags exist, suppress wellness tips to prioritize emergency care
-  if (context.activeRedFlags) {
+  if (context.activeRedFlags || context.acuteSafetyRedFlag) {
     return [];
   }
 
   const userAllergies = new Set(context.allergies ?? []);
-  const userRestrictions = new Set(context.mobilityRestrictions ?? []);
+  const userRestrictions = new Set(
+    (context.mobilityRestrictions ?? []).map((restriction) =>
+      restriction
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_"),
+    ),
+  );
+  const normalizedConditions = new Set(
+    (context.healthConditions ?? []).map((condition) =>
+      condition
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_"),
+    ),
+  );
+  if (context.hasPelvicPain || context.hasPelvicPainFeatures) {
+    normalizedConditions.add("pelvic_pain");
+  }
+  if (context.hasPcosFeatures) normalizedConditions.add("pcos");
+  if (context.hasHeavyBleedingFeatures)
+    normalizedConditions.add("heavy_bleeding");
+  if (context.hasFatigue) normalizedConditions.add("fatigue");
 
   // Filter against contraindications and dietary preferences
   const safeItems = WELLNESS_CATALOG.filter((item) => {
+    if (context.categoryFocus && item.category !== context.categoryFocus)
+      return false;
+    // Movement options have not been reviewed as a prenatal or postpartum plan.
+    // Keep them out of that context until clinician-reviewed variants exist.
+    if (item.category === "yoga_movement" && context.isPregnantOrLactating)
+      return false;
+
     // Check contraindications
     for (const c of item.contraindications) {
       if (userAllergies.has(c) || userRestrictions.has(c)) {
         return false;
       }
+      if (normalizedConditions.has(c)) return false;
     }
 
     // Check strict dietary preference
@@ -181,13 +275,62 @@ export function herWellnessRanker(
       (item.id.includes("supta") || item.id.includes("cat-cow"))
     )
       score += 20;
+    if (
+      (context.hasPelvicPain || context.hasPelvicPainFeatures) &&
+      [
+        "yoga-01-supta-baddha",
+        "yoga-04-supported-rest",
+        "yoga-06-restorative-breath",
+      ].includes(item.id)
+    )
+      score += 14;
+    if (
+      (context.hasHeavyBleedingFeatures || context.hasFatigue) &&
+      ["yoga-04-supported-rest", "yoga-06-restorative-breath"].includes(item.id)
+    )
+      score += 12;
+    if (
+      userRestrictions.size > 0 &&
+      ["yoga-04-supported-rest", "yoga-06-restorative-breath"].includes(item.id)
+    )
+      score += 8;
     // Boost iron for fatigue
     if (context.hasFatigue && item.id.includes("iron")) score += 18;
 
-    return { ...item, calculatedUtility: score };
+    const reasons: string[] = [];
+    if (context.hasPcosFeatures && item.id.includes("chilla"))
+      reasons.push("PCOS-related screening features");
+    if (
+      (context.hasPelvicPain || context.hasPelvicPainFeatures) &&
+      [
+        "yoga-01-supta-baddha",
+        "yoga-04-supported-rest",
+        "yoga-06-restorative-breath",
+      ].includes(item.id)
+    )
+      reasons.push("your recent pelvic discomfort");
+    if (
+      (context.hasHeavyBleedingFeatures || context.hasFatigue) &&
+      item.id.includes("iron")
+    )
+      reasons.push("fatigue or heavy-bleeding screening flags");
+    if (
+      (context.hasHeavyBleedingFeatures || context.hasFatigue) &&
+      ["yoga-04-supported-rest", "yoga-06-restorative-breath"].includes(item.id)
+    )
+      reasons.push(
+        "a lower-effort option based on your recent health information",
+      );
+    return {
+      ...item,
+      ...(reasons.length > 0
+        ? { rationale: `Prioritized for ${reasons.join(" and ")}.` }
+        : {}),
+      calculatedUtility: score,
+    };
   });
 
   ranked.sort((a, b) => b.calculatedUtility - a.calculatedUtility);
 
-  return ranked.slice(0, 5);
+  return ranked.slice(0, context.categoryFocus === "yoga_movement" ? 6 : 5);
 }

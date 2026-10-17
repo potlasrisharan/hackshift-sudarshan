@@ -17,6 +17,7 @@ import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_trajecto
 import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_copilot_screen.dart";
 import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_summary_screen.dart";
 import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_settings_screen.dart";
+import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_onboarding_screen.dart";
 
 void main() {
   group("AyuSetu Vitalis Widget & Responsive Tests", () {
@@ -127,6 +128,41 @@ void main() {
       await testScreen(tester, const VitalisSettingsScreen());
       expect(find.text("Privacy, Consent & Data Vault"), findsOneWidget);
       expect(find.text("Immutable Access Audit Log"), findsOneWidget);
+    });
+
+    testWidgets("VitalisOnboardingScreen renders dynamic steps and toggles HER module for Female", (tester) async {
+      await testScreen(tester, const VitalisOnboardingScreen());
+      expect(find.text("AyuSetu Health Onboarding"), findsOneWidget);
+      expect(find.text("Step 1 of 4 · Preventive Healthspan"), findsOneWidget);
+      expect(find.text("Step 1: Core Demographics"), findsOneWidget);
+      expect(find.text("Biological Sex for Clinical Guidelines"), findsOneWidget);
+      expect(find.text("Female (Enables HER Care)"), findsOneWidget);
+      expect(find.text("Male"), findsOneWidget);
+
+      // Tapping Female should expand steps to 5 and enable HER Care
+      await tester.tap(find.text("Female (Enables HER Care)"));
+      await tester.pumpAndSettle();
+      expect(find.text("Step 1 of 5 · Longevity & Women's Health"), findsOneWidget);
+
+      // Tapping Male should reduce steps to 4
+      await tester.tap(find.text("Male"));
+      await tester.pumpAndSettle();
+      expect(find.text("Step 1 of 4 · Preventive Healthspan"), findsOneWidget);
+
+      // Switch back to Female to verify full HER flow
+      await tester.tap(find.text("Female (Enables HER Care)"));
+      await tester.pumpAndSettle();
+      expect(find.text("Step 1 of 5 · Longevity & Women's Health"), findsOneWidget);
+
+      // Proceed to Step 2 (Body Measurements)
+      await tester.ensureVisible(find.text("Continue"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Continue"));
+      await tester.pumpAndSettle();
+      expect(find.text("Step 2: Body Measurements"), findsOneWidget);
+      expect(find.text("Height (cm)"), findsOneWidget);
+      expect(find.text("Weight (kg)"), findsOneWidget);
+      expect(find.text("Calculated BMI: 26.4 kg/m²"), findsOneWidget);
     });
   });
 }

@@ -42,7 +42,7 @@ class VitalisState {
     required this.preventiveItems,
     required this.recommendations,
     this.safetyAlert,
-    this.isWearableConnected = true,
+    this.isWearableConnected = false,
     this.isLoading = false,
   });
 
@@ -94,11 +94,27 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
           VitalisState(
             activePersona: VitalisSyntheticFixtures.personaA,
             profile: VitalisSyntheticFixtures.personaA.profile,
-            hpiResult: VitalisSyntheticFixtures.personaA.hpiResult,
+            hpiResult: const VitalisHpiResultModel(
+              hpiScore: null,
+              coverage: 0,
+              status: "INSUFFICIENT_DATA",
+              domains: [],
+            ),
             biomarkerTrend: VitalisSyntheticFixtures.personaA.biomarkerTrend,
             cardio: VitalisSyntheticFixtures.personaA.cardio,
             readiness: VitalisSyntheticFixtures.personaA.readiness,
-            exercisePlan: VitalisSyntheticFixtures.personaA.exercisePlan,
+            exercisePlan: const VitalisExercisePlanModel(
+              id: "plan_unavailable",
+              weeklyAerobicMinutesTarget: 0,
+              weeklyStrengthSessionsTarget: 0,
+              recommendedActivities: [],
+              contraindicatedActivities: [],
+              intensityLevel: "unavailable",
+              yogaRoutine: [],
+              safetyStatus: "UNAVAILABLE",
+              progressionAction: "COLLECT_BASELINE",
+              safetyNotes: ["Waiting for an activity baseline from your check-in."],
+            ),
             nutritionPlan: VitalisSyntheticFixtures.personaA.nutritionPlan,
             preventiveItems: VitalisSyntheticFixtures.personaA.preventiveItems,
             recommendations: const [
@@ -107,7 +123,7 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
               VitalisRecommendationModel(id: "REC-3", title: "Consistent 30-min Sleep Schedule Window", category: "sleep", priorityScore: 0.84, evidenceSource: "National Sleep Foundation"),
             ],
             safetyAlert: VitalisSyntheticFixtures.personaA.safetyAlert,
-            isWearableConnected: true,
+            isWearableConnected: false,
           ),
         ) {
     refreshFromBackend();
@@ -166,6 +182,26 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
     } catch (_) {
       state = state.copyWith(isLoading: false, profile: updated);
     }
+  }
+
+  Future<bool> recordHealthspanCheckIn({
+    required double weeklyActivityMinutes,
+    required int weeklyStrengthSessions,
+    required double averageSleepHours,
+    required double activityAdherencePercent,
+    required int fatigueRating,
+    required bool symptomsDuringExercise,
+  }) async {
+    final saved = await apiService.recordHealthspanCheckIn(
+      weeklyActivityMinutes: weeklyActivityMinutes,
+      weeklyStrengthSessions: weeklyStrengthSessions,
+      averageSleepHours: averageSleepHours,
+      activityAdherencePercent: activityAdherencePercent,
+      fatigueRating: fatigueRating,
+      symptomsDuringExercise: symptomsDuringExercise,
+    );
+    if (saved) await refreshFromBackend();
+    return saved;
   }
 
   void dismissSafetyAlert() {
