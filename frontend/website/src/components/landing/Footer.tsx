@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, Facebook, Instagram } from 'lucide-react';
+
 
 const Footer: React.FC = () => {
   return (
@@ -10,20 +10,12 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-12 mb-16">
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white rounded-sm transform rotate-45"></div>
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-slate-900">Aarogya Nidhi</span>
+              <span className="ds-wordmark">Ayu<span lang="hi">सेतु</span></span>
             </Link>
             <p className="text-slate-600 max-w-xs mb-8 leading-relaxed">
               Revolutionizing healthcare management through integrated technology. Empowering providers, improving lives.
             </p>
-            <div className="flex space-x-5 text-slate-400">
-              <a href="#" className="hover:text-primary transition-colors"><Linkedin className="w-6 h-6" /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Twitter className="w-6 h-6" /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Facebook className="w-6 h-6" /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Instagram className="w-6 h-6" /></a>
-            </div>
+            <Link to="/contact" className="text-sm font-semibold text-primary">Contact the team</Link>
           </div>
 
           <div>

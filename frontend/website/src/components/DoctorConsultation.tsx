@@ -846,21 +846,21 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto font-sans antialiased text-slate-900">
+    <div className="ayu-clinician p-0 space-y-6 max-w-7xl mx-auto font-sans antialiased text-slate-900">
       
       {/* Clinician Command Console Header */}
-      <div className="bg-slate-900 text-white p-5 rounded-2xl shadow-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className="ayu-clinical-header bg-white p-5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-2xl shadow-lg ring-2 ring-blue-400/20">
-            🩺
+          <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+            <Stethoscope className="w-6 h-6"/>
           </div>
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="text-xl font-black tracking-tight text-white">
-                AYUSETU Clinical OS • OPD Consultation Engine
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                Your consultation workspace
               </h1>
               <span className="text-[10px] bg-blue-500/20 border border-blue-400/40 text-blue-300 font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                AYUSETU Kiosk Realtime Sync
+                Synthetic clinical demonstration
               </span>
               <span className="text-[10px] bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -868,16 +868,16 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1 font-medium">
-              Automated Indic Voice Intake • Sub-150ms Emergency Red Flags • Jan Aushadhi Generic Switcher • 1-Click POS Dispatch
+              Patient intake, clinical notes and medication workflows in one place.
             </p>
           </div>
         </div>
 
         {/* Live Status Right Pill */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 bg-slate-800/80 border border-slate-700/80 px-3.5 py-2 rounded-xl">
+          <div className="hidden sm:flex items-center gap-2 bg-teal-50 border border-teal-100 px-3.5 py-2 rounded-xl">
             <Users className="w-4 h-4 text-blue-400" />
-            <span className="text-xs font-bold text-slate-200">
+            <span className="text-xs font-bold text-teal-800">
               {queue.length} Active in Queue
             </span>
           </div>
@@ -1136,7 +1136,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   </div>
                   <div>
                     <h4 className="text-xs font-black text-rose-900 uppercase tracking-wider flex items-center gap-1.5">
-                      Sub-150ms Emergency Red-Flag Triggered
+                      Emergency red flag detected
                     </h4>
                     <p className="text-xs text-rose-700 font-medium mt-0.5">
                       Substernal crushing chest pain with sympathetic crisis. Immediate casualty bed & ECG crash-cart reserved.
@@ -1162,7 +1162,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 <div className="flex items-center gap-1.5">
                   <Activity className="w-4 h-4 text-blue-700" />
                   <h3 className="text-xs font-black uppercase text-slate-700 tracking-wider">
-                    Vitals Heads-Up Display (Hardware BLE Verified)
+                    Vitals overview (synthetic demonstration)
                   </h3>
                 </div>
                 <span className="text-[10px] text-slate-400 font-medium">
@@ -1371,7 +1371,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                       <span>O: Objective (Biomarkers & Exam)</span>
                     </div>
                     <span className="text-[10px] bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full font-bold">
-                      Verified Hardware
+                      Demo measurements
                     </span>
                   </div>
 

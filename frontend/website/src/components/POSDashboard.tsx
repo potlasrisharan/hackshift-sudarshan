@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect } from 'react'
 import { CardDescription } from '@/components/ui/basic'
 import { Button, Input, Label } from '@/components/ui/basic'
@@ -625,7 +626,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
         return (
             <div className="max-w-xl mx-auto mt-20 p-10 bg-white rounded-3xl border border-slate-200 shadow-xl text-center">
                 <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span className="material-symbols-outlined text-4xl text-blue-600">storefront</span>
+                    <SymbolIcon className="material-symbols-outlined text-4xl text-blue-600">storefront</SymbolIcon>
                 </div>
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">Select Clinic Location</h2>
                 <p className="text-slate-500 mb-8">Choose the designated clinic to start billing and POS operations.</p>
@@ -633,10 +634,10 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                     {clinics.map(c => (
                         <button key={c.id} disabled={c.status === 'paused'} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all group ${c.status === 'paused' ? 'border-slate-100 bg-slate-50 cursor-not-allowed opacity-60' : 'border-slate-100 hover:border-blue-600 focus:border-blue-600 bg-slate-50 hover:bg-white focus:bg-white'}`} onClick={() => setSelectedClinicId(c.id)}>
                             <div className="flex items-center gap-4">
-                                <span className={`material-symbols-outlined ${c.status === 'paused' ? 'text-slate-300' : 'text-slate-400 group-hover:text-blue-600'}`}>location_on</span>
+                                <SymbolIcon className={`material-symbols-outlined ${c.status === 'paused' ? 'text-slate-300' : 'text-slate-400 group-hover:text-blue-600'}`}>location_on</SymbolIcon>
                                 <span className={`font-bold ${c.status === 'paused' ? 'text-slate-400' : 'text-slate-700 group-hover:text-slate-900'}`}>{c.name} {c.status === 'paused' && <span className="text-red-500 font-medium ml-2 text-sm px-2 py-0.5 bg-red-50 rounded-full border border-red-100">Paused</span>}</span>
                             </div>
-                            <span className={`material-symbols-outlined ${c.status === 'paused' ? 'text-slate-200' : 'text-slate-300 group-hover:text-blue-600'}`}>chevron_right</span>
+                            <SymbolIcon className={`material-symbols-outlined ${c.status === 'paused' ? 'text-slate-200' : 'text-slate-300 group-hover:text-blue-600'}`}>chevron_right</SymbolIcon>
                         </button>
                     ))}
                 </div>
@@ -650,7 +651,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
             <header className="h-14 sm:h-16 shrink-0 border border-slate-200 bg-white rounded-t-lg sm:rounded-t-2xl flex items-center justify-between px-3 sm:px-6 shadow-sm z-20">
                 <div className="flex items-center gap-2 sm:gap-4">
                     <div className="bg-blue-600/10 p-1.5 sm:p-2 rounded-lg">
-                        <span className="material-symbols-outlined text-blue-600 text-[20px] sm:text-[24px]">point_of_sale</span>
+                        <SymbolIcon className="material-symbols-outlined text-blue-600 text-[20px] sm:text-[24px]">point_of_sale</SymbolIcon>
                     </div>
                     <div>
                         <h1 className="text-sm sm:text-lg font-bold tracking-tight text-slate-900">Clinical Billing & POS</h1>
@@ -660,7 +661,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                 {view === 'pharmacy' && (
                     <div className="hidden sm:flex items-center gap-4">
                         <div className="relative">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">search</span>
+                            <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">search</SymbolIcon>
                             <input
                                 className="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm w-64 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm"
                                 placeholder="Search items..."
@@ -681,17 +682,17 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                     <p className="hidden lg:block text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2 mt-2">Billing Flows</p>
 
                     <button onClick={() => setView('pharmacy')} className={`flex items-center whitespace-nowrap gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium transition-all group ${view === 'pharmacy' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-50 lg:bg-transparent hover:bg-slate-50 text-slate-600'}`}>
-                        <span className={`material-symbols-outlined text-[18px] sm:text-[24px] ${view === 'pharmacy' ? '' : 'group-hover:text-blue-600'}`}>pill</span>
+                        <SymbolIcon className={`material-symbols-outlined text-[18px] sm:text-[24px] ${view === 'pharmacy' ? '' : 'group-hover:text-blue-600'}`}>pill</SymbolIcon>
                         <span>Pharmacy POS</span>
                     </button>
 
                     <button onClick={() => setView('consultation')} className={`flex items-center whitespace-nowrap gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium transition-all group ${view === 'consultation' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-50 lg:bg-transparent hover:bg-slate-50 text-slate-600'}`}>
-                        <span className={`material-symbols-outlined text-[18px] sm:text-[24px] ${view === 'consultation' ? '' : 'group-hover:text-blue-600'}`}>stethoscope</span>
+                        <SymbolIcon className={`material-symbols-outlined text-[18px] sm:text-[24px] ${view === 'consultation' ? '' : 'group-hover:text-blue-600'}`}>stethoscope</SymbolIcon>
                         <span>OPD Consultation</span>
                     </button>
 
                     <button onClick={() => setView('ipd')} className={`flex items-center whitespace-nowrap gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium transition-all group ${view === 'ipd' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-slate-50 lg:bg-transparent hover:bg-slate-50 text-slate-600'}`}>
-                        <span className={`material-symbols-outlined text-[18px] sm:text-[24px] ${view === 'ipd' ? '' : 'group-hover:text-blue-600'}`}>hotel</span>
+                        <SymbolIcon className={`material-symbols-outlined text-[18px] sm:text-[24px] ${view === 'ipd' ? '' : 'group-hover:text-blue-600'}`}>hotel</SymbolIcon>
                         <span>IPD Admission</span>
                     </button>
 
@@ -712,7 +713,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                     <button
                                         onClick={() => setIsMobileSearchOpen(true)}
                                         className="sm:hidden px-3 py-1.5 text-xs font-semibold bg-white border border-slate-200 rounded-lg shadow-sm text-slate-900 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-[16px]">search</span>
+                                        <SymbolIcon className="material-symbols-outlined text-[16px]">search</SymbolIcon>
                                         All Items
                                     </button>
                                 </div>
@@ -723,7 +724,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         <div key={item.id} onClick={() => addToCart(item)} className="bg-white border border-slate-100 p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md hover:border-blue-600/30 active:scale-[0.98] transition-all cursor-pointer group flex flex-col">
                                             <div className="flex justify-between items-start mb-2 sm:mb-3 pointer-events-none">
                                                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center group-hover:scale-105 transition-transform border border-slate-100">
-                                                    <span className="material-symbols-outlined text-slate-500 group-hover:text-blue-600 text-[20px] sm:text-[24px]">medication</span>
+                                                    <SymbolIcon className="material-symbols-outlined text-slate-500 group-hover:text-blue-600 text-[20px] sm:text-[24px]">medication</SymbolIcon>
                                                 </div>
                                                 <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded bg-slate-100 text-slate-500 font-mono">Qty: {item.quantity}</span>
                                             </div>
@@ -736,14 +737,14 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                     onClick={(e) => { e.stopPropagation(); addToCart(item); }}
                                                     className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-slate-100 flex items-center justify-center active:bg-blue-600 active:text-white sm:group-hover:bg-blue-600 text-slate-500 sm:group-hover:text-white transition-colors shrink-0 shadow-sm z-10"
                                                 >
-                                                    <span className="material-symbols-outlined text-[18px] sm:text-[22px]">add</span>
+                                                    <SymbolIcon className="material-symbols-outlined text-[18px] sm:text-[22px]">add</SymbolIcon>
                                                 </button>
                                             </div>
                                         </div>
                                     ))}
                                     {clinicInventory.length === 0 && (
                                         <div className="col-span-full py-12 text-center text-slate-400">
-                                            <span className="material-symbols-outlined text-4xl mb-3 opacity-30">inventory_2</span>
+                                            <SymbolIcon className="material-symbols-outlined text-4xl mb-3 opacity-30">inventory_2</SymbolIcon>
                                             <p className="text-sm">No inventory items found.</p>
                                         </div>
                                     )}
@@ -757,8 +758,8 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                         <div className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 overflow-y-auto">
                             <div className="w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm sm:shadow-xl overflow-hidden">
                                 <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-5 sm:p-8 text-white relative overflow-hidden">
-                                    <span className="material-symbols-outlined absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 text-[80px] sm:text-[120px] opacity-10">stethoscope</span>
-                                    <h2 className="text-lg sm:text-2xl font-bold relative z-10 flex items-center gap-2"><span className="material-symbols-outlined">stethoscope</span> OPD Assessment & Billing</h2>
+                                    <SymbolIcon className="material-symbols-outlined absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 text-[80px] sm:text-[120px] opacity-10">stethoscope</SymbolIcon>
+                                    <h2 className="text-lg sm:text-2xl font-bold relative z-10 flex items-center gap-2"><SymbolIcon className="material-symbols-outlined">stethoscope</SymbolIcon> OPD Assessment & Billing</h2>
                                     <p className="text-blue-100 mt-1 relative z-10 text-xs sm:text-base">Generate a consultation fee receipt directly.</p>
                                 </div>
                                 <div className="p-5 sm:p-8">
@@ -767,7 +768,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                             <div className="space-y-1.5 sm:space-y-2">
                                                 <Label className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Admitted Patient (Optional)</Label>
                                                 <div className="relative">
-                                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">hotel</span>
+                                                    <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">hotel</SymbolIcon>
                                                     <select 
                                                         value={selectedAdmissionId || ''} 
                                                         onChange={e => {
@@ -807,15 +808,15 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                 <Label className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Patient Details</Label>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">person</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">person</SymbolIcon>
                                                         <Input required value={patientName} onChange={e => setPatientName(e.target.value)} placeholder="Patient Name*" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
                                                     </div>
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">call</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">call</SymbolIcon>
                                                         <Input value={patientPhone} onChange={e => setPatientPhone(e.target.value)} placeholder="Patient Phone" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
                                                     </div>
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">location_on</span>                                                         <Input value={patientAddress} onChange={e => setPatientAddress(e.target.value)} placeholder="Patient Address" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">location_on</SymbolIcon>                                                         <Input value={patientAddress} onChange={e => setPatientAddress(e.target.value)} placeholder="Patient Address" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -823,7 +824,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                             <div className="space-y-1.5 sm:space-y-2">
                                                 <Label className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Consultation Info</Label>
                                                 <div className="relative">
-                                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">medical_services</span>
+                                                    <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">medical_services</SymbolIcon>
                                                     <select
                                                         className="w-full h-10 sm:h-11 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:border-transparent pl-10 appearance-none"
                                                         required
@@ -849,11 +850,11 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="relative">
-                                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[16px]">payments</span>
+                                                     <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[16px]">payments</SymbolIcon>
                                                      <Input type="number" value={consultationFee} onChange={e => setConsultationFee(e.target.value)} placeholder="Fee Amount (₹)" className="pl-9 h-10 bg-slate-50 border-slate-100 text-sm" />
                                                 </div>
                                                 <div className="relative">
-                                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[16px]">percent</span>
+                                                     <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[16px]">percent</SymbolIcon>
                                                      <Input type="number" value={consultationDiscountPercent} onChange={e => setConsultationDiscountPercent(e.target.value)} placeholder="Discount %" className="pl-9 h-10 bg-slate-50 border-slate-100 text-sm" />
                                                 </div>
                                             </div>
@@ -867,7 +868,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                     onClick={() => setIsPayLater(!isPayLater)}
                                                     className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold transition-all border ${isPayLater ? 'bg-amber-100 border-amber-200 text-amber-700' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}
                                                 >
-                                                    <span className="material-symbols-outlined text-[16px]">{isPayLater ? 'pending_actions' : 'check_circle'}</span>
+                                                    <SymbolIcon className="material-symbols-outlined text-[16px]">{isPayLater ? 'pending_actions' : 'check_circle'}</SymbolIcon>
                                                     {isPayLater ? 'PAY LATER (CREDIT)' : 'AUTO-PAID'}
                                                 </button>
                                             </div>
@@ -879,7 +880,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         </div>
 
                                         <Button type="submit" disabled={isProcessing} className="w-full h-11 sm:h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2">
-                                            {isProcessing ? <Loader2 className="animate-spin" /> : <><span className="material-symbols-outlined">print</span> Print Reciept & Complete</>}
+                                            {isProcessing ? <Loader2 className="animate-spin" /> : <><SymbolIcon className="material-symbols-outlined">print</SymbolIcon> Print Reciept & Complete</>}
                                         </Button>
                                     </form>
                                 </div>
@@ -892,8 +893,8 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                         <div className="flex-1 flex flex-col items-center justify-start py-6 sm:py-12 px-3 sm:px-6 overflow-y-auto w-full">
                             <div className="w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm sm:shadow-xl">
                                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-5 sm:p-8 text-white relative overflow-hidden">
-                                    <span className="material-symbols-outlined absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 text-[80px] sm:text-[120px] opacity-10">hotel</span>
-                                    <h2 className="text-lg sm:text-2xl font-bold relative z-10 flex items-center gap-2"><span className="material-symbols-outlined">hotel</span> Hospital IPD Admission</h2>
+                                    <SymbolIcon className="material-symbols-outlined absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 text-[80px] sm:text-[120px] opacity-10">hotel</SymbolIcon>
+                                    <h2 className="text-lg sm:text-2xl font-bold relative z-10 flex items-center gap-2"><SymbolIcon className="material-symbols-outlined">hotel</SymbolIcon> Hospital IPD Admission</h2>
                                     <p className="text-indigo-100 mt-1 relative z-10 text-xs sm:text-base">Admit patient to hospital ward and process initial deposit.</p>
                                 </div>
                                 <div className="p-5 sm:p-8">
@@ -903,15 +904,15 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                 <Label className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Patient Details</Label>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">person</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">person</SymbolIcon>
                                                         <Input required value={patientName} onChange={e => setPatientName(e.target.value)} placeholder="Patient Name*" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
                                                     </div>
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">call</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">call</SymbolIcon>
                                                         <Input value={patientPhone} onChange={e => setPatientPhone(e.target.value)} placeholder="Patient Phone" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
                                                     </div>
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">location_on</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">location_on</SymbolIcon>
                                                         <Input value={patientAddress} onChange={e => setPatientAddress(e.target.value)} placeholder="Patient Address" className="pl-10 h-10 sm:h-11 bg-slate-50 border-slate-200 text-sm" />
                                                     </div>
                                                 </div>
@@ -921,7 +922,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                 <Label className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Clinical Team & Location</Label>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">person_filled</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">person_filled</SymbolIcon>
                                                         <select 
                                                             required 
                                                             value={selectedDoctorId} 
@@ -935,7 +936,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                         </select>
                                                     </div>
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">domain</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">domain</SymbolIcon>
                                                         <select 
                                                             required 
                                                             value={selectedWardId} 
@@ -952,7 +953,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                         </select>
                                                     </div>
                                                     <div className="relative">
-                                                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">bed</span>
+                                                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] z-10">bed</SymbolIcon>
                                                         {wards.length === 0 ? (
                                                             <div className="flex h-10 sm:h-11 items-center justify-between w-full rounded-md border border-slate-200 bg-slate-50 px-3 pl-10 pr-2">
                                                                 <span className="text-[10px] sm:text-xs text-slate-500 font-bold truncate">Setup Wards First</span>
@@ -989,7 +990,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                             <div className="space-y-1.5 sm:space-y-2">
                                                 <Label className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Medical Context</Label>
                                                 <div className="relative">
-                                                    <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-[18px]">medical_information</span>
+                                                    <SymbolIcon className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-[18px]">medical_information</SymbolIcon>
                                                     <textarea 
                                                         value={ipdReason} 
                                                         onChange={e => setIpdReason(e.target.value)} 
@@ -1007,7 +1008,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                             </div>
                                             <div className="grid grid-cols-1">
                                                 <div className="relative">
-                                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[16px]">payments</span>
+                                                     <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[16px]">payments</SymbolIcon>
                                                      <Input type="number" value={admissionAdvance} onChange={e => setAdmissionAdvance(e.target.value)} placeholder="Amount to pay now (₹)" className="pl-9 h-10 bg-slate-50 border-slate-100 text-sm" />
                                                 </div>
                                             </div>
@@ -1023,7 +1024,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         </div>
 
                                         <Button type="submit" disabled={isProcessing} className="w-full h-11 sm:h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2">
-                                            {isProcessing ? <Loader2 className="animate-spin" /> : <><span className="material-symbols-outlined">how_to_reg</span> Admit Patient & Finalize</>}
+                                            {isProcessing ? <Loader2 className="animate-spin" /> : <><SymbolIcon className="material-symbols-outlined">how_to_reg</SymbolIcon> Admit Patient & Finalize</>}
                                         </Button>
                                     </form>
                                 </div>
@@ -1037,7 +1038,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                     <aside className="w-full lg:w-80 xl:w-[400px] shrink-0 lg:border-l border-t lg:border-t-0 border-slate-200 bg-white flex flex-col z-20 shadow-sm lg:shadow-[-2px_0_10px_-4px_rgba(0,0,0,0.05)] h-auto max-h-[45vh] lg:max-h-full">
                         <div className="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
                             <div className="flex items-center justify-between mb-3 sm:mb-4">
-                                <h2 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2"><span className="material-symbols-outlined text-emerald-600 text-[18px] sm:text-[24px]">receipt</span> Current Bill</h2>
+                                <h2 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2"><SymbolIcon className="material-symbols-outlined text-emerald-600 text-[18px] sm:text-[24px]">receipt</SymbolIcon> Current Bill</h2>
                                 <button onClick={() => setCart([])} className="text-[10px] sm:text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition-colors">Clear</button>
                             </div>
 
@@ -1046,7 +1047,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                     <div className="space-y-1">
                                         <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Link to Admission</Label>
                                         <div className="relative">
-                                            <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px] z-10">hotel</span>
+                                            <SymbolIcon className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px] z-10">hotel</SymbolIcon>
                                             <select 
                                                 value={selectedAdmissionId || ''} 
                                                 onChange={e => {
@@ -1081,7 +1082,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                     <div className="space-y-1">
                                         <Label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">OPD Token Lookup</Label>
                                         <form onSubmit={handleTokenSearch} className="relative">
-                                            <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-blue-400 text-sm sm:text-[18px] z-10">confirmation_number</span>
+                                            <SymbolIcon className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-blue-400 text-sm sm:text-[18px] z-10">confirmation_number</SymbolIcon>
                                             <input
                                                 type="number"
                                                 className="w-full text-[10px] sm:text-xs bg-blue-50/30 border border-blue-100 rounded-lg pl-8 sm:pl-9 pr-8 py-1.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-bold placeholder:font-normal"
@@ -1090,14 +1091,14 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                                 onChange={e => setTokenSearch(e.target.value)}
                                             />
                                             <button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 rounded-md bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors">
-                                                <span className="material-symbols-outlined text-[16px]">search</span>
+                                                <SymbolIcon className="material-symbols-outlined text-[16px]">search</SymbolIcon>
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 gap-2">
                                     <div className="relative">
-                                        <span className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">person</span>
+                                        <SymbolIcon className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">person</SymbolIcon>
                                         <input
                                             className="w-full text-xs sm:text-sm bg-white border border-slate-200 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all shadow-sm font-medium placeholder:font-normal"
                                             placeholder="Patient Name*"
@@ -1107,7 +1108,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         />
                                     </div>
                                     <div className="relative">
-                                        <span className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">call</span>
+                                        <SymbolIcon className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">call</SymbolIcon>
                                         <input
                                             className="w-full text-xs sm:text-sm bg-white border border-slate-200 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all shadow-sm font-medium placeholder:font-normal"
                                             placeholder="Patient Phone"
@@ -1116,7 +1117,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         />
                                     </div>
                                     <div className="relative">
-                                        <span className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">location_on</span>
+                                        <SymbolIcon className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">location_on</SymbolIcon>
                                         <input
                                             className="w-full text-xs sm:text-sm bg-white border border-slate-200 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all shadow-sm font-medium placeholder:font-normal"
                                             placeholder="Patient Address"
@@ -1126,7 +1127,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <span className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">stethoscope</span>
+                                    <SymbolIcon className="material-symbols-outlined absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm sm:text-[18px]">stethoscope</SymbolIcon>
                                     <select
                                         className="w-full text-xs sm:text-sm bg-white border border-slate-200 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all shadow-sm font-medium"
                                         required
@@ -1148,7 +1149,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 min-h-[150px]">
                             {cart.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-slate-400 opacity-60">
-                                    <span className="material-symbols-outlined text-4xl sm:text-6xl mb-2 sm:mb-4">shopping_cart</span>
+                                    <SymbolIcon className="material-symbols-outlined text-4xl sm:text-6xl mb-2 sm:mb-4">shopping_cart</SymbolIcon>
                                     <p className="font-medium text-xs sm:text-sm">Cart is empty</p>
                                     <p className="text-[10px] sm:text-xs mt-1">Add items from inventory</p>
                                 </div>
@@ -1162,9 +1163,9 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         <div className="text-right shrink-0">
                                             <p className="text-xs sm:text-sm font-bold text-slate-900 leading-tight mb-0.5 sm:mb-1">₹{(c.price * c.quantity).toFixed(2)}</p>
                                             <div className="flex items-center gap-1 sm:gap-2 justify-end bg-slate-50 rounded-lg p-0.5 border border-slate-100">
-                                                <button onClick={() => updateCartQuantity(c.id, c.quantity - 1)} className="h-5 w-5 sm:h-6 sm:w-6 rounded-md hover:bg-white hover:text-red-500 hover:shadow-sm flex items-center justify-center transition-all text-slate-400"><span className="material-symbols-outlined text-[14px] sm:text-[16px]">remove</span></button>
+                                                <button onClick={() => updateCartQuantity(c.id, c.quantity - 1)} className="h-5 w-5 sm:h-6 sm:w-6 rounded-md hover:bg-white hover:text-red-500 hover:shadow-sm flex items-center justify-center transition-all text-slate-400"><SymbolIcon className="material-symbols-outlined text-[14px] sm:text-[16px]">remove</SymbolIcon></button>
                                                 <span className="text-[10px] sm:text-xs font-bold w-6 sm:w-8 text-center">{c.quantity} {c.isLoose ? 'u' : 'pk'}</span>
-                                                <button onClick={() => updateCartQuantity(c.id, c.quantity + 1)} className="h-5 w-5 sm:h-6 sm:w-6 rounded-md hover:bg-white hover:text-emerald-600 hover:shadow-sm flex items-center justify-center transition-all text-slate-400"><span className="material-symbols-outlined text-[14px] sm:text-[16px]">add</span></button>
+                                                <button onClick={() => updateCartQuantity(c.id, c.quantity + 1)} className="h-5 w-5 sm:h-6 sm:w-6 rounded-md hover:bg-white hover:text-emerald-600 hover:shadow-sm flex items-center justify-center transition-all text-slate-400"><SymbolIcon className="material-symbols-outlined text-[14px] sm:text-[16px]">add</SymbolIcon></button>
                                             </div>
                                         </div>
                                     </div>
@@ -1232,14 +1233,14 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                     onClick={() => setPaymentMode('Cash')} 
                                     className={`flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border-2 font-bold text-xs sm:text-sm transition-all ${paymentMode === 'Cash' ? 'border-emerald-600 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white'}`}
                                 >
-                                    <span className="material-symbols-outlined text-[16px] sm:text-[18px]">payments</span> Cash
+                                    <SymbolIcon className="material-symbols-outlined text-[16px] sm:text-[18px]">payments</SymbolIcon> Cash
                                 </button>
                                 <button 
                                     type="button"
                                     onClick={() => setPaymentMode('UPI')} 
                                     className={`flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border-2 font-bold text-xs sm:text-sm transition-all ${paymentMode === 'UPI' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white'}`}
                                 >
-                                    <span className="material-symbols-outlined text-[16px] sm:text-[18px]">qr_code_scanner</span> UPI/Card
+                                    <SymbolIcon className="material-symbols-outlined text-[16px] sm:text-[18px]">qr_code_scanner</SymbolIcon> UPI/Card
                                 </button>
                                 {selectedAdmissionId && (
                                     <button 
@@ -1247,7 +1248,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         onClick={() => setPaymentMode('IPD_BILL')} 
                                         className={`col-span-2 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border-2 font-bold text-xs sm:text-sm transition-all ${paymentMode === 'IPD_BILL' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white'}`}
                                     >
-                                        <span className="material-symbols-outlined text-[16px] sm:text-[18px]">hotel</span> IPD Billing Mode
+                                        <SymbolIcon className="material-symbols-outlined text-[16px] sm:text-[18px]">hotel</SymbolIcon> IPD Billing Mode
                                     </button>
                                 )}
                             </div>
@@ -1263,11 +1264,11 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                 }`}
                             >
                                 {isProcessing ? (
-                                    <span className="material-symbols-outlined animate-spin text-[18px] sm:text-[20px]">sync</span>
+                                    <SymbolIcon className="material-symbols-outlined animate-spin text-[18px] sm:text-[20px]">sync</SymbolIcon>
                                 ) : (
-                                    <span className="material-symbols-outlined text-[18px] sm:text-[20px]">
+                                    <SymbolIcon className="material-symbols-outlined text-[18px] sm:text-[20px]">
                                         {paymentMode === 'IPD_BILL' ? 'assignment_add' : 'check_circle'}
-                                    </span>
+                                    </SymbolIcon>
                                 )}
                                 {isProcessing 
                                     ? 'Processing...' 
@@ -1295,7 +1296,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                 <DialogContent className="sm:max-w-sm bg-white text-slate-900 border-none shadow-2xl rounded-2xl overflow-hidden p-0">
                     <div className="bg-slate-50 px-6 py-5 border-b border-slate-100 flex items-center gap-4">
                         <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center border border-blue-200 shrink-0">
-                            <span className="material-symbols-outlined text-blue-600 text-2xl">medication</span>
+                            <SymbolIcon className="material-symbols-outlined text-blue-600 text-2xl">medication</SymbolIcon>
                         </div>
                         <div className="min-w-0">
                             <DialogTitle className="text-xl font-bold text-slate-900 truncate" title={promptItem?.item_name}>{promptItem?.item_name}</DialogTitle>
@@ -1383,7 +1384,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                         <DialogTitle className="text-lg font-bold text-slate-900 mb-3">Search Inventory</DialogTitle>
                         <DialogDescription className="sr-only">Search clinic inventory for items to add to the cart</DialogDescription>
                         <div className="relative">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                            <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</SymbolIcon>
                             <input
                                 className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none"
                                 placeholder="Search by name or batch..."
@@ -1400,7 +1401,7 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                             <div key={item.id} onClick={() => { addToCart(item); toast({ description: `Added ${item.item_name} to cart`, duration: 1500 }); }} className="bg-white border border-slate-100 p-3 rounded-xl shadow-sm active:scale-[0.98] active:bg-slate-50 transition-all cursor-pointer flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0">
-                                        <span className="material-symbols-outlined text-slate-500 text-[20px]">medication</span>
+                                        <SymbolIcon className="material-symbols-outlined text-slate-500 text-[20px]">medication</SymbolIcon>
                                     </div>
                                     <div className="min-w-0">
                                         <h3 className="font-bold text-slate-800 text-sm leading-tight truncate">{item.item_name}</h3>
@@ -1416,14 +1417,14 @@ export function POSDashboard({ onNavigate, currentClinicId }: { onNavigate?: (vi
                                         onClick={(e) => { e.stopPropagation(); addToCart(item); toast({ description: `Added ${item.item_name} to cart`, duration: 1500 }); }}
                                         className="h-7 w-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 active:bg-blue-600 active:text-white transition-colors"
                                     >
-                                        <span className="material-symbols-outlined text-[18px]">add</span>
+                                        <SymbolIcon className="material-symbols-outlined text-[18px]">add</SymbolIcon>
                                     </button>
                                 </div>
                             </div>
                         ))}
                         {clinicInventory.length === 0 && (
                             <div className="py-12 text-center text-slate-400">
-                                <span className="material-symbols-outlined text-4xl mb-3 opacity-30">inventory_2</span>
+                                <SymbolIcon className="material-symbols-outlined text-4xl mb-3 opacity-30">inventory_2</SymbolIcon>
                                 <p className="text-sm">No items found.</p>
                             </div>
                         )}

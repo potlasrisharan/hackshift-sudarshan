@@ -6,7 +6,7 @@ import {
   CheckCircle2, 
   Sparkles
 } from 'lucide-react';
-import ReactGA from 'react-ga4';
+import ReactGA from '@/lib/analytics-client';
 
 interface DashboardOffering {
   id: string;

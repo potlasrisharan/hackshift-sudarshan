@@ -1,0 +1,245 @@
+{
+  "results": [
+    {
+      "surface": "patient",
+      "view": "today",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "thread",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "medicines",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "monitor",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "care",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "women",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "privacy",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "lab",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "today",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "thread",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "medicines",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "monitor",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "care",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "women",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "privacy",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "lab",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "today",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "thread",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "medicines",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "monitor",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "care",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "women",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "privacy",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "lab",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "today",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "thread",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "medicines",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "monitor",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "care",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "women",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "privacy",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "lab",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "today",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "thread",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "medicines",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "monitor",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "care",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "women",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "privacy",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "surface": "patient",
+      "view": "lab",
+      "width": 390,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

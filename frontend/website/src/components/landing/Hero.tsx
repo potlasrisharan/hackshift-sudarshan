@@ -1,6 +1,7 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 
 import React from 'react';
-import ReactGA from "react-ga4";
+import ReactGA from "@/lib/analytics-client";
 import { useNavigate } from 'react-router-dom';
 
 const Hero: React.FC = () => {
@@ -34,7 +35,7 @@ const Hero: React.FC = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl text-lg font-bold shadow-lg shadow-blue-600/30 transition-all hover:-translate-y-1 w-full sm:w-auto text-center cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Explore 5 Dashboards</span>
-                <span className="material-symbols-outlined text-lg">arrow_downward</span>
+                <SymbolIcon className="material-symbols-outlined text-lg">arrow_downward</SymbolIcon>
               </button>
               <button
                 onClick={() => {
@@ -73,7 +74,7 @@ const Hero: React.FC = () => {
                     }}
                     className={`inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 cursor-pointer ${item.color}`}
                   >
-                    <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
+                    <SymbolIcon className="material-symbols-outlined text-[16px]">{item.icon}</SymbolIcon>
                     <span>{item.label}</span>
                   </button>
                 ))}

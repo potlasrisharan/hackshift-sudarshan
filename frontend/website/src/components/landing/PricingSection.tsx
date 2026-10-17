@@ -5,7 +5,7 @@ import {
     Check, X, ArrowRight, Sparkles, Crown,
     Zap, Star, Clock, Shield
 } from 'lucide-react';
-import ReactGA from "react-ga4";
+import ReactGA from "@/lib/analytics-client";
 
 interface PlanData {
     id: string;

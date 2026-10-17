@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useMemo } from 'react';
 import { useHospital } from '@/context/HospitalContext';
 import { dataService as db } from '@/lib/dataService';
@@ -143,7 +144,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                         onClick={onBack}
                         className="p-2 hover:bg-slate-100 rounded-xl transition-all"
                     >
-                        <span className="material-symbols-outlined text-slate-600">arrow_back</span>
+                        <SymbolIcon className="material-symbols-outlined text-slate-600">arrow_back</SymbolIcon>
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Medicine Migration</h1>
@@ -157,12 +158,12 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                 >
                     {migrating ? (
                         <>
-                            <span className="material-symbols-outlined animate-spin mr-2">sync</span>
+                            <SymbolIcon className="material-symbols-outlined animate-spin mr-2">sync</SymbolIcon>
                             Migrating...
                         </>
                     ) : (
                         <>
-                            <span className="material-symbols-outlined mr-2">swap_horiz</span>
+                            <SymbolIcon className="material-symbols-outlined mr-2">swap_horiz</SymbolIcon>
                             Execute Migration ({selectedItems.size})
                         </>
                     )}
@@ -175,7 +176,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                     <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl bg-white overflow-hidden">
                         <CardHeader className="bg-slate-900 text-white p-6">
                             <CardTitle className="flex items-center gap-2 text-lg">
-                                <span className="material-symbols-outlined text-blue-400">location_on</span>
+                                <SymbolIcon className="material-symbols-outlined text-blue-400">location_on</SymbolIcon>
                                 facility Selection
                             </CardTitle>
                             <CardDescription className="text-slate-400 font-medium">Select source and target clinics</CardDescription>
@@ -200,7 +201,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                             <div className="flex justify-center -my-3 relative z-10">
                                 <div className="bg-white p-1 rounded-full shadow-md border border-slate-100">
                                     <div className="bg-slate-100 p-2 rounded-full">
-                                        <span className="material-symbols-outlined text-slate-400 rotate-90 scale-75">swap_horiz</span>
+                                        <SymbolIcon className="material-symbols-outlined text-slate-400 rotate-90 scale-75">swap_horiz</SymbolIcon>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +241,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                     <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 transition-all hover:shadow-lg hover:shadow-emerald-100/50">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                                <span className="material-symbols-outlined">verified</span>
+                                <SymbolIcon className="material-symbols-outlined">verified</SymbolIcon>
                             </div>
                             <div>
                                 <h3 className="text-sm font-bold text-emerald-900">Safe Transfer</h3>
@@ -260,7 +261,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                                     <CardDescription className="text-slate-500 font-medium italic">Showing stock from {clinics.find(c => c.id === sourceClinicId)?.name || 'Source Clinic'}</CardDescription>
                                 </div>
                                 <div className="relative w-full md:w-64">
-                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 scale-90">search</span>
+                                    <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 scale-90">search</SymbolIcon>
                                     <Input 
                                         placeholder="Search inventory..." 
                                         className="pl-10 h-10 rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:ring-slate-400 transition-all text-sm font-medium"
@@ -275,7 +276,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                             {!sourceClinicId ? (
                                 <div className="h-full flex flex-col items-center justify-center text-slate-400 p-12 text-center">
                                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                                        <span className="material-symbols-outlined text-4xl opacity-50">inventory_2</span>
+                                        <SymbolIcon className="material-symbols-outlined text-4xl opacity-50">inventory_2</SymbolIcon>
                                     </div>
                                     <h3 className="text-lg font-bold text-slate-900 mb-1">Source Clinic Not Selected</h3>
                                     <p className="max-w-xs text-sm font-medium">Please select a source clinic facility to view its available inventory for migration.</p>
@@ -283,7 +284,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                             ) : filteredItems.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-slate-400 p-12 text-center">
                                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                                        <span className="material-symbols-outlined text-4xl opacity-50">search_off</span>
+                                        <SymbolIcon className="material-symbols-outlined text-4xl opacity-50">search_off</SymbolIcon>
                                     </div>
                                     <h3 className="text-lg font-bold text-slate-900 mb-1">No Matches Found</h3>
                                     <p className="max-w-xs text-sm font-medium">Try adjusting your search terms or verify the clinic has stock items.</p>
@@ -313,7 +314,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                                                         onClick={() => handleQuantityChange(item.id, (selectedItems.get(item.id) || 0) - 1, item.quantity)}
                                                         className="p-1 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
                                                     >
-                                                        <span className="material-symbols-outlined scale-75">remove</span>
+                                                        <SymbolIcon className="material-symbols-outlined scale-75">remove</SymbolIcon>
                                                     </button>
                                                     <Input 
                                                         type="number" 
@@ -326,7 +327,7 @@ export function MedicineMigration({ onBack }: MedicineMigrationProps) {
                                                         onClick={() => handleQuantityChange(item.id, (selectedItems.get(item.id) || 0) + 1, item.quantity)}
                                                         className="p-1 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
                                                     >
-                                                        <span className="material-symbols-outlined scale-75">add</span>
+                                                        <SymbolIcon className="material-symbols-outlined scale-75">add</SymbolIcon>
                                                     </button>
                                                 </div>
                                             </div>

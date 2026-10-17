@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import React, { useState, useEffect, useMemo } from 'react';
 import { dataService as db } from '@/lib/dataService';
 import { useHospital } from '@/context/HospitalContext';
@@ -1558,7 +1559,7 @@ export function IPDDashboard() {
                                         <div key={s.id} className="flex justify-between items-center p-3 text-sm bg-emerald-50/30 border-b border-emerald-100/50 last:border-0 border-dashed">
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-emerald-800 flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">receipt_long</span> Pharmacy Receipt #{(s.id || '').toString().slice(-6).toUpperCase()}
+                                                    <SymbolIcon className="material-symbols-outlined text-[16px]">receipt_long</SymbolIcon> Pharmacy Receipt #{(s.id || '').toString().slice(-6).toUpperCase()}
                                                 </span>
                                                 <div className="flex items-center gap-2 mt-0.5">
                                                     <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${s.payment_mode === 'IPD_BILL' ? 'bg-emerald-100/50 text-emerald-700' : 'bg-blue-100/50 text-blue-700'}`}>
@@ -1584,7 +1585,7 @@ export function IPDDashboard() {
                                             <div className="flex justify-between items-center p-3 text-sm bg-amber-50/30">
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-amber-700 flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-sm">stethoscope</span> Consultations
+                                                        <SymbolIcon className="material-symbols-outlined text-sm">stethoscope</SymbolIcon> Consultations
                                                     </span>
                                                 </div>
                                                 <span className="font-bold font-mono text-amber-700">₹{consulTotal}</span>

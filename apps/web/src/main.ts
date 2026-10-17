@@ -1,6 +1,13 @@
 import { equivalent } from "../../../packages/shared/compare";
 import "./style.css";
+import "../../../packages/design/landing.css";
+import "./design-v2.css";
 import { z } from "zod";
+import {
+  brandMarkup,
+  designIcon,
+  landingMarkup,
+} from "../../../packages/design/landing";
 import {
   driftRadar,
   rxToShelf,
@@ -51,14 +58,14 @@ const safe = (s: unknown) =>
       ] ?? c,
   );
 const nav = [
-  { id: "today", key: "today", icon: "◷" },
-  { id: "thread", key: "thread", icon: "⤳" },
-  { id: "medicines", key: "medicines", icon: "✚" },
-  { id: "monitor", key: "monitor", icon: "⌁" },
-  { id: "care", label: "Daily wellbeing", icon: "❋" },
-  { id: "women", label: "Cycle wellbeing", icon: "◌" },
-  { id: "privacy", key: "privacy", icon: "◇" },
-  { id: "lab", key: "lab", icon: "⌘" },
+  { id: "today", key: "today", icon: "home" },
+  { id: "thread", key: "thread", icon: "clinical" },
+  { id: "medicines", key: "medicines", icon: "operations" },
+  { id: "monitor", key: "monitor", icon: "heart" },
+  { id: "care", label: "AyuSetu Vitalis", icon: "heart" },
+  { id: "women", label: "AyuSetu HER", icon: "heart" },
+  { id: "privacy", key: "privacy", icon: "shield" },
+  { id: "lab", key: "lab", icon: "intake" },
 ] as const;
 const API_BASE =
   import.meta.env.VITE_API_BASE ??
@@ -104,6 +111,8 @@ async function start() {
     token = session.token;
     await api("/consent", "POST", { granted: true });
     consent = true;
+    page = "today";
+    history.replaceState({ page }, "", "#today");
     record = recordResponse.parse(await api("/record"));
     deleted = false;
   } catch (e) {
@@ -111,6 +120,7 @@ async function start() {
   } finally {
     loading = false;
     render();
+    if (consent) window.scrollTo({ top: 0, behavior: "instant" });
   }
 }
 function chart(values: number[], title: string) {
@@ -130,7 +140,7 @@ function heading(title: string, description: string) {
 function today() {
   return `${heading(words[lang].welcome, "A clear view of today, with your care connected.")}
  <section class="welcome-panel"><div><span class="pill">Patient view ${caregiver ? "• Caregiver preview" : ""}</span><h2>Good morning, Sunita.</h2><p>Your next small step is a gentle walk.<br>Your care team stays part of the picture.</p><button data-go="care" class="primary">See your day’s plan <span>↗</span></button><button data-action="listen" class="listen-button">Listen to welcome</button><p id="speech-status" aria-live="polite"></p></div><div class="thread-art" aria-hidden="true"><div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div><div class="thread-center">Care<br>continues.</div><span class="thread-dot d1"></span><span class="thread-dot d2"></span></div></section>
- <div class="section-heading"><h2>Today, at a glance</h2><span>Saturday, 17 October • Synthetic scenario</span></div>
+ <div class="section-heading"><h2>Today, at a glance</h2><span>Synthetic scenario · Sample daily plan</span></div>
  <div class="stats"><article><span class="stat-icon">✚</span><p>Medicine check-in</p><strong>${taken ? "Recorded" : "Due at 8:30"}</strong><small>${taken ? "In this demo session" : "Illustrative medication schedule"}</small></article><article><span class="stat-icon mint">⌁</span><p>Latest recorded BP</p><strong>${record.observations.at(-1)?.value ?? "—"}<em> mmHg</em></strong><small>Systolic only • demo reading</small></article><article><span class="stat-icon violet">◇</span><p>Record sharing</p><strong>Local demo</strong><small>External clinical AI disabled</small></article></div>
  <div class="two-col"><section class="panel"><div class="section-heading"><h2>Your next steps</h2><span class="pill">2 activities</span></div><div class="task"><div class="task-time">08:30</div><div><h3>Medication check-in</h3><p>Follow your clinician’s prescription.</p></div><button data-action="taken" class="${taken ? "done" : "secondary"}">${taken ? "✓ Recorded" : "Mark taken"}</button></div><div class="task"><div class="task-time">09:00</div><div><h3>A short, comfortable walk</h3><p>Start small, at your own pace.</p></div><button data-go="care" class="text-button">View plan</button></div><p class="caption">Logging is a demo interaction. No alarm or caregiver message is sent.</p></section>
  <section class="panel thread-preview"><div class="section-heading"><h2>One health thread</h2><button data-go="thread" class="text-button">View record</button></div><div class="timeline"><div><span></span><h3>Clinical intake</h3><p>AYUSETU Intake • Kiosk</p></div><div><span></span><h3>Clinic observation</h3><p>AYUSETU ClinicOS • ERP</p></div><div><span></span><h3>At home, connected</h3><p>Monitoring and follow-up demo</p></div></div></section></div>`;
@@ -188,7 +198,20 @@ function render() {
   document.documentElement.lang = lang.slice(0, 2);
   document.body.classList.toggle("dark", dark);
   document.body.classList.toggle("elder", elder);
-  app.innerHTML = `<a class="skip" href="#main">Skip to content</a><aside class="sidebar"><a href="#today" class="brand"><img src="/icon.svg" width="40" height="40" alt=""><span>AYUSETU<small>Care that stays connected</small></span></a><div class="workspace"><span class="avatar">S</span><div><strong>Sunita’s care space</strong><small>Synthetic patient demo</small></div></div><nav aria-label="Main navigation">${nav.map((n) => `<button data-go="${n.id}" class="nav-item ${page === n.id ? "active" : ""}" ${page === n.id ? 'aria-current="page"' : ""}><span aria-hidden="true">${n.icon}</span>${"key" in n ? w[n.key] : n.label}</button>`).join("")}</nav><div class="sidebar-bottom"><p>One thread.<br>From clinic to everyday life.</p><span class="pill">Decision support demo</span><button data-action="caregiver" class="text-button">${caregiver ? "Leave caregiver preview" : "Caregiver preview"}</button></div></aside>
+  if (!consent) {
+    app.innerHTML =
+      landingMarkup({
+        patient: "#begin",
+        clinician: "/erp.html#/app?view=doctor-consultation",
+        emergency: "/erp.html#/app?view=emergency-triage",
+        headquarters: "/erp.html#/app?view=admin",
+        operations: "/erp.html#/app?view=clinic-admin",
+        home: "/",
+      }) +
+      `<section id="begin" class="ayu-consent-entry"><div class="panel consent"><span class="pill demo">Synthetic data only</span><h2>Welcome to your connected care space.</h2><p>Explore a synthetic patient journey across clinical intake, clinic operations and home monitoring. This demo uses an isolated server-memory session that expires after one hour.</p><p>No real health data or live hospital connections. Optional welcome audio sends only static interface text. Interface translations are illustrative and not clinician verified.</p>${error ? `<p role="alert" class="error">${safe(error)}</p>` : ""}<button data-action="start" class="primary" ${loading ? "disabled" : ""}>${loading ? "Preparing your care space…" : "Agree to local demo processing & begin"}</button><p class="caption">You can revoke consent or delete observations in Privacy.</p></div></section>`;
+    return;
+  }
+  app.innerHTML = `<a class="skip" href="#main">Skip to content</a><aside class="sidebar"><a href="#today" class="brand">${brandMarkup}</a><div class="workspace"><span class="avatar">S</span><div><strong>Sunita’s care space</strong><small>Synthetic patient demo</small></div></div><nav aria-label="Main navigation">${nav.map((n) => `<button data-go="${n.id}" class="nav-item ${page === n.id ? "active" : ""}" ${page === n.id ? 'aria-current="page"' : ""}>${designIcon(n.icon)}${"key" in n ? w[n.key] : n.label}</button>`).join("")}</nav><div class="sidebar-bottom"><p>One thread.<br>From clinic to everyday life.</p><span class="pill">Decision support demo</span><button data-action="caregiver" class="text-button">${caregiver ? "Leave caregiver preview" : "Caregiver preview"}</button></div></aside>
  <div class="main-wrap"><header><div class="breadcrumb">My care <span>/</span> ${safe(nav.find((n) => n.id === page)?.id ?? "today")}</div><div class="header-actions"><label class="sr-only" for="language">Language</label><select id="language">${Object.entries(
    languages,
  )
@@ -408,9 +431,18 @@ app.addEventListener("input", (event) => {
 window.addEventListener("offline", render);
 window.addEventListener("online", render);
 window.addEventListener("popstate", (event) => {
-  const p = (event.state as { page?: string })?.page;
+  const p =
+    (event.state as { page?: string } | null)?.page ??
+    window.location.hash.slice(1);
   if (p && nav.some((n) => n.id === p)) {
     page = p;
+    render();
+  }
+});
+window.addEventListener("hashchange", () => {
+  const h = window.location.hash.slice(1);
+  if (h && nav.some((n) => n.id === h) && page !== h) {
+    page = h as typeof page;
     render();
   }
 });

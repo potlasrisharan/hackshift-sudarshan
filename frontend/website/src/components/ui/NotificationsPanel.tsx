@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useHospital, Notification as ContextNotification } from '@/context/HospitalContext'
@@ -51,7 +52,7 @@ export function NotificationsPanel({ open, onClose, onNavigate }: { open: boolea
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-slate-100">
                     <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-slate-700">notifications</span>
+                        <SymbolIcon className="material-symbols-outlined text-slate-700">notifications</SymbolIcon>
                         <h3 className="font-bold text-slate-900">Notifications</h3>
                         {notifications.length > 0 && (
                             <span className="text-[10px] font-bold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
@@ -67,7 +68,7 @@ export function NotificationsPanel({ open, onClose, onNavigate }: { open: boolea
                 <div className="flex-1 overflow-y-auto">
                     {notifications.length === 0 ? (
                         <div className="text-center py-12 px-4">
-                            <span className="material-symbols-outlined text-4xl text-slate-300">notifications_off</span>
+                            <SymbolIcon className="material-symbols-outlined text-4xl text-slate-300">notifications_off</SymbolIcon>
                             <p className="text-sm text-slate-400 mt-2 font-medium">No notifications yet today</p>
                         </div>
                     ) : (
@@ -81,7 +82,7 @@ export function NotificationsPanel({ open, onClose, onNavigate }: { open: boolea
                                         onClick={() => setSelectedNotification(notif)}
                                     >
                                         <div className={`w-9 h-9 rounded-xl ${colors.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                                            <span className={`material-symbols-outlined text-[18px] ${colors.text}`}>{notif.icon}</span>
+                                            <SymbolIcon className={`material-symbols-outlined text-[18px] ${colors.text}`}>{notif.icon}</SymbolIcon>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
@@ -141,7 +142,7 @@ export function NotificationsPanel({ open, onClose, onNavigate }: { open: boolea
                     <div className="animate-in fade-in zoom-in-95 duration-200">
                         <div className={`p-6 ${getColorClasses(selectedNotification.color).bg} border-b border-slate-100 flex items-center gap-4`}>
                             <div className={`w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-${selectedNotification.color}-600`}>
-                                <span className="material-symbols-outlined text-2xl">{selectedNotification.icon}</span>
+                                <SymbolIcon className="material-symbols-outlined text-2xl">{selectedNotification.icon}</SymbolIcon>
                             </div>
                             <div>
                                 <DialogTitle className="text-xl font-bold text-slate-900">{selectedNotification.title}</DialogTitle>

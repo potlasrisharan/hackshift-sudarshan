@@ -1,8 +1,9 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import ReactGA from "react-ga4";
+import ReactGA from "@/lib/analytics-client";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,8 +24,8 @@ const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'Solutions', path: 'offers', isSection: true },
-    { name: 'Pricing', path: 'pricing', isSection: true },
+    { name: 'Solutions', path: '/clinic-operations', isSection: false },
+    { name: 'Pricing', path: '/app?view=billing', isSection: false },
     { name: 'About', path: '/about', isSection: false },
     { name: 'News', path: '/news', isSection: false },
     { name: 'Contact', path: '/contact', isSection: false },
@@ -76,10 +77,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
-              <span className="material-symbols-outlined text-white text-xl">local_hospital</span>
-            </div>
-            <span className="text-2xl font-extrabold tracking-tight text-slate-900">Aarogya Nidhi</span>
+            <span className="ds-wordmark">Ayu<span lang="hi">सेतु</span></span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -116,7 +114,7 @@ const Navbar: React.FC = () => {
               className="bg-primary hover:opacity-90 px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-blue-500/20 transition-all text-white flex items-center gap-1.5"
             >
               <span>Launch Dashboards</span>
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              <SymbolIcon className="material-symbols-outlined text-[16px]">arrow_forward</SymbolIcon>
             </Link>
           </div>
 

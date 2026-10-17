@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect } from 'react'
 import { Loader2, Plus, Pencil, Trash2, Clock, Users, AlertTriangle } from 'lucide-react'
 import { dataService as db } from '@/lib/dataService'
@@ -316,7 +317,7 @@ export function ShiftManagement({ clinicId }: ShiftManagementProps) {
                 <div>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                            <span className="material-symbols-outlined text-[20px]">schedule</span>
+                            <SymbolIcon className="material-symbols-outlined text-[20px]">schedule</SymbolIcon>
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-slate-900 tracking-tight">Shift Operations</h2>

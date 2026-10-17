@@ -1,45 +1,45 @@
-import { useState, useEffect } from 'react'
-import { StaffPortal } from '@/components/StaffPortal'
-import ProcurementDashboard from '@/components/ProcurementDashboard';
-import { MedicineMigration } from '@/components/MedicineMigration';
-import { SuperAdminDashboard } from "@/components/SuperAdminDashboard";
-import { HospitalDashboard } from "@/components/HospitalDashboard";
-import { ClinicAdminDashboard } from "@/components/ClinicAdminDashboard";
+import { useState, useEffect, lazy, Suspense } from 'react'
+const StaffPortal = lazy(() => import("@/components/StaffPortal").then(module => ({ default: module.StaffPortal })));
+const ProcurementDashboard = lazy(() => import("@/components/ProcurementDashboard"));
+const MedicineMigration = lazy(() => import("@/components/MedicineMigration").then(module => ({ default: module.MedicineMigration })));
+const SuperAdminDashboard = lazy(() => import("@/components/SuperAdminDashboard").then(module => ({ default: module.SuperAdminDashboard })));
+const HospitalDashboard = lazy(() => import("@/components/HospitalDashboard").then(module => ({ default: module.HospitalDashboard })));
+const ClinicAdminDashboard = lazy(() => import("@/components/ClinicAdminDashboard").then(module => ({ default: module.ClinicAdminDashboard })));
 import { AppLayout } from "@/components/layout/AppLayout";
-import { InventoryDashboard } from "@/components/InventoryDashboard";
-import { AdminSetup } from "@/components/AdminSetup";
+const InventoryDashboard = lazy(() => import("@/components/InventoryDashboard").then(module => ({ default: module.InventoryDashboard })));
+const AdminSetup = lazy(() => import("@/components/AdminSetup").then(module => ({ default: module.AdminSetup })));
 import { HospitalProvider, useHospital } from '@/context/HospitalContext';
 import { TourProvider } from '@/context/TourContext';
 import { ProductTour } from '@/components/ProductTour';
 import { ResetPasswordPage } from "@/components/ResetPasswordPage";
-import { HospitalsRegistry } from '@/components/HospitalsRegistry';
-import { ExpensesDashboard } from './components/ExpensesDashboard';
-import { EquipmentsDashboard } from './components/EquipmentsDashboard';
-import { HospitalDetails } from '@/components/HospitalDetails';
-import { AuditLogs } from '@/components/AuditLogs';
-import { POSDashboard } from '@/components/POSDashboard';
-import { ClinicAttendance } from '@/components/ClinicAttendance';
-import { ShiftManagement } from '@/components/ShiftManagement';
-import { HospitalShiftManagement } from '@/components/HospitalShiftManagement';
-import { EarningsDashboard } from '@/components/EarningsDashboard';
-import { SettingsDashboard } from '@/components/SettingsDashboard';
-import { CAFinancialSuite } from '@/components/CAFinancialSuite';
-import { IPDDashboard } from '@/components/IPDDashboard';
-import { DoctorConsultation } from '@/components/DoctorConsultation';
-import { EmergencyTriage } from '@/components/EmergencyTriage';
-import { AyushDashboard } from '@/components/AyushDashboard';
-import { PatientKiosk } from '@/components/PatientKiosk';
+const HospitalsRegistry = lazy(() => import("@/components/HospitalsRegistry").then(module => ({ default: module.HospitalsRegistry })));
+const ExpensesDashboard = lazy(() => import("./components/ExpensesDashboard").then(module => ({ default: module.ExpensesDashboard })));
+const EquipmentsDashboard = lazy(() => import("./components/EquipmentsDashboard").then(module => ({ default: module.EquipmentsDashboard })));
+const HospitalDetails = lazy(() => import("@/components/HospitalDetails").then(module => ({ default: module.HospitalDetails })));
+const AuditLogs = lazy(() => import("@/components/AuditLogs").then(module => ({ default: module.AuditLogs })));
+const POSDashboard = lazy(() => import("@/components/POSDashboard").then(module => ({ default: module.POSDashboard })));
+const ClinicAttendance = lazy(() => import("@/components/ClinicAttendance").then(module => ({ default: module.ClinicAttendance })));
+const ShiftManagement = lazy(() => import("@/components/ShiftManagement").then(module => ({ default: module.ShiftManagement })));
+const HospitalShiftManagement = lazy(() => import("@/components/HospitalShiftManagement").then(module => ({ default: module.HospitalShiftManagement })));
+const EarningsDashboard = lazy(() => import("@/components/EarningsDashboard").then(module => ({ default: module.EarningsDashboard })));
+const SettingsDashboard = lazy(() => import("@/components/SettingsDashboard").then(module => ({ default: module.SettingsDashboard })));
+const CAFinancialSuite = lazy(() => import("@/components/CAFinancialSuite").then(module => ({ default: module.CAFinancialSuite })));
+const IPDDashboard = lazy(() => import("@/components/IPDDashboard").then(module => ({ default: module.IPDDashboard })));
+const DoctorConsultation = lazy(() => import("@/components/DoctorConsultation").then(module => ({ default: module.DoctorConsultation })));
+const EmergencyTriage = lazy(() => import("@/components/EmergencyTriage").then(module => ({ default: module.EmergencyTriage })));
+const AyushDashboard = lazy(() => import("@/components/AyushDashboard").then(module => ({ default: module.AyushDashboard })));
+const PatientKiosk = lazy(() => import("@/components/PatientKiosk").then(module => ({ default: module.PatientKiosk })));
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from '@/pages/LandingPage';
 import { BillingOverview, SubscriptionDashboard } from '@/components/billing';
-import AboutPage from '@/pages/AboutPage';
-import NewsPage from '@/pages/NewsPage';
-import ContactPage from '@/pages/ContactPage';
-import ClinicOperationsPage from '@/pages/ClinicOperationsPage';
-import HospitalCommandCenterPage from '@/pages/HospitalCommandCenterPage';
-import PrivacyPage from '@/pages/PrivacyPage';
-import CareersPage from '@/pages/CareersPage';
-import SupportPage from '@/pages/SupportPage';
+const AboutPage = lazy(() => import("@/pages/AboutPage"));
+const NewsPage = lazy(() => import("@/pages/NewsPage"));
+const ContactPage = lazy(() => import("@/pages/ContactPage"));
+const ClinicOperationsPage = lazy(() => import("@/pages/ClinicOperationsPage"));
+const HospitalCommandCenterPage = lazy(() => import("@/pages/HospitalCommandCenterPage"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
+const CareersPage = lazy(() => import("@/pages/CareersPage"));
+const SupportPage = lazy(() => import("@/pages/SupportPage"));
 import { useLocation } from 'react-router-dom';
 import { logPageView } from '@/lib/analytics';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -678,7 +678,7 @@ function Main() {
         <Router>
             <TourProvider>
                 <ProductTour />
-                <AppRouter />
+                <Suspense fallback={<div className="p-8 text-center text-slate-500" role="status">Opening your workspace…</div>}><AppRouter /></Suspense>
             </TourProvider>
         </Router>
     );

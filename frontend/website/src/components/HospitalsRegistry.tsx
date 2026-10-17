@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useEffect, useState, useMemo } from 'react'
 import { dataService as db } from '@/lib/dataService'
 import { useToast } from '@/components/ui/use-toast'
@@ -101,7 +102,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
             <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border border-slate-200 rounded-t-2xl px-6 py-4 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm mt-4 mx-4">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0">
-                        <span className="material-symbols-outlined text-2xl">corporate_fare</span>
+                        <SymbolIcon className="material-symbols-outlined text-2xl">corporate_fare</SymbolIcon>
                     </div>
                     <div>
                         <h1 className="text-lg font-bold text-slate-900 leading-tight tracking-tight">Registry Management</h1>
@@ -131,7 +132,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
 
                     {/* Search Input */}
                     <div className="relative flex-1">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                        <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</SymbolIcon>
                         <input
                             className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400"
                             placeholder="Search hospitals by name or ID..."
@@ -176,7 +177,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                         </div>
 
                         <button onClick={() => fetchHospitals()} disabled={loading} className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 text-xs font-medium whitespace-nowrap bg-white hover:bg-slate-50 transition-colors">
-                            <span className={`material-symbols-outlined !text-[16px] ${loading ? 'animate-spin' : ''}`}>sync</span>
+                            <SymbolIcon className={`material-symbols-outlined !text-[16px] ${loading ? 'animate-spin' : ''}`}>sync</SymbolIcon>
                             Refresh
                         </button>
                     </div>
@@ -203,7 +204,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                                     <tr>
                                         <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
                                             <div className="flex flex-col items-center justify-center gap-3">
-                                                <span className="material-symbols-outlined animate-spin text-4xl">sync</span>
+                                                <SymbolIcon className="material-symbols-outlined animate-spin text-4xl">sync</SymbolIcon>
                                                 <span className="text-sm font-medium">Loading Hospitals...</span>
                                             </div>
                                         </td>
@@ -212,7 +213,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                                     <tr>
                                         <td colSpan={6} className="px-6 py-16 text-center text-slate-400">
                                             <div className="flex flex-col items-center justify-center gap-3">
-                                                <span className="material-symbols-outlined text-5xl opacity-50">search_off</span>
+                                                <SymbolIcon className="material-symbols-outlined text-5xl opacity-50">search_off</SymbolIcon>
                                                 <span className="text-sm font-medium">No hospitals found matching filters.</span>
                                             </div>
                                         </td>
@@ -248,7 +249,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                                             <td className="px-6 py-4">
                                                 <div className="flex justify-center">
                                                     <div className="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">
-                                                        <span className="material-symbols-outlined text-[14px] text-slate-400">group</span>
+                                                        <SymbolIcon className="material-symbols-outlined text-[14px] text-slate-400">group</SymbolIcon>
                                                         <span className="text-xs font-bold text-slate-600 tabular-nums">{h.total_users || 0}</span>
                                                     </div>
                                                 </div>
@@ -270,7 +271,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                                                         title="View Usage Details"
                                                         className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all focus:outline-none"
                                                     >
-                                                        <span className="material-symbols-outlined !text-[18px]">visibility</span>
+                                                        <SymbolIcon className="material-symbols-outlined !text-[18px]">visibility</SymbolIcon>
                                                     </button>
 
                                                     <button
@@ -278,9 +279,9 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                                                         title={h.is_active !== false ? 'Suspend Hospital' : 'Activate Hospital'}
                                                         className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all focus:outline-none"
                                                     >
-                                                        <span className="material-symbols-outlined !text-[18px]">
+                                                        <SymbolIcon className="material-symbols-outlined !text-[18px]">
                                                             {h.is_active !== false ? 'block' : 'power_settings_new'}
-                                                        </span>
+                                                        </SymbolIcon>
                                                     </button>
                                                 </div>
                                             </td>
@@ -307,7 +308,7 @@ export function HospitalsRegistry({ onView }: HospitalsRegistryProps) {
                 title="Register New Hospital"
                 className="fixed bottom-10 right-10 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-200 flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40"
             >
-                <span className="material-symbols-outlined !text-[28px]">add</span>
+                <SymbolIcon className="material-symbols-outlined !text-[28px]">add</SymbolIcon>
             </button>
 
         </div>

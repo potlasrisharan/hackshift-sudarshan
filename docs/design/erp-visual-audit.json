@@ -1,0 +1,408 @@
+{
+  "results": [
+    {
+      "route": "/",
+      "characters": 2721,
+      "overflow": false,
+      "headings": [
+        "Healthcare,finally connected.",
+        "One platform.Every stage of care.",
+        "Where would youlike to begin?",
+        "The whole picture.A clearer next step.",
+        "Human decisions.Thoughtful support.",
+        "Let’s bring care together."
+      ]
+    },
+    {
+      "route": "/about",
+      "characters": 2470,
+      "overflow": false,
+      "headings": [
+        "Elevating Healthcare Through Innovation.",
+        "The Aarogya Nidhi Story",
+        "Guided by Our Core Values",
+        "Ready to join the future of healthcare?"
+      ]
+    },
+    {
+      "route": "/news",
+      "characters": 2205,
+      "overflow": false,
+      "headings": [
+        "The Aarogya Nidhi Notebook",
+        "Join the Aarogya Nidhi Collective"
+      ]
+    },
+    {
+      "route": "/contact",
+      "characters": 1257,
+      "overflow": false,
+      "headings": [
+        "Let's simplify your operations."
+      ]
+    },
+    {
+      "route": "/clinic-operations",
+      "characters": 1488,
+      "overflow": false,
+      "headings": [
+        "Clinic & Pharmacy Operations",
+        "Lightning-Fast POS System"
+      ]
+    },
+    {
+      "route": "/hospital-command-center",
+      "characters": 1465,
+      "overflow": false,
+      "headings": [
+        "Hospital Command Center",
+        "Multi-Clinic Intelligence"
+      ]
+    },
+    {
+      "route": "/privacy",
+      "characters": 1145,
+      "overflow": false,
+      "headings": [
+        "Privacy Policy",
+        "1. Data Ownership & Sovereignty",
+        "2. Security Measures"
+      ]
+    },
+    {
+      "route": "/careers",
+      "characters": 1072,
+      "overflow": false,
+      "headings": [
+        "Help us heal the system.",
+        "Current Openings",
+        "Don't see a perfect fit?"
+      ]
+    },
+    {
+      "route": "/support",
+      "characters": 922,
+      "overflow": false,
+      "headings": [
+        "Support Center",
+        "Stay Informed"
+      ]
+    },
+    {
+      "route": "/kiosk",
+      "characters": 699,
+      "overflow": false,
+      "headings": [
+        "Choose your language"
+      ]
+    },
+    {
+      "route": "/app?view=doctor-consultation",
+      "characters": 4184,
+      "overflow": false,
+      "headings": [
+        "Doctor Consultation (OPD)",
+        "Your consultation workspace",
+        "Patient Intake Queue",
+        "Ramesh Chandra"
+      ]
+    },
+    {
+      "route": "/app?view=emergency-triage",
+      "characters": 3513,
+      "overflow": false,
+      "headings": [
+        "Emergency Triage (STAT)",
+        "Casualty ER & STAT Red-Flag Triage",
+        "Casualty Resuscitation Bays (1 to 4) Management",
+        "Live Critical Casualty Escrow Feed (2 Cases)"
+      ]
+    },
+    {
+      "route": "/app?view=admin",
+      "characters": 3718,
+      "overflow": false,
+      "headings": [
+        "Headquarters Command Center",
+        "AYUSETU Central Hospital (Medanta Network)",
+        "Multi-Clinic Hub Fleet (3)",
+        "Group Financial & Operational Analytics",
+        "Central Inventory & Stock Rebalancing Radar"
+      ]
+    },
+    {
+      "route": "/app?view=clinic-admin",
+      "characters": 2639,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Clinic Operations Hub",
+        "Revenue & Patient Flow Trajectory",
+        "Payment Channel Split",
+        "Drift Radar: Inventory Telemetry",
+        "Live Counter Transactions & Settlements"
+      ]
+    },
+    {
+      "route": "/app?view=pos",
+      "characters": 1024,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Clinical Billing & POS",
+        "Available Products",
+        " Current Bill"
+      ]
+    },
+    {
+      "route": "/app?view=inventory-dashboard",
+      "characters": 1264,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Stock Management",
+        "Quick Stock Entry"
+      ]
+    },
+    {
+      "route": "/app?view=staff",
+      "characters": 1041,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Staff Overview"
+      ]
+    },
+    {
+      "route": "/app?view=attendance",
+      "characters": 735,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Daily Roster & Attendance"
+      ]
+    },
+    {
+      "route": "/app?view=shift-management",
+      "characters": 914,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Hospital Shift Management"
+      ]
+    },
+    {
+      "route": "/app?view=earnings",
+      "characters": 934,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Earnings Dashboard"
+      ]
+    },
+    {
+      "route": "/app?view=settings",
+      "characters": 798,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "System Settings"
+      ]
+    },
+    {
+      "route": "/app?view=billing",
+      "characters": 855,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Current Plan"
+      ]
+    },
+    {
+      "route": "/app?view=procurement",
+      "characters": 711,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Procurement"
+      ]
+    },
+    {
+      "route": "/app?view=medicine-migration",
+      "characters": 927,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Medicine Migration"
+      ]
+    },
+    {
+      "route": "/app?view=expenses",
+      "characters": 776,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Other Expenses"
+      ]
+    },
+    {
+      "route": "/app?view=equipments",
+      "characters": 995,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "Equipments & Assets"
+      ]
+    },
+    {
+      "route": "/app?view=ca-suite",
+      "characters": 854,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "CA Financial Suite"
+      ]
+    },
+    {
+      "route": "/app?view=ipd",
+      "characters": 731,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "IPD Management"
+      ]
+    },
+    {
+      "route": "/app?view=ayush-center",
+      "characters": 1997,
+      "overflow": false,
+      "headings": [
+        "Clinic Operations & POS",
+        "AYUSH Clinical Case-Taking & Dashavidha Pariksha Center",
+        "AYUSH OPD Queue",
+        "Ananya Deshmukh"
+      ]
+    },
+    {
+      "route": "/",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "route": "/kiosk",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=doctor-consultation",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=emergency-triage",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=admin",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=clinic-admin",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "route": "/kiosk",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=doctor-consultation",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=emergency-triage",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=admin",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=clinic-admin",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/kiosk",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=doctor-consultation",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=emergency-triage",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=admin",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=clinic-admin",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "/kiosk",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=doctor-consultation",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=emergency-triage",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=admin",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "/app?view=clinic-admin",
+      "width": 390,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

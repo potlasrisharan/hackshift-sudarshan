@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect, useMemo } from 'react'
 import {
     RefreshCw,
@@ -500,7 +501,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
             <div className="bg-white/80 backdrop-blur-md rounded-2xl p-3 border border-slate-200/80 shadow-sm">
                 <div className="flex items-center justify-between px-2 pb-2 mb-2 border-b border-slate-100">
                     <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-blue-600 text-[18px]">bolt</span>
+                        <SymbolIcon className="material-symbols-outlined text-blue-600 text-[18px]">bolt</SymbolIcon>
                         <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Fast Navigation</span>
                     </div>
                     <span className="text-[11px] text-slate-400 font-medium">1-Click Direct Hub Access</span>
@@ -511,7 +512,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98] transition-all text-left group"
                     >
                         <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">point_of_sale</span>
+                            <SymbolIcon className="material-symbols-outlined text-[22px]">point_of_sale</SymbolIcon>
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs font-bold leading-tight truncate">POS Billing</p>
@@ -524,7 +525,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/60 hover:border-slate-300 hover:shadow-sm active:scale-[0.98] transition-all text-left group"
                     >
                         <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">inventory_2</span>
+                            <SymbolIcon className="material-symbols-outlined text-[22px]">inventory_2</SymbolIcon>
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs font-bold leading-tight truncate">Inventory Control</p>
@@ -537,7 +538,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/60 hover:border-slate-300 hover:shadow-sm active:scale-[0.98] transition-all text-left group"
                     >
                         <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">badge</span>
+                            <SymbolIcon className="material-symbols-outlined text-[22px]">badge</SymbolIcon>
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs font-bold leading-tight truncate">Staff Attendance</p>
@@ -550,7 +551,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/60 hover:border-slate-300 hover:shadow-sm active:scale-[0.98] transition-all text-left group"
                     >
                         <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">schedule</span>
+                            <SymbolIcon className="material-symbols-outlined text-[22px]">schedule</SymbolIcon>
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs font-bold leading-tight truncate">Shift Management</p>
@@ -563,7 +564,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/60 hover:border-slate-300 hover:shadow-sm active:scale-[0.98] transition-all text-left group"
                     >
                         <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-[22px]">hotel</span>
+                            <SymbolIcon className="material-symbols-outlined text-[22px]">hotel</SymbolIcon>
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs font-bold leading-tight truncate">IPD Inpatients</p>
@@ -582,7 +583,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                             <div>
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
-                                        <span className="material-symbols-outlined text-2xl">payments</span>
+                                        <SymbolIcon className="material-symbols-outlined text-2xl">payments</SymbolIcon>
                                     </div>
                                     <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${revenueTrend.positive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
                                         {revenueTrend.positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -611,7 +612,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         <DialogHeader className="border-b border-slate-100 pb-4">
                             <div className="flex items-center justify-between">
                                 <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-blue-600">receipt_long</span>
+                                    <SymbolIcon className="material-symbols-outlined text-blue-600">receipt_long</SymbolIcon>
                                     Today's Revenue Journal & Settlements
                                 </DialogTitle>
                                 <span className="text-xs font-bold bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100">
@@ -1196,7 +1197,7 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
                         <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-blue-600">receipt_long</span>
+                            <SymbolIcon className="material-symbols-outlined text-blue-600">receipt_long</SymbolIcon>
                             <h2 className="text-lg font-black text-slate-900 tracking-tight">Live Counter Transactions & Settlements</h2>
                         </div>
                         <p className="text-xs text-slate-500 mt-0.5">
