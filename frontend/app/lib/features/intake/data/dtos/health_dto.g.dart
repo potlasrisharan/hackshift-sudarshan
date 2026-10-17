@@ -19,3 +19,19 @@ Map<String, Object?> _$HealthDtoToJson(HealthDto instance) => <String, Object?>{
   'persistentStorage': instance.persistentStorage,
   'speechConfigured': instance.speechConfigured,
 };
+
+IntegrationHealthDto _$IntegrationHealthDtoFromJson(
+  Map<String, Object?> json,
+) => IntegrationHealthDto(
+  status: json['status'] as String,
+  service: json['service'] as String,
+  syntheticOnly: json['syntheticOnly'] as bool,
+);
+
+Map<String, Object?> _$IntegrationHealthDtoToJson(
+  IntegrationHealthDto instance,
+) => <String, Object?>{
+  'status': instance.status,
+  'service': instance.service,
+  'syntheticOnly': instance.syntheticOnly,
+};

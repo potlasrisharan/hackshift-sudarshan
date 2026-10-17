@@ -24,3 +24,30 @@ final class HealthDto {
     speechConfigured: speechConfigured,
   );
 }
+
+/// The newer integration health route does not claim storage/speech capability.
+@JsonSerializable()
+final class IntegrationHealthDto {
+  final String status;
+  final String service;
+  final bool syntheticOnly;
+  const IntegrationHealthDto({
+    required this.status,
+    required this.service,
+    required this.syntheticOnly,
+  });
+  factory IntegrationHealthDto.fromJson(Map<String, Object?> json) =>
+      _$IntegrationHealthDtoFromJson(json);
+  Map<String, Object?> toJson() => _$IntegrationHealthDtoToJson(this);
+  ServiceHealth toDomain() {
+    if (service != 'dhaaga-integration' || !syntheticOnly) {
+      throw const FormatException();
+    }
+    return ServiceHealth(
+      reachable: status == 'ok',
+      syntheticDemo: syntheticOnly,
+      persistentStorage: null,
+      speechConfigured: null,
+    );
+  }
+}

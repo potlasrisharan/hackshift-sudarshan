@@ -20,6 +20,9 @@ class UnavailableStep extends ConsumerWidget {
         ChoosingLanguage() => strings.flowChoosing,
         AwaitingIdentity() => strings.flowIdentity,
         IntakeBlocked() => strings.flowBlocked,
+        EditingIntake() ||
+        SubmittingIntake() ||
+        IntakeComplete() => strings.flowBlocked,
       },
     );
     return KioskShell(

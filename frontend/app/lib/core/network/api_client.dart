@@ -174,5 +174,44 @@ final class ApiClient {
     }
   }
 
+  /// Only the two audited integration operations are exposed, not arbitrary paths.
+  Future<Result<Object?>> login(
+    Map<String, Object?> body,
+    CancelToken cancelToken,
+  ) => _post('/auth/login', body, cancelToken);
+  Future<Result<Object?>> createEncounter(
+    Map<String, Object?> body,
+    String token,
+    String key,
+    CancelToken cancelToken,
+  ) => _post('/encounters', body, cancelToken, token: token, key: key);
+  Future<Result<Object?>> _post(
+    String path,
+    Map<String, Object?> body,
+    CancelToken cancelToken, {
+    String? token,
+    String? key,
+  }) async {
+    try {
+      final response = await _dio.post<Object?>(
+        '${config.apiBaseUrl}$path',
+        data: body,
+        cancelToken: cancelToken,
+        options: Options(
+          headers: {
+            if (token != null) 'Authorization': 'Bearer $token',
+            'Idempotency-Key': ?key,
+          },
+          extra: {'verifiedIdempotent': key != null},
+        ),
+      );
+      return Success(response.data);
+    } on DioException catch (err) {
+      return Failed(mapDioFailure(err));
+    } catch (_) {
+      return const Failed(UnknownFailure());
+    }
+  }
+
   void close() => _dio.close(force: true);
 }

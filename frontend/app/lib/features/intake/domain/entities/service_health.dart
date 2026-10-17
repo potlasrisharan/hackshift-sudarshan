@@ -1,8 +1,8 @@
 final class ServiceHealth {
   final bool reachable;
   final bool syntheticDemo;
-  final bool persistentStorage;
-  final bool speechConfigured;
+  final bool? persistentStorage;
+  final bool? speechConfigured;
   const ServiceHealth({
     required this.reachable,
     required this.syntheticDemo,

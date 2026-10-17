@@ -40,6 +40,42 @@ final healthUseCaseProvider = Provider<Result<CheckServiceHealth>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HealthUseCaseRef = ProviderRef<Result<CheckServiceHealth>>;
+String _$intakeRepositoryHash() => r'a025cf97b6de3a8f4fd07b4636f57f04e8ad91f8';
+
+/// See also [intakeRepository].
+@ProviderFor(intakeRepository)
+final intakeRepositoryProvider = Provider<Result<IntakeRepository>>.internal(
+  intakeRepository,
+  name: r'intakeRepositoryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$intakeRepositoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef IntakeRepositoryRef = ProviderRef<Result<IntakeRepository>>;
+String _$kioskClockHash() => r'bb97652004372e8946e6b481dcc5f8c37eed6e91';
+
+/// Injectable wall clock, so reset tests exercise elapsed time without real waits.
+///
+/// Copied from [kioskClock].
+@ProviderFor(kioskClock)
+final kioskClockProvider = Provider<DateTime Function()>.internal(
+  kioskClock,
+  name: r'kioskClockProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$kioskClockHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef KioskClockRef = ProviderRef<DateTime Function()>;
 String _$healthControllerHash() => r'd02ed1dbd4c75768b188ef57de8ca15aa00f421c';
 
 /// See also [HealthController].
@@ -56,7 +92,7 @@ final healthControllerProvider =
     );
 
 typedef _$HealthController = AsyncNotifier<ServiceHealth?>;
-String _$intakeFlowHash() => r'1e1cb25651afdaf455f93ce76d6715e9e62fccef';
+String _$intakeFlowHash() => r'db2c759af89ad4b14dbfd379e8f9920b875838b6';
 
 /// See also [IntakeFlow].
 @ProviderFor(IntakeFlow)

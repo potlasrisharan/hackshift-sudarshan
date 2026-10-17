@@ -19,7 +19,9 @@ final class ServiceRepositoryImpl implements ServiceRepository {
           return const Failed(ValidationFailure());
         }
         try {
-          final health = HealthDto.fromJson(value).toDomain();
+          final health = value['service'] == 'dhaaga-integration'
+              ? IntegrationHealthDto.fromJson(value).toDomain()
+              : HealthDto.fromJson(value).toDomain();
           return health.reachable
               ? Success(health)
               : const Failed(ServerFailure(503));

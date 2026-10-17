@@ -35,6 +35,36 @@ class Repository implements ServiceRepository {
 }
 
 void main() {
+  test(
+    'new integration health is parsed without inventing capability flags',
+    () async {
+      final input = <String, Object?>{
+        'status': 'ok',
+        'service': 'dhaaga-integration',
+        'syntheticOnly': true,
+      };
+      final dto = IntegrationHealthDto.fromJson(input);
+      expect(dto.toJson(), input);
+      expect(dto.toDomain().persistentStorage, isNull);
+      final adapter = ScriptedAdapter([(_) => jsonReply(input)]);
+      final client = ApiClient(
+        config(),
+        dio: Dio()..httpClientAdapter = adapter,
+      );
+      addTearDown(client.close);
+      expect(
+        await ServiceRepositoryImpl(HealthRemoteSource(client)).checkHealth(),
+        isA<Success<ServiceHealth>>(),
+      );
+      expect(
+        () => IntegrationHealthDto.fromJson({
+          ...input,
+          'syntheticOnly': false,
+        }).toDomain(),
+        throwsFormatException,
+      );
+    },
+  );
   test('health DTO round-trips the actual Worker fields', () {
     const input = <String, Object?>{
       'status': 'ok',
