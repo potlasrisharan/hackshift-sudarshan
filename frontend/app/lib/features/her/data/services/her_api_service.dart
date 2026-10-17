@@ -1,13 +1,14 @@
 import "dart:convert";
 import "package:http/http.dart" as http;
 import "../models/her_models.dart";
+import "../../../../core/network/api_config.dart";
 
 class HerApiService {
   final String baseUrl;
   final String patientId;
 
   const HerApiService({
-    this.baseUrl = "http://localhost:8787/api/v1/her",
+    this.baseUrl = "${ApiConfig.baseUrl}/her",
     this.patientId = "demo_patient_her",
   });
 
@@ -166,24 +167,7 @@ class HerApiService {
       }
     } catch (_) {}
 
-    return const [
-      HerWellnessItemModel(
-        id: "w_spearmint",
-        category: "NUTRITION",
-        title: "Spearmint & CCF Infusion",
-        description: "Fresh spearmint tea with cumin, coriander, and fennel seeds twice daily.",
-        rationale: "Helps calm ovarian and androgen activity while alleviating abdominal bloating.",
-        targetPhase: "all",
-      ),
-      HerWellnessItemModel(
-        id: "w_baddha_konasana",
-        category: "SOMATIC_YOGA",
-        title: "Supta Baddha Konasana (Reclining Bound Angle)",
-        description: "10-15 minutes supported by bolsters under knees with deep diaphragmatic breathing.",
-        rationale: "Relieves pelvic floor hypertonicity and down-regulates sympathetic nervous tone.",
-        targetPhase: "luteal",
-      ),
-    ];
+    return const [];
   }
 
   Future<HerDoctorSummaryModel?> generateDoctorSummary() async {

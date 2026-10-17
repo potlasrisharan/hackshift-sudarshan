@@ -9,6 +9,7 @@
 import { Hono } from "hono";
 import {
   vitalisSafetyGate,
+  vitalisExerciseProgression,
   vitalisHealthspanIndex,
   vitalisBiomarkerTrends,
   vitalisRecommendationSelector,
@@ -345,22 +346,31 @@ vitalisRouter.get("/healthspan-index", async (c) => {
 // ----------------------------------------------------
 vitalisRouter.get("/plans/exercise", async (c) => {
   const patientId = getPatientId(c);
+  const profile = store.profiles.get(patientId);
+  const progression = vitalisExerciseProgression({
+    currentWeeklyMinutes: 90,
+    adherencePercentage: 80,
+    recentFatigueRating: 2,
+    symptomsReported: false,
+    clinicianRestricted: profile?.clinicianRestrictedExertion ?? false,
+    hasCardiovascularCondition: (profile?.diagnosedConditions ?? []).some((condition) =>
+      /cardio|heart|coronary|hypertension/i.test(condition),
+    ),
+  });
   const plan = {
     id: "plan_ex_01",
     patientId,
-    weeklyAerobicMinutesTarget: 150,
+    weeklyAerobicMinutesTarget: progression.nextTargetMinutes,
     weeklyStrengthSessionsTarget: 2,
     recommendedActivities: ["Brisk Walking", "Bodyweight Squats", "Surya Namaskar"],
     contraindicatedActivities: ["Unsupervised HIIT 4x4"],
-    intensityLevel: "moderate",
-    yogaAndMobilityRoutine: [
-      { asana: "Tadasana (Mountain Pose)", durationMins: 5, focus: "Posture & Joint Alignment", contraindications: [] },
-      { asana: "Virabhadrasana II (Warrior II)", durationMins: 8, focus: "Hip Mobility & Leg Strength", contraindications: ["Severe knee pain"] },
-      { asana: "Shavasana & Anulom Vilom", durationMins: 7, focus: "Vagal Stimulation & Parasympathetic Reset", contraindications: [] },
-    ],
+    intensityLevel: progression.intensityCap,
+    yogaAndMobilityRoutine: [],
     policyVersion: "V3-EX-2026.1",
-    safetyStatus: "ALLOWED",
-    safetyNotes: ["Safe progressive volume aligned with WHO physical activity benchmarks."],
+    progressionAction: progression.action,
+    safetyStatus: progression.action === "CLINICAL_HOLD" ? "REVIEW" : "ALLOWED",
+    safetyNotes: [progression.reason],
+    syntheticDemo: true,
   };
   return c.json({ data: plan });
 });

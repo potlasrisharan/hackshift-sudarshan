@@ -109,7 +109,34 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
             safetyAlert: VitalisSyntheticFixtures.personaA.safetyAlert,
             isWearableConnected: true,
           ),
-        );
+        ) {
+    refreshFromBackend();
+  }
+
+  Future<void> refreshFromBackend() async {
+    state = state.copyWith(isLoading: true);
+    final profile = await apiService.fetchProfile();
+    final hpi = await apiService.fetchHealthspanIndex();
+    final trends = await apiService.fetchBiomarkerTrend();
+    final cardio = await apiService.fetchCardioFitness();
+    final readiness = await apiService.fetchDailyReadiness();
+    final exercisePlan = await apiService.fetchExercisePlan();
+    final nutritionPlan = await apiService.fetchNutritionPlan();
+    final preventiveItems = await apiService.fetchPreventiveCare();
+    final recommendations = await apiService.fetchRecommendations();
+    state = state.copyWith(
+      profile: profile,
+      hpiResult: hpi,
+      biomarkerTrend: trends,
+      cardio: cardio,
+      readiness: readiness,
+      exercisePlan: exercisePlan,
+      nutritionPlan: nutritionPlan,
+      preventiveItems: preventiveItems,
+      recommendations: recommendations,
+      isLoading: false,
+    );
+  }
 
   void switchPersona(VitalisSyntheticPersona persona) {
     state = state.copyWith(
@@ -129,6 +156,16 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
 
   void updateProfile(VitalisProfileModel updated) {
     state = state.copyWith(profile: updated);
+  }
+
+  Future<void> saveProfile(VitalisProfileModel updated) async {
+    state = state.copyWith(isLoading: true, profile: updated);
+    try {
+      final saved = await apiService.updateProfile(updated);
+      state = state.copyWith(isLoading: false, profile: saved);
+    } catch (_) {
+      state = state.copyWith(isLoading: false, profile: updated);
+    }
   }
 
   void dismissSafetyAlert() {

@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_colors.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/vitalis_provider.dart";
@@ -113,7 +112,6 @@ class VitalisPreventiveScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             for (final s in screenings) _buildScreeningCard(context, s),
             const SizedBox(height: 20),
-            _buildDoctorConsultationCta(context),
           ],
         ),
       ),
@@ -234,69 +232,9 @@ class VitalisPreventiveScreen extends ConsumerWidget {
           const SizedBox(height: 2),
           Text("Last recorded: ${item["lastCompleted"]}", style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
           const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: OutlinedButton(
-              onPressed: () {
-                context.push("/doctor");
-              },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.vitalisTeal,
-                side: const BorderSide(color: AppColors.vitalisTeal),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(item["action"] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildDoctorConsultationCta(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.vitalisTeal.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.vitalisTeal.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.medical_services_rounded, color: AppColors.vitalisTeal, size: 24),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Order Screenings via Clinic", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                const SizedBox(height: 2),
-                const Text("Connect directly with AyuSetu Physician Queue", style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => context.push("/doctor"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.vitalisTeal,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Text("Book", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
-    );
-  }
 }

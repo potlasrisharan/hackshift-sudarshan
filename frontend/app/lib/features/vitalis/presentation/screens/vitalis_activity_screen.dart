@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_colors.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/vitalis_provider.dart";
@@ -40,12 +41,15 @@ class VitalisActivityScreen extends ConsumerWidget {
               _buildActivitiesList(plan.contraindicatedActivities, false),
             ],
             const SizedBox(height: 20),
-            const Text(
-              "Integrated Yoga & Somatic Mobility",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.self_improvement_rounded, color: AppColors.primary),
+                title: const Text("Personalized yoga"),
+                subtitle: const Text("Open the safety-screened recommendations from the HER wellness algorithm."),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                onTap: () => context.push("/yoga"),
+              ),
             ),
-            const SizedBox(height: 10),
-            _buildYogaRoutineList(plan.yogaRoutine),
             const SizedBox(height: 20),
             _buildLogExerciseButton(context),
           ],
@@ -145,38 +149,6 @@ class VitalisActivityScreen extends ConsumerWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(act, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildYogaRoutineList(List yogaItems) {
-    return Column(
-      children: yogaItems.map((y) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.surfaceElevated),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.self_improvement_rounded, color: AppColors.yogaAmber, size: 22),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(y.asana, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                    const SizedBox(height: 2),
-                    Text("${y.durationMins} mins • ${y.focus}", style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                  ],
-                ),
               ),
             ],
           ),

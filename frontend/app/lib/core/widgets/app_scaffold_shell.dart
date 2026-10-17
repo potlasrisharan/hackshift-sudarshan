@@ -6,12 +6,14 @@ class AyuSetuLogoBadge extends StatelessWidget {
   final double height;
   final EdgeInsetsGeometry padding;
   final double borderRadius;
+  final bool showText;
 
   const AyuSetuLogoBadge({
     super.key,
     this.height = 20,
     this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
     this.borderRadius = 8,
+    this.showText = false,
   });
 
   @override
@@ -21,18 +23,72 @@ class AyuSetuLogoBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 1.5),
           ),
         ],
       ),
-      child: Image.asset(
-        "assets/images/ayusetu_logo.png",
-        height: height,
-        fit: BoxFit.contain,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            "assets/images/ayusetu_logo.png",
+            height: height,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: const Color(0xFF087D71),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(
+                Icons.healing_rounded,
+                size: 12,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          if (showText) ...[
+            const SizedBox(width: 6),
+            RichText(
+              text: const TextSpan(
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
+                ),
+                children: [
+                  TextSpan(
+                    text: "Ayu",
+                    style: TextStyle(
+                      color: Color(0xFF0F172A),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  TextSpan(
+                    text: "+",
+                    style: TextStyle(
+                      color: Color(0xFFEF4444),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  TextSpan(
+                    text: "सेतु",
+                    style: TextStyle(
+                      color: Color(0xFFE11D48),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -43,6 +99,7 @@ class AppScaffoldShell extends StatelessWidget {
   final String title;
   final String? subtitle;
   final List<Widget>? actions;
+  final bool isLight;
 
   const AppScaffoldShell({
     super.key,
@@ -50,6 +107,7 @@ class AppScaffoldShell extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.actions,
+    this.isLight = true,
   });
 
   @override
@@ -72,39 +130,84 @@ class AppScaffoldShell extends StatelessWidget {
       }
     }
 
+    final Color bgColor = isLight ? AppColors.clinicalBg : AppColors.background;
+    final Color appBarBg = isLight ? AppColors.clinicalCard : AppColors.surface;
+    final Color titleColor = isLight ? AppColors.clinicalTextDark : AppColors.textPrimary;
+    final Color subtitleColor = isLight ? AppColors.medicalTeal : AppColors.primaryLight;
+    final Color iconColor = isLight ? AppColors.clinicalTextDark : AppColors.textPrimary;
+    final Color actionIconColor = isLight ? AppColors.clinicalTextMuted : AppColors.textSecondary;
+
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
+        backgroundColor: appBarBg,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        shape: isLight
+            ? const Border(bottom: BorderSide(color: AppColors.clinicalBorder, width: 1))
+            : null,
         leading: canPop
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.textPrimary),
-                tooltip: "Back",
-                onPressed: () {
-                  try {
-                    if (context.canPop()) {
-                      context.pop();
-                      return;
-                    }
-                  } catch (_) {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                      return;
-                    }
-                  }
-                  try {
-                    context.go("/");
-                  } catch (_) {}
-                },
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  color: isLight ? const Color(0xFFF1F5F9) : AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Tooltip(
+                    message: "Back",
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () {
+                        try {
+                          if (context.canPop()) {
+                            context.pop();
+                            return;
+                          }
+                        } catch (_) {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                            return;
+                          }
+                        }
+                        try {
+                          context.go("/");
+                        } catch (_) {}
+                      },
+                      child: Center(
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: iconColor,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               )
-            : IconButton(
-                icon: const Icon(Icons.grid_view_rounded,
-                    color: AppColors.textSecondary),
-                tooltip: "All Portals",
-                onPressed: () {
-                  try {
-                    context.go("/");
-                  } catch (_) {}
-                },
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  color: isLight ? const Color(0xFFF1F5F9) : AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Tooltip(
+                    message: "All Portals",
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () {
+                        try {
+                          context.go("/");
+                        } catch (_) {}
+                      },
+                      child: Center(
+                        child: Icon(
+                          Icons.grid_view_rounded,
+                          color: actionIconColor,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
         title: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,10 +217,11 @@ class AppScaffoldShell extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 18,
+              style: TextStyle(
+                fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: titleColor,
+                letterSpacing: -0.3,
               ),
             ),
             if (subtitle != null)
@@ -125,10 +229,10 @@ class AppScaffoldShell extends StatelessWidget {
                 subtitle!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.primaryLight,
-                  fontWeight: FontWeight.w500,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: subtitleColor,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
           ],
@@ -142,7 +246,7 @@ class AppScaffoldShell extends StatelessWidget {
             ...actions!
           else
             IconButton(
-              icon: const Icon(Icons.apps_rounded, color: AppColors.textSecondary),
+              icon: Icon(Icons.apps_rounded, color: actionIconColor),
               tooltip: "Portals",
               onPressed: () => context.go("/"),
             ),
@@ -156,8 +260,7 @@ class AppScaffoldShell extends StatelessWidget {
   Widget? _buildBottomNav(BuildContext context, String currentRoute) {
     if (currentRoute == "/") return null;
 
-    final isClinical = currentRoute.startsWith("/doctor") ||
-        currentRoute.startsWith("/nurse") ||
+    final isClinical = currentRoute.startsWith("/nurse") ||
         currentRoute.startsWith("/hq") ||
         currentRoute.startsWith("/clinical");
 
@@ -168,51 +271,55 @@ class AppScaffoldShell extends StatelessWidget {
 
     if (isClinical) {
       int currentIndex = 0;
-      if (currentRoute.startsWith("/nurse")) currentIndex = 1;
-      if (currentRoute.startsWith("/hq")) currentIndex = 2;
-      if (currentRoute.startsWith("/clinical")) currentIndex = 3;
+      if (currentRoute.startsWith("/nurse")) currentIndex = 0;
+      if (currentRoute.startsWith("/hq")) currentIndex = 1;
+      if (currentRoute.startsWith("/clinical")) currentIndex = 2;
 
-      return NavigationBar(
+      final navBar = NavigationBar(
+        backgroundColor: isLight ? AppColors.clinicalCard : null,
+        indicatorColor: isLight ? AppColors.medicalTeal.withValues(alpha: 0.15) : null,
         selectedIndex: currentIndex,
         onDestinationSelected: (idx) {
           switch (idx) {
             case 0:
-              context.go("/doctor");
-              break;
-            case 1:
               context.go("/nurse");
               break;
-            case 2:
+            case 1:
               context.go("/hq");
               break;
-            case 3:
+            case 2:
               context.go("/clinical");
               break;
           }
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.medical_services_outlined),
-            selectedIcon: Icon(Icons.medical_services),
-            label: "Doctor",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.local_hospital_outlined),
-            selectedIcon: Icon(Icons.local_hospital),
+            icon: Icon(Icons.local_hospital_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+            selectedIcon: Icon(Icons.local_hospital, color: isLight ? AppColors.medicalTeal : null),
             label: "Nurse",
           ),
           NavigationDestination(
-            icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(Icons.analytics),
+            icon: Icon(Icons.analytics_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+            selectedIcon: Icon(Icons.analytics, color: isLight ? AppColors.medicalTeal : null),
             label: "HQ",
           ),
           NavigationDestination(
-            icon: Icon(Icons.inventory_2_outlined),
-            selectedIcon: Icon(Icons.inventory_2),
+            icon: Icon(Icons.inventory_2_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+            selectedIcon: Icon(Icons.inventory_2, color: isLight ? AppColors.medicalTeal : null),
             label: "Operations",
           ),
         ],
       );
+
+      if (isLight) {
+        return Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.clinicalBorder, width: 1)),
+          ),
+          child: navBar,
+        );
+      }
+      return navBar;
     }
 
     if (isWellness) {
@@ -220,7 +327,9 @@ class AppScaffoldShell extends StatelessWidget {
       if (currentRoute.startsWith("/longevity")) currentIndex = 1;
       if (currentRoute.startsWith("/womens-health") || currentRoute.startsWith("/her")) currentIndex = 2;
 
-      return NavigationBar(
+      final navBar = NavigationBar(
+        backgroundColor: isLight ? AppColors.clinicalCard : null,
+        indicatorColor: isLight ? AppColors.medicalTeal.withValues(alpha: 0.15) : null,
         selectedIndex: currentIndex,
         onDestinationSelected: (idx) {
           switch (idx) {
@@ -235,24 +344,34 @@ class AppScaffoldShell extends StatelessWidget {
               break;
           }
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.self_improvement_outlined),
-            selectedIcon: Icon(Icons.self_improvement),
+            icon: Icon(Icons.self_improvement_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+            selectedIcon: Icon(Icons.self_improvement, color: isLight ? AppColors.medicalTeal : null),
             label: "Yoga",
           ),
           NavigationDestination(
-            icon: Icon(Icons.favorite_outline),
-            selectedIcon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite_outline, color: isLight ? AppColors.clinicalTextMuted : null),
+            selectedIcon: Icon(Icons.favorite, color: isLight ? AppColors.medicalTeal : null),
             label: "Longevity",
           ),
           NavigationDestination(
-            icon: Icon(Icons.female_outlined),
-            selectedIcon: Icon(Icons.female),
+            icon: Icon(Icons.female_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+            selectedIcon: Icon(Icons.female, color: isLight ? AppColors.medicalTeal : null),
             label: "HER / Women's",
           ),
         ],
       );
+
+      if (isLight) {
+        return Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.clinicalBorder, width: 1)),
+          ),
+          child: navBar,
+        );
+      }
+      return navBar;
     }
 
     return null;

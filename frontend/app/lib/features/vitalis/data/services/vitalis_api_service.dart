@@ -2,13 +2,14 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import "../models/vitalis_models.dart";
 import "../fixtures/vitalis_synthetic_fixtures.dart";
+import "../../../../core/network/api_config.dart";
 
 class VitalisApiService {
   final String baseUrl;
   final String patientId;
 
   const VitalisApiService({
-    this.baseUrl = "http://localhost:8787/api/v1/vitalis",
+    this.baseUrl = "${ApiConfig.baseUrl}/vitalis",
     this.patientId = "demo_patient_vitalis",
   });
 
@@ -102,7 +103,17 @@ class VitalisApiService {
         return VitalisExercisePlanModel.fromJson(data);
       }
     } catch (_) {}
-    return VitalisSyntheticFixtures.personaA.exercisePlan;
+    return const VitalisExercisePlanModel(
+      id: "plan_unavailable",
+      weeklyAerobicMinutesTarget: 0,
+      weeklyStrengthSessionsTarget: 0,
+      recommendedActivities: [],
+      contraindicatedActivities: [],
+      intensityLevel: "unavailable",
+      yogaRoutine: [],
+      safetyStatus: "UNAVAILABLE",
+      safetyNotes: ["Connect to AyuSetu Cloudflare services to load a safety-screened plan."],
+    );
   }
 
   Future<VitalisNutritionPlanModel> fetchNutritionPlan() async {
@@ -143,11 +154,7 @@ class VitalisApiService {
         return list;
       }
     } catch (_) {}
-    return const [
-      VitalisRecommendationModel(id: "REC-1", title: "150 Minutes Moderate Aerobic Walking", category: "lifestyle_activity", priorityScore: 0.92, evidenceSource: "WHO 2020 Guidelines"),
-      VitalisRecommendationModel(id: "REC-2", title: "Daily Dals & Pulses with Lemon (Vitamin C)", category: "nutrition", priorityScore: 0.88, evidenceSource: "ICMR Dietary Guidelines"),
-      VitalisRecommendationModel(id: "REC-3", title: "Consistent 30-min Sleep Schedule Window", category: "sleep", priorityScore: 0.84, evidenceSource: "National Sleep Foundation"),
-    ];
+    return const [];
   }
 
   Future<VitalisDoctorSummaryModel> fetchDoctorSummary() async {

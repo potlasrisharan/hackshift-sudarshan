@@ -1,12 +1,6 @@
 import "package:go_router/go_router.dart";
+import "../app_session.dart";
 import "../../features/portal/presentation/screens/portal_selection_screen.dart";
-import "../../features/intake/presentation/screens/language_screen.dart";
-import "../../features/intake/presentation/screens/identify_screen.dart";
-import "../../features/intake/presentation/screens/converse_screen.dart";
-import "../../features/intake/presentation/screens/scan_screen.dart";
-import "../../features/intake/presentation/screens/summarize_screen.dart";
-import "../../features/intake/presentation/screens/queue_token_screen.dart";
-import "../../features/doctor/presentation/screens/doctor_consultation_screen.dart";
 import "../../features/nurse/presentation/screens/nurse_triage_screen.dart";
 import "../../features/headquarters/presentation/screens/headquarters_screen.dart";
 import "../../features/clinical_mgmt/presentation/screens/clinical_management_screen.dart";
@@ -43,6 +37,13 @@ import "../../features/prescription/presentation/screens/medicine_reminder_scree
 
 final appRouter = GoRouter(
   initialLocation: "/",
+  redirect: (context, state) {
+    final onOnboarding = state.matchedLocation == "/onboarding" ||
+        state.matchedLocation == "/vitalis/onboarding";
+    if (!AppSession.onboardingComplete && !onOnboarding) return "/onboarding";
+    if (AppSession.onboardingComplete && onOnboarding) return "/";
+    return null;
+  },
   routes: [
     GoRoute(
       path: "/",
@@ -53,36 +54,32 @@ final appRouter = GoRouter(
       path: "/prescription",
       builder: (context, state) => const MedicineReminderScreen(),
     ),
-    // Patient Kiosk Flow
+    // Deprecated Patient Kiosk Routes (Safely Redirect to Home)
     GoRoute(
       path: "/kiosk",
-      builder: (context, state) => const LanguageScreen(),
+      redirect: (context, state) => "/",
     ),
     GoRoute(
       path: "/identify",
-      builder: (context, state) => const IdentifyScreen(),
+      redirect: (context, state) => "/",
     ),
     GoRoute(
       path: "/converse",
-      builder: (context, state) => const ConverseScreen(),
+      redirect: (context, state) => "/",
     ),
     GoRoute(
       path: "/scan",
-      builder: (context, state) => const ScanScreen(),
+      redirect: (context, state) => "/",
     ),
     GoRoute(
       path: "/summarize",
-      builder: (context, state) => const SummarizeScreen(),
+      redirect: (context, state) => "/",
     ),
     GoRoute(
       path: "/queue",
-      builder: (context, state) => const QueueTokenScreen(),
+      redirect: (context, state) => "/",
     ),
     // Hospital & Clinic Operations
-    GoRoute(
-      path: "/doctor",
-      builder: (context, state) => const DoctorConsultationScreen(),
-    ),
     GoRoute(
       path: "/nurse",
       builder: (context, state) => const NurseTriageScreen(),
@@ -146,7 +143,11 @@ final appRouter = GoRouter(
       builder: (context, state) => const HerWearableScreen(),
     ),
 
-    // AyuSetu Vitalis Module Routes
+    // AyuSetu General & Vitalis Onboarding
+    GoRoute(
+      path: "/onboarding",
+      builder: (context, state) => const VitalisOnboardingScreen(),
+    ),
     GoRoute(
       path: "/vitalis",
       builder: (context, state) => const VitalisDashboardScreen(),

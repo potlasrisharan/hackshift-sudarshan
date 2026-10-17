@@ -1,11 +1,9 @@
 import "dart:convert";
 import "package:http/http.dart" as http;
+import "../../../../core/network/api_config.dart";
 
 class ApiClient {
-  static const String baseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:8787/api/v1',
-  );
+  static const String baseUrl = ApiConfig.baseUrl;
   static const String sarvamApiKey = String.fromEnvironment(
     'SARVAM_API_KEY',
     defaultValue: '',

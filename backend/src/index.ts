@@ -19,6 +19,10 @@ import {
   rxToShelf,
   driftRadar,
   threadPulse,
+  dispensingPlan,
+  savingsMeter,
+  computeLedger,
+  predictRefillWarning,
   herSafetyGate,
   herCycleDetector,
   herScreeningEngine,
@@ -29,8 +33,16 @@ import {
   vitalisPreventiveRanker,
   vitalisExerciseProgression,
   vitalisBiomarkerTrends,
+  vitalisLifestyleCorrelations,
+  vitalisRecommendationSelector,
+  evaluateVO2maxRecord,
+  estimateNonExerciseVO2max,
+  vitalisRollingBaseline,
+  vitalisSleepRegularity,
   vitalisDailyReadiness,
   vitalisFunctionalCapacity,
+  vitalisIngestAndDeduplicate,
+  vitalisPreventiveEligibility,
   vitalisBehaviorSimulator,
 } from "../../packages/engine";
 
@@ -506,6 +518,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Explicit CORS allowlist — no wildcard. Only known origins accepted.
 const ALLOWED_ORIGINS = new Set([
   "https://ayusetu-api.potlasrisharanchowdary.workers.dev",
+  "https://ayuseva.pages.dev",
   "https://dhaaga-web.pages.dev",
 ]);
 
@@ -614,6 +627,371 @@ documentsRouter.post("/ocr", async (c) => {
   });
 });
 
+// Prescriptions Router: Doctor-to-Patient synchronization & adherence
+interface MedicineRecord {
+  id: string;
+  prescriptionId?: string;
+  name: string;
+  dosageForm: string;
+  strength: string;
+  timeSlot: "morning" | "afternoon" | "night";
+  scheduledTime: string;
+  instructions: string;
+  batchNumber: string;
+  expiryDate: string;
+  isTaken: boolean;
+  reminderEnabled: boolean;
+  takenAt?: string | null;
+}
+
+interface PrescriptionRecord {
+  rxId: string;
+  prescriptionId?: string;
+  patientId: string;
+  prescriptionDate: string;
+  validTillDate: string;
+  doctorName: string;
+  specialty: string;
+  hospital: string;
+  opdRoom: string;
+  doctorNotes: string;
+  dietRestrictions: string[];
+  hydrationTarget: string;
+  followUpDate: string;
+  medicines: MedicineRecord[];
+  adherenceLog: Array<{
+    medicineId: string;
+    isTaken: boolean;
+    takenAt: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const defaultRameshPrescription: PrescriptionRecord = {
+  rxId: "#RX-2026-A8921",
+  prescriptionId: "#RX-2026-A8921",
+  patientId: "pat-048291",
+  prescriptionDate: "18 Oct 2026",
+  validTillDate: "01 Nov 2026",
+  doctorName: "Dr. Ananya Sharma",
+  specialty: "Senior Physician · Rheumatology & Integrative Ayurveda",
+  hospital: "All India Institute of Ayurveda (AIIA)",
+  opdRoom: "OPD-3",
+  doctorNotes:
+    "Vata-shamana & Rasayana protocol: Continue medication consistently for 14 days. If knee stiffness flares up in morning, apply warm castor oil pack for 15 mins.",
+  dietRestrictions: [
+    "Avoid fermented curds, refrigerated foods, and carbonated beverages",
+    "Restrict high-purine lentils (toor dal, black gram) during acute flare-ups",
+    "Prefer warm moong soup, boiled vegetables with cow's ghee and roasted cumin",
+  ],
+  hydrationTarget: "2.8L of warm water or CCF (Cumin-Coriander-Fennel) infusion daily",
+  followUpDate: "Nov 02, 2026 · OPD-3 · In 14 Days",
+  medicines: [
+    {
+      id: "med-01",
+      prescriptionId: "rx-98124a-2026",
+      name: "Yograj Guggulu",
+      dosageForm: "Tablet",
+      strength: "500 mg",
+      timeSlot: "morning",
+      scheduledTime: "08:00 AM",
+      instructions: "1 tablet with lukewarm water 15 mins after breakfast",
+      batchNumber: "BAT-2026-Y89",
+      expiryDate: "11/2027",
+      isTaken: true,
+      reminderEnabled: true,
+      takenAt: "2026-10-18T08:15:00.000Z",
+    },
+    {
+      id: "med-02",
+      prescriptionId: "rx-98124a-2026",
+      name: "Dashamularishta",
+      dosageForm: "Asava / Elixir",
+      strength: "20 ml",
+      timeSlot: "afternoon",
+      scheduledTime: "01:00 PM",
+      instructions: "20 ml mixed with 20 ml equal warm water after lunch",
+      batchNumber: "BAT-2026-D12",
+      expiryDate: "04/2028",
+      isTaken: false,
+      reminderEnabled: true,
+      takenAt: null,
+    },
+    {
+      id: "med-03",
+      prescriptionId: "rx-98124a-2026",
+      name: "Shatavari Churna",
+      dosageForm: "Churna / Powder",
+      strength: "3 g",
+      timeSlot: "night",
+      scheduledTime: "08:30 PM",
+      instructions: "3 grams with warm almond/cow milk 30 mins before sleep",
+      batchNumber: "BAT-2026-S44",
+      expiryDate: "09/2027",
+      isTaken: false,
+      reminderEnabled: true,
+      takenAt: null,
+    },
+    {
+      id: "med-04",
+      prescriptionId: "rx-98124a-2026",
+      name: "Triphala Churna",
+      dosageForm: "Churna / Powder",
+      strength: "5 g",
+      timeSlot: "night",
+      scheduledTime: "09:30 PM",
+      instructions: "1 teaspoon with hot water right before bedtime",
+      batchNumber: "BAT-2026-T10",
+      expiryDate: "12/2027",
+      isTaken: false,
+      reminderEnabled: true,
+      takenAt: null,
+    },
+  ],
+  adherenceLog: [
+    {
+      medicineId: "med-01",
+      isTaken: true,
+      takenAt: "2026-10-18T08:15:00.000Z",
+    },
+  ],
+  createdAt: "2026-10-18T00:00:00.000Z",
+  updatedAt: "2026-10-18T08:15:00.000Z",
+};
+
+const prescriptionStore = new Map<string, PrescriptionRecord>();
+prescriptionStore.set("pat-048291", defaultRameshPrescription);
+prescriptionStore.set("#RX-2026-A8921", defaultRameshPrescription);
+prescriptionStore.set("RX-2026-A8921", defaultRameshPrescription);
+
+const prescriptionsRouter = new Hono<{ Bindings: Env }>();
+
+// GET /api/v1/prescriptions/patient/:id
+prescriptionsRouter.get("/patient/:id", async (c) => {
+  const patientId = c.req.param("id");
+  let rx = prescriptionStore.get(patientId);
+  if (!rx) {
+    for (const val of prescriptionStore.values()) {
+      if (val.patientId === patientId) {
+        rx = val;
+        break;
+      }
+    }
+  }
+  if (!rx) {
+    rx = defaultRameshPrescription;
+  }
+  return c.json({
+    ...rx,
+    prescription: rx,
+  });
+});
+
+// Fallback GET /api/v1/prescriptions
+prescriptionsRouter.get("/", async (c) => {
+  const rx = prescriptionStore.get("pat-048291") ?? defaultRameshPrescription;
+  return c.json({
+    ...rx,
+    prescription: rx,
+  });
+});
+
+// GET /api/v1/prescriptions/:id
+prescriptionsRouter.get("/:id", async (c) => {
+  const id = decodeURIComponent(c.req.param("id"));
+  let rx = prescriptionStore.get(id);
+  if (!rx) {
+    for (const val of prescriptionStore.values()) {
+      if (val.rxId === id || val.patientId === id) {
+        rx = val;
+        break;
+      }
+    }
+  }
+  if (!rx) {
+    rx = defaultRameshPrescription;
+  }
+  return c.json({
+    ...rx,
+    prescription: rx,
+  });
+});
+
+// POST /api/v1/prescriptions: Issue new prescription from doctor consultation
+prescriptionsRouter.post("/", async (c) => {
+  try {
+    const raw = (await c.req.json()) as Record<string, unknown>;
+    const patientId = String(raw.patientId || raw.patient_id || "pat-048291");
+    const rxId = String(raw.rxId || raw.rx_id || `#RX-${Date.now().toString().slice(-6)}`);
+    const adviceObj = (typeof raw.advice === "object" && raw.advice !== null ? raw.advice : {}) as Record<string, unknown>;
+
+    const doctorName = String(raw.doctorName || adviceObj.doctorName || "Dr. Ananya Sharma");
+    const specialty = String(raw.specialty || adviceObj.specialty || "Senior Physician · Rheumatology & Integrative Ayurveda");
+    const hospital = String(raw.hospital || adviceObj.hospital || "All India Institute of Ayurveda (AIIA)");
+    const opdRoom = String(raw.opdRoom || adviceObj.opdRoom || "OPD-3");
+    const doctorNotes = String(raw.doctorNotes || adviceObj.doctorNotes || raw.plan || "Follow prescribed dosages.");
+    const prescriptionDate = String(raw.prescriptionDate || adviceObj.prescriptionDate || "Today");
+    const validTillDate = String(raw.validTillDate || adviceObj.validTillDate || "In 14 Days");
+    const followUpDate = String(raw.followUpDate || adviceObj.followUpDate || "In 14 Days · OPD-3");
+    const hydrationTarget = String(raw.hydrationTarget || adviceObj.hydrationTarget || "2.5L warm water daily");
+
+    let dietRestrictions: string[] = [];
+    if (Array.isArray(raw.dietRestrictions)) {
+      dietRestrictions = raw.dietRestrictions.map(String);
+    } else if (Array.isArray(adviceObj.dietRestrictions)) {
+      dietRestrictions = adviceObj.dietRestrictions.map(String);
+    } else {
+      dietRestrictions = [
+        "Warm nourishing meals with digestive spices (jeera, shunthi)",
+        "Avoid cold, heavy, and ultra-processed items during recovery",
+      ];
+    }
+
+    const rawMedicines = Array.isArray(raw.medicines) ? raw.medicines : [];
+    const medicines: MedicineRecord[] = rawMedicines.map((m: unknown, index: number) => {
+      const med = (typeof m === "object" && m !== null ? m : {}) as Record<string, unknown>;
+      const slotRaw = String(med.timeSlot || (index === 0 ? "morning" : index === 1 ? "afternoon" : "night")).toLowerCase();
+      const timeSlot: "morning" | "afternoon" | "night" =
+        slotRaw.includes("morn") ? "morning" : slotRaw.includes("after") ? "afternoon" : "night";
+      return {
+        id: String(med.id || `med-${patientId}-${index}`),
+        prescriptionId: String(med.prescriptionId || rxId),
+        name: String(med.name || `Medicine ${index + 1}`),
+        dosageForm: String(med.dosageForm || "Tablet"),
+        strength: String(med.strength || "500 mg"),
+        timeSlot,
+        scheduledTime: String(med.scheduledTime || (timeSlot === "morning" ? "08:00 AM" : timeSlot === "afternoon" ? "01:00 PM" : "08:30 PM")),
+        instructions: String(med.instructions || "1 dose after meals"),
+        batchNumber: String(med.batchNumber || "BAT-2026"),
+        expiryDate: String(med.expiryDate || "12/2027"),
+        isTaken: Boolean(med.isTaken),
+        reminderEnabled: med.reminderEnabled !== undefined ? Boolean(med.reminderEnabled) : true,
+        takenAt: med.takenAt ? String(med.takenAt) : null,
+      };
+    });
+
+    const now = new Date().toISOString();
+    const newRecord: PrescriptionRecord = {
+      rxId,
+      prescriptionId: rxId,
+      patientId,
+      prescriptionDate,
+      validTillDate,
+      doctorName,
+      specialty,
+      hospital,
+      opdRoom,
+      doctorNotes,
+      dietRestrictions,
+      hydrationTarget,
+      followUpDate,
+      medicines,
+      adherenceLog: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    prescriptionStore.set(patientId, newRecord);
+    prescriptionStore.set(rxId, newRecord);
+    const cleanId = rxId.replace("#", "");
+    prescriptionStore.set(cleanId, newRecord);
+
+    if (c.env?.DB) {
+      try {
+        await c.env.DB.prepare(
+          "INSERT OR REPLACE INTO prescriptions (id, org_id, encounter_id, doctor_id, signed_at, items_json, status) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        ).bind(
+          rxId,
+          "org-ayusetu-primary",
+          patientId,
+          doctorName,
+          now,
+          JSON.stringify(medicines),
+          "SIGNED"
+        ).run();
+      } catch {
+        // Fallback safely to in-memory store
+      }
+    }
+
+    return c.json({
+      success: true,
+      prescriptionId: rxId,
+      rxId,
+      patientId,
+      prescription: newRecord,
+    }, 201);
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    return c.json({ success: false, error: errorMsg }, 400);
+  }
+});
+
+// PUT /api/v1/prescriptions/:id/adherence: Record patient medicine adherence
+prescriptionsRouter.put("/:id/adherence", async (c) => {
+  try {
+    const paramId = decodeURIComponent(c.req.param("id"));
+    const raw = (await c.req.json()) as Record<string, unknown>;
+    const medicineId = String(raw.medicineId || raw.medicine_id || "");
+    const isTaken = raw.isTaken !== undefined ? Boolean(raw.isTaken) : true;
+    const takenAt = String(raw.takenAt || new Date().toISOString());
+
+    let targetRx = prescriptionStore.get(paramId);
+    if (!targetRx) {
+      for (const val of prescriptionStore.values()) {
+        if (
+          val.rxId === paramId ||
+          val.patientId === paramId ||
+          paramId.includes(val.patientId) ||
+          val.rxId.includes(paramId)
+        ) {
+          targetRx = val;
+          break;
+        }
+      }
+    }
+    if (!targetRx) {
+      targetRx = defaultRameshPrescription;
+    }
+
+    let updated = false;
+    for (const med of targetRx.medicines) {
+      if (med.id === medicineId || medicineId === "") {
+        med.isTaken = isTaken;
+        med.takenAt = isTaken ? takenAt : null;
+        updated = true;
+        if (medicineId !== "") break;
+      }
+    }
+
+    targetRx.adherenceLog.push({
+      medicineId: medicineId || "med-all",
+      isTaken,
+      takenAt,
+    });
+    targetRx.updatedAt = new Date().toISOString();
+
+    const takenCount = targetRx.medicines.filter((m) => m.isTaken).length;
+    const totalCount = targetRx.medicines.length;
+
+    return c.json({
+      success: true,
+      rxId: targetRx.rxId,
+      medicineId,
+      isTaken,
+      takenAt,
+      adherenceCount: takenCount,
+      totalCount,
+      adherenceRate: totalCount > 0 ? takenCount / totalCount : 0,
+      updated,
+    });
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    return c.json({ success: false, error: errorMsg }, 400);
+  }
+});
+
 // Mount module routers under /api/v1
 const v1 = new Hono<{ Bindings: Env }>();
 v1.route("/intake", intakeRouter);
@@ -624,6 +1002,7 @@ v1.route("/platform", platformRouter);
 v1.route("/abdm", abdmRouter);
 v1.route("/insurance", insuranceRouter);
 v1.route("/documents", documentsRouter);
+v1.route("/prescriptions", prescriptionsRouter);
 v1.route("/her", herRouter);
 v1.route("/vitalis", vitalisRouter);
 
@@ -635,6 +1014,10 @@ v1.post("/algorithms/:name", async (c) => {
   if (name === "rx-to-shelf" || name === "rxToShelf") return c.json(rxToShelf(body));
   if (name === "drift-radar" || name === "driftRadar") return c.json(driftRadar(body));
   if (name === "threadpulse" || name === "threadPulse") return c.json(threadPulse(body));
+  if (name === "dispensing-plan" || name === "dispensingPlan") return c.json(dispensingPlan(body.prescription, body.inventory, body.today));
+  if (name === "savings-meter" || name === "savingsMeter") return c.json(savingsMeter(body));
+  if (name === "double-entry-ledger" || name === "computeLedger") return c.json(computeLedger(body));
+  if (name === "refill-warning" || name === "predictRefillWarning") return c.json(predictRefillWarning(body));
   if (name === "her-safety-gate" || name === "herSafetyGate") return c.json(herSafetyGate(body));
   if (name === "her-cycle-detector" || name === "herCycleDetector") return c.json(herCycleDetector(body));
   if (name === "her-screening-engine" || name === "herScreeningEngine") return c.json(herScreeningEngine(body));
@@ -645,14 +1028,22 @@ v1.post("/algorithms/:name", async (c) => {
   if (name === "vitalis-preventive-ranker" || name === "vitalisPreventiveRanker") return c.json(vitalisPreventiveRanker(body.actions, body.config));
   if (name === "vitalis-exercise-progression" || name === "vitalisExerciseProgression") return c.json(vitalisExerciseProgression(body));
   if (name === "vitalis-biomarker-trends" || name === "vitalisBiomarkerTrends") return c.json(vitalisBiomarkerTrends(body.metricKey, body.readings));
+  if (name === "vitalis-lifestyle-correlations" || name === "vitalisLifestyleCorrelations") return c.json(vitalisLifestyleCorrelations(body.xLabel, body.yLabel, body.pairs));
+  if (name === "vitalis-recommendation-selector" || name === "vitalisRecommendationSelector") return c.json(vitalisRecommendationSelector(body));
+  if (name === "vitalis-vo2-provenance" || name === "evaluateVO2maxRecord") return c.json(evaluateVO2maxRecord(body));
+  if (name === "vitalis-estimate-vo2" || name === "estimateNonExerciseVO2max") return c.json(estimateNonExerciseVO2max(body));
+  if (name === "vitalis-rolling-baseline" || name === "vitalisRollingBaseline") return c.json(vitalisRollingBaseline(body.metricType, body.historicalSamples, body.todaySample));
+  if (name === "vitalis-sleep-regularity" || name === "vitalisSleepRegularity") return c.json(vitalisSleepRegularity(body.intervals ?? body));
   if (name === "vitalis-daily-readiness" || name === "vitalisDailyReadiness") return c.json(vitalisDailyReadiness(body));
   if (name === "vitalis-functional-capacity" || name === "vitalisFunctionalCapacity") return c.json(vitalisFunctionalCapacity(body));
+  if (name === "vitalis-time-series-dedup" || name === "vitalisIngestAndDeduplicate") return c.json(vitalisIngestAndDeduplicate(body.samples ?? body));
+  if (name === "vitalis-preventive-eligibility" || name === "vitalisPreventiveEligibility") return c.json(vitalisPreventiveEligibility(body));
   if (name === "vitalis-behavior-simulator" || name === "vitalisBehaviorSimulator") return c.json(vitalisBehaviorSimulator(body));
   return c.json({ error: `Unknown algorithm: ${name}` }, 404);
 });
 
-app.route("/", createIntegrationApp());
 app.route("/api/v1", v1);
+app.route("/", createIntegrationApp());
 
 // Mount demo app for legacy compatibility (/api/v1/demo/session, /api/v1/consent, /api/v1/record, etc.)
 const demoEnv = (globalThis as { process?: { env?: Record<string, string> } }).process?.env;
