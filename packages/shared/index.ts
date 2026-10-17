@@ -8,7 +8,7 @@ export const PatientSchema = z.object({
   dob: z.string(),
   sex: z.enum(["M", "F", "O"]),
   phoneHash: z.string(),
-  preferredLang: z.enum(["hi", "en", "pa", "ta"])
+  preferredLang: z.enum(["hi", "en", "pa", "ta"]),
 });
 
 export type Patient = z.infer<typeof PatientSchema>;
@@ -19,7 +19,7 @@ export const EncounterSchema = z.object({
   clinicId: z.string(),
   tier: z.number().int().min(0).max(3),
   chiefComplaint: z.string(),
-  createdAt: z.string()
+  createdAt: z.string(),
 });
 
 export type Encounter = z.infer<typeof EncounterSchema>;
