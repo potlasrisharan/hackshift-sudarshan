@@ -1,6 +1,6 @@
 # Progress — 17 October 2026
 
-**PAUSED at the user’s explicit request.** All completed source and reports are being pushed. No further implementation, testing or device work is authorized until resumed.
+**Mobile kiosk work resumed on 17 October 2026.** The latest user-approved scope is the phased Flutter kiosk in `frontend/app/`. Phase 1 core is verified; the earlier platform/Expo checkpoint below is historical. See `docs/MOBILE_KIOSK_PHASE1.md` for the current gate and contract gaps.
 
 This is a checkpoint, not completion of prompts.md. DONE means only the verified
 slice described. TODO work is not disguised as blocked or completed.
@@ -55,3 +55,12 @@ clinical modules. The full requested Definition of Done remains unmet.
 ## Resume checkpoint
 
 Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. Resume only when the user asks.
+
+
+## Flutter mobile kiosk — Phase 1 gate
+
+- Active app: `frontend/app/` on `feat/mobile-kiosk`.
+- Complete: typed Dio/errors/results, Riverpod 2.x codegen and sealed flow foundation, four-language ARBs, bundled fonts, dark/Elder themes, guarded routes and read-only live health.
+- Verified: pub get/codegen pass; analyzer 0 issues; 28 unit/widget tests + 1 opt-in live health test pass; current domain/data coverage 97.4%; release Web build passes; archived originals unchanged.
+- Pending: agreed intake/OCR/hash/QR/idempotency schemas, functional intake, encrypted offline sync, kiosk lockdown, APK and tablet verification. Current service is a synthetic demo, not a real-patient backend.
+- Gate: stop after Phase 1 as requested. Full product Definition of Done remains unmet.
