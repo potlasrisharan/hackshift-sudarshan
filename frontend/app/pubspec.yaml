@@ -1,0 +1,48 @@
+name: kiosk_app
+description: DHAAGA patient intake kiosk for Android tablets and Web.
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: '>=3.9.0 <3.10.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: 2.6.1
+  riverpod_annotation: 2.6.1
+  go_router: 16.2.4
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+  json_annotation: ^4.9.0
+  intl: any
+  speech_to_text: 7.3.0
+dev_dependencies:
+  dhaaga_typed_json:
+    path: tool/typed_json
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: 2.6.5
+  json_serializable: ^6.9.0
+flutter:
+  generate: false
+  uses-material-design: true
+  fonts:
+    # Flutter Web default fallback uses the same bundled upright font.
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/NotoSans.ttf
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans.ttf
+    - family: NotoSansDevanagari
+      fonts:
+        - asset: assets/fonts/NotoSansDevanagari.ttf
+    - family: NotoSansGurmukhi
+      fonts:
+        - asset: assets/fonts/NotoSansGurmukhi.ttf
+    - family: NotoSansTamil
+      fonts:
+        - asset: assets/fonts/NotoSansTamil.ttf

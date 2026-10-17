@@ -26,6 +26,16 @@
 
 </div>
 
+> **Implementation checkpoint:** this repository is a synthetic demonstration,
+> not ready for real patient data or clinical deployment. The architecture and
+> module descriptions below include design goals and earlier demo mechanisms;
+> they are not evidence that every integration is deployed. See
+> [current progress](docs/PROGRESS.md), the [integration runbook](docs/INTEGRATION_RUNBOOK.md)
+> and the [Flutter Phase 2 report](docs/MOBILE_KIOSK_PHASE2.md) for verified scope.
+> Android APK/device verification, OCR, durable kiosk offline sync and production
+> authentication remain incomplete.
+
+
 ## 📌 Executive Summary
 
 In healthcare systems across India and emerging economies, **care breaks at the hand-offs**:
@@ -34,6 +44,45 @@ In healthcare systems across India and emerging economies, **care breaks at the 
 3. **The Black Box at Home:** Once discharged, patients stop medication adherence or silently deteriorate until they land in the emergency room.
 
 **DHAAGA** solves this by weaving an unbroken, consented, digital **Patient Thread** connecting **Voice Triage**, **Clinic Operations & Pharmacy**, and **Home Remote Monitoring** into one closed-loop operating system powered by **4 custom deterministic algorithms**.
+
+---
+
+## Flutter patient intake kiosk
+
+The active Android tablet/Web kiosk is in [frontend/app](frontend/app/README.md).
+Its Phase 2 implementation includes Hindi, English, Punjabi and Tamil, dark/Elder
+Mode, staff sign-in, entered synthetic demographics and symptoms, required care
+consent, emergency guidance, a server-issued encounter receipt and a visible
+60-second inactivity reset. Optional Android speech source is implemented; Web
+uses typed input and Android microphone/device behavior remains unverified.
+
+Use **Flutter 3.35.7 / Dart 3.9.2**, pinned in frontend/app/.fvmrc:
+
+```sh
+cd frontend/app
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter analyze
+flutter test --coverage
+```
+
+The kiosk follows packages/shared/integration.ts and backend/src/index.ts:
+staff-authenticated POST /api/v1/encounters persists the intake. The response is
+an encounter receipt; OPD tokens, wait estimates, QR and phone/ABHA lookup are
+explicitly unavailable. No phone number or ABHA is collected. For functional Web
+integration, serve the Flutter assets and persistent API behind the same HTTPS
+origin; see the [kiosk setup guide](frontend/app/README.md#api-configuration-and-running)
+and [backend runbook](docs/INTEGRATION_RUNBOOK.md).
+
+The configured public Worker still served the legacy API at Phase 2 verification;
+its successful health check does not establish live encounter/OCR support. No
+backend deployment was performed. Use synthetic information only.
+
+Phase 2 evidence: **49 Flutter tests**, **zero analyzer issues**, **91.1% domain/data
+coverage**, release Web builds and real local-backend routine/emergency Chrome
+walkthroughs. See [the phase report](docs/MOBILE_KIOSK_PHASE2.md) for measured scope.
+OCR, encrypted offline replay, lockdown, debug APK and Android device verification
+remain later gates. The separate Expo app below is the earlier mobile project.
 
 ---
 
@@ -299,6 +348,9 @@ hackshift-sudarshan/
 │   └── api/                    # Node & Cloudflare Worker server entrypoint
 │       ├── server.ts           # Standalone Node development server
 │       └── worker.ts           # Cloudflare Worker entrypoint
+├── frontend/
+│   ├── website/                # React integrated clinical workspace
+│   └── app/                    # Flutter Android tablet / Web patient kiosk
 ├── backend/                    # Unified Cloudflare Edge Worker
 │   ├── src/
 │   │   ├── do/                 # Durable Objects (ClinicInventory, ClinicHub, OrgAudit)
@@ -328,7 +380,7 @@ hackshift-sudarshan/
 ## 🚀 Quickstart & Local Setup
 
 ### Prerequisites
-* **Node.js:** `>= 20.19.0`
+* **Node.js:** `>= 22.13.0`
 * **npm:** `>= 10.0.0`
 * **Docker:** *(Optional, for containerized run)*
 
