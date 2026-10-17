@@ -31,6 +31,22 @@ import TextType from "./TextType";
 const root = document.querySelector<HTMLDivElement>("#app");
 if (!root) throw new Error("Application root missing");
 const app = root;
+
+window.addEventListener(
+  "error",
+  (e) => {
+    const target = e.target as HTMLElement | null;
+    if (
+      target?.tagName === "IMG" &&
+      target.classList.contains("ds-brand-logo")
+    ) {
+      target.style.display = "none";
+      const fallback = target.nextElementSibling as HTMLElement | null;
+      if (fallback) fallback.style.display = "inline-block";
+    }
+  },
+  true,
+);
 let token = "",
   page = "today",
   lang: Language = "en-IN",

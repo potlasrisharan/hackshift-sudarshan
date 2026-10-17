@@ -586,6 +586,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
   const [isFooterVisible, setIsFooterVisible] = useState<boolean>(true);
   const [showVoiceModal, setShowVoiceModal] = useState<boolean>(false);
   const [showRedFlagBanner, setShowRedFlagBanner] = useState<boolean>(false);
+  const [logoError, setLogoError] = useState<boolean>(false);
 
   // Form states
   const [mobileInput, setMobileInput] = useState<string>('9876543210');
@@ -900,12 +901,16 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
 
       <header className="ayu-kiosk-header relative z-10">
         <a href="#/" className="ds-wordmark flex items-center gap-2.5" aria-label="AyuSetu home">
-          <img
-            src="/assets/ayusetu_logo.png"
-            alt="AyuSetu"
-            className="h-8 md:h-9 w-auto object-contain shrink-0"
-          />
-          <span>Ayu<span lang="hi">सेतु</span></span>
+          {!logoError ? (
+            <img
+              src="/assets/ayusetu_logo.png"
+              alt="AyuSetu"
+              className="h-8 md:h-9 w-auto object-contain shrink-0"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <span>Ayu<span lang="hi">सेतु</span></span>
+          )}
         </a>
         <nav className="ayu-stepper" aria-label="Intake progress">
           {['Language','Identity','Voice','Scan','Complete'].map((label,index)=><button key={label} type="button" aria-current={index===currentScreenIndex?'step':undefined} onClick={()=>handleStepClick(index)}><span>{index+1}</span>{label}</button>)}
