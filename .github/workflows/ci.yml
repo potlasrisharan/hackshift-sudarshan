@@ -44,7 +44,6 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: 22}
       - run: npm ci
-      - run: npm ci --prefix frontend/website --ignore-scripts
       - run: cd apps/mobile && npm ci && npm run typecheck
   deploy:
     name: Deploy to Cloudflare

@@ -1,4 +1,12 @@
-import { Keyboard, Mic, RotateCcw, Square } from "lucide-react";
+import {
+  Keyboard,
+  Mic,
+  Pause,
+  Play,
+  RotateCcw,
+  Square,
+  Volume2,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface RecognitionEvent {
@@ -24,6 +32,8 @@ type VoiceState =
   | "initializing"
   | "listening"
   | "processing"
+  | "paused"
+  | "speaking"
   | "completed"
   | "error";
 const bars = Array.from({ length: 15 }, (_, index) => ({
@@ -34,9 +44,11 @@ const bars = Array.from({ length: 15 }, (_, index) => ({
 export function VoiceInput({
   language,
   onTranscript,
+  onType,
 }: {
   language: string;
   onTranscript: (text: string) => void;
+  onType?: () => void;
 }) {
   const [state, setState] = useState<VoiceState>("idle");
   const [error, setError] = useState("");
@@ -50,6 +62,7 @@ export function VoiceInput({
   }>({});
   const mounted = useRef(true);
   const generation = useRef(0);
+  const replay = useRef<SpeechSynthesisUtterance | null>(null);
   const stopMeter = useCallback(() => {
     const r = resources.current;
     if (r.frame !== undefined) cancelAnimationFrame(r.frame);
@@ -64,10 +77,12 @@ export function VoiceInput({
       mounted.current = false;
       generation.current++;
       recognition.current?.abort();
+      if (replay.current) window.speechSynthesis?.cancel();
       stopMeter();
     };
   }, [stopMeter]);
-  async function begin() {
+  async function begin(resume = false) {
+    const prefix = resume ? text : "";
     const Speech =
       (window as SpeechWindow).SpeechRecognition ??
       (window as SpeechWindow).webkitSpeechRecognition;
@@ -115,9 +130,10 @@ export function VoiceInput({
       rec.continuous = true;
       rec.interimResults = true;
       rec.onresult = (event) => {
-        const value = Array.from(event.results)
+        const current = Array.from(event.results)
           .map((result) => result[0]?.transcript ?? "")
           .join(" ");
+        const value = [prefix, current].filter(Boolean).join(" ");
         if (mounted.current) {
           setText(value);
           onTranscript(value);
@@ -136,7 +152,8 @@ export function VoiceInput({
       };
       rec.onend = () => {
         stopMeter();
-        if (mounted.current) setState((s) => (s === "error" ? s : "completed"));
+        if (mounted.current)
+          setState((s) => (s === "error" || s === "paused" ? s : "completed"));
       };
       rec.start();
       setState("listening");
@@ -156,6 +173,8 @@ export function VoiceInput({
     initializing: "Preparing your microphone…",
     listening: "Listening to you…",
     processing: "Finishing your transcript…",
+    paused: "Recording paused",
+    speaking: "Playing your transcript…",
     completed: "Transcript ready for your review",
     error: "You can always type instead",
   };
@@ -204,9 +223,66 @@ export function VoiceInput({
         </p>
       )}
       <div className="ayu-voice-tools">
-        <span>
-          <Keyboard size={14} /> Typing is always available below
-        </span>
+        <button
+          type="button"
+          onClick={
+            onType ??
+            (() =>
+              visual.current
+                ?.closest("form")
+                ?.querySelector("textarea")
+                ?.focus())
+          }
+        >
+          <Keyboard size={14} /> Type instead
+        </button>
+        {state === "listening" && (
+          <button
+            type="button"
+            onClick={() => {
+              setState("paused");
+              recognition.current?.stop();
+              stopMeter();
+            }}
+          >
+            <Pause size={14} /> Pause
+          </button>
+        )}
+        {state === "paused" && (
+          <button type="button" onClick={() => void begin(true)}>
+            <Play size={14} /> Resume
+          </button>
+        )}
+        {text && !active && "speechSynthesis" in window && (
+          <button
+            type="button"
+            onClick={() => {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(text);
+              replay.current = utterance;
+              utterance.lang = language;
+              utterance.onstart = () => {
+                if (mounted.current) setState("speaking");
+              };
+              utterance.onend = () => {
+                replay.current = null;
+                if (mounted.current) setState("completed");
+              };
+              utterance.onerror = () => {
+                replay.current = null;
+                if (mounted.current) {
+                  setState("error");
+                  setError(
+                    "Playback unavailable. Your transcript is still available to read and edit.",
+                  );
+                }
+              };
+              window.speechSynthesis.speak(utterance);
+            }}
+          >
+            <Volume2 size={14} /> Replay
+          </button>
+        )}
         {state === "completed" && (
           <button
             type="button"

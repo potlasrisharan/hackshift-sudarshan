@@ -62,8 +62,8 @@ const nav = [
   { id: "thread", key: "thread", icon: "clinical" },
   { id: "medicines", key: "medicines", icon: "operations" },
   { id: "monitor", key: "monitor", icon: "heart" },
-  { id: "care", label: "Daily wellbeing", icon: "heart" },
-  { id: "women", label: "Cycle wellbeing", icon: "heart" },
+  { id: "care", label: "AyuSetu Vitalis", icon: "heart" },
+  { id: "women", label: "AyuSetu HER", icon: "heart" },
   { id: "privacy", key: "privacy", icon: "shield" },
   { id: "lab", key: "lab", icon: "intake" },
 ] as const;

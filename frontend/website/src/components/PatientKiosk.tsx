@@ -1378,7 +1378,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
                 </button>
               </div>
 
-              {intakeMode === 'voice' && <VoiceInput language={currentLanguage} onTranscript={(text) => { setTypedSymptom(text); setCurrentPatient(prev => ({...prev, selectedSymptom:text, englishTranslation:text})); }} />}
+              {intakeMode === 'voice' && <VoiceInput language={currentLanguage} onType={()=>setIntakeMode("type")} onTranscript={(text) => { setTypedSymptom(text); setCurrentPatient(prev => ({...prev, selectedSymptom:text, englishTranslation:text})); }} />}
 
               {/* Type Mode */}
               {intakeMode === 'type' && (

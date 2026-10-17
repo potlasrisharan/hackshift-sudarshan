@@ -1,6 +1,5 @@
 import {
   type FormEvent,
-  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -31,6 +30,10 @@ import {
   Menu,
   Search,
 } from "lucide-react";
+import {
+  ClinicalStatusBadge as Badge,
+  MetricCard,
+} from "./components/ui/clinical";
 import { VoiceInput } from "./components/VoiceInput";
 
 type Client = ReturnType<typeof integrationClient>;
@@ -60,15 +63,6 @@ function useRoute() {
     return () => window.removeEventListener("hashchange", update);
   }, []);
   return route;
-}
-function Badge({
-  children,
-  danger = false,
-}: {
-  children: ReactNode;
-  danger?: boolean;
-}) {
-  return <span className={`badge ${danger ? "danger" : ""}`}>{children}</span>;
 }
 function Login({
   onLogin,
@@ -503,23 +497,22 @@ function Clinician({
         </a>
       </div>
       <div className="stats">
-        <div>
-          <span>Awaiting review</span>
-          <strong>{waiting.toString().padStart(2, "0")}</strong>
-          <small>Consented encounters</small>
-        </div>
-        <div>
-          <span>Emergency escalation</span>
-          <strong className={emergency ? "red-text" : ""}>
-            {emergency.toString().padStart(2, "0")}
-          </strong>
-          <small>Requires immediate staff attention</small>
-        </div>
-        <div>
-          <span>Patient threads</span>
-          <strong>{rows.length.toString().padStart(2, "0")}</strong>
-          <small>Latest 100 consented records · persisted locally</small>
-        </div>
+        <MetricCard
+          label="Awaiting review"
+          value={waiting.toString().padStart(2, "0")}
+          detail="Consented encounters"
+        />
+        <MetricCard
+          label="Emergency escalation"
+          value={emergency.toString().padStart(2, "0")}
+          detail="Requires immediate staff attention"
+          critical={emergency > 0}
+        />
+        <MetricCard
+          label="Patient threads"
+          value={rows.length.toString().padStart(2, "0")}
+          detail="Latest 100 consented records · persisted locally"
+        />
       </div>
       {error && (
         <div role="alert" className="error">
