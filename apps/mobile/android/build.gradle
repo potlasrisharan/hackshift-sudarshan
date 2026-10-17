@@ -20,5 +20,7 @@ allprojects {
   }
 }
 
+// Optional verified local-toolchain override; default remains Expo SDK 56's pinned NDK.
+if (findProperty("dhaaga.ndkVersion")) { ext.ndkVersion = findProperty("dhaaga.ndkVersion") }
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"

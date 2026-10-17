@@ -94,3 +94,5 @@ prebuild` generates Android sources; a local Gradle build is attempted and its
 final status is in PROGRESS. Release builds currently use Android's development
 signing configuration, suitable only for internal demos. Production signing,
 iOS distribution and real-device health/notification validation are pending.
+
+For local native builds only, `-Pdhaaga.ndkVersion=28.2.13676358` can select the already-installed NDK while preserving Expo's default. This override remains experimental until the APK build completes. The Android workflow generates an internal-demo signing key when absent; production signing must be configured separately.

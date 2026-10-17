@@ -14,6 +14,11 @@ jobs:
       - run: npm ci
       - run: cd apps/mobile && npm ci && npm run typecheck
       - run: cd apps/mobile && npx expo prebuild --platform android --no-install
+      - name: Create internal-demo signing key when absent
+        run: |
+          if [ ! -f apps/mobile/android/app/debug.keystore ]; then
+            keytool -genkeypair -keystore apps/mobile/android/app/debug.keystore -storepass android -keypass android -alias androiddebugkey -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+          fi
       - run: cd apps/mobile/android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a --no-daemon
       - uses: actions/upload-artifact@v4
         with:

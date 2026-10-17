@@ -245,3 +245,21 @@ it("compares cross-runtime floating-point results with bounded tolerance", () =>
   expect(equivalent({ p: 0.3 }, { p: 0.30001 })).toBe(false);
   expect(equivalent({ tier: "review" }, { tier: "emergency" })).toBe(false);
 });
+it("rejects duplicate batch identities rather than counting stock twice", () => {
+  const p = demoPlan();
+  const batch = p.batches[0];
+  if (!batch) throw new Error("Missing test fixture");
+  p.batches.push({ ...batch });
+  expect(() => rxToShelf(p)).toThrow(/Batch IDs/);
+});
+it("rejects conflicting reuse of a source observation identity", () => {
+  const r = fromOpsReading({
+    id: "duplicate",
+    patient_id: "p",
+    systolic: 120,
+    recorded_at: "2026-10-01T00:00:00Z",
+  });
+  expect(() => mergeRecord([r, { ...r, value: 140 }])).toThrow(
+    /correction review/,
+  );
+});

@@ -43,3 +43,5 @@
 12. **Cross-runtime verification:** browser/Node transcendental functions can
     differ at final floating-point bits. Compare full JSON structure exactly with
     absolute numeric tolerance 1e-10; material numerical differences still fail.
+
+13. **Native toolchain:** exact generated Gradle 9.3.1 is required; newer cached Gradle 9.6 exposed incompatible Kotlin metadata. The pinned NDK download stalled, so a command-line-only local NDK 28 override is being tested. The default Expo NDK remains unchanged. No successful APK is claimed until the artifact is produced and tested.

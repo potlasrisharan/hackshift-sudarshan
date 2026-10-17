@@ -17,7 +17,7 @@ slice described. TODO work is not disguised as blocked or completed.
 | Four algorithms | DONE declared mechanisms | Bayesian question selection, exact safe-stock allocation, robust CUSUM, exact demand convolution; property/exhaustive tests and docs |
 | Clinical model depth/calibration | TODO | Reviewed ontology/asymmetric loss, BOCPD/fusion, fitted refill history and independent evaluation |
 | Benchmarks | DONE mechanism harness | 500 seed-26047 cases; measured JSON/markdown/plot with synthetic limitations |
-| Web/PWA/accessibility | DONE declared slice | Responsive shell, four draft label dictionaries, elder/dark, offline lab; three browser tests and screenshots |
+| Web/PWA/accessibility | DONE declared slice | Responsive shell, four draft label dictionaries, elder/dark, offline lab; four browser tests and screenshots |
 | Native Expo app | IN PROGRESS | Eight screens, shared engine, secure check-in, notifications/biometrics source; typecheck/prebuild pass; release build retry running |
 | Android APK/device test | IN PROGRESS | Gradle retries encountered download/Kotlin issues; no APK or device claim until verified |
 | Sarvam gateway | DONE limited adapter; BLOCKED live test | Static nonclinical welcome only; cache/timeouts/cap/fallback and mocked tests. Server-side key required |

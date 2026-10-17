@@ -44,11 +44,16 @@ export function fromOpsReading(raw: unknown): Observation {
 /** Dedupe identical source IDs; retain competing sources for human review. */
 export function mergeRecord(readings: Observation[]) {
   const unique = new Map<string, Observation>();
-  for (const reading of readings)
-    unique.set(
-      `${reading.source}:${reading.id}`,
-      observationSchema.parse(reading),
-    );
+  for (const reading of readings) {
+    const parsed = observationSchema.parse(reading);
+    const key = `${parsed.source}:${parsed.id}`;
+    const prior = unique.get(key);
+    if (prior && JSON.stringify(prior) !== JSON.stringify(parsed))
+      throw new Error(
+        "Conflicting observation identity requires explicit correction review",
+      );
+    unique.set(key, parsed);
+  }
   return [...unique.values()].sort((a, b) =>
     a.sampledAt.localeCompare(b.sampledAt),
   );

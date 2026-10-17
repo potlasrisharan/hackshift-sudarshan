@@ -13,8 +13,8 @@ foundation with synthetic data, not a production-ready medical platform.
 - Four shared pure algorithms, property/exhaustive tests, explanatory payloads
   and reproducible mechanism benchmarks. No clinical calibration is claimed.
 - Responsive PWA, four draft dictionaries, elder/dark mode, offline lab,
-  three browser flows and visually inspected desktop/mobile screenshots.
-- 48 platform tests at this checkpoint; typecheck/lint and production build pass.
+  four browser flows and visually inspected desktop/mobile screenshots.
+- 50 platform tests at this checkpoint; typecheck/lint and production build pass.
 - Expo native source with eight screens, secure check-in, approximate notifications
   and biometric lock; typecheck/prebuild pass. APK status is tracked in PROGRESS.
 - Real local Cognee 1.6.5 remember/recall returned the two synthetic BP readings

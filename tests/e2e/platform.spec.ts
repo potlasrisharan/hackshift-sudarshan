@@ -81,3 +81,12 @@ test("algorithm screen works offline after first load", async ({
   await expect(page.getByText(/Offline. The algorithm lab/)).toBeVisible();
   await context.setOffline(false);
 });
+test("unconfigured speech provider gives a visible fallback", async ({
+  page,
+}) => {
+  await start(page);
+  await page.getByRole("button", { name: "Listen to welcome" }).click();
+  await expect(page.locator("#speech-status")).toContainText(
+    "Sarvam is not configured",
+  );
+});

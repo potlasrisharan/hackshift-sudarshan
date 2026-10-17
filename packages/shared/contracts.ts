@@ -38,13 +38,26 @@ export const batchSchema = z.object({
   pricePaise: z.number().int().nonnegative().max(10000000),
   expiry: z.iso.date(),
 });
-export const planInputSchema = z.object({
-  prescription: prescriptionSchema,
-  batches: z.array(batchSchema).max(200),
-  allergies: z.array(z.string().max(100)).max(30).default([]),
-  homeClinic: z.string().max(100),
-  transferPaise: z.number().int().nonnegative().max(100000).default(0),
-});
+export const planInputSchema = z
+  .object({
+    prescription: prescriptionSchema,
+    batches: z.array(batchSchema).max(200),
+    allergies: z.array(z.string().max(100)).max(30).default([]),
+    homeClinic: z.string().max(100),
+    transferPaise: z.number().int().nonnegative().max(100000).default(0),
+  })
+  .superRefine((input, ctx) => {
+    const ids = new Set<string>();
+    for (const [index, batch] of input.batches.entries()) {
+      if (ids.has(batch.id))
+        ctx.addIssue({
+          code: "custom",
+          message: "Batch IDs must be unique",
+          path: ["batches", index, "id"],
+        });
+      ids.add(batch.id);
+    }
+  });
 export type PlanInput = z.infer<typeof planInputSchema>;
 export type Batch = z.infer<typeof batchSchema>;
 export const sentinelInputSchema = z.object({
