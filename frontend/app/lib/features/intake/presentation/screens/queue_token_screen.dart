@@ -5,11 +5,24 @@ import "package:kiosk_app/core/constants/app_colors.dart";
 import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
 import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
-class QueueTokenScreen extends ConsumerWidget {
+class QueueTokenScreen extends ConsumerStatefulWidget {
   const QueueTokenScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QueueTokenScreen> createState() => _QueueTokenScreenState();
+}
+
+class _QueueTokenScreenState extends ConsumerState<QueueTokenScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(intakeProvider.notifier).finalizeIntake();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(intakeProvider);
 
     return Scaffold(

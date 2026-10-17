@@ -112,6 +112,26 @@ class IntakeNotifier extends StateNotifier<IntakeState> {
       extractedLabs: List<Map<String, dynamic>>.from(ocrData["lab_results"] ?? []),
     );
   }
+
+  Future<void> finalizeIntake() async {
+    final patient = state.patient;
+    final name = patient?.name ?? "Ramesh Chandra";
+    final phone = patient?.phone ?? "+91 9876543210";
+    final abha = patient?.abhaNumber ?? "91-4829-1029-4821";
+    final complaint = state.chatMessages.isNotEmpty
+        ? state.chatMessages.firstWhere((m) => m["role"] == "patient", orElse: () => {"text": "General consultation"})["text"] ?? "General consultation"
+        : "General consultation";
+
+    await _api.registerPatientEncounter(
+      name: name,
+      phone: phone,
+      abhaNumber: abha,
+      chiefComplaint: complaint,
+      tokenNumber: state.tokenNumber,
+      isEmergency: state.redFlagTriggered,
+      pmjayEligible: state.isPmjayActive,
+    );
+  }
 }
 
 final intakeProvider = StateNotifierProvider<IntakeNotifier, IntakeState>((ref) {
