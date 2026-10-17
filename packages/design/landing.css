@@ -85,7 +85,6 @@
 .ds-hero {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 64px);
   min-height: 100dvh;
   display: flex;
   align-items: center;
@@ -243,7 +242,9 @@
   -webkit-backdrop-filter: blur(14px);
   z-index: 2;
   white-space: nowrap;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 .ds-care-node:hover {
   transform: translateY(-3px) scale(1.02);
@@ -775,8 +776,8 @@
       120deg,
       rgba(248, 250, 245, 0.98) 0%,
       rgba(248, 250, 245, 0.93) 48%,
-      rgba(248, 250, 245, 0.70) 75%,
-      rgba(248, 250, 245, 0.40) 100%
+      rgba(248, 250, 245, 0.7) 75%,
+      rgba(248, 250, 245, 0.4) 100%
     );
   }
   .dark .ds-hero-scrim {
@@ -890,7 +891,7 @@
       180deg,
       rgba(18, 37, 30, 0.98) 0%,
       rgba(18, 37, 30, 0.93) 45%,
-      rgba(18, 37, 30, 0.80) 72%,
+      rgba(18, 37, 30, 0.8) 72%,
       rgba(18, 37, 30, 0.96) 100%
     );
   }
