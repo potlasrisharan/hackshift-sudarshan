@@ -258,6 +258,12 @@ export function createIntegrationApp() {
     });
   });
   integrationApp.use("/api/v1/*", async (c, next) => {
+    if (c.req.path === "/api/v1/auth/login") {
+      return next();
+    }
+    if (!c.req.path.startsWith("/api/v1/encounters") && !c.req.path.startsWith("/api/v1/auth")) {
+      return next();
+    }
     const authorization = c.req.header("Authorization") ?? "";
     if (!authorization.startsWith("Bearer "))
       throw new HTTPException(401, { message: "Session required" });
@@ -466,16 +472,6 @@ export function createIntegrationApp() {
       throw new HTTPException(404, { message: "Active consent unavailable" });
     return c.json({ revoked: true });
   });
-  integrationApp.all("/api/*", () => {
-    throw new HTTPException(501, {
-      message: "This integration capability is not implemented yet",
-    });
-  });
-  integrationApp.get("*", async (c) =>
-    c.env.ASSETS
-      ? c.env.ASSETS.fetch(c.req.raw)
-      : c.json({ error: { message: "Website assets not built" } }, 404),
-  );
   return integrationApp;
 }
 
@@ -633,6 +629,7 @@ v1.post("/algorithms/:name", async (c) => {
   return c.json({ error: `Unknown algorithm: ${name}` }, 404);
 });
 
+app.route("/", createIntegrationApp());
 app.route("/api/v1", v1);
 
 // Mount demo app for legacy compatibility (/api/v1/demo/session, /api/v1/consent, /api/v1/record, etc.)
@@ -643,5 +640,11 @@ const demoApp = createApp({
   speechKey: demoEnv?.SARVAM_API_KEY,
 });
 app.route("/", demoApp);
+
+app.get("*", async (c) =>
+  c.env.ASSETS
+    ? c.env.ASSETS.fetch(c.req.raw)
+    : c.json({ error: { message: "Website assets not built" } }, 404),
+);
 
 export default app;

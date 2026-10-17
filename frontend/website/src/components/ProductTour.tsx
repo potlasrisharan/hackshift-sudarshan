@@ -1,249 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTour } from '@/context/TourContext';
-import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { ChevronLeft, ChevronRight, Compass, X } from "lucide-react";
+import { useTour } from "@/context/TourContext";
 
-export const ProductTour: React.FC = () => {
-    const { isTourActive, currentStepIndex, steps, nextStep, prevStep, endTour } = useTour();
-    const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
-    const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-
-    // Handle window resize
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Compute position of the target element
-    useEffect(() => {
-        if (!isTourActive || steps.length === 0) return;
-
-        const currentStep = steps[currentStepIndex];
-        if (currentStep.targetId === 'center') {
-            setTargetRect(null); // Center mode
-            return;
-        }
-
-        let retryCount = 0;
-        const maxRetries = 10;
-        let timeoutId: ReturnType<typeof setTimeout>;
-
-        const findElementAndSetRect = () => {
-            const element = document.getElementById(currentStep.targetId);
-            if (element) {
-                // Scroll to element if not in view
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                // Compute position after a delay to allow smooth scrolling to finish
-                timeoutId = setTimeout(() => {
-                    const rect = element.getBoundingClientRect();
-                    setTargetRect(rect);
-                }, 200);
-            } else if (retryCount < maxRetries) {
-                retryCount++;
-                timeoutId = setTimeout(findElementAndSetRect, 100);
-            } else {
-                // If element not found, fallback to center or retry
-                setTargetRect(null);
-            }
-        };
-
-        findElementAndSetRect();
-
-        return () => clearTimeout(timeoutId);
-    }, [isTourActive, currentStepIndex, steps, windowSize]);
-
-    if (!isTourActive || steps.length === 0 || windowSize.width < 768) return null;
-
-    const currentStep = steps[currentStepIndex];
-
-    // Dialog placement logic
-    const isCenter = !targetRect || currentStep.targetId === 'center';
-
-    let dialogStyle: React.CSSProperties = {};
-    if (isCenter) {
-        dialogStyle = {
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-        };
-    } else if (targetRect) {
-        const padding = 24;
-        const spotlightBuffer = 15;
-        const dialogWidth = 450;
-        const dialogHeight = 250;
-        const sidebarWidth = 260; // Approximate sidebar width
-
-        // Determine if target is in the sidebar
-        const isSidebarItem = currentStep.targetId.startsWith('tour-dashboard') ||
-            currentStep.targetId.startsWith('tour-inventory') ||
-            currentStep.targetId.startsWith('tour-staff') ||
-            currentStep.targetId.startsWith('tour-shifts') ||
-            currentStep.targetId.startsWith('tour-earnings') ||
-            currentStep.targetId.startsWith('tour-billing') ||
-            currentStep.targetId.startsWith('tour-settings') ||
-            currentStep.targetId.startsWith('tour-hospitals');
-
-        // Target center Y
-        const targetCenterY = targetRect.top + targetRect.height / 2;
-
-        if (isSidebarItem) {
-            // Sidebar items: Force to the Right with extra margin
-            dialogStyle = {
-                top: Math.max(padding, Math.min(targetCenterY - dialogHeight / 2, windowSize.height - dialogHeight - padding)),
-                left: Math.max(sidebarWidth + padding, targetRect.right + spotlightBuffer + padding),
-            };
-        } else {
-            // General elements: Determine best position: Right, Left, Bottom, Top
-            const spaceRight = windowSize.width - (targetRect.right + spotlightBuffer + padding);
-            const spaceLeft = targetRect.left - spotlightBuffer - padding;
-            const spaceBottom = windowSize.height - (targetRect.bottom + spotlightBuffer + padding);
-            const spaceTop = targetRect.top - spotlightBuffer - padding;
-
-            if (spaceRight >= dialogWidth) {
-                // Place Right
-                dialogStyle = {
-                    top: Math.max(padding, Math.min(targetCenterY - dialogHeight / 2, windowSize.height - dialogHeight - padding)),
-                    left: targetRect.right + spotlightBuffer + padding,
-                };
-            } else if (spaceLeft >= dialogWidth) {
-                // Place Left
-                dialogStyle = {
-                    top: Math.max(padding, Math.min(targetCenterY - dialogHeight / 2, windowSize.height - dialogHeight - padding)),
-                    left: targetRect.left - dialogWidth - spotlightBuffer - padding,
-                };
-            } else if (spaceBottom >= dialogHeight) {
-                // Place Bottom
-                dialogStyle = {
-                    top: targetRect.bottom + spotlightBuffer + padding,
-                    left: Math.max(padding, Math.min(targetRect.left + (targetRect.width / 2) - (dialogWidth / 2), windowSize.width - dialogWidth - padding)),
-                };
-            } else if (spaceTop >= dialogHeight) {
-                // Place Top
-                dialogStyle = {
-                    top: targetRect.top - dialogHeight - spotlightBuffer - padding,
-                    left: Math.max(padding, Math.min(targetRect.left + (targetRect.width / 2) - (dialogWidth / 2), windowSize.width - dialogWidth - padding)),
-                };
-            } else {
-                // Fallback: Bottom of screen (centered)
-                dialogStyle = {
-                    bottom: padding,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                };
-            }
-        }
+type Rect = { left:number; top:number; width:number; height:number; right:number; bottom:number };
+/** Opt-in native modal: keyboard containment, Escape and focus restoration are browser-managed. */
+export function ProductTour() {
+  const {isTourActive,currentStepIndex,steps,nextStep,prevStep,endTour}=useTour();
+  const dialog=useRef<HTMLDialogElement>(null);
+  const [target,setTarget]=useState<Rect|null>(null);
+  const [position,setPosition]=useState({left:16,top:16});
+  const step=steps[currentStepIndex];
+  useEffect(()=>{
+    const element=dialog.current;
+    if(!isTourActive||!element)return;
+    const previous=document.activeElement instanceof HTMLElement?document.activeElement:null;
+    element.showModal();
+    return ()=>{element.close();if(previous?.isConnected)previous.focus({preventScroll:true});};
+  },[isTourActive]);
+  useEffect(()=>{
+    if(!isTourActive||!step)return;
+    let targetElement:HTMLElement|null=null;
+    let retry:ReturnType<typeof setTimeout>|undefined;
+    let stopped=false;
+    let observer:ResizeObserver|undefined;
+    let attempts=0;
+    function measure() {
+      if(stopped||!dialog.current)return;
+      const viewport=window.visualViewport;
+      const width=viewport?.width??innerWidth;
+      const height=viewport?.height??innerHeight;
+      const card=dialog.current.getBoundingClientRect();
+      const rect=targetElement?.getBoundingClientRect();
+      const visible=rect && rect.width>0 && rect.height>0 && rect.right>0 && rect.left<width && rect.bottom>0 && rect.top<height;
+      setTarget(visible?{left:Math.max(8,rect.left-6),top:Math.max(8,rect.top-6),right:Math.min(width-8,rect.right+6),bottom:Math.min(height-8,rect.bottom+6),width:Math.min(width-8,rect.right+6)-Math.max(8,rect.left-6),height:Math.min(height-8,rect.bottom+6)-Math.max(8,rect.top-6)}:null);
+      let left=(width-card.width)/2;
+      let top=(height-card.height)/2;
+      if(visible&&width>=768){
+        if(rect.right+24+card.width<=width-16){left=rect.right+24;top=rect.top;}
+        else if(rect.left-24-card.width>=16){left=rect.left-24-card.width;top=rect.top;}
+        else if(rect.bottom+24+card.height<=height-16){top=rect.bottom+24;}
+      }
+      setPosition({left:Math.max(16,Math.min(left,width-card.width-16)),top:Math.max(16,Math.min(top,height-card.height-16))});
     }
-
-    return (
-        <AnimatePresence>
-            {isTourActive && (
-                <div className="fixed inset-0 z-[9999] pointer-events-none overflow-hidden">
-                    {/* Overlay mask */}
-                    <motion.div
-                        className="absolute inset-0 bg-slate-900/60 transition-all duration-300"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            clipPath: targetRect && !isCenter
-                                ? `polygon(
-                    0% 0%, 0% 100%, 
-                    ${targetRect.left - 15}px 100%, 
-                    ${targetRect.left - 15}px ${targetRect.top - 15}px, 
-                    ${targetRect.right + 15}px ${targetRect.top - 15}px, 
-                    ${targetRect.right + 15}px ${targetRect.bottom + 15}px, 
-                    ${targetRect.left - 15}px ${targetRect.bottom + 15}px, 
-                    ${targetRect.left - 15}px 100%, 
-                    100% 100%, 100% 0%
-                  )`
-                                : 'none'
-                        }}
-                    />
-
-                    {/* Dialogue Box */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute pointer-events-auto w-[calc(100%-40px)] max-w-[450px] z-[10000]"
-                        transition={{
-                            type: 'spring',
-                            damping: 25,
-                            stiffness: 200,
-                            opacity: { duration: 0.3 }
-                        }}
-                        style={dialogStyle}
-                    >
-                        <div className="relative bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
-                            {/* Doctor Avatar - Left Side */}
-                            <div className="w-[120px] md:w-[150px] bg-gradient-to-b from-blue-50 to-blue-100/50 flex flex-col justify-end items-center shrink-0 border-b md:border-b-0 md:border-r border-blue-100 relative overflow-hidden hidden sm:flex">
-                                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-blue-500/10 to-transparent pointer-events-none" />
-                                <img
-                                    src="/assets/tour/doctor_guide.png"
-                                    alt="Dr. Guide"
-                                    className="w-full h-full object-cover object-bottom relative z-10 scale-110 origin-bottom"
-                                    style={{ mixBlendMode: 'multiply' }}
-                                />
-                            </div>
-
-                            {/* Content Area */}
-                            <div className="p-6 md:p-8 flex flex-col flex-grow">
-                                {/* Header */}
-                                <div className="flex justify-between items-start mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                                        <h3 className="font-bold text-slate-900 text-lg tracking-tight">Dr. Guide</h3>
-                                    </div>
-                                    <button
-                                        onClick={endTour}
-                                        className="p-1 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                                {/* Title */}
-                                <h4 className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">
-                                    {currentStep.title}
-                                </h4>
-
-                                {/* Body */}
-                                <p className="text-slate-600 leading-relaxed min-h-[4rem] text-[15px]">
-                                    {currentStep.content}
-                                </p>
-
-                                {/* Footer Controls */}
-                                <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-100">
-                                    <span className="text-xs font-medium text-slate-400">
-                                        Step {currentStepIndex + 1} of {steps.length}
-                                    </span>
-
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={prevStep}
-                                            disabled={currentStepIndex === 0}
-                                            className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
-                                        >
-                                            <ChevronLeft className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            onClick={nextStep}
-                                            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-blue-500/20 transition-all hover:-translate-y-0.5"
-                                        >
-                                            {currentStepIndex === steps.length - 1 ? 'Finish' : 'Next'}
-                                            {currentStepIndex !== steps.length - 1 && <ChevronRight className="w-4 h-4" />}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>
-    );
-};
+    function find() {
+      if(stopped)return;
+      targetElement=step.targetId==="center"?null:document.getElementById(step.targetId);
+      if(targetElement&&targetElement.getBoundingClientRect().width>0){
+        targetElement.scrollIntoView({behavior:"instant",block:"nearest",inline:"nearest"});
+        observer?.observe(targetElement);
+      } else if(step.targetId!=="center"&&attempts++<12)retry=setTimeout(find,100);
+      measure();
+    }
+    observer=new ResizeObserver(measure);
+    if(dialog.current)observer.observe(dialog.current);
+    find();
+    window.addEventListener("resize",measure);
+    window.addEventListener("scroll",measure,true);
+    window.visualViewport?.addEventListener("resize",measure);
+    return ()=>{stopped=true;clearTimeout(retry);observer?.disconnect();window.removeEventListener("resize",measure);window.removeEventListener("scroll",measure,true);window.visualViewport?.removeEventListener("resize",measure);};
+  },[isTourActive,step]);
+  if(!isTourActive||!step)return null;
+  return createPortal(<>
+    <div className={target?"ayu-guide-spotlight":"ayu-guide-shade"} aria-hidden="true" style={target?{left:target.left,top:target.top,width:target.width,height:target.height}:undefined}/>
+    <dialog ref={dialog} className="ayu-guide-dialog" style={position} aria-labelledby="ayu-guide-title" aria-describedby="ayu-guide-description" onCancel={(event)=>{event.preventDefault();endTour();}}>
+      <header><span><Compass size={18}/> Workspace guide</span><button type="button" onClick={endTour} aria-label="Close guide"><X size={18}/></button></header>
+      <p className="ayu-guide-progress">Step {currentStepIndex+1} of {steps.length}</p>
+      <h2 id="ayu-guide-title">{step.title}</h2>
+      <p id="ayu-guide-description">{step.content}</p>
+      <footer><button type="button" onClick={prevStep} disabled={currentStepIndex===0}><ChevronLeft size={16}/> Back</button><button type="button" className="ayu-guide-next" onClick={nextStep}>{currentStepIndex===steps.length-1?"Finish guide":"Next"}<ChevronRight size={16}/></button></footer>
+    </dialog>
+  </>,document.body);
+}
