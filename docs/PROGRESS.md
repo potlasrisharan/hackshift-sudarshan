@@ -1,5 +1,7 @@
 # Progress — 17 October 2026
 
+**PAUSED at the user’s explicit request.** All completed source and reports are being pushed. No further implementation, testing or device work is authorized until resumed.
+
 This is a checkpoint, not completion of prompts.md. DONE means only the verified
 slice described. TODO work is not disguised as blocked or completed.
 
@@ -18,8 +20,8 @@ slice described. TODO work is not disguised as blocked or completed.
 | Clinical model depth/calibration | TODO | Reviewed ontology/asymmetric loss, BOCPD/fusion, fitted refill history and independent evaluation |
 | Benchmarks | DONE mechanism harness | 500 seed-26047 cases; measured JSON/markdown/plot with synthetic limitations |
 | Web/PWA/accessibility | DONE declared slice | Responsive shell, four draft label dictionaries, elder/dark, offline lab; four browser tests and screenshots |
-| Native Expo app | IN PROGRESS | Eight screens, shared engine, secure check-in, notifications/biometrics source; typecheck/prebuild pass; release build retry running |
-| Android APK/device test | IN PROGRESS | Gradle retries encountered download/Kotlin issues; no APK or device claim until verified |
+| Native Expo app | IN PROGRESS | Eight screens, shared engine, secure check-in, notifications/biometrics source; typecheck/prebuild pass; Android JS/assets export passed; native release build stopped on user request before an APK was produced |
+| Android APK/device test | IN PROGRESS | Gradle retries encountered download/Kotlin issues, then advanced to native packaging with an installed-NDK override. Paused before APK/device verification |
 | Sarvam gateway | DONE limited adapter; BLOCKED live test | Static nonclinical welcome only; cache/timeouts/cap/fallback and mocked tests. Server-side key required |
 | Full multilingual voice/translation | TODO | STT, clinical glossary, original toggle, verified translations and language evals |
 | Wearables | DONE simulation only | Source/unit/plausibility/dedupe boundary; real Health Connect/HealthKit/BLE implementation/device validation TODO |
@@ -49,3 +51,7 @@ into chat/repo. Existing public browser config is not permission to access live 
 Finish native build/device verification and load evidence; publish tested commits
 and inspect actual CI. Then implement durable identity/events/sync and the full
 clinical modules. The full requested Definition of Done remains unmet.
+
+## Resume checkpoint
+
+Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. Resume only when the user asks.

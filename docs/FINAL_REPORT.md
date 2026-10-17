@@ -1,5 +1,7 @@
 # Final checkpoint report
 
+**Paused at the user’s request on 17 October 2026.** No further implementation or testing is running as part of this task.
+
 **The full requested product is not complete.** This is a tested integration
 foundation with synthetic data, not a production-ready medical platform.
 
@@ -63,3 +65,5 @@ and device review are required before real use. Full status and next steps are
 in PROGRESS.md; substantial independent implementation is still pending.
 
 Real k6 health-route transport load: five virtual users for 15 seconds, 117,589 completed iterations; see benchmarks/k6-health.txt. This ran on the first verified container image before the final hardening update, and is not a clinical/authenticated/database workload. A separate in-process handler measurement is labelled as such in load-handler.json.
+
+Pause checkpoint: Android JS/assets export completed successfully (730 modules, 2.4 MB Hermes bundle). The native build was stopped before APK/device verification. No installable APK is claimed.
