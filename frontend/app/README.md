@@ -1,10 +1,8 @@
-# DHAAGA Flutter kiosk — Phase 1 foundation
+# DHAAGA Flutter kiosk — Phase 2 synthetic intake
 
-Active project: `frontend/app/`. Android tablet + Web. This is a **foundation
-preview**, not a completed clinical intake product. It collects no patient data.
-Language selection, Elder Mode, navigation guards, and an explicit read-only
-service health check work. Intake, OCR, token issuance, encrypted offline queue,
-and device lockdown are gated behind subsequent implementation phases.
+Active project: frontend/app. Android tablet + Web source. The synthetic intake now uses the shared staff-authenticated encounter API: entered demographics → complaint/structured safety questions → consent → server receipt. Optional Android speech is implemented with a typed Web fallback. OPD tokens, wait estimates, QR and identifier lookup are explicitly unavailable in the current contract.
+
+See [the Phase 2 gate](../../docs/MOBILE_KIOSK_PHASE2.md) for evidence and limitations. The public Worker still exposes the legacy API, so local persistent integration verification does not imply live hosted intake. OCR, encrypted offline sync, lockdown, APK and device speech verification remain later gates. Use synthetic information only.
 
 ## Toolchain and run
 
@@ -48,13 +46,11 @@ strings and fragments are rejected. No environment secrets belong in this file.
   GoRouter and generated ARB strings.
 - `lib/core/storage`: documents the disabled storage boundary pending Phase 4.
 - `features/intake/domain`: immutable entities, sealed flow states, repository
-  interface and health use case. No Flutter/Dio/Riverpod dependencies here.
-- `features/intake/data`: typed generated health DTO, remote source, repository.
+  interfaces and health/intake use cases. No Flutter/Dio/Riverpod dependencies here.
+- `features/intake/data`: typed generated health/intake DTOs, speech adapter, remote source and repositories.
 - `features/intake/presentation`: generated Riverpod providers and responsive UI.
 
-Only health uses a deployed API contract. Intake DTOs are deliberately absent
-until their authoritative shared schemas exist. The five later screen classes
-show localized unavailability; guarded routes cannot display a fake token.
+Health recognizes both actual backend contracts. Intake DTOs follow packages/shared/integration.ts and backend/src/index.ts. Staff tokens and drafts remain in memory; completion retains only receipt metadata. A failed/uncertain submit freezes its body and UUID key for replay; this is not durable offline support. The router cannot fabricate a receipt or skip required input/consent. The actual API provides no OPD token, wait estimate or QR specification.
 Archived originals under `hackshift/projects/` remain unchanged.
 
 ## Type-safe generation and localization
@@ -136,3 +132,7 @@ lockdown, APK and tablet emulator/device checks.
 Optional CI: `tool/ci/kiosk-flutter.yml.example` contains a Flutter verification
 workflow template. It is not enabled; copy it into `.github/workflows/` when
 CI ownership and workflow publishing permissions are configured.
+
+## Same-origin synthetic integration
+
+Use the backend/local server and synthetic staff accounts documented in docs/INTEGRATION_RUNBOOK.md. Build with --dart-define=API_BASE_URL=https://YOUR-SAME-ORIGIN/api/v1 and serve API and Flutter assets behind that HTTPS origin. No staff password or token belongs in a Dart define. Cross-origin browser calls are deliberately rejected by this backend. The production config points at the legacy public service and currently cannot submit encounters.

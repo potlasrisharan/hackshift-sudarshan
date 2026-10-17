@@ -6,12 +6,19 @@ import '../providers/core_providers.dart';
 class KioskShell extends ConsumerWidget {
   final String title;
   final List<Widget> children;
-  const KioskShell({super.key, required this.title, required this.children});
+  final Widget? bottom;
+  const KioskShell({
+    super.key,
+    required this.title,
+    required this.children,
+    this.bottom,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final strings = AppStrings.of(context);
     final preferences = ref.watch(preferencesProvider);
     return Scaffold(
+      bottomNavigationBar: bottom,
       body: SafeArea(
         child: FocusTraversalGroup(
           policy: WidgetOrderTraversalPolicy(),
@@ -19,6 +26,7 @@ class KioskShell extends ConsumerWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 980),
               child: ListView(
+                key: ValueKey(title),
                 padding: const EdgeInsets.all(24),
                 children: [
                   Semantics(
@@ -65,7 +73,7 @@ class KioskShell extends ConsumerWidget {
                   ...children,
                   const SizedBox(height: 32),
                   Text(
-                    strings.privacyNotice,
+                    strings.sessionPrivacy,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],

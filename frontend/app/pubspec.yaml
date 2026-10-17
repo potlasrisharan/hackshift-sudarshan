@@ -16,6 +16,7 @@ dependencies:
   dio: ^5.9.0
   json_annotation: ^4.9.0
   intl: any
+  speech_to_text: 7.3.0
 dev_dependencies:
   dhaaga_typed_json:
     path: tool/typed_json

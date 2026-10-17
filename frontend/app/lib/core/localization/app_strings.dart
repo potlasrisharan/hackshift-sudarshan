@@ -292,6 +292,336 @@ final class AppStrings {
     'ta' => "மீண்டும் தொடங்கவும்",
     _ => "Start again",
   };
+  String get staffTitle => switch (localeName) {
+    'hi' => "कर्मचारी साइन इन",
+    'pa' => "ਸਟਾਫ ਸਾਈਨ ਇਨ",
+    'ta' => "பணியாளர் உள்நுழைவு",
+    _ => "Staff sign-in",
+  };
+  String get staffHelp => switch (localeName) {
+    'hi' => "केवल परीक्षण के लिए। क्लिनिक कर्मचारी से साइन इन करवाएँ।",
+    'pa' => "ਕੇਵਲ ਜਾਂਚ ਲਈ। ਕਲੀਨਿਕ ਸਟਾਫ ਨੂੰ ਸਾਈਨ ਇਨ ਕਰਨ ਲਈ ਕਹੋ।",
+    'ta' => "சோதனைக்கு மட்டும். மருத்துவமனை பணியாளரை உள்நுழையச் சொல்லவும்.",
+    _ =>
+      "Synthetic integration only. Ask clinic staff to sign in. Production kiosk authentication is not configured.",
+  };
+  String get organization => switch (localeName) {
+    'hi' => "संस्था",
+    'pa' => "ਸੰਸਥਾ",
+    'ta' => "நிறுவனம்",
+    _ => "Organization",
+  };
+  String get email => switch (localeName) {
+    'hi' => "कर्मचारी ईमेल",
+    'pa' => "ਸਟਾਫ ਈਮੇਲ",
+    'ta' => "பணியாளர் மின்னஞ்சல்",
+    _ => "Staff email",
+  };
+  String get password => switch (localeName) {
+    'hi' => "पासवर्ड",
+    'pa' => "ਪਾਸਵਰਡ",
+    'ta' => "கடவுச்சொல்",
+    _ => "Password",
+  };
+  String get signIn => switch (localeName) {
+    'hi' => "साइन इन",
+    'pa' => "ਸਾਈਨ ਇਨ",
+    'ta' => "உள்நுழைக",
+    _ => "Sign in",
+  };
+  String get patientName => switch (localeName) {
+    'hi' => "काल्पनिक रोगी का नाम",
+    'pa' => "ਕਾਲਪਨਿਕ ਮਰੀਜ਼ ਦਾ ਨਾਮ",
+    'ta' => "கற்பனை நோயாளி பெயர்",
+    _ => "Synthetic patient name",
+  };
+  String get birthDate => switch (localeName) {
+    'hi' => "जन्म तिथि (YYYY-MM-DD)",
+    'pa' => "ਜਨਮ ਮਿਤੀ (YYYY-MM-DD)",
+    'ta' => "பிறந்த தேதி (YYYY-MM-DD)",
+    _ => "Birth date (YYYY-MM-DD)",
+  };
+  String get identityHelp => switch (localeName) {
+    'hi' =>
+      "पुष्ट काल्पनिक विवरण भरें। नाम और सही जन्म तिथि आवश्यक हैं। वास्तविक जानकारी न दें।",
+    'pa' =>
+      "ਪੁਸ਼ਟ ਕਾਲਪਨਿਕ ਵੇਰਵੇ ਭਰੋ। ਨਾਮ ਅਤੇ ਸਹੀ ਜਨਮ ਮਿਤੀ ਲੋੜੀਂਦੇ ਹਨ। ਅਸਲੀ ਜਾਣਕਾਰੀ ਨਾ ਦਿਓ।",
+    'ta' =>
+      "உறுதிப்படுத்திய கற்பனை விவரங்களை உள்ளிடவும். பெயரும் சரியான பிறந்த தேதியும் தேவை. உண்மையான தகவல் வேண்டாம்.",
+    _ =>
+      "Enter confirmed synthetic demographics. Name and a valid birth date are required. No real patient data.",
+  };
+  String get identifierUnavailable => switch (localeName) {
+    'hi' =>
+      "फोन / ABHA खोज उपलब्ध नहीं है। कोई फोन नंबर या ABHA नहीं लिया जाता।",
+    'pa' => "ਫ਼ੋਨ / ABHA ਖੋਜ ਉਪਲਬਧ ਨਹੀਂ। ਫ਼ੋਨ ਨੰਬਰ ਜਾਂ ABHA ਨਹੀਂ ਲਿਆ ਜਾਂਦਾ।",
+    'ta' => "தொலைபேசி / ABHA தேடல் கிடைக்கவில்லை. இவை சேகரிக்கப்படாது.",
+    _ =>
+      "Phone / ABHA lookup is unavailable. No phone number or ABHA is collected.",
+  };
+  String get gender => switch (localeName) {
+    'hi' => "लिंग",
+    'pa' => "ਲਿੰਗ",
+    'ta' => "பாலினம்",
+    _ => "Gender",
+  };
+  String get female => switch (localeName) {
+    'hi' => "महिला",
+    'pa' => "ਔਰਤ",
+    'ta' => "பெண்",
+    _ => "Female",
+  };
+  String get male => switch (localeName) {
+    'hi' => "पुरुष",
+    'pa' => "ਮਰਦ",
+    'ta' => "ஆண்",
+    _ => "Male",
+  };
+  String get other => switch (localeName) {
+    'hi' => "अन्य",
+    'pa' => "ਹੋਰ",
+    'ta' => "மற்றவை",
+    _ => "Other",
+  };
+  String get unknown => switch (localeName) {
+    'hi' => "नहीं बताना चाहते",
+    'pa' => "ਦੱਸਣਾ ਨਹੀਂ ਚਾਹੁੰਦੇ",
+    'ta' => "தெரிவிக்க விரும்பவில்லை",
+    _ => "Prefer not to say",
+  };
+  String get syntheticConfirm => switch (localeName) {
+    'hi' => "मैं पुष्टि करता हूँ कि सभी रोगी विवरण काल्पनिक हैं।",
+    'pa' => "ਮੈਂ ਪੁਸ਼ਟੀ ਕਰਦਾ ਹਾਂ ਕਿ ਮਰੀਜ਼ ਦੇ ਸਾਰੇ ਵੇਰਵੇ ਕਾਲਪਨਿਕ ਹਨ।",
+    'ta' =>
+      "உள்ளிட்ட நோயாளி தகவல்கள் அனைத்தும் கற்பனையானவை என உறுதி செய்கிறேன்.",
+    _ => "I confirm all entered patient information is synthetic.",
+  };
+  String get complaint => switch (localeName) {
+    'hi' => "अपनी परेशानी बताएँ (3–2000 अक्षर)",
+    'pa' => "ਆਪਣੀ ਤਕਲੀਫ਼ ਦੱਸੋ (3–2000 ਅੱਖਰ)",
+    'ta' => "உங்கள் உடல்நிலையை விவரிக்கவும் (3–2000 எழுத்துகள்)",
+    _ => "Describe how you feel (3–2000 characters)",
+  };
+  String get redFlagHelp => switch (localeName) {
+    'hi' => "पहले तीन सुरक्षा प्रश्नों के उत्तर दें। बाकी वैकल्पिक हैं।",
+    'pa' => "ਪਹਿਲੇ ਤਿੰਨ ਸੁਰੱਖਿਆ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿਓ। ਬਾਕੀ ਚੋਣਵੇਂ ਹਨ।",
+    'ta' =>
+      "முதல் மூன்று பாதுகாப்புக் கேள்விகளுக்கு பதிலளிக்கவும். மற்றவை விருப்பத்தேர்வு.",
+    _ =>
+      "Answer each of the first three safety questions. Remaining questions are optional.",
+  };
+  String get chestPain => switch (localeName) {
+    'hi' => "सीने में दर्द?",
+    'pa' => "ਛਾਤੀ ਵਿੱਚ ਦਰਦ?",
+    'ta' => "நெஞ்சு வலி உள்ளதா?",
+    _ => "Chest pain?",
+  };
+  String get breathless => switch (localeName) {
+    'hi' => "साँस लेने में परेशानी?",
+    'pa' => "ਸਾਹ ਲੈਣ ਵਿੱਚ ਮੁਸ਼ਕਲ?",
+    'ta' => "மூச்சு விடுவதில் சிரமமா?",
+    _ => "Difficulty breathing?",
+  };
+  String get fainting => switch (localeName) {
+    'hi' => "बेहोशी?",
+    'pa' => "ਬੇਹੋਸ਼ੀ?",
+    'ta' => "மயக்கம் உள்ளதா?",
+    _ => "Fainting?",
+  };
+  String get fever => switch (localeName) {
+    'hi' => "बुखार?",
+    'pa' => "ਬੁਖ਼ਾਰ?",
+    'ta' => "காய்ச்சல் உள்ளதா?",
+    _ => "Fever?",
+  };
+  String get cough => switch (localeName) {
+    'hi' => "खाँसी?",
+    'pa' => "ਖੰਘ?",
+    'ta' => "இருமல் உள்ளதா?",
+    _ => "Cough?",
+  };
+  String get fatigue => switch (localeName) {
+    'hi' => "थकान?",
+    'pa' => "ਥਕਾਵਟ?",
+    'ta' => "சோர்வு உள்ளதா?",
+    _ => "Fatigue?",
+  };
+  String get thirst => switch (localeName) {
+    'hi' => "अधिक प्यास?",
+    'pa' => "ਵੱਧ ਪਿਆਸ?",
+    'ta' => "அதிக தாகமா?",
+    _ => "Increased thirst?",
+  };
+  String get yes => switch (localeName) {
+    'hi' => "हाँ",
+    'pa' => "ਹਾਂ",
+    'ta' => "ஆம்",
+    _ => "Yes",
+  };
+  String get no => switch (localeName) {
+    'hi' => "नहीं",
+    'pa' => "ਨਹੀਂ",
+    'ta' => "இல்லை",
+    _ => "No",
+  };
+  String get unsure => switch (localeName) {
+    'hi' => "पता नहीं",
+    'pa' => "ਪਤਾ ਨਹੀਂ",
+    'ta' => "உறுதியாகத் தெரியவில்லை",
+    _ => "Unsure",
+  };
+  String get informStaff => switch (localeName) {
+    'hi' => "क्लिनिक कर्मचारी को तुरंत बताएँ। इस फॉर्म के लिए न रुकें।",
+    'pa' => "ਕਲੀਨਿਕ ਸਟਾਫ ਨੂੰ ਤੁਰੰਤ ਦੱਸੋ। ਇਸ ਫਾਰਮ ਲਈ ਉਡੀਕ ਨਾ ਕਰੋ।",
+    'ta' =>
+      "உடனே மருத்துவமனை பணியாளரிடம் தெரிவிக்கவும். இந்தப் படிவத்திற்காக காத்திருக்க வேண்டாம்.",
+    _ => "Inform clinic staff immediately. Do not wait for this form.",
+  };
+  String get speak => switch (localeName) {
+    'hi' => "माइक्रोफ़ोन शुरू करें",
+    'pa' => "ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਚਾਲੂ ਕਰੋ",
+    'ta' => "ஒலிவாங்கியைத் தொடங்கு",
+    _ => "Start microphone",
+  };
+  String get stopSpeech => switch (localeName) {
+    'hi' => "माइक्रोफ़ोन रोकें",
+    'pa' => "ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬੰਦ ਕਰੋ",
+    'ta' => "ஒலிவாங்கியை நிறுத்து",
+    _ => "Stop microphone",
+  };
+  String get speechNotice => switch (localeName) {
+    'hi' =>
+      "Android पर वैकल्पिक वॉइस इनपुट है। केवल काल्पनिक बातें बोलें। आगे बढ़ने से पहले पाठ जाँचें।",
+    'pa' =>
+      "Android ਉੱਤੇ ਚੋਣਵਾਂ ਆਵਾਜ਼ ਇਨਪੁਟ ਹੈ। ਕੇਵਲ ਕਾਲਪਨਿਕ ਗੱਲਾਂ ਬੋਲੋ। ਅੱਗੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਲਿਖਤ ਜਾਂਚੋ।",
+    'ta' =>
+      "Android குரல் உள்ளீடு விருப்பத்தேர்வு. கற்பனைத் தகவல்களை மட்டும் பேசவும். தொடரும் முன் உரையைச் சரிபார்க்கவும்.",
+    _ =>
+      "Optional Android speech input uses the device recognizer. Use synthetic speech only. Review and edit the transcript before continuing.",
+  };
+  String get typedFallback => switch (localeName) {
+    'hi' => "नीचे लिखें। माइक्रोफ़ोन, यह भाषा या वॉइस सेवा उपलब्ध नहीं है।",
+    'pa' => "ਹੇਠਾਂ ਲਿਖੋ। ਮਾਈਕ੍ਰੋਫ਼ੋਨ, ਇਹ ਭਾਸ਼ਾ ਜਾਂ ਆਵਾਜ਼ ਸੇਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
+    'ta' =>
+      "கீழே தட்டச்சு செய்யவும். ஒலிவாங்கி, இந்த மொழி அல்லது குரல் சேவை கிடைக்கவில்லை.",
+    _ =>
+      "Type below. Microphone permission, this language, or speech recognition is unavailable.",
+  };
+  String get webTyped => switch (localeName) {
+    'hi' => "वेब पर लिखें। Android पर वॉइस इनपुट उपलब्ध है।",
+    'pa' => "ਵੈੱਬ ਉੱਤੇ ਲਿਖੋ। Android ਉੱਤੇ ਆਵਾਜ਼ ਇਨਪੁਟ ਹੈ।",
+    'ta' => "இணையத்தில் தட்டச்சு செய்யவும். Android இல் குரல் உள்ளீடு உள்ளது.",
+    _ => "Use typed input on Web. Android supports optional speech input.",
+  };
+  String get listening => switch (localeName) {
+    'hi' => "सुन रहे हैं — चुप्पी पर रुक जाएगा",
+    'pa' => "ਸੁਣ ਰਹੇ ਹਾਂ — ਚੁੱਪ ਹੋਣ ਤੇ ਰੁਕੇਗਾ",
+    'ta' => "கேட்கிறது — அமைதிக்குப் பின் நிற்கும்",
+    _ => "Listening — stops after silence",
+  };
+  String get review => switch (localeName) {
+    'hi' => "विवरण जाँचें",
+    'pa' => "ਵੇਰਵੇ ਜਾਂਚੋ",
+    'ta' => "விவரங்களைச் சரிபார்",
+    _ => "Review intake",
+  };
+  String get editComplaint => switch (localeName) {
+    'hi' => "परेशानी का विवरण बदलें",
+    'pa' => "ਤਕਲੀਫ਼ ਦੇ ਵੇਰਵੇ ਬਦਲੋ",
+    'ta' => "உடல்நிலை விவரத்தைத் திருத்து",
+    _ => "Edit complaint",
+  };
+  String get careConsent => switch (localeName) {
+    'hi' =>
+      "मैं देखभाल के लिए यह विवरण क्लिनिक कर्मचारी से साझा करने को सहमत हूँ।",
+    'pa' => "ਮੈਂ ਦੇਖਭਾਲ ਲਈ ਇਹ ਵੇਰਵੇ ਕਲੀਨਿਕ ਸਟਾਫ ਨਾਲ ਸਾਂਝੇ ਕਰਨ ਲਈ ਸਹਿਮਤ ਹਾਂ।",
+    'ta' =>
+      "பராமரிப்புக்காக இந்த விவரங்களை மருத்துவமனை பணியாளருடன் பகிர ஒப்புக்கொள்கிறேன்.",
+    _ => "I agree to share this intake with clinic staff for care.",
+  };
+  String get submitIntake => switch (localeName) {
+    'hi' => "विवरण भेजें",
+    'pa' => "ਵੇਰਵੇ ਭੇਜੋ",
+    'ta' => "விவரங்களை அனுப்பு",
+    _ => "Submit intake",
+  };
+  String get noVitals => switch (localeName) {
+    'hi' => "शारीरिक माप नहीं लिए गए।",
+    'pa' => "ਸਰੀਰਕ ਮਾਪ ਨਹੀਂ ਲਏ ਗਏ।",
+    'ta' => "உடல் அளவீடுகள் சேகரிக்கப்படவில்லை.",
+    _ => "Vitals were not collected.",
+  };
+  String get noOcr => switch (localeName) {
+    'hi' =>
+      "इस चरण में प्रिस्क्रिप्शन स्कैन उपलब्ध नहीं है। कोई दवा निकाली नहीं गई।",
+    'pa' => "ਇਸ ਪੜਾਅ ਵਿੱਚ ਪਰਚੀ ਸਕੈਨ ਉਪਲਬਧ ਨਹੀਂ। ਕੋਈ ਦਵਾਈ ਨਹੀਂ ਪੜ੍ਹੀ ਗਈ।",
+    'ta' =>
+      "இந்தக் கட்டத்தில் மருந்துச்சீட்டு ஸ்கேன் இல்லை. மருந்துகள் எதுவும் பிரித்தெடுக்கப்படவில்லை.",
+    _ =>
+      "Prescription scanning is not available in this phase. No medications were extracted.",
+  };
+  String get receiptTitle => switch (localeName) {
+    'hi' => "विवरण की रसीद",
+    'pa' => "ਵੇਰਵਿਆਂ ਦੀ ਰਸੀਦ",
+    'ta' => "பதிவு ரசீது",
+    _ => "Intake receipt",
+  };
+  String get reference => switch (localeName) {
+    'hi' => "मुलाकात संदर्भ",
+    'pa' => "ਮੁਲਾਕਾਤ ਹਵਾਲਾ",
+    'ta' => "சந்திப்பு குறிப்பு",
+    _ => "Encounter reference",
+  };
+  String get routineReceived => switch (localeName) {
+    'hi' =>
+      "क्लिनिक ने विवरण प्राप्त किया। अपनी बारी के बारे में कर्मचारी से पूछें।",
+    'pa' => "ਕਲੀਨਿਕ ਨੇ ਵੇਰਵੇ ਪ੍ਰਾਪਤ ਕੀਤੇ। ਆਪਣੀ ਵਾਰੀ ਬਾਰੇ ਸਟਾਫ ਨੂੰ ਪੁੱਛੋ।",
+    'ta' =>
+      "மருத்துவமனை விவரங்களைப் பெற்றது. உங்கள் முறை பற்றி பணியாளரிடம் கேளுங்கள்.",
+    _ => "Intake received by the clinic. Ask staff about your turn.",
+  };
+  String get tokenUnavailable => switch (localeName) {
+    'hi' =>
+      "वर्तमान API में OPD टोकन, प्रतीक्षा समय और QR उपलब्ध नहीं हैं। यह संदर्भ कतार टोकन नहीं है।",
+    'pa' =>
+      "ਮੌਜੂਦਾ API ਵਿੱਚ OPD ਟੋਕਨ, ਉਡੀਕ ਸਮਾਂ ਅਤੇ QR ਉਪਲਬਧ ਨਹੀਂ। ਇਹ ਹਵਾਲਾ ਕਤਾਰ ਟੋਕਨ ਨਹੀਂ ਹੈ।",
+    'ta' =>
+      "தற்போதைய API இல் OPD எண், காத்திருப்பு நேரம், QR இல்லை. இந்தக் குறிப்பு வரிசை எண் அல்ல.",
+    _ =>
+      "OPD token, estimated wait and QR code are unavailable in the current API. This reference is not a queue token.",
+  };
+  String get consentRecorded => switch (localeName) {
+    'hi' => "देखभाल की सहमति दर्ज हुई",
+    'pa' => "ਦੇਖਭਾਲ ਦੀ ਸਹਿਮਤੀ ਦਰਜ ਹੋਈ",
+    'ta' => "பராமரிப்பு ஒப்புதல் பதிவானது",
+    _ => "Care consent recorded",
+  };
+  String get resetCountdown => switch (localeName) {
+    'hi' => "निष्क्रियता पर रीसेट (सेकंड)",
+    'pa' => "ਨਿਸ਼ਕਿਰਿਆ ਹੋਣ ਤੇ ਰੀਸੈੱਟ (ਸਕਿੰਟ)",
+    'ta' => "செயல்பாடின்றி மீட்டமைப்பு (வினாடிகள்)",
+    _ => "Automatic reset after inactivity (seconds)",
+  };
+  String get retryUncertain => switch (localeName) {
+    'hi' =>
+      "परिणाम की पुष्टि नहीं हुई। पुनः प्रयास वही अनुरोध भेजेगा। नया विवरण शुरू करने से पहले कर्मचारी से पूछें।",
+    'pa' =>
+      "ਨਤੀਜੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋਈ। ਮੁੜ ਕੋਸ਼ਿਸ਼ ਉਹੀ ਬੇਨਤੀ ਭੇਜੇਗੀ। ਨਵਾਂ ਵੇਰਵਾ ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਟਾਫ ਨੂੰ ਪੁੱਛੋ।",
+    'ta' =>
+      "முடிவு உறுதியாகவில்லை. மீண்டும் முயல்வது அதே கோரிக்கையை அனுப்பும். புதிய பதிவுக்கு முன் பணியாளரிடம் கேளுங்கள்.",
+    _ =>
+      "The outcome is not confirmed. Retry sends the same request and key. Ask staff before starting another intake.",
+  };
+  String get sessionPrivacy => switch (localeName) {
+    'hi' =>
+      "काल्पनिक विवरण रीसेट तक मेमोरी में रहता है। पूरा होने या रीसेट पर साइन इन मिट जाता है। फोन या ABHA नहीं लिया जाता।",
+    'pa' =>
+      "ਕਾਲਪਨਿਕ ਵੇਰਵੇ ਰੀਸੈੱਟ ਤੱਕ ਮੈਮੋਰੀ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ। ਪੂਰਾ ਹੋਣ ਜਾਂ ਰੀਸੈੱਟ ਤੇ ਸਾਈਨ ਇਨ ਮਿਟਦਾ ਹੈ। ਫ਼ੋਨ ਜਾਂ ABHA ਨਹੀਂ ਲਿਆ ਜਾਂਦਾ।",
+    'ta' =>
+      "கற்பனை விவரங்கள் மீட்டமைப்பு வரை நினைவகத்தில் இருக்கும். முடிவில் அல்லது மீட்டமைப்பில் உள்நுழைவு அழிக்கப்படும். தொலைபேசி அல்லது ABHA சேகரிக்கப்படாது.",
+    _ =>
+      "Synthetic intake stays in memory until reset. Staff sign-in is cleared at completion or reset. No phone or ABHA is collected.",
+  };
 }
 
 AppStrings lookupAppStrings(Locale locale) => AppStrings._(

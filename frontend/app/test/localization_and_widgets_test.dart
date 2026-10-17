@@ -110,11 +110,8 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(const Key('continue')));
         await tester.pumpAndSettle();
-        await tester.scrollUntilVisible(
-          find.text(labels.unavailableTitle),
-          300,
-        );
-        expect(find.text(labels.unavailableTitle), findsOneWidget);
+
+        expect(find.text(labels.staffTitle), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
