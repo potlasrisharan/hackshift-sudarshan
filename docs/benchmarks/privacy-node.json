@@ -1,0 +1,16 @@
+{
+  "synthetic": true,
+  "cognee": "1.6.5",
+  "storage": "Local isolated directory (not uploaded)",
+  "graph": "ladybug",
+  "vectors": "lancedb",
+  "metadata": "sqlite",
+  "llm": "aya-expanse:8b",
+  "embedding": "nomic-embed-text:latest",
+  "elapsedSeconds": 108.714,
+  "blockedPythonConnections": 0,
+  "networkProof": "Python socket guard only; not system-wide egress proof",
+  "recall": [
+    "The systolic blood pressure readings recorded for Sunita were:\n- 124 mmHg\n- 128 mmHg"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "In-process Hono health-handler concurrency only; NOT k6 or end-to-end HTTP/database load",
+  "concurrency": 5,
+  "requests": 298805,
+  "failures": 0,
+  "elapsedMs": 3055.60175,
+  "p50Ms": 0.04370799999992414,
+  "p95Ms": 0.05262499999980719,
+  "requestsPerSecond": 97789.2488770829
+}

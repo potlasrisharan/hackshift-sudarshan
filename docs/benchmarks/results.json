@@ -1,0 +1,43 @@
+{
+  "seed": 26047,
+  "cases": 500,
+  "generatedAt": "2026-10-17T10:34:15.718Z",
+  "runtime": "v20.20.1",
+  "durationMs": 145.51941699999998,
+  "allocation": {
+    "oursUnsafe": 0,
+    "baselineUnsafe": 276,
+    "oursMeanPaise": 7892.599999999998,
+    "baselineMeanPaise": 5106.12
+  },
+  "drift": {
+    "oursDetected": 250,
+    "baselineDetected": 0,
+    "oursFalseAlerts": 4,
+    "baselineFalseAlerts": 0
+  },
+  "latency": [
+    {
+      "algorithm": "sentinel",
+      "meanMs": 0.0068121249999999805
+    },
+    {
+      "algorithm": "rxToShelf",
+      "meanMs": 0.011771584000000019
+    },
+    {
+      "algorithm": "driftRadar",
+      "meanMs": 0.033004334
+    },
+    {
+      "algorithm": "threadPulse",
+      "meanMs": 0.03997979099999998
+    }
+  ],
+  "limitations": [
+    "Hand-constructed adversarial allocation cases: cheapest-only baseline ignores safety; not a real pharmacy comparison.",
+    "Noise/ramp parameters favour a baseline-adaptive detector; not calibrated or clinically validated.",
+    "No independent clinical dataset; no claim about real-world sensitivity or safety.",
+    "Cycle modelling, full BOCPD, calibrated Sentinel confidence and refill-time estimation remain pending."
+  ]
+}

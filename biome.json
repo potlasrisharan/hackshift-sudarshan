@@ -1,7 +1,27 @@
 {
- "$schema":"https://biomejs.dev/schemas/2.3.0/schema.json",
- "files":{"includes":["apps/**","packages/**","tests/**","scripts/**"]},
- "formatter":{"indentStyle":"space","indentWidth":2},
- "linter":{"enabled":true,"rules":{"recommended":true}},
- "javascript":{"formatter":{"quoteStyle":"double"}}
+  "$schema": "https://biomejs.dev/schemas/2.3.0/schema.json",
+  "files": {
+    "includes": [
+      "apps/**",
+      "packages/**",
+      "tests/**",
+      "scripts/**",
+      "services/lang-gateway/**"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  }
 }
