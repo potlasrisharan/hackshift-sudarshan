@@ -83,12 +83,28 @@ export function createApp(
     c.set("requestId", id);
     c.header("X-Request-Id", id);
     if (c.req.path.startsWith("/api")) c.header("Cache-Control", "no-store");
+    const origin = c.req.header("origin");
+    const reqOrigin = requestOrigin(c.req.raw, options.trustedProxy ?? false);
+    const isAllowedOrigin = Boolean(
+      origin &&
+        (origin === reqOrigin ||
+          origin.endsWith(".pages.dev") ||
+          origin.includes("localhost") ||
+          origin.includes("127.0.0.1")),
+    );
+    if (origin && isAllowedOrigin) {
+      c.header("Access-Control-Allow-Origin", origin);
+      c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      c.header(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization, X-Request-Id",
+      );
+    }
+    if (c.req.method === "OPTIONS") {
+      return c.body(null, 204);
+    }
     if (c.req.method !== "GET" && c.req.method !== "HEAD") {
-      const origin = c.req.header("origin");
-      if (
-        origin &&
-        origin !== requestOrigin(c.req.raw, options.trustedProxy ?? false)
-      )
+      if (origin && !isAllowedOrigin)
         throw new HTTPException(403, {
           message: "Cross-origin writes are disabled",
         });

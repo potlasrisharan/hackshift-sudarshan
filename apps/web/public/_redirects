@@ -1,0 +1,3 @@
+/api/*  https://dhaaga-api.potlasrisharanchowdary.workers.dev/api/:splat  200
+/healthz  https://dhaaga-api.potlasrisharanchowdary.workers.dev/healthz  200
+/*  /index.html  200

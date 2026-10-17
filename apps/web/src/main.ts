@@ -60,12 +60,20 @@ const nav = [
   { id: "privacy", key: "privacy", icon: "◇" },
   { id: "lab", key: "lab", icon: "⌘" },
 ] as const;
+const API_BASE =
+  import.meta.env.VITE_API_BASE ??
+  (typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1")
+    ? "/api/v1"
+    : "https://dhaaga-api.potlasrisharanchowdary.workers.dev/api/v1");
+
 async function api(
   path: string,
   method = "GET",
   data?: unknown,
 ): Promise<unknown> {
-  const response = await fetch(`/api/v1${path}`, {
+  const response = await fetch(`${API_BASE}${path}`, {
     method,
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
