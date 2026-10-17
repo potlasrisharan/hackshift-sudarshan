@@ -238,7 +238,7 @@ function render() {
   const isPatientPage = nav.some((n) => n.id === currentHash);
   if (!isPatientPage) {
     app.innerHTML = landingMarkup({
-      patient: "#today",
+      patient: "#begin",
       clinician: "/erp.html#/app?view=doctor-consultation",
       emergency: "/erp.html#/app?view=emergency-triage",
       headquarters: "/erp.html#/app?view=admin",
