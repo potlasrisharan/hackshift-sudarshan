@@ -76,7 +76,8 @@ AsyncNotifier. Preferences use a synchronous generated Notifier for local UI
 settings, with immutable values and no `setState` business logic.
 
 Four Noto font families and their SIL Open Font Licenses are bundled in
-`assets/fonts/`; no runtime Google Fonts request is made. Source:
+`assets/fonts/`; no runtime Google Fonts request is made. Noto Sans is also registered under
+Flutter Web's default Roboto family so the engine's fallback stays local. Source:
 https://github.com/google/fonts/tree/main/ofl
 Translations are draft interface translations and need native-speaker review.
 AAA claims are limited to tested Elder Mode foreground/background text pairs;

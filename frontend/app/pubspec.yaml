@@ -29,6 +29,10 @@ flutter:
   generate: false
   uses-material-design: true
   fonts:
+    # Flutter Web default fallback uses the same bundled upright font.
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/NotoSans.ttf
     - family: NotoSans
       fonts:
         - asset: assets/fonts/NotoSans.ttf
