@@ -20,6 +20,7 @@
   <a href="#-the-4-core-modules">Core Modules</a> •
   <a href="#-the-deterministic-algorithms">Algorithms</a> •
   <a href="#-specialized-clinical-intelligence">HER & Vitalis</a> •
+  <a href="#-cbc-research-model-api">CBC Model API</a> •
   <a href="#-client-applications">Client Apps</a> •
   <a href="#-security-privacy--dpdp-compliance">Privacy & Security</a> •
   <a href="#-benchmarks--performance">Benchmarks</a> •
@@ -199,6 +200,67 @@ Integrated under `/api/v1/vitalis` and `packages/engine/vitalis/`:
 
 ---
 
+## 🧪 CBC Research Model API
+
+The trained CBC model is maintained in [`model-api/`](model-api/README.md) as an
+**optional, separately deployed Python inference service**. The main application
+continues to use Cloudflare. Its frontend and backend do **not** call this model
+yet; application integration is a separate task. This service does not replace
+the platform's deterministic clinical engines.
+
+| Item | Details |
+| --- | --- |
+| Hosted API | [rohan-cbc-model-api.onrender.com](https://rohan-cbc-model-api.onrender.com) |
+| Interactive API docs | [/docs](https://rohan-cbc-model-api.onrender.com/docs) |
+| Health check | [GET /health](https://rohan-cbc-model-api.onrender.com/health) |
+| Prediction | `POST /predict` with a JSON body |
+| Model | Frozen India-only logistic regression pipeline, version `india-cbc-logistic-c87ec8485159` |
+| Source branch | `codex/add-model-api`, pending [PR #4](https://github.com/potlasrisharan/hackshift-sudarshan/pull/4) |
+| Hosting | Render Free in Singapore; Python 3.12.12; service root `model-api/` |
+
+**Inputs:** WBC in 10^9/L, RBC in 10^12/L, and neutrophil, lymphocyte and monocyte
+percentages. The service rounds differential percentages consistently, calculates
+NLR and LMR, then applies the saved imputation, scaling and logistic regression.
+It performs inference only; requests do not upload a dataset or retrain the model.
+
+Example request using a published sample record:
+
+```bash
+curl -X POST https://rohan-cbc-model-api.onrender.com/predict \
+  -H "Content-Type: application/json" \
+  -d '{"wbc":8.95,"rbc":4.41,"neutrophils":65,"lymphocytes":25,"monocytes":9}'
+```
+
+The verified sample score is **0.6528833817519397**, with research cutoff
+**0.626816175626443**. Responses include `model_version`, `score`, `cutoff`,
+`above_cutoff`, `undefined_ratios_imputed` and `research_only`. Invalid inputs
+return HTTP 422. This example verifies serving consistency, not clinical accuracy.
+
+**Research limits:** the model was refitted on an Indian development cohort of
+752 published records with reconstructed case/control labels. Internal nested
+cross-validation yielded AUC **0.713**, accuracy **63.2%**, sensitivity **35.9%**
+and specificity **90.4%**. These metrics do not independently validate the final
+refitted model. Hospital-source differences, label reconstruction and measurement
+precision limit interpretation; haemoglobin was excluded because source units
+were uncertain. Scores are **not calibrated cancer probabilities**, and outputs
+are **not diagnoses or screening recommendations**. See the
+[source study](https://www.nature.com/articles/s41598-023-27548-w).
+
+No patient-level datasets, identifiers, credentials or training jobs are included
+in `model-api/`. Use published sample measurements for the hackathon. The API
+currently has no built-in authentication or application-level rate limiter;
+future integration must respect the shared backend's consent and tenant controls.
+Direct browser calls require the frontend origin to be added to `ALLOWED_ORIGINS`.
+Backend-to-backend calls do not require CORS.
+
+Free instances sleep after 15 minutes without traffic; a request after inactivity
+can take about a minute. Open `/health` before presenting and handle loading and
+failure states in a future client. See the [service README](model-api/README.md)
+for local setup, tests, deployment settings and model identity. After PR #4 is
+merged, switch Render's deployment branch to `main`; its public URL can stay the same.
+
+---
+
 ## 📱 Client Applications
 
 ### 1. Flutter Patient Kiosk & Tablet (`frontend/app`)
@@ -305,6 +367,11 @@ hackshift-sudarshan/
 │   │   ├── lib/core/           # Theme, routing (GoRouter), API client, constants
 │   │   └── lib/features/       # Triage, Kiosk, HER, Vitalis, Reminders (Riverpod)
 │   └── website/                # 💻 React Clinician & Admin Portal (Vite + Tailwind)
+├── model-api/                  # Optional frozen CBC research API hosted on Render
+│   ├── api/main.py             # FastAPI health, schema and prediction endpoints
+│   ├── inference.py            # Shared CBC preprocessing and frozen inference
+│   ├── bundle/                 # Fitted model and checksum configuration only
+│   └── tests/                  # Artifact identity and API regression checks
 ├── packages/
 │   ├── engine/                 # 🧠 Pure TS Deterministic Algorithms (Zero Deps)
 │   │   ├── index.ts            # Sentinel, Rx-to-Shelf, DriftRadar, ThreadPulse
@@ -331,6 +398,7 @@ hackshift-sudarshan/
 * **Node.js:** `>= 22.13.0`
 * **npm:** `>= 10.0.0`
 * **Flutter:** `>= 3.35.0` *(for kiosk app)*
+* **Python:** `3.12.12` *(optional, only for running or testing `model-api/` locally)*
 * **Docker:** *(Optional, for containerized deployment)*
 
 ### 1. One-Command Demo
