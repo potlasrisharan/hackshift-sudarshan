@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState } from 'react';
 import { VoiceInput } from './VoiceInput';
 import { ArrowLeft, Volume2, VolumeX, ShieldCheck, Accessibility } from 'lucide-react';
 import { jsPDF } from 'jspdf';
@@ -574,14 +574,13 @@ const I18N: Record<string, Record<string, string>> = {
   }
 };
 
-export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps) {
+export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: PatientKioskProps) {
   // Start on Screen 0: Language Selection
   const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
   const [currentLanguage, setCurrentLanguage] = useState<string>('hi-IN');
   const [isVoiceActive, setIsVoiceActive] = useState<boolean>(true);
   const [authMethod, setAuthMethod] = useState<'qr' | 'mobile' | 'abha' | 'aadhaar' | 'register'>('qr');
   const [intakeMode, setIntakeMode] = useState<'voice' | 'type'>('voice');
-  const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isHighContrast, setIsHighContrast] = useState<boolean>(false);
   const [fontSizeLevel, setFontSizeLevel] = useState<number>(0);
   const [isFooterVisible, setIsFooterVisible] = useState<boolean>(true);
@@ -630,7 +629,6 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
   ]);
 
   const dict = I18N[currentLanguage] || I18N['en-IN'];
-  const recognitionRef = useRef<any>(null);
 
   // Audio speech synthesis helper
   const speakText = (text: string) => {
@@ -754,54 +752,6 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
     speakText(native);
   };
 
-  // Mic speech toggle
-  const toggleMic = () => {
-    const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRec) {
-      setShowVoiceModal(true);
-      return;
-    }
-
-    if (isRecording) {
-      if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch (e) {}
-      }
-      setIsRecording(false);
-      return;
-    }
-
-    try {
-      const rec = new SpeechRec();
-      rec.continuous = false;
-      rec.interimResults = true;
-      rec.lang = currentLanguage;
-      rec.onstart = () => setIsRecording(true);
-      rec.onresult = (e: any) => {
-        let transcript = '';
-        for (let i = e.resultIndex; i < e.results.length; ++i) {
-          transcript += e.results[i][0].transcript;
-        }
-        if (transcript) {
-          setTypedSymptom(transcript);
-          setCurrentPatient(prev => ({
-            ...prev,
-            selectedSymptom: transcript,
-            englishTranslation: transcript
-          }));
-        }
-      };
-      rec.onerror = () => {
-        setIsRecording(false);
-        setShowVoiceModal(true);
-      };
-      rec.onend = () => setIsRecording(false);
-      recognitionRef.current = rec;
-      rec.start();
-    } catch (e) {
-      setIsRecording(false);
-      setShowVoiceModal(true);
-    }
-  };
 
   // Generate Token & Register Encounter
   const handleGenerateToken = async () => {

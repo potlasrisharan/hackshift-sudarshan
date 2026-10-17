@@ -118,26 +118,70 @@ class PortalSelectionScreen extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.hub_rounded, color: AppColors.primaryLight, size: 28),
-              SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  AppStrings.appName,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        "assets/images/ayusetu_logo.png",
+                        height: 24,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Flexible(
+                      child: Text(
+                        AppStrings.appName,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.primaryLight.withValues(alpha: 0.3)),
+                ),
+                child: const Text(
+                  "v1.0",
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
-                    letterSpacing: 0.5,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryLight,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 6),
-          Text(
+          const SizedBox(height: 14),
+          const Text(
             AppStrings.tagline,
             style: TextStyle(
               fontSize: 13,

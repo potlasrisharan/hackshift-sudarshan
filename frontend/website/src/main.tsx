@@ -93,9 +93,11 @@ function Login({
     <div className="login-page">
       <section className="login-story">
         <div className="wordmark">
-          <span className="ds-wordmark">
-            Ayu<span lang="hi">सेतु</span>
-          </span>
+          <img
+            src="/assets/ayusetu_logo.png"
+            alt="AyuSetu Healthcare"
+            style={{ height: "48px", width: "auto", objectFit: "contain" }}
+          />
         </div>
         <div>
           <p className="eyebrow">CARE THAT STAYS CONNECTED</p>
@@ -799,9 +801,11 @@ function App() {
     <div className={`workspace ${navOpen ? "nav-open" : ""}`}>
       <aside className="sidebar">
         <a href="#/clinician" className="wordmark">
-          <span className="ds-wordmark">
-            Ayu<span lang="hi">सेतु</span>
-          </span>
+          <img
+            src="/assets/ayusetu_logo.png"
+            alt="AyuSetu Healthcare"
+            style={{ height: "32px", width: "auto", objectFit: "contain" }}
+          />
         </a>
         <div className="clinic-label">
           <span className="clinic-avatar">
@@ -844,7 +848,7 @@ function App() {
           </span>
           <div>
             <strong>{session.principal.userId}</strong>
-            <small>{session.principal.role.replaceAll("_", " ")}</small>
+            <small>{session.principal.role.replace(/_/g, " ")}</small>
           </div>
           <button
             type="button"

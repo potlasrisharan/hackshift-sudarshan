@@ -166,7 +166,14 @@ export function LoginPage() {
 
             <div className="w-full max-w-6xl mx-auto space-y-8 z-10 my-auto py-8">
                 {/* Header */}
-                <div className="text-center space-y-3 max-w-2xl mx-auto">
+                <div className="text-center space-y-4 max-w-2xl mx-auto">
+                    <div className="flex justify-center mb-2">
+                        <img
+                            src="/assets/ayusetu_logo.png"
+                            alt="AyuSetu Healthcare"
+                            className="h-12 w-auto object-contain"
+                        />
+                    </div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-full text-blue-800 text-xs font-black tracking-wide shadow-xs">
                         <Zap className="w-3.5 h-3.5 text-blue-600 fill-blue-600" />
                         <span>ZERO PASSWORD REQUIREMENT • 1-CLICK INSTANT ENTRY</span>

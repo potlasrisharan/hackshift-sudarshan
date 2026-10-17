@@ -183,21 +183,21 @@ export function AppLayout({
                 transform transition-transform duration-300 ease-in-out
                 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                <div className="p-6 border-b border-slate-200 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isClinicPortal ? 'bg-blue-600' : 'bg-indigo-600'}`}>
-                            <SymbolIcon className="material-symbols-outlined text-white text-xl">
-                                {isClinicPortal ? 'local_hospital' : 'domain'}
-                            </SymbolIcon>
-                        </div>
-                        <div className="flex flex-col min-w-0 ayu-sidebar-brand">
-                            <span className="font-bold text-sm tracking-tight truncate max-w-[150px]">
-                                <span className="ds-wordmark" title={getBrandName()}>Ayu<span lang="hi">सेतु</span></span>
-                            </span>
-                            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold truncate">
-                                {isClinicalPortal ? 'Clinical workspace' : isClinicPortal ? 'Clinic operations' : 'Headquarters'}
-                            </span>
-                        </div>
+                <div className="p-4 border-b border-slate-200 flex justify-between items-center">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        <img
+                            src="/assets/ayusetu_logo.png"
+                            alt="AyuSetu"
+                            title={getBrandName()}
+                            className={`${isCollapsed ? 'h-7' : 'h-8'} w-auto object-contain shrink-0`}
+                        />
+                        {!isCollapsed && (
+                            <div className="flex flex-col min-w-0 ayu-sidebar-brand">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold truncate">
+                                    {isClinicalPortal ? 'Clinical workspace' : isClinicPortal ? 'Clinic operations' : 'Headquarters'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                     <button className="lg:hidden text-slate-500" onClick={() => setIsMobileMenuOpen(false)}>
                         <SymbolIcon className="material-symbols-outlined">close</SymbolIcon>

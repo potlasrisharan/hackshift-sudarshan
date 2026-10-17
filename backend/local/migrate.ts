@@ -64,10 +64,15 @@ export function splitSqlScript(sql: string): string[] {
   return statements;
 }
 export function migrationScripts() {
-  return readdirSync("backend/migrations")
-    .filter((name) => /^\d+.*\.sql$/.test(name))
-    .sort()
-    .map((name) => readFileSync(join("backend/migrations", name), "utf8"));
+  const canonical = [
+    "0001_intake.sql",
+    "0002_pharmacy.sql",
+    "0002_ayusetu_her.sql",
+    "0003_ayusetu_vitalis.sql",
+  ];
+  return canonical.map((name) =>
+    readFileSync(join("backend/migrations", name), "utf8"),
+  );
 }
 export function migrateLocal(db: LocalDatabase) {
   // Current scripts are additive/idempotent. Keep the schema files in order.

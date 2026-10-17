@@ -99,6 +99,21 @@ class AppScaffoldShell extends StatelessWidget {
         ),
         actions: actions ??
             [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Image.asset(
+                    "assets/images/ayusetu_logo.png",
+                    height: 22,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
               IconButton(
                 icon: const Icon(Icons.apps_rounded, color: AppColors.textSecondary),
                 tooltip: "Portals",

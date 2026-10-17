@@ -77,10 +77,11 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
-              <SymbolIcon className="material-symbols-outlined text-white text-xl">local_hospital</SymbolIcon>
-            </div>
-            <span className="text-2xl font-extrabold tracking-tight text-slate-900">Aarogya Nidhi</span>
+            <img
+              src="/assets/ayusetu_logo.png"
+              alt="AyuSetu Healthcare"
+              className="h-9 md:h-10 w-auto object-contain"
+            />
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">

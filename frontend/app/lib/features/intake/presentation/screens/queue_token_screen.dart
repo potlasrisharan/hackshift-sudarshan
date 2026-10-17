@@ -24,6 +24,26 @@ class QueueTokenScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          "assets/images/ayusetu_logo.png",
+                          height: 32,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                       const Icon(Icons.check_circle, color: AppColors.success, size: 64),
                       const SizedBox(height: 16),
                       const Text(

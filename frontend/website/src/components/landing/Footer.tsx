@@ -10,10 +10,11 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-12 mb-16">
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white rounded-sm transform rotate-45"></div>
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-slate-900">Aarogya Nidhi</span>
+              <img
+                src="/assets/ayusetu_logo.png"
+                alt="AyuSetu Healthcare"
+                className="h-9 w-auto object-contain"
+              />
             </Link>
             <p className="text-slate-600 max-w-xs mb-8 leading-relaxed">
               Revolutionizing healthcare management through integrated technology. Empowering providers, improving lives.

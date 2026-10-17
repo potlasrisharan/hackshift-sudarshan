@@ -155,12 +155,17 @@ export function createIntegrationApp() {
   });
   integrationApp.use("/api/*", bodyLimit({ maxSize: 32000 }));
   integrationApp.onError((error, c) => {
-    const status =
-      error instanceof z.ZodError
-        ? 422
-        : error instanceof HTTPException
-          ? error.status
-          : 500;
+    const isZod =
+      error instanceof z.ZodError ||
+      (error as { name?: string })?.name === "ZodError";
+    const status = isZod
+      ? 422
+      : error instanceof HTTPException
+        ? error.status
+        : 500;
+    if (status === 500) {
+      console.error("[INTEGRATION ERROR]", error);
+    }
     return c.json(
       {
         error: {
