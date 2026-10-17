@@ -64,7 +64,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist/web --project-name=dhaaga-web --branch=main --commit-dirty=true
+          command: pages deploy dist/web --project-name=ayuseva --branch=main --commit-dirty=true
       - name: Deploy Backend to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
