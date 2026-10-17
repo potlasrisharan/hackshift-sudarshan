@@ -1,87 +1,90 @@
+import { gsap } from "gsap";
 import {
+  createElement,
   type ElementType,
   type ReactNode,
-  createElement,
   useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
-} from 'react';
-import { gsap } from 'gsap';
-import './TextType.css';
+} from "react";
+import "./TextType.css";
 
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const NEIGHBORS: Record<string, string> = {
-  a: 'qwsz',
-  b: 'vghn',
-  c: 'xdfv',
-  d: 'serfcx',
-  e: 'wsdr',
-  f: 'drtgvc',
-  g: 'ftyhbv',
-  h: 'gyujnb',
-  i: 'ujko',
-  j: 'huikmn',
-  k: 'jiolm',
-  l: 'kop',
-  m: 'njk',
-  n: 'bhjm',
-  o: 'iklp',
-  p: 'ol',
-  q: 'wa',
-  r: 'edft',
-  s: 'awedxz',
-  t: 'rfgy',
-  u: 'yhji',
-  v: 'cfgb',
-  w: 'qase',
-  x: 'zsdc',
-  y: 'tghu',
-  z: 'asx',
-  0: '9p',
-  1: '2q',
-  2: '13w',
-  3: '24e',
-  4: '35r',
-  5: '46t',
-  6: '57y',
-  7: '68u',
-  8: '79i',
-  9: '80o',
+  a: "qwsz",
+  b: "vghn",
+  c: "xdfv",
+  d: "serfcx",
+  e: "wsdr",
+  f: "drtgvc",
+  g: "ftyhbv",
+  h: "gyujnb",
+  i: "ujko",
+  j: "huikmn",
+  k: "jiolm",
+  l: "kop",
+  m: "njk",
+  n: "bhjm",
+  o: "iklp",
+  p: "ol",
+  q: "wa",
+  r: "edft",
+  s: "awedxz",
+  t: "rfgy",
+  u: "yhji",
+  v: "cfgb",
+  w: "qase",
+  x: "zsdc",
+  y: "tghu",
+  z: "asx",
+  0: "9p",
+  1: "2q",
+  2: "13w",
+  3: "24e",
+  4: "35r",
+  5: "46t",
+  6: "57y",
+  7: "68u",
+  8: "79i",
+  9: "80o",
 };
 
 const EFFECTS = {
   fade: {
     keyframes: [{ opacity: 0 }, { opacity: 1 }],
-    options: { duration: 360, easing: 'cubic-bezier(0.25, 1, 0.5, 1)' },
+    options: { duration: 360, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
   },
   blur: {
     keyframes: [
-      { opacity: 0, filter: 'blur(0.3em)' },
-      { opacity: 1, filter: 'blur(0em)' },
+      { opacity: 0, filter: "blur(0.3em)" },
+      { opacity: 1, filter: "blur(0em)" },
     ],
-    options: { duration: 520, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    options: { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
   },
   rise: {
     keyframes: [
-      { opacity: 0, top: '0.6em' },
-      { opacity: 1, top: '0em' },
+      { opacity: 0, top: "0.6em" },
+      { opacity: 1, top: "0em" },
     ],
-    options: { duration: 480, easing: 'cubic-bezier(0.34, 1.4, 0.64, 1)' },
+    options: { duration: 480, easing: "cubic-bezier(0.34, 1.4, 0.64, 1)" },
   },
 } as const;
 
 const graphemes = (value: string): string[] => {
-  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
-    const segmenter = new (Intl as unknown as {
-      Segmenter: new (
-        locale: undefined,
-        options: { granularity: string },
-      ) => { segment: (val: string) => Iterable<{ segment: string }> };
-    }).Segmenter(undefined, { granularity: 'grapheme' });
+  if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
+    const segmenter = new (
+      Intl as unknown as {
+        Segmenter: new (
+          locale: undefined,
+          options: { granularity: string },
+        ) => { segment: (val: string) => Iterable<{ segment: string }> };
+      }
+    ).Segmenter(undefined, { granularity: "grapheme" });
     return Array.from(segmenter.segment(value), (part) => part.segment);
   }
   return Array.from(value);
@@ -102,18 +105,18 @@ export interface TextTypeProps {
   initialDelay?: number;
   pauseDuration?: number;
   deletingSpeed?: number;
-  deleteMode?: 'backspace' | 'select';
+  deleteMode?: "backspace" | "select";
   loop?: boolean;
   className?: string;
   showCursor?: boolean;
   hideCursorWhileTyping?: boolean;
-  cursorStyle?: 'character' | 'bar' | 'block' | 'underscore';
+  cursorStyle?: "character" | "bar" | "block" | "underscore";
   cursorCharacter?: string | ReactNode;
   cursorColor?: string;
   cursorClassName?: string;
   cursorBlinkDuration?: number;
   cursorGlide?: boolean;
-  typeEffect?: 'none' | 'fade' | 'blur' | 'rise';
+  typeEffect?: "none" | "fade" | "blur" | "rise";
   mistakes?: number;
   prefix?: string;
   prefixColor?: string;
@@ -133,26 +136,26 @@ interface TypoState {
 
 const TextType = ({
   text,
-  as: Component = 'div',
+  as: Component = "div",
   typingSpeed = 50,
   initialDelay = 0,
   pauseDuration = 2000,
   deletingSpeed = 30,
-  deleteMode = 'backspace',
+  deleteMode = "backspace",
   loop = true,
-  className = '',
+  className = "",
   showCursor = true,
   hideCursorWhileTyping = false,
-  cursorStyle = 'character',
-  cursorCharacter = '|',
-  cursorColor = 'currentColor',
-  cursorClassName = '',
+  cursorStyle = "character",
+  cursorCharacter = "|",
+  cursorColor = "currentColor",
+  cursorClassName = "",
   cursorBlinkDuration = 0.5,
   cursorGlide = true,
-  typeEffect = 'none',
+  typeEffect = "none",
   mistakes = 0,
-  prefix = '',
-  prefixColor = 'currentColor',
+  prefix = "",
+  prefixColor = "currentColor",
   textColors = [],
   variableSpeed,
   onSentenceComplete,
@@ -178,10 +181,12 @@ const TextType = ({
   const lastTypo = useRef(-1);
   const onSentenceCompleteRef = useRef(onSentenceComplete);
 
-  const textKey = Array.isArray(text) ? text.join('\u0000') : String(text ?? '');
-  const textArray = useMemo(() => textKey.split('\u0000'), [textKey]);
+  const textKey = Array.isArray(text)
+    ? text.join("\u0000")
+    : String(text ?? "");
+  const textArray = useMemo(() => textKey.split("\u0000"), [textKey]);
   const index = textIndex % textArray.length;
-  const currentText = textArray[index] ?? '';
+  const currentText = textArray[index] ?? "";
   const chars = useMemo(() => graphemes(currentText), [currentText]);
   const total = chars.length;
   const shown = Math.min(count, total);
@@ -195,11 +200,11 @@ const TextType = ({
   }, [onSentenceComplete]);
 
   useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReduceMotion(query.matches);
     update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
@@ -229,10 +234,10 @@ const TextType = ({
     const fade = cursorBlinkDuration * 0.45;
     const timeline = gsap.timeline({ repeat: -1 });
     timeline
-      .to(blink, { opacity: 0, duration: fade, ease: 'sine.inOut' }, hold)
+      .to(blink, { opacity: 0, duration: fade, ease: "sine.inOut" }, hold)
       .to(
         blink,
-        { opacity: 1, duration: fade, ease: 'sine.inOut' },
+        { opacity: 1, duration: fade, ease: "sine.inOut" },
         hold + fade + cursorBlinkDuration * 0.4,
       );
     blinkTimeline.current = timeline;
@@ -258,14 +263,27 @@ const TextType = ({
       const x = caret.offsetLeft;
       const y = caret.offsetTop;
       const last = caretPosition.current;
-      if (last && Math.abs(last.x - x) < 0.5 && Math.abs(last.y - y) < 0.5) return;
+      if (last && Math.abs(last.x - x) < 0.5 && Math.abs(last.y - y) < 0.5)
+        return;
       caretPosition.current = { x, y };
 
-      if (instant || !last || !cursorGlide || reduceMotion || Math.abs(last.y - y) > 1) {
+      if (
+        instant ||
+        !last ||
+        !cursorGlide ||
+        reduceMotion ||
+        Math.abs(last.y - y) > 1
+      ) {
         gsap.killTweensOf(cursor);
         gsap.set(cursor, { x, y });
       } else {
-        gsap.to(cursor, { x, y, duration: glideTime, ease: 'power3.out', overwrite: true });
+        gsap.to(cursor, {
+          x,
+          y,
+          duration: glideTime,
+          ease: "power3.out",
+          overwrite: true,
+        });
       }
 
       const timeline = blinkTimeline.current;
@@ -273,7 +291,7 @@ const TextType = ({
       if (instant || !timeline || !blink) return;
       timeline.pause();
       blinkResume.current?.kill();
-      gsap.to(blink, { opacity: 1, duration: 0.12, ease: 'power1.out' });
+      gsap.to(blink, { opacity: 1, duration: 0.12, ease: "power1.out" });
       blinkResume.current = gsap.delayedCall(0.12, () => timeline.restart());
     };
     placeCursor.current(false);
@@ -281,11 +299,11 @@ const TextType = ({
 
   useEffect(() => {
     const node = containerRef.current;
-    if (!node || typeof ResizeObserver === 'undefined') return;
+    if (!node || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => placeCursor.current(true));
     observer.observe(node);
     return () => observer.disconnect();
-  }, [Component]);
+  }, []);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -303,10 +321,15 @@ const TextType = ({
         } else if (!typo.fixing) {
           if (typo.tail.length < typo.plan.length) {
             wait(speed(), () =>
-              setTypo({ ...typo, tail: typo.plan.slice(0, typo.tail.length + 1) }),
+              setTypo({
+                ...typo,
+                tail: typo.plan.slice(0, typo.tail.length + 1),
+              }),
             );
           } else {
-            wait(260 + Math.random() * 320, () => setTypo({ ...typo, fixing: true }));
+            wait(260 + Math.random() * 320, () =>
+              setTypo({ ...typo, fixing: true }),
+            );
           }
         } else if (typo.tail.length) {
           wait(Math.max(45, deletingSpeed), () =>
@@ -331,7 +354,9 @@ const TextType = ({
           const plan = [wrong];
           const follow = chars[reverseMode ? next - 1 : next + 1];
           if (follow && follow.trim() && Math.random() < 0.4) plan.push(follow);
-          wait(lead + speed(), () => setTypo({ plan, tail: [wrong], fixing: false }));
+          wait(lead + speed(), () =>
+            setTypo({ plan, tail: [wrong], fixing: false }),
+          );
         } else {
           wait(lead + speed(), () => setCount(shown + 1));
         }
@@ -341,7 +366,7 @@ const TextType = ({
     } else if (shown > 0) {
       if (reduceMotion) {
         wait(0, () => setCount(0));
-      } else if (deleteMode === 'select') {
+      } else if (deleteMode === "select") {
         if (selected < shown) {
           wait(deletingSpeed, () => setSelected(selected + 1));
         } else {
@@ -354,7 +379,7 @@ const TextType = ({
         wait(deletingSpeed, () => setCount(shown - 1));
       }
     } else {
-      const completed = textArray[index] ?? '';
+      const completed = textArray[index] ?? "";
       onSentenceCompleteRef.current?.(completed, index);
       lastTypo.current = -1;
       setSelected(0);
@@ -387,7 +412,12 @@ const TextType = ({
 
   const animateChar = useCallback(
     (node: HTMLSpanElement | null) => {
-      if (!node || typeEffect === 'none' || reduceMotion || typeof node.animate !== 'function')
+      if (
+        !node ||
+        typeEffect === "none" ||
+        reduceMotion ||
+        typeof node.animate !== "function"
+      )
         return;
       const effect = EFFECTS[typeEffect];
       if (!effect) return;
@@ -402,10 +432,13 @@ const TextType = ({
     const isMarked = reverseMode ? i < marked : i >= shown - marked;
     return (
       <span
+        // biome-ignore lint/suspicious/noArrayIndexKey: character slice position
         key={start + i}
         ref={animateChar}
         className={
-          isMarked ? 'text-type__char text-type__char--selected' : 'text-type__char'
+          isMarked
+            ? "text-type__char text-type__char--selected"
+            : "text-type__char"
         }
       >
         {char}
@@ -413,6 +446,7 @@ const TextType = ({
     );
   });
   const mistyped = (typo?.tail ?? []).map((char, i) => (
+    // biome-ignore lint/suspicious/noArrayIndexKey: ephemeral typo index
     <span key={`typo-${i}`} ref={animateChar} className="text-type__char">
       {char}
     </span>
@@ -421,14 +455,18 @@ const TextType = ({
 
   const caret = (
     <span ref={caretRef} className="text-type__caret">
-      {'\u200B'}
+      {"\u200B"}
     </span>
   );
-  const color = textColors.length ? textColors[index % textColors.length] : 'inherit';
+  const color = textColors.length
+    ? textColors[index % textColors.length]
+    : "inherit";
   const typing = shown < total || isDeleting || typo !== null;
   const hideCursor = hideCursorWhileTyping && typing;
   const customCursorColor =
-    cursorColor && cursorColor !== 'currentColor' ? { color: cursorColor } : undefined;
+    cursorColor && cursorColor !== "currentColor"
+      ? { color: cursorColor }
+      : undefined;
 
   return createElement(
     Component,
@@ -437,7 +475,7 @@ const TextType = ({
       className: `text-type ${className}`,
       ...props,
     },
-    <span className="text-type__sr">{prefix + textArray.join(' ')}</span>,
+    <span className="text-type__sr">{prefix + textArray.join(" ")}</span>,
     <span className="text-type__content" aria-hidden="true">
       {prefix ? (
         <span className="text-type__prefix" style={{ color: prefixColor }}>
@@ -455,12 +493,12 @@ const TextType = ({
         ref={cursorRef}
         aria-hidden="true"
         className={`text-type__cursor text-type__cursor--${cursorStyle} ${
-          hideCursor ? 'text-type__cursor--hidden' : ''
+          hideCursor ? "text-type__cursor--hidden" : ""
         } ${cursorClassName}`}
         style={customCursorColor}
       >
         <span ref={blinkRef} className="text-type__blink">
-          {cursorStyle === 'character' ? (
+          {cursorStyle === "character" ? (
             cursorCharacter
           ) : (
             <span className="text-type__shape" />

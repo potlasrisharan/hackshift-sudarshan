@@ -2,6 +2,8 @@ import { equivalent } from "../../../packages/shared/compare";
 import "./style.css";
 import "../../../packages/design/landing.css";
 import "./design-v2.css";
+import { createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
 import { z } from "zod";
 import {
   brandMarkup,
@@ -24,8 +26,6 @@ import {
   demoReadings,
   demoRecord,
 } from "../../../packages/shared/demo";
-import { createElement } from "react";
-import { createRoot, type Root } from "react-dom/client";
 import TextType from "./TextType";
 
 const root = document.querySelector<HTMLDivElement>("#app");
