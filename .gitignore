@@ -1,0 +1,24 @@
+.DS_Store
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite*
+.venv/
+__pycache__/
+.pytest_cache/
+.expo/
+.wrangler/
+coverage/
+test-results/
+playwright-report/
+# Duplicate imports retained locally; canonical originals are hackshift/projects/.
+/HOSPITAL-MANAGEMENT-main/
+/medikiosk-sih2026-main/
+# Historical authenticated tokens and captured logs are not publication assets.
+hackshift/projects/project-1/pentest/
+hackshift/projects/project-1/pentest_result*.txt
+hackshift/projects/project-1/*_output.txt
