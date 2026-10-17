@@ -2,6 +2,40 @@
 
 **Mobile kiosk work resumed on 17 October 2026.** The latest user-approved scope is the phased Flutter kiosk in `frontend/app/`. Phase 1 core is verified; the earlier platform/Expo checkpoint below is historical. See `docs/MOBILE_KIOSK_PHASE1.md` for the current gate and contract gaps.
 
+**Integration implementation resumed on 17 October 2026 at the user's request.**
+The [integration plan](PROJECT_INTEGRATION_PLAN.md) now has an implemented first
+clinical milestone. See the [runbook](INTEGRATION_RUNBOOK.md) for setup and limits.
+
+| New integration work | State | Evidence / next step |
+|---|---|---|
+| React clinic shell | Implemented | `frontend/website`, Project 1-derived structure; routed intake/queue/thread; mobile layout; attribution in PROVENANCE |
+| Canonical contracts/client | Implemented initial scope | Consolidated shared exports; Punjabi retained alongside existing languages; Zod intake/review/session models, typed client and separate integration OpenAPI |
+| Tenant/auth/persistence | Verified local synthetic slice | D1-compatible schema, tenantDb marker binding, persisted hashed opaque sessions, clinic/role checks, logout/expiry/login throttle; production login disabled |
+| Intake → clinician | Verified API slice | Atomic patient/encounter/consent/activity write; replay protection, persisted review note, emergency routine-review protection, consent revoke/read denial |
+| Automated API verification | Passed | 61 total tests including 11 new integration tests; persistence across DB reopen, concurrent retries, batch rollback, tenant/clinic/role denials |
+| Cloudflare runtime | Passed initial smoke | Dry-run Worker bundle and actual local workerd/D1 login → intake → concurrent replay / batch rollback → review → revocation |
+| Browser verification | Passed | Three end-to-end checks: separate nurse/doctor sessions, review reload, revocation, emergency protection, mobile overflow and visible server failures; screenshots inspected |
+| Build/CI | Local checks passed; CI extended | Strict root/backend checks, lint, React build and legacy build; integration build/Worker/browser checks added to CI; legacy Docker image rebuild passed, no remote CI run claimed |
+| Production foundation | Pending | Argon2id/JWT/refresh, provisioning, device/patient sessions, encrypted identifiers and hash-chained audit; local demo currently uses PBKDF2 and plaintext synthetic data |
+| Remaining integration | Pending | Prescriptions, POS/ledger/inventory/procurement, remaining operations, OCR/speech/AYUSH, home/events, Flutter and parity/cutover |
+
+## Current preview checkpoint
+
+At the user's request, the integrated website was rebuilt and started on
+`http://127.0.0.1:8790`; browser sign-in and the clinician queue were inspected.
+The development server is intentionally left running for the user to explore.
+The interrupted phase-4 work added pharmacy contracts, an additive migration and
+an allocation engine. Its unfinished router import was removed from the running
+API; these operations remain unavailable until their service/UI implementation
+and final checks are complete. The build/typechecks pass; no new full test run
+was performed in this preview turn.
+
+No originals were modified; `verify-untouched` passes. The old mock module/DO
+scaffold has been removed from `backend`; unavailable routes now fail explicitly.
+The legacy root demo stays available separately until the new app passes parity.
+
+The remaining table records the earlier checkpoint, not newly verified parity.
+
 This is a checkpoint, not completion of prompts.md. DONE means only the verified
 slice described. TODO work is not disguised as blocked or completed.
 
@@ -52,7 +86,7 @@ Finish native build/device verification and load evidence; publish tested commit
 and inspect actual CI. Then implement durable identity/events/sync and the full
 clinical modules. The full requested Definition of Done remains unmet.
 
-## Resume checkpoint
+## Historical resume checkpoint
 
 Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. Resume only when the user asks.
 
@@ -64,3 +98,5 @@ Last implementation commit before pause: 8834d46. Platform: 50 tests passed, fou
 - Verified: pub get/codegen pass; analyzer 0 issues; 28 unit/widget tests + 1 opt-in live health test pass; current domain/data coverage 97.4%; release Web build passes; archived originals unchanged.
 - Pending: agreed intake/OCR/hash/QR/idempotency schemas, functional intake, encrypted offline sync, kiosk lockdown, APK and tablet verification. Current service is a synthetic demo, not a real-patient backend.
 - Gate: stop after Phase 1 as requested. Full product Definition of Done remains unmet.
+
+Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. This earlier pause was superseded by the current integration request.

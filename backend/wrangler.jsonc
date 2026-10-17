@@ -1,63 +1,18 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "dhaaga-backend",
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "dhaaga-integration",
   "main": "src/index.ts",
-  "compatibility_date": "2024-12-30",
-  "compatibility_flags": ["nodejs_compat"],
-
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "dhaaga-db",
-      "database_id": "local-dhaaga-db",
-      "migrations_dir": "migrations"
-    }
-  ],
-
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "dhaaga-kv"
-    }
-  ],
-
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "dhaaga-files"
-    }
-  ],
-
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "CLINIC_INVENTORY",
-        "class_name": "ClinicInventory"
-      },
-      {
-        "name": "CLINIC_HUB",
-        "class_name": "ClinicHub"
-      },
-      {
-        "name": "TRIAGE_SESSION",
-        "class_name": "TriageSession"
-      },
-      {
-        "name": "ORG_AUDIT",
-        "class_name": "OrgAudit"
-      }
-    ]
+  "compatibility_date": "2026-10-17",
+  "assets": {
+    "directory": "../dist/integration",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
   },
-
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_classes": ["ClinicInventory", "ClinicHub", "TriageSession", "OrgAudit"]
-    }
-  ],
-
-  "vars": {
-    "ENVIRONMENT": "development",
-    "API_VERSION": "v1"
-  }
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "dhaaga-integration",
+    "migrations_dir": "migrations"
+  }],
+  "vars": { "ENVIRONMENT": "production" }
 }

@@ -94,7 +94,10 @@ export function createApp(
     );
     if (origin && isAllowedOrigin) {
       c.header("Access-Control-Allow-Origin", origin);
-      c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      c.header(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS",
+      );
       c.header(
         "Access-Control-Allow-Headers",
         "Content-Type, Authorization, X-Request-Id",
