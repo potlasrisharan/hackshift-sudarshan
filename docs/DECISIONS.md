@@ -45,3 +45,18 @@
     absolute numeric tolerance 1e-10; material numerical differences still fail.
 
 13. **Native toolchain:** exact generated Gradle 9.3.1 is required; newer cached Gradle 9.6 exposed incompatible Kotlin metadata. The pinned NDK download stalled, so a command-line-only local NDK 28 override is being tested. The default Expo NDK remains unchanged. No successful APK is claimed until the artifact is produced and tested.
+
+## Current integration direction — 17 October 2026
+
+The user's new integration request and root AGENTS/PRD govern the new work. Use
+Project 1's React workspace structure for `frontend/website` and incorporate
+Project 2's clinical workflows, followed by its Flutter kiosk as the second
+client. `backend/` is the new persistent Cloudflare integration entrypoint; the
+older `apps/*` synthetic demo remains explicit during migration. Earlier AWS/DOM/
+Expo decisions above describe that older slice, not this target architecture.
+
+The first milestone is staff-assisted synthetic intake and clinician review.
+Use local SQLite for fast durable tests and actual workerd/D1 for runtime checks.
+Opaque hashed sessions and PBKDF2 are explicitly limited to local seeded accounts;
+production login remains disabled pending production auth, encryption and audit.
+No fake service success is mounted while operational/provider modules are pending.

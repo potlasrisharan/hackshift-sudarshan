@@ -8,9 +8,16 @@ before implementation. **Its full Definition of Done is not yet satisfied.** Thi
 repository distinguishes working mechanisms, simulated data, unverified code and
 external blockers; it is not ready for real patient data or clinical deployment.
 
+## New integrated clinic workspace
+
+`npm ci && npm run integration:dev` starts the React intake/clinician milestone
+at http://127.0.0.1:8790 with persistent synthetic records. See the
+[runbook](docs/INTEGRATION_RUNBOOK.md) for local credentials, verification and remaining scope.
+The earlier demo below remains separate until the integration cutover gates pass.
+
 ## Run locally
 
-Node >=20.19, npm and Git:
+Node >=22.13, npm and Git:
 
 ```bash
 make demo
@@ -59,6 +66,9 @@ entry guidance: `/docs`. Existing originals are in `hackshift/projects/`;
 [Pillars](docs/PILLARS.md) · [Deployment](docs/DEPLOYMENT.md) ·
 [Safety/security](docs/COMPLIANCE.md) · [Demo](docs/DEMO_SCRIPT.md) ·
 [Final checkpoint report](docs/FINAL_REPORT.md)
+
+New work: [Project 1 + Project 2 integration implementation plan](docs/PROJECT_INTEGRATION_PLAN.md)
+— frontend selection, shared backend/data design, migration sequence and acceptance gates.
 
 Unknown-provenance local databases, historic authenticated-token test scripts,
 secrets and duplicate import folders are excluded from publication. No live

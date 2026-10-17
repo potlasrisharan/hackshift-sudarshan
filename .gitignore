@@ -35,3 +35,8 @@ apps/mobile/android/app/debug.keystore
 
 apps/mobile/android/app/.cxx/
 apps/mobile/android/.idea/
+
+# Persistent synthetic integration workspace
+.local/
+frontend/app/.dart_tool/
+frontend/app/build/
