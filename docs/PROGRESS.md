@@ -1,6 +1,6 @@
 # Progress — 17 October 2026
 
-**Mobile kiosk work resumed on 17 October 2026.** The latest user-approved scope is the phased Flutter kiosk in `frontend/app/`. Phase 1 core is verified; the earlier platform/Expo checkpoint below is historical. See `docs/MOBILE_KIOSK_PHASE1.md` for the current gate and contract gaps.
+**Mobile kiosk work resumed on 17 October 2026.** The latest user-approved scope is the phased Flutter kiosk in `frontend/app/`. Phase 2 synthetic encounter intake is implemented; the earlier platform/Expo checkpoint below is historical. See `docs/MOBILE_KIOSK_PHASE2.md` for the current gate and contract gaps.
 
 **Integration implementation resumed on 17 October 2026 at the user's request.**
 The [integration plan](PROJECT_INTEGRATION_PLAN.md) now has an implemented first
@@ -88,7 +88,7 @@ clinical modules. The full requested Definition of Done remains unmet.
 
 ## Historical resume checkpoint
 
-Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. Resume only when the user asks.
+Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. This earlier pause was superseded by the resumed integration and mobile work.
 
 
 ## Flutter mobile kiosk — Phase 1 gate
@@ -99,4 +99,10 @@ Last implementation commit before pause: 8834d46. Platform: 50 tests passed, fou
 - Pending: agreed intake/OCR/hash/QR/idempotency schemas, functional intake, encrypted offline sync, kiosk lockdown, APK and tablet verification. Current service is a synthetic demo, not a real-patient backend.
 - Gate: stop after Phase 1 as requested. Full product Definition of Done remains unmet.
 
-Last implementation commit before pause: 8834d46. Platform: 50 tests passed, four browser tests passed, lint/typechecks/build passed. Standalone local Cognee proof and measured k6 health test are saved. Android JavaScript export passed (730 modules, 2.4 MB Hermes bundle); native APK was not produced before cancellation. This earlier pause was superseded by the current integration request.
+
+## Flutter mobile kiosk — Phase 2 gate
+
+- User selected the existing shared synthetic encounter contract; OPD token/wait/QR and phone/ABHA lookup remain explicitly unavailable.
+- Implemented staff sign-in, entered demographics, typed/Android speech complaint, structured safety answers, consent, emergency receipt, idempotent retry and 60-second receipt reset.
+- Flutter: 49 tests pass, strict analyzer zero issues, domain/data coverage 91.1%; independent live health read passes. Existing backend integration: 11 tests pass. See MOBILE_KIOSK_PHASE2.md for browser/build evidence and limits.
+- No hosted backend deployment, Android APK/device verification, OCR, encrypted offline queue or lockdown claimed. Stop at Phase 2 pending the next gate.
