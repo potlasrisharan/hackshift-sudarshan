@@ -472,6 +472,11 @@ export function createIntegrationApp() {
       throw new HTTPException(404, { message: "Active consent unavailable" });
     return c.json({ revoked: true });
   });
+  integrationApp.all("/api/v1/ops/pos/*", () => {
+    throw new HTTPException(501, {
+      message: "This integration capability is not implemented yet",
+    });
+  });
   return integrationApp;
 }
 
