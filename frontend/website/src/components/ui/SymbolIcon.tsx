@@ -22,6 +22,7 @@ import {
   CircleHelp,
   CirclePlus,
   Clock3,
+  Cog,
   CreditCard,
   Download,
   ExternalLink,
@@ -35,6 +36,7 @@ import {
   IndianRupee,
   Info,
   KeyRound,
+  Landmark,
   LayoutDashboard,
   LockKeyhole,
   LogOut,
@@ -69,6 +71,14 @@ import {
 import type { HTMLAttributes, ReactNode } from "react";
 
 const icons = {
+  account_balance: Landmark,
+  shield_person: ShieldCheck,
+  conveyor_belt: Cog,
+  settings: Settings2,
+  account_circle: User,
+  dashboard: LayoutDashboard,
+  monitoring: Activity,
+  receipt_long: FileText,
   add: Plus,
   add_box: CirclePlus,
   add_circle: CirclePlus,
@@ -135,7 +145,6 @@ const icons = {
   print: Printer,
   qr_code_scanner: QrCode,
   receipt: FileText,
-  receipt_long: FileText,
   remove: Minus,
   schedule: Clock3,
   search: Search,

@@ -724,11 +724,11 @@ export function HospitalDashboard({ onSelectClinic }: HospitalDashboardProps) {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto pb-12">
+        <div className="ayu-headquarters space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto pb-12">
             {/* --------------------------------------------------------- */}
             {/* PLATFORM INTEGRITY HUD: Cryptographic Audit & D1 Tenant */}
             {/* --------------------------------------------------------- */}
-            <div className="rounded-2xl p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl border border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="ayu-audit-strip rounded-2xl p-4 bg-emerald-50 border border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-xl">
                         <ShieldCheck className="w-4 h-4 text-emerald-400 animate-pulse" />

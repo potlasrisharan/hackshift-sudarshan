@@ -568,7 +568,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
   }, [emergencies, statusFilter, selectedBayFilter, searchQuery]);
 
   return (
-    <div className={`ayu-emergency min-h-screen transition-colors duration-200 ${
+    <div data-theme={isDark ? "dark" : "light"} className={`ayu-emergency min-h-screen transition-colors duration-200 ${
       isDark ? 'bg-[#0B0F19] text-slate-100' : 'bg-slate-50 text-slate-900'
     } p-3 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto`}>
 
@@ -666,7 +666,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                   <Clock className="w-3.5 h-3.5" /> {currentTime} IST
                 </span>
                 <span>•</span>
-                <span className="text-[#FFA530] font-semibold">Zero-Click Escalation Guarantee</span>
+                <span className="text-[#FFA530] font-semibold">Synthetic emergency scenario</span>
               </p>
             </div>
           </div>
@@ -732,7 +732,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                   Sentinel Deterministic Rule Core
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                  Sub-15ms Triage Guarantee
+                  Local engine benchmark
                 </span>
               </div>
               <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -766,7 +766,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
               }`}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isBenchmarking ? 'animate-spin' : ''}`} />
-              <span>{isBenchmarking ? 'Testing...' : 'Verify <15ms SLA'}</span>
+              <span>{isBenchmarking ? 'Testing...' : 'Run local benchmark'}</span>
             </button>
           </div>
         </div>
@@ -1010,7 +1010,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                       {/* Sub-15ms Sentinel Latency Badge */}
                       <span className="text-[10px] bg-red-500/15 text-red-400 font-mono font-bold px-2.5 py-0.5 rounded-lg border border-red-500/30 flex items-center gap-1">
                         <Zap className="w-3 h-3 text-red-400" />
-                        <span>Sentinel Intercept: {em.detectionLatencyMs}ms (&lt;15ms SLA)</span>
+                        <span>Sentinel Intercept: {em.detectionLatencyMs}ms (synthetic event)</span>
                       </span>
 
                       {/* ESI-1 Resuscitation badge */}

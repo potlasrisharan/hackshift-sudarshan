@@ -955,7 +955,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
       )}
 
       {/* Main Container */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pt-6 pb-36 flex flex-col justify-start">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pt-6 pb-12 flex flex-col justify-start">
 
         {/* =================================================================== */}
         {/* SCREEN 1: LANGUAGE SELECTION */}
@@ -1645,33 +1645,33 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
       )}
 
       {/* 5. Fixed Bottom Bar: 1-Click Demo Patient Credentials */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-[#223D79] text-white border-t-2 border-[#FFA530] shadow-2xl py-2 px-4 z-40 transition-all duration-200">
+      <footer className="ayu-demo-profiles mt-auto py-3 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
           <div className="flex items-center justify-between w-full md:w-auto gap-3">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FFA530] animate-ping" />
               <span className="text-xs font-black tracking-wider text-[#FFA530] uppercase">
-                🔑 Demo Profiles (1-Click Auto-Fill):
+                Try a synthetic patient
               </span>
             </div>
             <button onClick={() => setIsFooterVisible(!isFooterVisible)} className="text-[11px] bg-white/10 hover:bg-white/20 text-[#D9CDBA] px-2 py-0.5 rounded border border-[#D9CDBA]/30">
-              {isFooterVisible ? 'Hide ✕' : 'Show 🔑'}
+              {isFooterVisible ? 'Hide' : 'Show samples'}
             </button>
           </div>
 
           {isFooterVisible && (
             <div className="flex flex-wrap items-center gap-2">
               <button onClick={() => loadDemoPatient('9876543210')} className="bg-[#1a2f5e] hover:bg-[#FFA530] hover:text-[#223D79] text-[#D9CDBA] border border-[#D9CDBA]/30 text-xs font-bold py-1.5 px-3 rounded-lg transition shadow flex items-center gap-1.5">
-                <span>👴 Ramesh Chandra (52M - Knee OA)</span>
+                <span>Ramesh Chandra (52M - Knee OA)</span>
               </button>
               <button onClick={() => loadDemoPatient('9811122334')} className="bg-[#1a2f5e] hover:bg-[#FFA530] hover:text-[#223D79] text-[#D9CDBA] border border-[#D9CDBA]/30 text-xs font-bold py-1.5 px-3 rounded-lg transition shadow flex items-center gap-1.5">
-                <span>👩 Priya Sharma (34F - Acidity)</span>
+                <span>Priya Sharma (34F - Acidity)</span>
               </button>
               <button onClick={() => loadDemoPatient('9777788899')} className="bg-[#1a2f5e] hover:bg-[#FFA530] hover:text-[#223D79] text-[#D9CDBA] border border-[#D9CDBA]/30 text-xs font-bold py-1.5 px-3 rounded-lg transition shadow flex items-center gap-1.5">
-                <span>🚨 Mohan Das (61M - Cardiac Red-Flag)</span>
+                <span>Mohan Das (61M - Cardiac Red-Flag)</span>
               </button>
               <button onClick={() => loadDemoPatient('9123456789')} className="bg-[#1a2f5e] hover:bg-[#FFA530] hover:text-[#223D79] text-[#D9CDBA] border border-[#D9CDBA]/30 text-xs font-bold py-1.5 px-3 rounded-lg transition shadow flex items-center gap-1.5">
-                <span>🆕 Ananya Verma (28F - New ABHA)</span>
+                <span>Ananya Verma (28F - New ABHA)</span>
               </button>
             </div>
           )}

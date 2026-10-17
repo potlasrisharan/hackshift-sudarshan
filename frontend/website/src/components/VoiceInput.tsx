@@ -63,6 +63,13 @@ export function VoiceInput({
   const mounted = useRef(true);
   const generation = useRef(0);
   const replay = useRef<SpeechSynthesisUtterance | null>(null);
+  const stopPlayback = useCallback(() => {
+    if (!replay.current) return;
+    replay.current.onend = null;
+    replay.current.onerror = null;
+    window.speechSynthesis.cancel();
+    replay.current = null;
+  }, []);
   const stopMeter = useCallback(() => {
     const r = resources.current;
     if (r.frame !== undefined) cancelAnimationFrame(r.frame);
@@ -77,11 +84,12 @@ export function VoiceInput({
       mounted.current = false;
       generation.current++;
       recognition.current?.abort();
-      if (replay.current) window.speechSynthesis?.cancel();
+      stopPlayback();
       stopMeter();
     };
-  }, [stopMeter]);
+  }, [stopMeter, stopPlayback]);
   async function begin(resume = false) {
+    stopPlayback();
     const prefix = resume ? text : "";
     const Speech =
       (window as SpeechWindow).SpeechRecognition ??
@@ -189,10 +197,19 @@ export function VoiceInput({
         <button
           type="button"
           className="ayu-voice-orb"
-          aria-label={active ? "Stop voice input" : "Start voice input"}
+          aria-label={
+            state === "speaking"
+              ? "Stop playback"
+              : active
+                ? "Stop voice input"
+                : "Start voice input"
+          }
           disabled={state === "initializing" || state === "processing"}
           onClick={() => {
-            if (active) {
+            if (state === "speaking") {
+              stopPlayback();
+              setState("completed");
+            } else if (active) {
               setState("processing");
               recognition.current?.stop();
               stopMeter();
@@ -257,7 +274,7 @@ export function VoiceInput({
           <button
             type="button"
             onClick={() => {
-              window.speechSynthesis.cancel();
+              stopPlayback();
               const utterance = new SpeechSynthesisUtterance(text);
               replay.current = utterance;
               utterance.lang = language;

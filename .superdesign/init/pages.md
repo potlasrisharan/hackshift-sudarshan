@@ -1,0 +1,150 @@
+## frontend/website/src/main.tsx
+- frontend/website/src/main.tsx
+  - packages/api-client/integration.ts
+    - packages/shared/integration.ts
+      - packages/shared/contracts.ts
+  - packages/engine/index.ts
+    - packages/engine/her/safety_gate.ts
+    - packages/engine/her/cycle_detector.ts
+    - packages/engine/her/screening_engine.ts
+      - packages/shared/her_contracts.ts
+    - packages/engine/her/wellness_ranker.ts
+    - packages/engine/her/trend_analyzer.ts
+    - packages/engine/vitalis/index.ts
+      - packages/engine/vitalis/v0_safety_gate.ts
+      - packages/engine/vitalis/v1_healthspan_index.ts
+      - packages/engine/vitalis/v2_preventive_ranker.ts
+      - packages/engine/vitalis/v3_exercise_progression.ts
+      - packages/engine/vitalis/v4_biomarker_trends.ts
+      - packages/engine/vitalis/v5_lifestyle_correlations.ts
+      - packages/engine/vitalis/v6_recommendation_selector.ts
+      - packages/engine/vitalis/v7_vo2_provenance.ts
+      - packages/engine/vitalis/v8_rolling_baseline.ts
+      - packages/engine/vitalis/v9_sleep_regularity.ts
+      - packages/engine/vitalis/v10_daily_readiness.ts
+      - packages/engine/vitalis/v11_functional_capacity.ts
+      - packages/engine/vitalis/v12_time_series_dedup.ts
+      - packages/engine/vitalis/v13_preventive_eligibility.ts
+      - packages/engine/vitalis/v14_behavior_simulator.ts
+  - frontend/website/src/style.css
+
+## frontend/website/src/pages/LandingPage.tsx
+- frontend/website/src/pages/LandingPage.tsx
+
+## frontend/website/src/components/PatientKiosk.tsx
+- frontend/website/src/components/PatientKiosk.tsx
+  - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/lib/supabase.ts
+
+## frontend/website/src/components/DoctorConsultation.tsx
+- frontend/website/src/components/DoctorConsultation.tsx
+  - frontend/website/src/context/HospitalContext.tsx
+    - frontend/website/src/lib/authService.ts
+      - frontend/website/src/lib/supabase.ts
+    - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/hooks/useSubscription.ts
+    - frontend/website/src/lib/notifications.ts
+    - frontend/website/src/lib/utils.ts
+
+## frontend/website/src/components/EmergencyTriage.tsx
+- frontend/website/src/components/EmergencyTriage.tsx
+  - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/lib/supabase.ts
+  - frontend/website/src/context/HospitalContext.tsx
+    - frontend/website/src/lib/authService.ts
+    - frontend/website/src/hooks/useSubscription.ts
+    - frontend/website/src/lib/notifications.ts
+    - frontend/website/src/lib/utils.ts
+
+## frontend/website/src/components/HospitalDashboard.tsx
+- frontend/website/src/components/HospitalDashboard.tsx
+  - frontend/website/src/components/ui/basic.tsx
+    - frontend/website/src/lib/utils.ts
+  - frontend/website/src/components/ui/dialog.tsx
+  - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/lib/supabase.ts
+  - frontend/website/src/lib/authService.ts
+  - frontend/website/src/components/ui/use-toast.ts
+    - frontend/website/src/components/ui/toast.tsx
+  - frontend/website/src/context/HospitalContext.tsx
+    - frontend/website/src/hooks/useSubscription.ts
+    - frontend/website/src/lib/notifications.ts
+  - frontend/website/src/components/ui/select.tsx
+
+## frontend/website/src/components/ClinicAdminDashboard.tsx
+- frontend/website/src/components/ClinicAdminDashboard.tsx
+  - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/lib/supabase.ts
+  - frontend/website/src/lib/utils.ts
+  - frontend/website/src/context/HospitalContext.tsx
+    - frontend/website/src/lib/authService.ts
+    - frontend/website/src/hooks/useSubscription.ts
+    - frontend/website/src/lib/notifications.ts
+  - frontend/website/src/components/ui/dialog.tsx
+  - frontend/website/src/components/ui/ReceiptModal.tsx
+    - frontend/website/src/components/ui/basic.tsx
+    - frontend/website/src/components/ui/ReceiptBranding.tsx
+
+## frontend/website/src/components/POSDashboard.tsx
+- frontend/website/src/components/POSDashboard.tsx
+  - frontend/website/src/components/ui/basic.tsx
+    - frontend/website/src/lib/utils.ts
+  - frontend/website/src/components/ui/use-toast.ts
+    - frontend/website/src/components/ui/toast.tsx
+  - frontend/website/src/components/ui/dialog.tsx
+  - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/lib/supabase.ts
+  - frontend/website/src/context/HospitalContext.tsx
+    - frontend/website/src/lib/authService.ts
+    - frontend/website/src/hooks/useSubscription.ts
+    - frontend/website/src/lib/notifications.ts
+  - frontend/website/src/components/ui/ReceiptModal.tsx
+    - frontend/website/src/components/ui/ReceiptBranding.tsx
+
+## frontend/website/src/components/InventoryDashboard.tsx
+- frontend/website/src/components/InventoryDashboard.tsx
+  - frontend/website/src/lib/dataService.ts
+    - frontend/website/src/lib/supabase.ts
+  - frontend/website/src/components/ui/basic.tsx
+    - frontend/website/src/lib/utils.ts
+  - frontend/website/src/components/ui/tooltip.tsx
+  - frontend/website/src/components/ui/dialog.tsx
+  - frontend/website/src/components/ui/use-toast.ts
+    - frontend/website/src/components/ui/toast.tsx
+  - frontend/website/src/context/HospitalContext.tsx
+    - frontend/website/src/lib/authService.ts
+    - frontend/website/src/hooks/useSubscription.ts
+    - frontend/website/src/lib/notifications.ts
+  - frontend/website/src/components/ui/DropdownMenu.tsx
+
+## apps/web/src/main.ts
+- apps/web/src/main.ts
+  - packages/shared/compare.ts
+  - apps/web/src/style.css
+  - packages/engine/index.ts
+    - packages/shared/contracts.ts
+    - packages/engine/her/safety_gate.ts
+    - packages/engine/her/cycle_detector.ts
+    - packages/engine/her/screening_engine.ts
+      - packages/shared/her_contracts.ts
+    - packages/engine/her/wellness_ranker.ts
+    - packages/engine/her/trend_analyzer.ts
+    - packages/engine/vitalis/index.ts
+      - packages/engine/vitalis/v0_safety_gate.ts
+      - packages/engine/vitalis/v1_healthspan_index.ts
+      - packages/engine/vitalis/v2_preventive_ranker.ts
+      - packages/engine/vitalis/v3_exercise_progression.ts
+      - packages/engine/vitalis/v4_biomarker_trends.ts
+      - packages/engine/vitalis/v5_lifestyle_correlations.ts
+      - packages/engine/vitalis/v6_recommendation_selector.ts
+      - packages/engine/vitalis/v7_vo2_provenance.ts
+      - packages/engine/vitalis/v8_rolling_baseline.ts
+      - packages/engine/vitalis/v9_sleep_regularity.ts
+      - packages/engine/vitalis/v10_daily_readiness.ts
+      - packages/engine/vitalis/v11_functional_capacity.ts
+      - packages/engine/vitalis/v12_time_series_dedup.ts
+      - packages/engine/vitalis/v13_preventive_eligibility.ts
+      - packages/engine/vitalis/v14_behavior_simulator.ts
+  - packages/i18n/index.ts
+  - packages/shared/demo.ts
+    - packages/shared/adapters.ts

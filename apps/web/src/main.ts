@@ -111,6 +111,8 @@ async function start() {
     token = session.token;
     await api("/consent", "POST", { granted: true });
     consent = true;
+    page = "today";
+    history.replaceState({ page }, "", "#today");
     record = recordResponse.parse(await api("/record"));
     deleted = false;
   } catch (e) {
@@ -118,6 +120,7 @@ async function start() {
   } finally {
     loading = false;
     render();
+    if (consent) window.scrollTo({ top: 0, behavior: "instant" });
   }
 }
 function chart(values: number[], title: string) {
@@ -428,7 +431,9 @@ app.addEventListener("input", (event) => {
 window.addEventListener("offline", render);
 window.addEventListener("online", render);
 window.addEventListener("popstate", (event) => {
-  const p = (event.state as { page?: string })?.page;
+  const p =
+    (event.state as { page?: string } | null)?.page ??
+    window.location.hash.slice(1);
   if (p && nav.some((n) => n.id === p)) {
     page = p;
     render();
