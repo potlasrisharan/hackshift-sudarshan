@@ -1,11 +1,11 @@
 import { SymbolIcon } from "@/components/ui/SymbolIcon";
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useHospital } from '@/context/HospitalContext'
 import { NotificationsPanel } from '@/components/ui/NotificationsPanel'
 import { requestNotificationPermission } from '@/lib/notifications'
 import { useTour } from '@/context/TourContext'
-import { DASHBOARD_TOUR_STEPS } from '@/tourSteps'
+import { workspaceTour } from '@/tourSteps'
 import { Play } from 'lucide-react'
 
 interface AppLayoutProps {
@@ -29,7 +29,7 @@ export function AppLayout({
 }: AppLayoutProps) {
     const navigate = useNavigate();
     const { profile: userProfile, hospital, clinics, unseenCount } = useHospital()
-    const { startTour, currentStepIndex, steps, isTourActive } = useTour()
+    const { startTour, scope, isTourActive, endTour } = useTour()
     const role = userProfile?.role
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
@@ -88,44 +88,15 @@ export function AppLayout({
 
     const portalMeta = getPortalMeta();
 
-    const autoStartAttempted = useRef(false);
-
-    useEffect(() => {
-        if (!role || view === 'selection' || view === 'setup' || lockNavigation) return;
-        if (autoStartAttempted.current) return;
-
-        const hasCompletedTour = localStorage.getItem('aarogya_nidhi_tour_completed');
-        const isDesktop = window.innerWidth >= 768;
-
-        if (!hasCompletedTour && isDesktop) {
-            autoStartAttempted.current = true;
-            const timer = setTimeout(() => {
-                startTour(DASHBOARD_TOUR_STEPS);
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [role, view, lockNavigation, startTour]);
-
-    // Sync tour steps with app view for internal navigation
-    useEffect(() => {
-        if (!isTourActive || steps.length === 0) return;
-        const currentStep = steps[currentStepIndex];
-        if (currentStep && currentStep.route && currentStep.route !== view) {
-            // Check if context already navigated the browser route. 
-            // If we are already in /app, we just need to set the local view state.
-            const possibleViews = [
-                'selection', 'staff', 'admin', 'clinic-admin', 'inventory-dashboard', 'setup',
-                'hospitals', 'audit_logs', 'pos', 'attendance', 'earnings',
-                'settings', 'billing', 'shift-management', 'procurement',
-                'expenses', 'equipments', 'ipd', 'ca-suite',
-                'doctor-consultation', 'emergency-triage', 'ayush-center', 'patient-kiosk'
-            ];
-            if (possibleViews.includes(currentStep.route)) {
-                setView(currentStep.route);
-            }
-        }
-    }, [isTourActive, currentStepIndex, steps, setView, view]);
-
+    const [showGuideInvitation,setShowGuideInvitation] = useState(false);
+    useEffect(()=>{
+        if (!role || ['selection','setup','patient-kiosk','emergency-triage'].includes(view) || lockNavigation) { setShowGuideInvitation(false); return; }
+        try { setShowGuideInvitation(!localStorage.getItem(`ayusetu_tour_completed:${view}`) && !localStorage.getItem(`ayusetu_tour_dismissed:${view}`) && !localStorage.getItem('aarogya_nidhi_tour_completed')); }
+        catch { setShowGuideInvitation(true); }
+    },[role,view,lockNavigation]);
+    useEffect(()=>{if(isTourActive && scope && scope!==view)endTour();},[isTourActive,scope,view,endTour]);
+    const showGuide = () => { setShowGuideInvitation(false); startTour(workspaceTour(view),view); };
+    const dismissGuideInvitation = () => { setShowGuideInvitation(false); try { localStorage.setItem(`ayusetu_tour_dismissed:${view}`,'true'); } catch {} };
 
     // Helper for Navigation Items
     const NavItem = ({ icon, label, active, onClick, disabled, id }: any) => (
@@ -436,11 +407,11 @@ export function AppLayout({
 
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => startTour(DASHBOARD_TOUR_STEPS)}
-                            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100/50 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors"
+                            onClick={showGuide}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100/50 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors"
                         >
                             <Play className="w-3.5 h-3.5" />
-                            Replay Demo
+                            Show guide
                         </button>
                         {/* Notifications */}
                         <div className="flex items-center gap-1 sm:gap-2">
@@ -484,7 +455,8 @@ export function AppLayout({
                 )}
 
                 {/* SCROLLABLE INNER CONTENT */}
-                <div className={view === 'patient-kiosk' ? "flex-1 w-full" : "flex-1 p-4 lg:p-12 lg:pt-6 max-w-[1600px] w-full mx-auto"}>
+                <div id="tour-workspace-content" className={view === 'patient-kiosk' ? "flex-1 w-full" : "flex-1 p-4 lg:p-12 lg:pt-6 max-w-[1600px] w-full mx-auto"}>
+                    {showGuideInvitation && !isTourActive && <section className="ayu-guide-invitation" aria-label="Workspace introduction"><div><strong>New to this workspace?</strong><p>Take a short guide without leaving this page.</p></div><button type="button" onClick={showGuide}>Show me around</button><button type="button" onClick={dismissGuideInvitation}>Not now</button></section>}
                     {children}
                 </div>
             </main>

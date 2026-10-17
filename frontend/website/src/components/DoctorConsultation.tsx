@@ -849,7 +849,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     <div className="ayu-clinician p-0 space-y-6 max-w-7xl mx-auto font-sans antialiased text-slate-900">
       
       {/* Clinician Command Console Header */}
-      <div className="ayu-clinical-header bg-white p-5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+      <div id="tour-clinical-overview" className="ayu-clinical-header bg-white p-5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
             <Stethoscope className="w-6 h-6"/>
@@ -900,7 +900,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Rapid Patient Queue Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
+        <div id="tour-clinical-queue" className="lg:col-span-4 space-y-4">
           <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3.5">
             
             {/* Queue Header & Search */}
@@ -1072,7 +1072,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
         </div>
 
         {/* Right Column: 15-Second Clinical Console & SOAP Suite (8 cols) */}
-        <div className="lg:col-span-8 space-y-5">
+        <div id="tour-clinical-record" className="lg:col-span-8 space-y-5">
           <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm space-y-6">
             
             {/* Active Patient Clinical Profile Header */}

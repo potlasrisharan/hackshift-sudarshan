@@ -93,3 +93,10 @@ In the shared development checkout, the standard clinical browser run was blocke
 The isolated branch retains the baseline backend API/test mismatch: 18 tests expect legacy compatibility endpoints that the baseline backend does not expose. Repository-wide Biome reported 1,422 errors across the shared existing tree. The original broad TypeScript configuration also includes dormant ERP/archive/Supabase files with existing strict-type errors. New frontend code has its own focused typecheck. These wider cleanup items remain outside a visual frontend change.
 
 Automated inspection does not establish full WCAG conformance or validate every nested modal with every role and dataset. Live speech provider quality, real microphone hardware, clinical validity and production operations require separate verification.
+
+
+## Guidance dismissal correction
+
+The workspace tour is now opt-in and specific to the current view. It no longer switches clinician pages to Headquarters. The spotlight and dialog share the active tour lifecycle and unmount together on Finish, Close, or Escape; storage failures cannot prevent dismissal. The dialog fits mobile viewports, keeps keyboard focus within its controls, and restores focus when dismissed.
+
+Validation: frontend typecheck and production build passed. Eleven browser regressions passed, including completion/close/Escape at 1440, 768, and 390 pixels, normal interaction after dismissal, completion persistence, and dismissal when browser storage throws. Existing patient navigation, speech fallback, microphone release, offline, and privacy regressions also passed.
