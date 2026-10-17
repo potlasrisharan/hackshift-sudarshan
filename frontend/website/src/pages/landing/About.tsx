@@ -13,12 +13,19 @@ const About: React.FC = () => {
         </div>
 
         <div className="max-w-5xl mx-auto px-4 relative z-10 text-center">
+          <div className="flex justify-center mb-6">
+            <img
+              src="/assets/ayusetu_logo.png"
+              alt="AyuSetu Healthcare"
+              className="h-12 md:h-16 w-auto object-contain"
+            />
+          </div>
           <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest mb-6 animate-fade-in">Our Mission</span>
           <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 mb-8 tracking-tight">
             Elevating <span className="text-blue-600">Healthcare</span> <br />Through Innovation.
           </h1>
           <p className="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-medium">
-            Aarogya Nidhi is more than software—it's a clinical operating system designed to eliminate complexity,
+            AyuSetu is more than software—it's a clinical operating system designed to eliminate complexity,
             so providers can focus on what matters most: saving lives and improving outcomes.
           </p>
         </div>
@@ -41,7 +48,7 @@ const About: React.FC = () => {
               <div className="relative z-10 space-y-8">
                 <div>
                   <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
-                    The Aarogya Nidhi <span className="text-blue-600 italic">Story</span>
+                    The AyuSetu <span className="text-blue-600 italic">Story</span>
                   </h2>
                   <div className="flex items-center gap-4 mb-8">
                     <div className="w-12 h-1 bg-blue-600 rounded-full" />
@@ -51,7 +58,7 @@ const About: React.FC = () => {
 
                 <div className="space-y-6 text-lg text-slate-700 leading-relaxed italic font-serif">
                   <p className="border-l-4 border-blue-600/20 pl-6 py-2">
-                    "Hi, I'm Saksham Goswami, the developer behind Aarogya Nidhi. I started this project with a simple realization: the software our doctors and clinic staff use every day shouldn't be harder to navigate than the medical problems they solve."
+                    "Hi, I'm Potla Sri Sharan, the developer behind AyuSetu. I started this project with a simple realization: the software our doctors and clinic staff use every day shouldn't be harder to navigate than the medical problems they solve."
                   </p>
                   <p className="pl-6">
                     "I saw a massive gap between clunky legacy systems and the smooth technology we use everywhere else. I’m not a massive corporate entity; I’m a developer on a mission to bring real, tangible change to healthcare operations."
@@ -87,20 +94,18 @@ const About: React.FC = () => {
                 <div className="relative overflow-hidden rounded-[2rem] shadow-2xl border-8 border-white group-hover:rotate-1 transition-transform duration-700">
                   <img
                     src="/assets/about/aarogya_nidhi_story.png"
-                    alt="The Aarogya Nidhi Journey"
+                    alt="The AyuSetu Journey"
                     className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-blue-900/5 mix-blend-multiply opacity-30 group-hover:opacity-0 transition-opacity duration-700" />
                 </div>
 
                 {/* Floating Founder's Signature Seal */}
-                <div className="absolute -bottom-10 -right-6 lg:-right-12 bg-white/95 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-white/50 animate-float flex flex-col items-center justify-center group/seal hover:scale-105 transition-transform duration-500 min-w-[180px]">
-                  <div className="relative mb-2">
-                    <img
-                      src="/assets/about/signature_clean.png"
-                      alt="Saksham Signature"
-                      className="h-16 md:h-20 w-auto object-contain brightness-105 group-hover:brightness-110 transition-all drop-shadow-sm"
-                    />
+                <div className="absolute -bottom-10 -right-6 lg:-right-12 bg-white/95 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-white/50 animate-float flex flex-col items-center justify-center group/seal hover:scale-105 transition-transform duration-500 min-w-[200px]">
+                  <div className="relative mb-2 py-1 px-3 text-center">
+                    <span className="font-serif italic font-bold text-xl md:text-2xl text-slate-800 tracking-wider select-none">
+                      Potla Sri Sharan
+                    </span>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="h-px w-12 bg-blue-600/20 mb-3"></div>
@@ -138,12 +143,12 @@ const About: React.FC = () => {
               {
                 icon: <Shield className="w-8 h-8" />,
                 title: "Security Paradox",
-                desc: "In healthcare, data trust is everything. I’ve built Aarogya Nidhi with an 'invisible security' approach—enterprise-grade protection that keeps patient data safe without getting in the way of your workflow."
+                desc: "In healthcare, data trust is everything. I’ve built AyuSetu with an 'invisible security' approach—enterprise-grade protection that keeps patient data safe without getting in the way of your workflow."
               },
               {
                 icon: <Heart className="w-8 h-8" />,
                 title: "Built for the Frontline",
-                desc: "Aarogya Nidhi wasn't built in a boardroom; it was built by looking at real hospital struggles. I design every interface to feel intuitive, so you can spend less time clicking and more time caring."
+                desc: "AyuSetu wasn't built in a boardroom; it was built by looking at real hospital struggles. I design every interface to feel intuitive, so you can spend less time clicking and more time caring."
               }
             ].map((v, i) => (
               <div key={i} className="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-300 group flex flex-col h-full">
@@ -168,7 +173,7 @@ const About: React.FC = () => {
                 Ready to join the <br />future of healthcare?
               </h2>
               <p className="text-blue-100 text-lg max-w-xl mx-auto font-medium">
-                Join hundreds of forward-thinking facilities that are scaling efficiently with Aarogya Nidhi.
+                Join hundreds of forward-thinking facilities that are scaling efficiently with AyuSetu.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link

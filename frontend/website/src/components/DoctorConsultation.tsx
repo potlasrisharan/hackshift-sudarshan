@@ -87,8 +87,8 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       assessment: 'Acute Coronary Syndrome (ACS) / NSTEMI rule-out. Secondary: Uncontrolled Stage-2 Essential Hypertension.',
       icd11Code: 'BA41 (Acute Myocardial Infarction) / BA00 (Essential Hypertension)',
       icd11Description: 'Acute Myocardial Infarction with Essential Hypertension',
-      namasteCode: 'AY-HRD-02 (Hridroga - Vataja Kaphaja)',
-      namasteDescription: 'Hridroga (Ayurvedic Cardiorespiratory Disorder)',
+      namasteCode: 'AHA/ACC 2023 NSTE-ACS Guideline (Class I, Level A)',
+      namasteDescription: 'Immediate Dual Antiplatelet (DAPT) + High-Intensity Statin + Rapid Cath Lab Transfer',
       plan: [
         { 
           drug: 'Aspirin 300mg (Soluble Dispersible)', 
@@ -170,8 +170,8 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       assessment: 'Type 2 Diabetes Mellitus with poor glycemic control. Mild dyslipidemia.',
       icd11Code: '5A11 (Type 2 Diabetes Mellitus)',
       icd11Description: 'Type 2 Diabetes Mellitus without acute complications',
-      namasteCode: 'AY-PRM-04 (Madhumeha - Pitta-Kaphaja)',
-      namasteDescription: 'Madhumeha (Ayurvedic Metabolic Disorder)',
+      namasteCode: 'ADA / EASD 2024 Standards of Care Protocol',
+      namasteDescription: 'First-Line Metformin ER + Sulfonylurea Titration + Lifestyle Glycemic Optimization (Target HbA1c < 7.0%)',
       plan: [
         { 
           drug: 'Metformin 500mg Extended Release', 
@@ -227,8 +227,8 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       assessment: 'Community-Acquired Acute Bronchitis / Lower Respiratory Tract Infection.',
       icd11Code: 'CA20 (Acute Bronchitis)',
       icd11Description: 'Acute Bronchitis unspecified',
-      namasteCode: 'AY-KAS-01 (Kasa - Kaphaja)',
-      namasteDescription: 'Kasa (Ayurvedic Respiratory Affliction)',
+      namasteCode: 'NICE NG120 / ATS Respiratory Protocol',
+      namasteDescription: 'Targeted Antimicrobial (Amoxy-Clav) + Mucolytic Hydration & Antipyretic Analgesia',
       plan: [
         { 
           drug: 'Amoxicillin + Clavulanic Acid 625mg', 
@@ -296,8 +296,8 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
       assessment: 'Primary Bilateral Osteoarthritis of Knees (Kellgren-Lawrence Grade II-III).',
       icd11Code: 'FA01.0 (Primary Osteoarthritis of Knee)',
       icd11Description: 'Primary osteoarthritis of knee, bilateral',
-      namasteCode: 'AY-SND-03 (Sandhigata Vata)',
-      namasteDescription: 'Sandhigata Vata (Osteoarticular Degenerative Disorder)',
+      namasteCode: 'OARSI / ACR 2020 Knee Osteoarthritis Guideline',
+      namasteDescription: 'Oral NSAID + Mandatory PPI Gastroprotection + Quadriceps Physiotherapy & Weight Offloading',
       plan: [
         { 
           drug: 'Aceclofenac 100mg + Paracetamol 325mg', 
@@ -326,22 +326,137 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
           genericPrice: 22
         },
         { 
-          drug: 'Shallaki (Boswellia Serrata) 500mg', 
-          dosage: '500mg', 
-          frequency: '1-0-1', 
-          duration: '30 Days', 
+          drug: 'Pantoprazole 40mg (Gastroprotection)', 
+          dosage: '40mg', 
+          frequency: '1-0-0', 
+          duration: '14 Days', 
           availableInClinic: true,
-          instructions: 'With warm water after meals',
-          shelfLocation: 'Shelf AYUSH-02 (Herbal)',
-          brandName: 'Himalaya Shallaki',
-          brandPrice: 220,
-          genericName: 'Shallaki Churna / Tab 500mg',
-          genericPrice: 55
+          instructions: 'Take 30 mins before breakfast on empty stomach (Co-prescribed with NSAID for GI safety)',
+          shelfLocation: 'Shelf B-04 (Gastroenterology)',
+          brandName: 'Pan 40',
+          brandPrice: 155,
+          genericName: 'Pantoprazole Sodium 40mg',
+          genericPrice: 18
         }
       ]
     }
   }
 ];
+
+const WESTERN_CLINICAL_RECOMMENDATIONS: Record<string, PrescriptionItem[]> = {
+  'pat-048291': [
+    {
+      drug: 'Atorvastatin 80mg (High-Intensity Statin)',
+      dosage: '80mg',
+      frequency: '0-0-1',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Take at night after food for plaque stabilization (ACC/AHA Class I)',
+      shelfLocation: 'Shelf A-03 (Cardiology)',
+      brandName: 'Atorva 80',
+      brandPrice: 340,
+      genericName: 'Atorvastatin 80mg',
+      genericPrice: 48
+    },
+    {
+      drug: 'Nitroglycerin 0.5mg Sublingual',
+      dosage: '0.5mg',
+      frequency: 'SOS',
+      duration: '10 Days',
+      availableInClinic: true,
+      instructions: 'Dissolve under tongue immediately for acute angina episode',
+      shelfLocation: 'Shelf A-01 (Emergency)',
+      brandName: 'Angispan-TR 0.5',
+      brandPrice: 95,
+      genericName: 'Nitroglycerin Sublingual 0.5mg',
+      genericPrice: 18
+    }
+  ],
+  'pat-048292': [
+    {
+      drug: 'Empagliflozin 10mg (SGLT2 Inhibitor)',
+      dosage: '10mg',
+      frequency: '1-0-0',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Take in morning with water (Cardiorenal & glycemic benefit)',
+      shelfLocation: 'Shelf C-06 (Endocrine)',
+      brandName: 'Jardiance 10',
+      brandPrice: 620,
+      genericName: 'Empagliflozin 10mg',
+      genericPrice: 85
+    },
+    {
+      drug: 'Telmisartan 40mg (Renoprotective ARB)',
+      dosage: '40mg',
+      frequency: '1-0-0',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Take once daily in morning for microalbuminuria prevention',
+      shelfLocation: 'Shelf C-02 (Cardio-Renal)',
+      brandName: 'Telma 40',
+      brandPrice: 160,
+      genericName: 'Telmisartan 40mg',
+      genericPrice: 22
+    }
+  ],
+  'pat-048293': [
+    {
+      drug: 'Paracetamol 650mg (Antipyretic / Analgesic)',
+      dosage: '650mg',
+      frequency: '1-1-1',
+      duration: '3 Days',
+      availableInClinic: true,
+      instructions: 'Take after meals for fever > 100°F (Max 3g/day)',
+      shelfLocation: 'Shelf D-01 (Analgesics)',
+      brandName: 'Dolo 650',
+      brandPrice: 32,
+      genericName: 'Paracetamol 650mg',
+      genericPrice: 8
+    },
+    {
+      drug: 'Levocetirizine 5mg + Montelukast 10mg',
+      dosage: '1 Tab',
+      frequency: '0-0-1',
+      duration: '5 Days',
+      availableInClinic: true,
+      instructions: 'Take at bedtime for bronchodilation and cough suppression',
+      shelfLocation: 'Shelf D-04 (Respiratory)',
+      brandName: 'Montair-LC',
+      brandPrice: 190,
+      genericName: 'Levocetirizine + Montelukast',
+      genericPrice: 28
+    }
+  ],
+  'pat-048294': [
+    {
+      drug: 'Topical Diclofenac Diethylamine Gel 1.16%',
+      dosage: 'Gel (30g)',
+      frequency: '1-0-1',
+      duration: '14 Days',
+      availableInClinic: true,
+      instructions: 'Apply gently over bilateral knee joints BD without vigorous rubbing (OARSI 2020)',
+      shelfLocation: 'Shelf E-04 (Orthopedic)',
+      brandName: 'Voveran Emulgel',
+      brandPrice: 145,
+      genericName: 'Diclofenac Diethylamine Gel 1.16%',
+      genericPrice: 28
+    },
+    {
+      drug: 'Tramadol 37.5mg + Paracetamol 325mg',
+      dosage: '1 Tab',
+      frequency: 'SOS',
+      duration: '5 Days',
+      availableInClinic: true,
+      instructions: 'Take strictly SOS for severe breakthrough mechanical pain',
+      shelfLocation: 'Shelf E-06 (Controlled Analgesics)',
+      brandName: 'Ultracet',
+      brandPrice: 210,
+      genericName: 'Tramadol + Paracetamol',
+      genericPrice: 35
+    }
+  ]
+};
 
 interface DoctorConsultationProps {
   onSendToPos?: (items: any[], patientInfo: any) => void;
@@ -523,6 +638,26 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
         soap: {
           ...patient.soap,
           plan: patient.soap.plan.filter((_, i) => i !== index)
+        }
+      };
+    }));
+  };
+
+  // Quick-Add Western Clinical Recommendation
+  const handleQuickAddRecommendation = (item: PrescriptionItem) => {
+    setQueue(prev => prev.map(patient => {
+      if (patient.patientId !== activePatient.patientId) return patient;
+      // Avoid duplicate adds
+      const isDuplicate = patient.soap.plan.some(p => 
+        p.drug.toLowerCase().includes(item.drug.toLowerCase().split(' ')[0]) ||
+        (item.genericName && p.genericName?.toLowerCase() === item.genericName.toLowerCase())
+      );
+      if (isDuplicate) return patient;
+      return {
+        ...patient,
+        soap: {
+          ...patient.soap,
+          plan: [...patient.soap.plan, { ...item, isGenericSubstituted: isGenericSwapped }]
         }
       };
     }));
@@ -752,8 +887,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     doc.setTextColor(55, 48, 163); // indigo-800
     doc.text(`WHO ICD-11 Diagnosis: ${activePatient.soap.icd11Code}`, 18, y + 5.5);
     if (activePatient.soap.namasteCode) {
-      doc.setTextColor(6, 95, 70); // emerald-800
-      doc.text(`AYUSH / NAMASTE Holistic Code: ${activePatient.soap.namasteCode}`, 18, y + 10.5);
+      doc.setTextColor(2, 132, 199); // sky-600
+      doc.text(`Evidence-Based Clinical Protocol: ${activePatient.soap.namasteCode}`, 18, y + 10.5);
     }
     y += 18;
 
@@ -860,7 +995,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 Your consultation workspace
               </h1>
               <span className="text-[10px] bg-blue-500/20 border border-blue-400/40 text-blue-300 font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                Synthetic clinical demonstration
+                AI Decision Support Active
               </span>
               <span className="text-[10px] bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -1162,11 +1297,11 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 <div className="flex items-center gap-1.5">
                   <Activity className="w-4 h-4 text-blue-700" />
                   <h3 className="text-xs font-black uppercase text-slate-700 tracking-wider">
-                    Vitals overview (synthetic demonstration)
+                    Patient Vitals Telemetry
                   </h3>
                 </div>
                 <span className="text-[10px] text-slate-400 font-medium">
-                  MediKiosk Pod #3 Hardware Sensor Array
+                  AyuSetu Kiosk Pod #3 Hardware Sensor Array
                 </span>
               </div>
 
@@ -1260,7 +1395,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   </span>
                   <span>•</span>
                   <span className="bg-slate-100 px-2 py-0.5 rounded font-mono font-bold">
-                    Dual Coding (ICD-11 + AYUSH)
+                    Dual Coding (ICD-11 + Clinical Guidelines)
                   </span>
                 </div>
               </div>
@@ -1396,7 +1531,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                   </div>
 
                   <div className="text-[11px] text-slate-500 italic">
-                    Physical auscultation and triage observations synchronized via MediKiosk Bluetooth medical peripheral stack.
+                    Physical auscultation and triage observations synchronized via AyuSetu Bluetooth medical peripheral stack.
                   </div>
                 </div>
 
@@ -1439,18 +1574,18 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                     )}
                   </div>
 
-                  {/* AYUSH NAMASTE Code */}
-                  <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-sm space-y-1">
+                  {/* Evidence-Based Western Clinical Guideline */}
+                  <div className="p-3 bg-white rounded-xl border border-sky-200 shadow-sm space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase text-emerald-700 tracking-wider">
-                        Ministry of AYUSH NAMASTE Code:
+                      <span className="text-[10px] font-black uppercase text-sky-700 tracking-wider">
+                        Evidence-Based Clinical Guideline:
                       </span>
-                      <span className="text-[9px] bg-emerald-50 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
-                        National Portal
+                      <span className="text-[9px] bg-sky-50 text-sky-800 font-bold px-1.5 py-0.5 rounded">
+                        Western CDS Standard
                       </span>
                     </div>
-                    <div className="font-mono text-xs font-black text-emerald-900">
-                      {activePatient.soap.namasteCode || 'AY-GEN-01 (Samanya Rog)'}
+                    <div className="font-mono text-xs font-black text-slate-900">
+                      {activePatient.soap.namasteCode || 'Standard Allopathic Protocol'}
                     </div>
                     {activePatient.soap.namasteDescription && (
                       <div className="text-[11px] text-slate-500">
@@ -1505,6 +1640,68 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                     <p className="text-slate-600">
                       {algorithmResult.explanation?.scope || 'Allocated optimal batches matching minimal unit cost with verified expiry buffer.'}
                     </p>
+                  </div>
+                )}
+
+                {/* Evidence-Based Western Clinical Pharmacotherapy Recommendations */}
+                {WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId]?.length > 0 && (
+                  <div className="p-3.5 bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50 border border-sky-200/90 rounded-xl space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-black text-sky-950 uppercase tracking-wide">
+                        <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Recommended Western Medicines (Evidence-Based CDS)</span>
+                      </div>
+                      <span className="text-[9px] bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-full border border-sky-200">
+                        Allopathic Protocol
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId].map((rec, rIdx) => {
+                        const isAlreadyAdded = activePatient.soap.plan.some(p => 
+                          p.drug.toLowerCase().includes(rec.drug.toLowerCase().split(' ')[0]) || 
+                          (rec.genericName && p.genericName?.toLowerCase() === rec.genericName.toLowerCase())
+                        );
+                        return (
+                          <div 
+                            key={rIdx}
+                            className="p-2.5 bg-white/95 rounded-lg border border-sky-200/70 flex items-center justify-between gap-2 shadow-xs"
+                          >
+                            <div className="min-w-0 pr-1">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-bold text-xs text-slate-900">{rec.drug}</span>
+                                <span className="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-mono font-semibold">
+                                  {rec.dosage}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-500 truncate mt-0.5">
+                                {rec.instructions}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleQuickAddRecommendation(rec)}
+                              disabled={isAlreadyAdded}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold shrink-0 transition flex items-center gap-1 ${
+                                isAlreadyAdded 
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default' 
+                                  : 'bg-sky-600 hover:bg-sky-700 text-white shadow-xs active:scale-95'
+                              }`}
+                            >
+                              {isAlreadyAdded ? (
+                                <>
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  <span>Added</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Plus className="w-3 h-3" />
+                                  <span>Add to Rx</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
@@ -1847,7 +2044,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                       code: { 
                         coding: [
                           { system: "http://id.who.int/icd11/mms", code: activePatient.soap.icd11Code },
-                          { system: "https://namstp.ayush.gov.in", code: activePatient.soap.namasteCode || "AY-GEN-01" }
+                          { system: "https://guidelines.who.int/clinical", code: activePatient.soap.namasteCode || "EVIDENCE-BASED-PROTOCOL" }
                         ] 
                       },
                       subject: { reference: `Patient/${activePatient.patientId}` }

@@ -97,9 +97,15 @@ export function UpgradeModal({ isOpen, onClose, highlightPlan }: UpgradeModalPro
                 <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
                     {/* Header */}
                     <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10 rounded-t-2xl">
-                        <div>
-                            <h2 className="text-xl font-bold text-slate-900">Choose Your Plan</h2>
-                            <p className="text-sm text-slate-500">Scale your hospital management as you grow</p>
+                        <div className="flex items-center gap-3.5">
+                            <img
+                                src="/assets/ayusetu_logo.png"
+                                alt="AyuSetu"
+                                className="h-9 w-auto object-contain shrink-0"
+                            />
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900">Choose Your Plan</h2>
+                                <p className="text-sm text-slate-500">Scale your hospital management as you grow</p>
                             {billing.isTrialing && (
                                 <div className="mt-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-100 w-fit">
                                     <Clock className="w-3.5 h-3.5 text-amber-600" />
@@ -108,6 +114,7 @@ export function UpgradeModal({ isOpen, onClose, highlightPlan }: UpgradeModalPro
                                     </span>
                                 </div>
                             )}
+                        </div>
                         </div>
                         <div className="flex items-center gap-4">
                             {/* Billing cycle toggle */}

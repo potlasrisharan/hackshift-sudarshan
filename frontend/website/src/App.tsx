@@ -1,51 +1,74 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
-const StaffPortal = lazy(() => import("@/components/StaffPortal").then(module => ({ default: module.StaffPortal })));
-const ProcurementDashboard = lazy(() => import("@/components/ProcurementDashboard"));
-const MedicineMigration = lazy(() => import("@/components/MedicineMigration").then(module => ({ default: module.MedicineMigration })));
-const SuperAdminDashboard = lazy(() => import("@/components/SuperAdminDashboard").then(module => ({ default: module.SuperAdminDashboard })));
-const HospitalDashboard = lazy(() => import("@/components/HospitalDashboard").then(module => ({ default: module.HospitalDashboard })));
-const ClinicAdminDashboard = lazy(() => import("@/components/ClinicAdminDashboard").then(module => ({ default: module.ClinicAdminDashboard })));
+import { useState, useEffect, lazy, Suspense, Component, type ErrorInfo, type ReactNode } from 'react'
+
+function lazyWithRetry<T extends React.ComponentType<any>>(
+    factory: () => Promise<{ default: T } | any>
+) {
+    return lazy(async () => {
+        const pageHasBeenForceRefreshed = sessionStorage.getItem('dhaaga_chunk_retry_active');
+        try {
+            const module = await factory();
+            sessionStorage.removeItem('dhaaga_chunk_retry_active');
+            return 'default' in module ? module : { default: module };
+        } catch (error: any) {
+            console.warn('Vite dynamic chunk load error:', error);
+            if (!pageHasBeenForceRefreshed) {
+                sessionStorage.setItem('dhaaga_chunk_retry_active', 'true');
+                window.location.reload();
+                return new Promise<{ default: T }>(() => {});
+            }
+            sessionStorage.removeItem('dhaaga_chunk_retry_active');
+            throw error;
+        }
+    });
+}
+
+const StaffPortal = lazyWithRetry(() => import("@/components/StaffPortal").then(module => ({ default: module.StaffPortal })));
+const ProcurementDashboard = lazyWithRetry(() => import("@/components/ProcurementDashboard"));
+const MedicineMigration = lazyWithRetry(() => import("@/components/MedicineMigration").then(module => ({ default: module.MedicineMigration })));
+const SuperAdminDashboard = lazyWithRetry(() => import("@/components/SuperAdminDashboard").then(module => ({ default: module.SuperAdminDashboard })));
+const HospitalDashboard = lazyWithRetry(() => import("@/components/HospitalDashboard").then(module => ({ default: module.HospitalDashboard })));
+const ClinicAdminDashboard = lazyWithRetry(() => import("@/components/ClinicAdminDashboard").then(module => ({ default: module.ClinicAdminDashboard })));
 import { AppLayout } from "@/components/layout/AppLayout";
-const InventoryDashboard = lazy(() => import("@/components/InventoryDashboard").then(module => ({ default: module.InventoryDashboard })));
-const AdminSetup = lazy(() => import("@/components/AdminSetup").then(module => ({ default: module.AdminSetup })));
+const InventoryDashboard = lazyWithRetry(() => import("@/components/InventoryDashboard").then(module => ({ default: module.InventoryDashboard })));
+const AdminSetup = lazyWithRetry(() => import("@/components/AdminSetup").then(module => ({ default: module.AdminSetup })));
 import { HospitalProvider, useHospital } from '@/context/HospitalContext';
 import { TourProvider } from '@/context/TourContext';
 import { ProductTour } from '@/components/ProductTour';
 import { ResetPasswordPage } from "@/components/ResetPasswordPage";
-const HospitalsRegistry = lazy(() => import("@/components/HospitalsRegistry").then(module => ({ default: module.HospitalsRegistry })));
-const ExpensesDashboard = lazy(() => import("./components/ExpensesDashboard").then(module => ({ default: module.ExpensesDashboard })));
-const EquipmentsDashboard = lazy(() => import("./components/EquipmentsDashboard").then(module => ({ default: module.EquipmentsDashboard })));
-const HospitalDetails = lazy(() => import("@/components/HospitalDetails").then(module => ({ default: module.HospitalDetails })));
-const AuditLogs = lazy(() => import("@/components/AuditLogs").then(module => ({ default: module.AuditLogs })));
-const POSDashboard = lazy(() => import("@/components/POSDashboard").then(module => ({ default: module.POSDashboard })));
-const ClinicAttendance = lazy(() => import("@/components/ClinicAttendance").then(module => ({ default: module.ClinicAttendance })));
-const ShiftManagement = lazy(() => import("@/components/ShiftManagement").then(module => ({ default: module.ShiftManagement })));
-const HospitalShiftManagement = lazy(() => import("@/components/HospitalShiftManagement").then(module => ({ default: module.HospitalShiftManagement })));
-const EarningsDashboard = lazy(() => import("@/components/EarningsDashboard").then(module => ({ default: module.EarningsDashboard })));
-const SettingsDashboard = lazy(() => import("@/components/SettingsDashboard").then(module => ({ default: module.SettingsDashboard })));
-const CAFinancialSuite = lazy(() => import("@/components/CAFinancialSuite").then(module => ({ default: module.CAFinancialSuite })));
-const IPDDashboard = lazy(() => import("@/components/IPDDashboard").then(module => ({ default: module.IPDDashboard })));
-const DoctorConsultation = lazy(() => import("@/components/DoctorConsultation").then(module => ({ default: module.DoctorConsultation })));
-const EmergencyTriage = lazy(() => import("@/components/EmergencyTriage").then(module => ({ default: module.EmergencyTriage })));
-const AyushDashboard = lazy(() => import("@/components/AyushDashboard").then(module => ({ default: module.AyushDashboard })));
-const PatientKiosk = lazy(() => import("@/components/PatientKiosk").then(module => ({ default: module.PatientKiosk })));
+const HospitalsRegistry = lazyWithRetry(() => import("@/components/HospitalsRegistry").then(module => ({ default: module.HospitalsRegistry })));
+const ExpensesDashboard = lazyWithRetry(() => import("./components/ExpensesDashboard").then(module => ({ default: module.ExpensesDashboard })));
+const EquipmentsDashboard = lazyWithRetry(() => import("./components/EquipmentsDashboard").then(module => ({ default: module.EquipmentsDashboard })));
+const HospitalDetails = lazyWithRetry(() => import("@/components/HospitalDetails").then(module => ({ default: module.HospitalDetails })));
+const AuditLogs = lazyWithRetry(() => import("@/components/AuditLogs").then(module => ({ default: module.AuditLogs })));
+const POSDashboard = lazyWithRetry(() => import("@/components/POSDashboard").then(module => ({ default: module.POSDashboard })));
+const ClinicAttendance = lazyWithRetry(() => import("@/components/ClinicAttendance").then(module => ({ default: module.ClinicAttendance })));
+const ShiftManagement = lazyWithRetry(() => import("@/components/ShiftManagement").then(module => ({ default: module.ShiftManagement })));
+const HospitalShiftManagement = lazyWithRetry(() => import("@/components/HospitalShiftManagement").then(module => ({ default: module.HospitalShiftManagement })));
+const EarningsDashboard = lazyWithRetry(() => import("@/components/EarningsDashboard").then(module => ({ default: module.EarningsDashboard })));
+const SettingsDashboard = lazyWithRetry(() => import("@/components/SettingsDashboard").then(module => ({ default: module.SettingsDashboard })));
+const CAFinancialSuite = lazyWithRetry(() => import("@/components/CAFinancialSuite").then(module => ({ default: module.CAFinancialSuite })));
+const IPDDashboard = lazyWithRetry(() => import("@/components/IPDDashboard").then(module => ({ default: module.IPDDashboard })));
+const DoctorConsultation = lazyWithRetry(() => import("@/components/DoctorConsultation").then(module => ({ default: module.DoctorConsultation })));
+const EmergencyTriage = lazyWithRetry(() => import("@/components/EmergencyTriage").then(module => ({ default: module.EmergencyTriage })));
+const AyushDashboard = lazyWithRetry(() => import("@/components/AyushDashboard").then(module => ({ default: module.AyushDashboard })));
+const PatientKiosk = lazyWithRetry(() => import("@/components/PatientKiosk").then(module => ({ default: module.PatientKiosk })));
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from '@/pages/LandingPage';
 import { BillingOverview, SubscriptionDashboard } from '@/components/billing';
-const AboutPage = lazy(() => import("@/pages/AboutPage"));
-const NewsPage = lazy(() => import("@/pages/NewsPage"));
-const ContactPage = lazy(() => import("@/pages/ContactPage"));
-const ClinicOperationsPage = lazy(() => import("@/pages/ClinicOperationsPage"));
-const HospitalCommandCenterPage = lazy(() => import("@/pages/HospitalCommandCenterPage"));
-const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
-const CareersPage = lazy(() => import("@/pages/CareersPage"));
-const SupportPage = lazy(() => import("@/pages/SupportPage"));
+const AboutPage = lazyWithRetry(() => import("@/pages/AboutPage"));
+const NewsPage = lazyWithRetry(() => import("@/pages/NewsPage"));
+const ContactPage = lazyWithRetry(() => import("@/pages/ContactPage"));
+const ClinicOperationsPage = lazyWithRetry(() => import("@/pages/ClinicOperationsPage"));
+const HospitalCommandCenterPage = lazyWithRetry(() => import("@/pages/HospitalCommandCenterPage"));
+const PrivacyPage = lazyWithRetry(() => import("@/pages/PrivacyPage"));
+const CareersPage = lazyWithRetry(() => import("@/pages/CareersPage"));
+const SupportPage = lazyWithRetry(() => import("@/pages/SupportPage"));
 import { useLocation } from 'react-router-dom';
 import { logPageView } from '@/lib/analytics';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageVariants } from '@/lib/transitions';
 
-import { Loader2, Shield } from 'lucide-react'
+import { Loader2, Shield, RefreshCw, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/basic'
 import { Toaster } from '@/components/ui/toaster'
 import { authService } from '@/lib/authService'
@@ -673,12 +696,71 @@ function AppRouter() {
     )
 }
 
+interface ErrorBoundaryProps {
+    children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+    error: Error | null;
+}
+
+class WorkspaceErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error('Workspace crash caught by ErrorBoundary:', error, errorInfo);
+    }
+
+    handleReload = () => {
+        sessionStorage.removeItem('dhaaga_chunk_retry_active');
+        window.location.reload();
+    };
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 text-white">
+                    <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
+                        <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto mb-4">
+                            <AlertTriangle className="w-6 h-6" />
+                        </div>
+                        <h2 className="text-xl font-bold mb-2">Workspace Recovery</h2>
+                        <p className="text-sm text-slate-400 mb-6">
+                            A new deployment or module update occurred. Click below to refresh your workspace bundle.
+                        </p>
+                        <button
+                            onClick={this.handleReload}
+                            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 px-4 rounded-xl transition shadow-lg shadow-emerald-900/30"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                            Reload Workspace
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
 function Main() {
     return (
         <Router>
             <TourProvider>
                 <ProductTour />
-                <Suspense fallback={<div className="p-8 text-center text-slate-500" role="status">Opening your workspace…</div>}><AppRouter /></Suspense>
+                <WorkspaceErrorBoundary>
+                    <Suspense fallback={<div className="p-8 text-center text-slate-500" role="status">Opening your workspace…</div>}>
+                        <AppRouter />
+                    </Suspense>
+                </WorkspaceErrorBoundary>
             </TourProvider>
         </Router>
     );

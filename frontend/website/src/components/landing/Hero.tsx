@@ -18,7 +18,7 @@ const Hero: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-left z-10 relative">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-tight mb-4 md:mb-6 tracking-tight">
-              Welcome to Aarogya Nidhi:<br />
+              Welcome to AyuSetu:<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-cyan-400 pb-2 inline-block">
                 Healthcare Operations, Reimagined.
               </span>
@@ -96,7 +96,7 @@ const Hero: React.FC = () => {
               {/* Dashboard Preview Image */}
               <img
                 src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1200"
-                alt="Aarogya Nidhi Dashboard Preview"
+                alt="AyuSetu Dashboard Preview"
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90"
               />
 
@@ -127,7 +127,7 @@ const Hero: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                    <p className="text-slate-500 font-medium text-[11px]">Aarogya Nidhi Unified Dashboard</p>
+                    <p className="text-slate-500 font-medium text-[11px]">AyuSetu Unified Dashboard</p>
                   </div>
                 </div>
               </div>

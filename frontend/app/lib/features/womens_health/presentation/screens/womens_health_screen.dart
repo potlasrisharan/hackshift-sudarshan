@@ -94,13 +94,10 @@ class _WomensHealthScreenState extends State<WomensHealthScreen> {
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.wellnessPink.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.auto_awesome, color: AppColors.wellnessPink, size: 22),
+              const AyuSetuLogoBadge(
+                height: 22,
+                borderRadius: 10,
+                padding: EdgeInsets.all(6),
               ),
               const SizedBox(width: 10),
               const Expanded(

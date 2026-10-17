@@ -1219,8 +1219,15 @@ export function IPDDashboard() {
                         <div className="p-10 space-y-8">
                             <div className="flex justify-between items-start border-b border-slate-100 pb-8">
                                 <div className="space-y-4">
-                                    <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                                        <Receipt className="w-3.5 h-3.5" /> IPD Tax Invoice (Active)
+                                    <div className="flex items-center gap-3">
+                                        <img
+                                            src="/assets/ayusetu_logo.png"
+                                            alt="AyuSetu"
+                                            className="h-8 w-auto object-contain"
+                                        />
+                                        <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                                            <Receipt className="w-3.5 h-3.5" /> IPD Tax Invoice (Active)
+                                        </div>
                                     </div>
                                     <div>
                                         <h2 className="text-4xl font-black text-slate-900 tracking-tight">Bill Summary</h2>

@@ -87,14 +87,18 @@ class _NurseTriageScreenState extends State<NurseTriageScreen> {
                 Text(
                   "Triage Sentinel Active (<3s Bypass Engine)",
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   "Deterministic rule triggers for immediate clinical handoff",
                   style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
+          SizedBox(width: 8),
+          AyuSetuLogoBadge(height: 18),
         ],
       ),
     );

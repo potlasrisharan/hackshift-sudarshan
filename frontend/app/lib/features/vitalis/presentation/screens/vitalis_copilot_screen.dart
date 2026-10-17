@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../../../../core/constants/app_colors.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../widgets/vitalis_explainability_sheet.dart";
 
 class VitalisCopilotScreen extends ConsumerStatefulWidget {
@@ -120,6 +121,10 @@ class _VitalisCopilotScreenState extends ConsumerState<VitalisCopilotScreen> {
         title: const Text("Vitalis AI Healthspan Copilot"),
         backgroundColor: AppColors.surface,
         actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: AyuSetuLogoBadge(height: 20),
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline, color: AppColors.vitalisTeal),
             onPressed: () {
@@ -167,8 +172,11 @@ class _VitalisCopilotScreenState extends ConsumerState<VitalisCopilotScreen> {
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.lock_outline, size: 14, color: AppColors.ayushGreen),
-          SizedBox(width: 6),
+          AyuSetuLogoBadge(
+            height: 14,
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          ),
+          SizedBox(width: 8),
           Flexible(
             child: Text(
               "Zero-PHI Redaction Active · Deterministic Safety Verified",

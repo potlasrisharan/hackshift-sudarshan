@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "../../../../core/constants/app_colors.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../../data/models/her_models.dart";
 
 class HerExplainabilitySheet extends StatelessWidget {
@@ -45,6 +46,8 @@ class HerExplainabilitySheet extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
+                const AyuSetuLogoBadge(height: 18),
               ],
             ),
             const SizedBox(height: 12),

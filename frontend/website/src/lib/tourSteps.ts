@@ -1,9 +1,9 @@
 export const TOUR_STEPS = [
     {
         targetId: 'center',
-        title: 'Welcome to Aarogya Nidhi!',
+        title: 'Welcome to AyuSetu!',
         route: 'admin',
-        content: "Welcome to Aarogya Nidhi! I'm Dr. Guide, your AI assistant. I'll help you navigate through the powerful features of your hospital management workspace. Ready to see the magic?"
+        content: "Welcome to AyuSetu! I'm Dr. Guide, your AI assistant. I'll help you navigate through the powerful features of your hospital management workspace. Ready to see the magic?"
     },
     {
         targetId: 'tour-new-clinic',
@@ -27,6 +27,6 @@ export const TOUR_STEPS = [
         targetId: 'center',
         title: "You're all set!",
         route: 'admin',
-        content: "You're all set! Explore the rest of Aarogya Nidhi and see how we're revolutionizing healthcare management. If you need me again, I'm just a click away!"
+        content: "You're all set! Explore the rest of AyuSetu and see how we're revolutionizing healthcare management. If you need me again, I'm just a click away!"
     }
 ];

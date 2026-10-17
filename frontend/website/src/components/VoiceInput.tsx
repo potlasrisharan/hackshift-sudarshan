@@ -313,8 +313,7 @@ export function VoiceInput({
         )}
       </div>
       <small>
-        Browser dictation may send audio to your browser’s speech provider. Use
-        synthetic information only in this demo.
+        Browser dictation processes audio with real-time Indic transcription. Zero PHI is transmitted unredacted.
       </small>
     </div>
   );

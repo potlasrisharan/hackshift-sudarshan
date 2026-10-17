@@ -586,7 +586,10 @@ class HerHubScreen extends ConsumerWidget {
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.shield_outlined, color: AppColors.ayushGreen, size: 18),
+          AyuSetuLogoBadge(
+            height: 18,
+            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          ),
           SizedBox(width: 8),
           Expanded(
             child: Text(

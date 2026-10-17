@@ -90,8 +90,8 @@ Deno.serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'MedFlow Billing <billing@medflow.app>',
-        to: [recipientEmail || 'billing@aarogyanidhi.org'], // Fallback email
+        from: 'AyuSetu Billing <billing@ayusetu.in>',
+        to: [recipientEmail || 'billing@ayusetu.in'], // Fallback email
         subject: subject,
         html: html,
       }),

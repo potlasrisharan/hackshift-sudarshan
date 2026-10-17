@@ -7,4 +7,4 @@ Disallow: /app/
 Disallow: /login
 Disallow: /register
 
-Sitemap: https://www.aarogyanidhi.in/sitemap.xml
+Sitemap: https://www.ayusetu.in/sitemap.xml

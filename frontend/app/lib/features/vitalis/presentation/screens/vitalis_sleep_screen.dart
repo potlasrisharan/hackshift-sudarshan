@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../../../../core/constants/app_colors.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/vitalis_provider.dart";
 import "../widgets/vitalis_explainability_sheet.dart";
 
@@ -19,6 +20,10 @@ class VitalisSleepScreen extends ConsumerWidget {
         title: const Text("Sleep Regularity & Circadian SRI"),
         backgroundColor: AppColors.surface,
         actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: AyuSetuLogoBadge(height: 20),
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline, color: AppColors.vitalisTeal),
             onPressed: () {

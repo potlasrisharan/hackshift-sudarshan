@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
 
 class PortalSelectionScreen extends StatelessWidget {
   const PortalSelectionScreen({super.key});
@@ -26,6 +27,15 @@ class PortalSelectionScreen extends StatelessWidget {
                 icon: Icons.personal_injury_rounded,
                 accentColor: AppColors.primaryLight,
                 route: "/kiosk",
+              ),
+              const SizedBox(height: 12),
+              _buildPortalCard(
+                context,
+                title: AppStrings.prescriptionHeader,
+                subtitle: "Doctor's advice, medication schedule, FEFO batches & timed dosage alarms",
+                icon: Icons.medication_liquid_rounded,
+                accentColor: AppColors.ayushGreen,
+                route: "/prescription",
               ),
               const SizedBox(height: 12),
               _buildPortalCard(
@@ -126,24 +136,9 @@ class PortalSelectionScreen extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        "assets/images/ayusetu_logo.png",
-                        height: 24,
-                        fit: BoxFit.contain,
-                      ),
+                    const AyuSetuLogoBadge(
+                      height: 24,
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     ),
                     const SizedBox(width: 8),
                     const Flexible(

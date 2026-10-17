@@ -1,5 +1,10 @@
 // Cloudflare Native API Client - Replaces Supabase entirely
-export const CLOUDFLARE_API_BASE = (import.meta.env.VITE_API_URL || '/api/v1').replace(/\/$/, '');
+const isPagesDev = typeof window !== 'undefined' && window.location.hostname.endsWith('pages.dev');
+const defaultApiUrl = isPagesDev 
+  ? 'https://ayusetu-api.potlasrisharanchowdary.workers.dev/api/v1'
+  : '/api/v1';
+
+export const CLOUDFLARE_API_BASE = (import.meta.env.VITE_API_URL || defaultApiUrl).replace(/\/$/, '');
 
 export interface CloudflareResponse<T = any> {
   data: T | null;

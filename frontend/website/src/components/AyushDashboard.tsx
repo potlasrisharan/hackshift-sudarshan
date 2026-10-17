@@ -232,8 +232,27 @@ export function AyushDashboard({ onSendToPos }: AyushDashboardProps) {
 
         {/* Right: Dashavidha & Formulation Pad (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-5" id="ayush-case-sheet">
             
+            {/* Printable Header */}
+            <div className="hidden print:flex items-center justify-between pb-4 border-b border-slate-300">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/assets/ayusetu_logo.png"
+                  alt="AyuSetu"
+                  className="h-10 w-auto object-contain"
+                />
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900">AyuSetu AYUSH Clinical Centre</h1>
+                  <p className="text-xs text-slate-500">Ministry of Ayush Standardized OPD Case Sheet</p>
+                </div>
+              </div>
+              <div className="text-right text-xs text-slate-500">
+                <p>Date: {new Date().toLocaleDateString('en-IN')}</p>
+                <p className="font-mono">ABDM Milestone 2</p>
+              </div>
+            </div>
+
             {/* Patient Header */}
             <div className="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200 gap-3">
               <div>

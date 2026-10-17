@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../../../../core/constants/app_colors.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../providers/vitalis_provider.dart";
 import "../widgets/vitalis_explainability_sheet.dart";
 
@@ -41,6 +42,10 @@ class _VitalisSummaryScreenState extends ConsumerState<VitalisSummaryScreen> {
         title: const Text("Clinician Summary & Export"),
         backgroundColor: AppColors.surface,
         actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: AyuSetuLogoBadge(height: 20),
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline, color: AppColors.vitalisTeal),
             onPressed: () {
@@ -135,6 +140,7 @@ class _VitalisSummaryScreenState extends ConsumerState<VitalisSummaryScreen> {
                 child: const Text(
                   "ABDM ABHA: 91-****-4210",
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.vitalisTeal),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

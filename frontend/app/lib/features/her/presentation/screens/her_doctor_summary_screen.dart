@@ -138,7 +138,10 @@ class HerDoctorSummaryScreen extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.link, size: 16, color: AppColors.primaryLight),
+                const AyuSetuLogoBadge(
+                  height: 16,
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

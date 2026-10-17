@@ -115,7 +115,7 @@ class CloudflareAuthService implements AuthService {
     async signInDemo(role: 'HOSPITAL_ADMIN' | 'DOCTOR' | 'CLINIC_ADMIN' | 'SUPER_ADMIN' | 'NURSE' | 'PATIENT' = 'HOSPITAL_ADMIN') {
         const demoHospital = {
             id: 'cdd763dd-5cda-4444-adad-699058e335d8',
-            name: 'AYUSETU Central Hospital (Medanta Network)',
+            name: 'AYUSETU Central Hospital & Medical Network',
             branding_color: '#2563eb',
             primary_email: 'admin@ayusetu.in',
             tier: 'enterprise'

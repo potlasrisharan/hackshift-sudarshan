@@ -23,6 +23,7 @@ import "package:kiosk_app/features/her/presentation/screens/her_wearable_screen.
 import "package:kiosk_app/features/her/presentation/screens/her_wellness_studio_screen.dart";
 import "package:kiosk_app/features/her/presentation/screens/her_questionnaire_screen.dart";
 import "package:kiosk_app/features/her/presentation/screens/her_symptom_journal_screen.dart";
+import "package:kiosk_app/features/prescription/presentation/screens/medicine_reminder_screen.dart";
 
 void main() {
   testWidgets("AyuSetu app initializes properly", (WidgetTester tester) async {
@@ -147,6 +148,13 @@ void main() {
     testWidgets("HerSymptomJournalScreen renders on 360px width with no overflow", (tester) async {
       await testScreen(tester, const HerSymptomJournalScreen());
       expect(find.text("Daily Symptom Journal"), findsOneWidget);
+    });
+
+    testWidgets("MedicineReminderScreen renders on 360px width with no overflow", (tester) async {
+      await testScreen(tester, const MedicineReminderScreen());
+      expect(find.text(AppStrings.prescriptionHeader), findsOneWidget);
+      expect(find.text("Dr. Ananya Sharma"), findsOneWidget);
+      expect(find.text("Yograj Guggulu"), findsOneWidget);
     });
   });
 }

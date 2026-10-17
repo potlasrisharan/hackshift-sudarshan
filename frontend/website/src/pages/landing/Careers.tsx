@@ -6,7 +6,7 @@ const Careers: React.FC = () => {
   const jobs = [
     { title: "Senior Software Engineer", dept: "Engineering", type: "Remote", id: "001" },
     { title: "Clinical Product Manager", dept: "Product", type: "Hybrid", id: "002" },
-    { title: "Healthcare Data Scientist", dept: "Data & AI", type: "On-site (NY)", id: "003" },
+    { title: "Healthcare Data Scientist", dept: "Data & AI", type: "On-site (Bengaluru)", id: "003" },
     { title: "Customer Success Lead", dept: "Operations", type: "Remote", id: "004" }
   ];
 

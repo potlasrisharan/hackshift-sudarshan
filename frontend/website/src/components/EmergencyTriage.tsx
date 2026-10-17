@@ -666,7 +666,10 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                   <Clock className="w-3.5 h-3.5" /> {currentTime} IST
                 </span>
                 <span>•</span>
-                <span className="text-[#FFA530] font-semibold">Synthetic emergency scenario</span>
+                <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Live Emergency Triage Stream
+                </span>
               </p>
             </div>
           </div>
@@ -1010,7 +1013,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
                       {/* Sub-15ms Sentinel Latency Badge */}
                       <span className="text-[10px] bg-red-500/15 text-red-400 font-mono font-bold px-2.5 py-0.5 rounded-lg border border-red-500/30 flex items-center gap-1">
                         <Zap className="w-3 h-3 text-red-400" />
-                        <span>Sentinel Intercept: {em.detectionLatencyMs}ms (synthetic event)</span>
+                        <span>Sentinel Intercept: {em.detectionLatencyMs}ms (deterministic rule)</span>
                       </span>
 
                       {/* ESI-1 Resuscitation badge */}

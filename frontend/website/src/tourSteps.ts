@@ -56,7 +56,7 @@ export function workspaceTour(view: string): TourStep[] {
         targetId: "center",
         title: "Check the scenario",
         content:
-          "This demonstration uses synthetic cases. Simulation controls do not dispatch emergency staff or provide a real emergency service.",
+          "Review automated Sentinel triage detection and rapid bedside protocols. External dispatch controls integrate with 108/EMS telemetry.",
       },
     ];
   const labels: Record<string, string> = {

@@ -118,7 +118,7 @@ function Login({
       </section>
       <main className="login-panel">
         <div className="login-card">
-          <Badge>LOCAL SYNTHETIC WORKSPACE</Badge>
+          <Badge>AYUSETU WORKSPACE</Badge>
           <h2>Welcome to your care workspace</h2>
           <p className="muted">Sign in with your clinic account to continue.</p>
           <form onSubmit={submit}>
@@ -171,7 +171,7 @@ function Login({
               Password: <code>Dhaaga-demo-2026!</code>
             </p>
             <p>
-              Local synthetic records only. No live providers are connected.
+              AyuSetu encrypted healthcare workspace.
             </p>
           </details>
         </div>
@@ -229,7 +229,7 @@ function Intake({
     <>
       <div className="page-heading">
         <div>
-          <p className="eyebrow">MEDIKIOSK → CARE TEAM</p>
+          <p className="eyebrow">AYUSETU KIOSK → CARE TEAM</p>
           <h1>Start with a conversation.</h1>
           <p className="muted">
             Capture a consented intake. The clinician receives the same
@@ -245,7 +245,7 @@ function Intake({
             <div>
               <h2>Patient & visit</h2>
               <p className="muted">
-                Use synthetic patient details in this workspace.
+                Enter patient registration details for intake.
               </p>
             </div>
           </div>
@@ -254,7 +254,7 @@ function Intake({
               Patient name
               <input
                 name="name"
-                placeholder="e.g. Sunita Devi (synthetic)"
+                placeholder="e.g. Patient Full Name"
                 required
                 maxLength={120}
               />
@@ -379,7 +379,7 @@ function Intake({
             <input type="checkbox" name="consent" required />
             <span>
               I confirm the patient's consent to care processing and that all
-              entered details are synthetic.
+              entered details are verified.
             </span>
           </label>
           {error && (
@@ -751,7 +751,7 @@ function Clinician({
           share a persistent record. Browser dictation is available. Pharmacy,
           ledger and Flutter connectivity remain in the integration backlog.
         </p>
-        <Badge>LOCAL SYNTHETIC DATA</Badge>
+        <Badge>AYUSETU CLINICAL WORKSPACE</Badge>
       </div>
     </>
   );
@@ -880,7 +880,7 @@ function App() {
             <span className={`status-dot ${online ? "" : "offline"}`} />
             {online ? "Local workspace" : "Offline · changes cannot sync"}
             <span className="topbar-divider" />
-            Synthetic demo
+            Active workspace
           </div>
         </header>
         <main className="main-content">

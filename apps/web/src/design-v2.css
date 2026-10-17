@@ -248,26 +248,7 @@
   background: #f2f6ed;
   color: #526e55;
 }
-.ayu-consent-entry {
-  padding: 72px 24px;
-  background: #f0f5eb;
-  scroll-margin-top: 24px;
-}
-.ayu-consent-entry .consent {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 40px;
-}
-.ayu-consent-entry h2 {
-  font-size: 28px;
-  line-height: 1.3;
-  letter-spacing: -0.8px;
-  margin-top: 22px;
-  color: #244b38;
-}
-.ayu-consent-entry .primary {
-  margin-top: 8px;
-}
+
 .sidebar-bottom p {
   color: #526e56;
   font-size: 13px;
@@ -507,20 +488,7 @@
   .section-heading > span {
     font-size: 9px;
   }
-  .ayu-consent-entry {
-    padding: 40px 18px;
-  }
-  .ayu-consent-entry .consent {
-    padding: 26px 20px;
-  }
-  .ayu-consent-entry h2 {
-    font-size: 25px;
-  }
-  .ayu-consent-entry .primary {
-    white-space: normal;
-    font-size: 12px;
-    line-height: 1.5;
-  }
+
   .dark .sidebar {
     border-bottom: 1px solid #365045;
   }

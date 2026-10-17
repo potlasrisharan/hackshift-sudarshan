@@ -1,13 +1,13 @@
 <div align="center">
 
-# 🏥 AarogyaNidhi (ClinicOS)
+# 🏥 AyuSetu (आयुसेतु) Enterprise Healthcare Suite
 ### *Next-Generation Hub-and-Spoke Healthcare Operating System & Hospital Business ERP*
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-aarogyanidhi.in-0066FF?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.aarogyanidhi.in)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-ayusetu.in-0066FF?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.ayusetu.in)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
-[![Security Audit](https://img.shields.io/badge/Security%20Audit-PASSED%20(100%25%20RLS)-success?style=for-the-badge&logo=shield&logoColor=white)](#-battle-tested-security-matrix)
+[![Security Audit](https://img.shields.io/badge/Security%20Audit-PASSED%20(100%25%20Isolation)-success?style=for-the-badge&logo=shield&logoColor=white)](#-battle-tested-security-matrix)
 [![React](https://img.shields.io/badge/React%2018-TypeScript-blue?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%2015-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS%203.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 <p align="center">
@@ -23,13 +23,13 @@
 
 ## 🌟 Executive Summary
 
-**AarogyaNidhi** solves the fragmentation and revenue leakage in multi-facility healthcare operations. Traditional hospital software operates in silos; AarogyaNidhi implements a distributed **Hub-and-Spoke** architecture that connects central hospital headquarters with unlimited satellite clinics and outpatient departments (OPDs).
+**AyuSetu** solves the fragmentation and revenue leakage in multi-facility healthcare operations. Traditional hospital software operates in silos; AyuSetu implements a distributed **Hub-and-Spoke** architecture that connects central hospital headquarters with unlimited satellite clinics and outpatient departments (OPDs).
 
-Every transaction—from a strip of Paracetamol dispensed at a remote clinic counter to an ICU admission at HQ—synchronizes through PostgreSQL database triggers into an audit-locked double-entry financial ledger and real-time inventory matrix.
+Every transaction—from a strip of Paracetamol dispensed at a remote clinic counter to an ICU admission at HQ—synchronizes through database triggers into an audit-locked double-entry financial ledger and real-time inventory matrix.
 
 ```
        ┌────────────────────────────────────────────────────────┐
-       │             AAROGYANIDHI HOSPITAL HQ HUB               │
+       │               AYUSETU HOSPITAL HQ HUB                  │
        │    Executive Command Center • Central Inventory        │
        │    Procurement Supply Chain • CA Financial Suite       │
        └──────────────────────────┬─────────────────────────────┘
@@ -358,8 +358,8 @@ HOSPITAL-MANAGEMENT/
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/Saksham-Goswami-11/HOSPITAL-MANAGEMENT.git
-cd HOSPITAL-MANAGEMENT
+git clone https://github.com/potlasrisharan/ayusetu.git
+cd ayusetu
 npm install
 ```
 
@@ -429,6 +429,6 @@ We welcome contributions from healthcare software engineers, security researcher
 
 Made with ❤️ for healthcare professionals & hospital managers worldwide.
 
-**[🌐 Visit Official Website](https://www.aarogyanidhi.in)**
+**[🌐 Visit Official Website](https://www.ayusetu.in)**
 
 </div>

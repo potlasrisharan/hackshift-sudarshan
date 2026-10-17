@@ -184,13 +184,25 @@ class VitalisDashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      AppStrings.healthspanIndex,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      children: const [
+                        AyuSetuLogoBadge(
+                          height: 16,
+                          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        ),
+                        SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            AppStrings.healthspanIndex,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 6),
                     FittedBox(

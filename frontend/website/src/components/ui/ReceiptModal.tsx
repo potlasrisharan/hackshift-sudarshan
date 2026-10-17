@@ -14,10 +14,9 @@ export function ReceiptModal({ open, onClose, sale, items }: { open: boolean, on
     const myClinic = profile?.clinic_id ? clinics.find(c => c.id === profile.clinic_id) : null
     const activeClinic = managedClinic || myClinic
 
-    const receiptHeaderName = activeClinic?.name || hospital?.name || 'Aarogya Nidhi Clinic'
+    const receiptHeaderName = activeClinic?.name || hospital?.name || 'AyuSetu Clinic'
     const receiptHeaderSubtext = activeClinic?.address || hospital?.address || 'Excellence in Healthcare'
     const patientAddress = sale?.patient_address || ''
-    if (!open) return null
 
     const modalContent = (
         <div
@@ -50,9 +49,16 @@ export function ReceiptModal({ open, onClose, sale, items }: { open: boolean, on
                 <div className="p-8 space-y-8 print:p-0" id="receipt-content">
                     {/* Header Section */}
                     <div className="flex justify-between items-start border-b pb-6">
-                        <div className="space-y-1">
-                            <h2 className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{receiptHeaderName}</h2>
-                            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">{receiptHeaderSubtext}</p>
+                        <div className="flex items-start gap-3.5">
+                            <img
+                                src="/assets/ayusetu_logo.png"
+                                alt="AyuSetu"
+                                className="h-11 w-auto object-contain shrink-0 mt-0.5"
+                            />
+                            <div className="space-y-1">
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{receiptHeaderName}</h2>
+                                <p className="text-sm text-slate-500 max-w-xs leading-relaxed">{receiptHeaderSubtext}</p>
+                            </div>
                         </div>
                         <div className="text-right space-y-3">
                             <div className="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-widest rounded-md border border-blue-100">

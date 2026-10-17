@@ -103,7 +103,7 @@ class ApiClient {
       "document_id": "doc-09821",
       "medications": [
         {"name": "Telmisartan (Telma 40)", "dosage": "40mg", "frequency": "1-0-0", "duration": "30 Days"},
-        {"name": "Yograj Guggulu", "dosage": "500mg", "frequency": "1-0-1", "duration": "15 Days"}
+        {"name": "Paracetamol 650mg", "dosage": "650mg", "frequency": "1-0-1 (SOS)", "duration": "5 Days"}
       ],
       "lab_results": [
         {"test_name": "Serum Uric Acid", "value": "7.8", "unit": "mg/dL", "reference_range": "3.5 - 7.2", "is_abnormal": true},

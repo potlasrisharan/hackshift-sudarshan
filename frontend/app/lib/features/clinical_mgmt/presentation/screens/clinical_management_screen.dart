@@ -14,14 +14,14 @@ class _ClinicalManagementScreenState extends State<ClinicalManagementScreen> wit
   late TabController _tabController;
 
   final List<Map<String, dynamic>> _inventory = const [
-    {"item": "Yograj Guggulu 500mg", "batch": "BAT-2026-Y89", "expiry": "11/2026", "stock": 420, "status": "EXPIRING IN 30D", "warn": true},
-    {"item": "Dashamularishta 450ml", "batch": "BAT-2026-D12", "expiry": "04/2028", "stock": 95, "status": "OPTIMAL", "warn": false},
-    {"item": "Shatavari Churna 100g", "batch": "BAT-2026-S44", "expiry": "09/2027", "stock": 310, "status": "OPTIMAL", "warn": false},
-    {"item": "Triphala Churna 250g", "batch": "BAT-2026-T01", "expiry": "12/2026", "stock": 38, "status": "LOW STOCK", "warn": true},
+    {"item": "Febuxostat 40mg", "batch": "BAT-2026-F40", "expiry": "11/2026", "stock": 420, "status": "EXPIRING IN 30D", "warn": true},
+    {"item": "Colchicine 0.5mg", "batch": "BAT-2026-C05", "expiry": "04/2028", "stock": 95, "status": "OPTIMAL", "warn": false},
+    {"item": "Metformin 500mg SR", "batch": "BAT-2026-M50", "expiry": "09/2027", "stock": 310, "status": "OPTIMAL", "warn": false},
+    {"item": "Pantoprazole 40mg", "batch": "BAT-2026-P40", "expiry": "12/2026", "stock": 38, "status": "LOW STOCK", "warn": true},
   ];
 
   final List<Map<String, dynamic>> _shifts = const [
-    {"staff": "Dr. Ananya Sharma", "role": "Senior Ayurvedic Clinician", "shift": "08:00 - 16:00", "status": "ON DUTY"},
+    {"staff": "Dr. Ananya Sharma", "role": "Senior Consultant Physician", "shift": "08:00 - 16:00", "status": "ON DUTY"},
     {"staff": "Nurse Priya Nair", "role": "Triage & Emergency Lead", "shift": "08:00 - 16:00", "status": "ON DUTY"},
     {"staff": "Pharmacist Rajesh", "role": "Dispensary & FEFO Head", "shift": "10:00 - 18:00", "status": "ON DUTY"},
     {"staff": "Dr. Vikas Verma", "role": "Consultant Physician", "shift": "16:00 - 00:00", "status": "UPCOMING"},
@@ -160,13 +160,23 @@ class _ClinicalManagementScreenState extends State<ClinicalManagementScreen> wit
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Cashless POS Terminal",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Expanded(
+                      child: Text(
+                        "Cashless POS Terminal",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    AyuSetuLogoBadge(height: 18),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 _buildReceiptRow("Patient Token", "T-102 (Ramesh Chandra)"),
-                _buildReceiptRow("Prescribed Items", "Yograj Guggulu + Dashamularishta"),
+                _buildReceiptRow("Prescribed Items", "Febuxostat 40mg + Colchicine 0.5mg"),
                 _buildReceiptRow("Ayushman PM-JAY Coverage", "100% Cashless Subsidy"),
                 const Divider(color: AppColors.surfaceElevated, height: 24),
                 _buildReceiptRow("Total Ledger Entry", "₹40,000 paise (₹400.00)", isBold: true),

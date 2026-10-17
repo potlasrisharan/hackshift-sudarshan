@@ -42,11 +42,11 @@ const News: React.FC = () => {
     {
       date: "March 01, 2026",
       tag: "CLINICAL SYNERGY",
-      title: "Beyond Dashboards: How Aarogya Nidhi Serves the Medical Frontline.",
+      title: "Beyond Dashboards: How AyuSetu Serves the Medical Frontline.",
       image: "/assets/news/article-1.png",
       icon: <Users className="w-5 h-5 text-blue-600" />,
-      desc: "High-performance healthcare starts with high-performance tools. We’ve optimized Aarogya Nidhi’s interface to connect hospital management directly with daily clinical workflows. By removing administrative friction, we’ve created a digital environment where the staff is empowered and the patient is always the priority.",
-      fullContent: "The gap between administrative oversight and clinical reality is often where medical errors and burnout occur. Aarogya Nidhi 2.0 introduces a 'clinical-first' architecture. Instead of doctors adapting to the software, the software adapts to the patient journey. From real-time vitals integration to AI-assisted documentation, every feature is designed to keep the healer’s eyes on the patient, not the screen. We believe that when technology vanishes into the background, true care begins."
+      desc: "High-performance healthcare starts with high-performance tools. We’ve optimized AyuSetu’s interface to connect hospital management directly with daily clinical workflows. By removing administrative friction, we’ve created a digital environment where the staff is empowered and the patient is always the priority.",
+      fullContent: "The gap between administrative oversight and clinical reality is often where medical errors and burnout occur. AyuSetu 2.0 introduces a 'clinical-first' architecture. Instead of doctors adapting to the software, the software adapts to the patient journey. From real-time vitals integration to AI-assisted documentation, every feature is designed to keep the healer’s eyes on the patient, not the screen. We believe that when technology vanishes into the background, true care begins."
     },
     {
       date: "Feb 18, 2026",
@@ -54,7 +54,7 @@ const News: React.FC = () => {
       title: "The 20-Hour Gift: Why we automated the Billing Engine.",
       image: "/assets/news/article-2.png",
       icon: <Clock className="w-5 h-5 text-indigo-600" />,
-      desc: "Our community of doctors shared that they spend too much time on paperwork and not enough on patients. We listened. Aarogya Nidhi’s billing engine is a time-recovery tool designed to save practitioners 20+ hours of manual entry every week, turning tedious data entry into seamless patient care.",
+      desc: "Our community of doctors shared that they spend too much time on paperwork and not enough on patients. We listened. AyuSetu’s billing engine is a time-recovery tool designed to save practitioners 20+ hours of manual entry every week, turning tedious data entry into seamless patient care.",
       fullContent: "Billing is the most stressful non-clinical task for any practitioner. Our new Autonomous Billing Engine uses machine learning to categorize procedures, verify insurance codes, and generate invoices in sub-seconds. In a pilot study across 50 clinics, we observed a 45% reduction in billing errors and an average time-saving of 22 hours per week for administrative staff. This isn't just about money; it's about reclaiming the energy needed for high-quality healthcare."
     },
     {
@@ -64,7 +64,7 @@ const News: React.FC = () => {
       image: "/assets/news/article-3.png",
       icon: <Lightbulb className="w-5 h-5 text-amber-600" />,
       desc: "The biggest challenge in healthcare tech today is fragmentation. As a student developer community, we see this as an opportunity to build bridges. We’re not just building a SaaS platform; we’re creating a standard for how modern clinics should operate—simple, unified, and always human-centric.",
-      fullContent: "Legacy healthcare systems are built in silos. Our mission as a developer-led collective is to treat interoperability as a human right. Aarogya Nidhi is built on open standards, allowing for seamless data exchange between labs, pharmacies, and primary care providers. By involving medical students and young doctors in our design process, we ensure that Aarogya Nidhi is built for the future of medicine, not just solving the problems of the past."
+      fullContent: "Legacy healthcare systems are built in silos. Our mission as a developer-led collective is to treat interoperability as a human right. AyuSetu is built on open standards, allowing for seamless data exchange between labs, pharmacies, and primary care providers. By involving medical students and young doctors in our design process, we ensure that AyuSetu is built for the future of medicine, not just solving the problems of the past."
     }
   ];
 
@@ -83,7 +83,7 @@ const News: React.FC = () => {
             <span className="text-xs font-bold text-slate-800 uppercase tracking-widest">Community Insights</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 mb-8 tracking-tight">
-            The Aarogya Nidhi <span className="italic text-blue-600 font-medium">Notebook</span>
+            The AyuSetu <span className="italic text-blue-600 font-medium">Notebook</span>
           </h1>
           <p className="text-slate-500 text-xl max-w-2xl mx-auto font-medium leading-relaxed">
             Real stories, progress reports, and deep dives into the future of healthcare operations.
@@ -137,7 +137,7 @@ const News: React.FC = () => {
         </div>
       </section>
 
-      {/* Newsletter - The Aarogya Nidhi Collective */}
+      {/* Newsletter - The AyuSetu Collective */}
       <section className="py-24 relative overflow-hidden bg-[#f8fafc]">
         {/* Subtle Decorative Elements */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
@@ -149,7 +149,7 @@ const News: React.FC = () => {
               <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-8 mx-auto md:mx-0 shadow-inner">
                 <Mail className="w-8 h-8" />
               </div>
-              <h2 className="text-4xl font-bold text-slate-900 mb-6 tracking-tight">Join the <span className="italic text-blue-600 font-medium tracking-normal">Aarogya Nidhi Collective</span></h2>
+              <h2 className="text-4xl font-bold text-slate-900 mb-6 tracking-tight">Join the <span className="italic text-blue-600 font-medium tracking-normal">AyuSetu Collective</span></h2>
               <p className="text-slate-500 text-lg font-medium leading-relaxed mb-0">
                 We’re building this for you. Join a community of healthcare professionals and tech enthusiasts who believe that better systems lead to better care. No corporate spam—just real progress and insights.
               </p>
@@ -265,9 +265,15 @@ const News: React.FC = () => {
                 <div className="mt-12 pt-8 border-t border-slate-100">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">M</div>
+                      <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center p-1.5 border border-blue-100 shrink-0">
+                        <img
+                          src="/assets/ayusetu_logo.png"
+                          alt="AyuSetu Team"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                       <div>
-                        <p className="text-slate-900 font-bold">Aarogya Nidhi Team</p>
+                        <p className="text-slate-900 font-bold">AyuSetu Team</p>
                         <p className="text-slate-400 text-xs font-medium">Core Development Collective</p>
                       </div>
                     </div>

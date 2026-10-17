@@ -156,11 +156,17 @@ export function SettingsDashboard() {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 max-w-6xl mx-auto pb-10">
-            <div>
-                <h2 className="text-3xl font-bold text-slate-900 tracking-tight">System Settings</h2>
-                <p className="text-slate-500 text-sm mt-1">
-                    Manage {isHospitalAdmin ? 'global hospital' : 'local clinic'} configurations and preferences.
-                </p>
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div>
+                    <h2 className="text-3xl font-bold text-slate-900 tracking-tight">System Settings</h2>
+                    <p className="text-slate-500 text-sm mt-1">
+                        Manage {isHospitalAdmin ? 'global hospital' : 'local clinic'} configurations and preferences.
+                    </p>
+                </div>
+                <div className="hidden sm:flex items-center gap-2.5 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl shadow-xs">
+                    <img src="/assets/ayusetu_logo.png" alt="AyuSetu" className="h-6 w-auto object-contain" />
+                    <span className="text-xs font-semibold text-slate-700">AyuSetu Operations</span>
+                </div>
             </div>
 
             <Tabs defaultValue="profile" className="flex flex-col md:flex-row gap-6">

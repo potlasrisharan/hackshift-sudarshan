@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "package:kiosk_app/core/constants/app_colors.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
 import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
 class ConverseScreen extends ConsumerStatefulWidget {
@@ -37,6 +38,10 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           onPressed: () => context.canPop() ? context.pop() : context.go("/identify"),
         ),
         actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: AyuSetuLogoBadge(height: 20),
+          ),
           IconButton(
             icon: const Icon(Icons.document_scanner),
             tooltip: "Proceed to Document Scan",

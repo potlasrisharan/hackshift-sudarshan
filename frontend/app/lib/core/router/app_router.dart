@@ -39,6 +39,7 @@ import "../../features/vitalis/presentation/screens/vitalis_trajectory_screen.da
 import "../../features/vitalis/presentation/screens/vitalis_copilot_screen.dart";
 import "../../features/vitalis/presentation/screens/vitalis_summary_screen.dart";
 import "../../features/vitalis/presentation/screens/vitalis_settings_screen.dart";
+import "../../features/prescription/presentation/screens/medicine_reminder_screen.dart";
 
 final appRouter = GoRouter(
   initialLocation: "/",
@@ -46,6 +47,11 @@ final appRouter = GoRouter(
     GoRoute(
       path: "/",
       builder: (context, state) => const PortalSelectionScreen(),
+    ),
+    // Patient Prescription & Medicine Reminder
+    GoRoute(
+      path: "/prescription",
+      builder: (context, state) => const MedicineReminderScreen(),
     ),
     // Patient Kiosk Flow
     GoRoute(

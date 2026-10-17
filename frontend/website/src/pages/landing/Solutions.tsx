@@ -35,13 +35,25 @@ const Solutions: React.FC = () => {
             <div className="bg-slate-100 rounded-[3rem] p-12 flex items-center justify-center">
               <div className="text-center">
                 <p className="text-slate-400 font-mono text-sm uppercase tracking-widest mb-4">Module Snapshot</p>
-                <div className="w-64 h-80 bg-white rounded-2xl shadow-xl p-6 relative">
-                  <div className="w-full h-4 bg-slate-100 rounded mb-4"></div>
-                  <div className="w-3/4 h-4 bg-slate-100 rounded mb-4"></div>
-                  <div className="w-full h-32 bg-blue-50 rounded-xl mb-4"></div>
-                  <div className="flex gap-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full"></div>
-                    <div className="flex-grow h-8 bg-slate-50 rounded"></div>
+                <div className="w-64 h-80 bg-white rounded-2xl shadow-xl p-6 relative flex flex-col justify-between">
+                  <div>
+                    <div className="w-full h-4 bg-slate-100 rounded mb-4"></div>
+                    <div className="w-3/4 h-4 bg-slate-100 rounded mb-4"></div>
+                  </div>
+                  <div className="w-full h-32 bg-blue-50/70 rounded-xl mb-4 flex items-center justify-center p-4 border border-blue-100/50">
+                    <img
+                      src="/assets/ayusetu_logo.png"
+                      alt="AyuSetu Platform"
+                      className="max-h-16 w-auto object-contain transition-transform hover:scale-105 duration-300"
+                    />
+                  </div>
+                  <div className="flex gap-2.5 items-center">
+                    <img
+                      src="/assets/ayusetu_logo.png"
+                      alt="AyuSetu Mark"
+                      className="w-8 h-8 rounded-full object-contain p-1 bg-blue-50 border border-blue-100 shrink-0"
+                    />
+                    <div className="flex-grow h-8 bg-slate-50 rounded flex items-center px-3 text-xs font-semibold text-slate-600">AyuSetu Core</div>
                   </div>
                 </div>
               </div>

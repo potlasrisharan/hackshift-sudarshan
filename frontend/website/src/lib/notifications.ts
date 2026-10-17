@@ -23,8 +23,8 @@ export const showNotification = (title: string, options?: NotificationOptions) =
     }
 
     const defaultOptions: NotificationOptions = {
-        icon: '/vite.svg',
-        badge: '/vite.svg',
+        icon: '/assets/ayusetu_logo.png',
+        badge: '/assets/ayusetu_logo.png',
         ...options
     };
 

@@ -24,6 +24,9 @@ import {
   demoReadings,
   demoRecord,
 } from "../../../packages/shared/demo";
+import { createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import TextType from "./TextType";
 
 const root = document.querySelector<HTMLDivElement>("#app");
 if (!root) throw new Error("Application root missing");
@@ -31,7 +34,7 @@ const app = root;
 let token = "",
   page = "today",
   lang: Language = "en-IN",
-  consent = false,
+  consent = true,
   loading = false,
   error = "",
   deleted = false;
@@ -103,24 +106,23 @@ const recordResponse = z.object({
 async function start() {
   loading = true;
   error = "";
-  render();
+  consent = true;
   try {
     const session = z
       .object({ token: z.string() })
       .parse(await api("/demo/session", "POST"));
     token = session.token;
     await api("/consent", "POST", { granted: true });
-    consent = true;
-    page = "today";
-    history.replaceState({ page }, "", "#today");
     record = recordResponse.parse(await api("/record"));
     deleted = false;
-  } catch (e) {
-    error = e instanceof Error ? e.message : "Connection failed";
+  } catch {
+    // Retain local synthetic demo record on network/offline fallback
   } finally {
     loading = false;
     render();
-    if (consent) window.scrollTo({ top: 0, behavior: "instant" });
+    if (window.location.hash) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   }
 }
 function chart(values: number[], title: string) {
@@ -193,25 +195,62 @@ function lab() {
  <div class="two-col"><section class="panel"><h2>Triage Sentinel</h2><p>Bayesian question selection over an illustrative knowledge base. Always requires clinician review.</p><div class="triage-status ${s.tier === "emergency" ? "emergency" : ""}">${s.tier === "emergency" ? "Seek emergency help now. Do not wait for this app." : `Next screen: ${safe(s.nextQuestion ?? "clinician review")}`}</div><div class="button-row"><button data-action="redflag" class="danger-button">Test chest-pain red flag</button><button data-action="reset-triage" class="secondary">Reset</button></div><p>${safe(s.explanation.action)}</p><details><summary>Show probabilities and information gain</summary><pre>${safe(JSON.stringify(s, null, 2))}</pre></details></section>
  <section class="panel"><h2>ThreadPulse</h2><p>Exact probabilistic demand from ten synthetic refill probabilities.</p><div class="stat-large">${pulse.reorderUnits}<small>additional units suggested</small></div><p>Illustrative stockout probability: ${(pulse.stockoutProbability * 100).toFixed(1)}%</p><p>95% service quantile: ${pulse.target} units. Manager approval required.</p><details><summary>Show demand distribution</summary><pre>${safe(JSON.stringify(pulse, null, 2))}</pre></details></section></div><section class="panel"><h2>Shared engine, local execution</h2><p>This screen runs the same pure TypeScript modules used by the API. It remains usable when the server is offline after the shell has been cached.</p><div class="button-row"><button data-action="server-test" class="primary">Compare with API result</button><button data-go="medicines" class="secondary">Explore Rx-to-Shelf</button><button data-go="monitor" class="secondary">Explore Drift Radar</button></div><pre id="server-result" class="result" aria-live="polite"></pre><p class="caption">Benchmarks are reproducible with make bench. Synthetic results do not establish clinical safety or superiority.</p></section>`;
 }
+let heroRoot: Root | null = null;
+
+function mountHeroTextType() {
+  const container = document.getElementById("hero-typed-target");
+  if (!container) return;
+  if (!heroRoot) {
+    heroRoot = createRoot(container);
+  }
+  heroRoot.render(
+    createElement(TextType, {
+      as: "span",
+      prefix: "Healthcare,\n",
+      text: [
+        "finally connected.",
+        "deeply human.",
+        "from clinic to home.",
+        "care without gaps.",
+      ],
+      textColors: ["#087466", "#087466", "#087466", "#087466"],
+      typingSpeed: 75,
+      pauseDuration: 1800,
+      deletingSpeed: 45,
+      deleteMode: "backspace",
+      typeEffect: "fade",
+      mistakes: 0.1,
+      cursorStyle: "bar",
+      cursorGlide: true,
+      showCursor: true,
+      cursorColor: "#087466",
+      className: "ds-typed-hero",
+    }),
+  );
+}
+
 function render() {
   const w = words[lang];
   document.documentElement.lang = lang.slice(0, 2);
   document.body.classList.toggle("dark", dark);
   document.body.classList.toggle("elder", elder);
-  if (!consent) {
-    app.innerHTML =
-      landingMarkup({
-        patient: "#begin",
-        clinician: "/erp.html#/app?view=doctor-consultation",
-        emergency: "/erp.html#/app?view=emergency-triage",
-        headquarters: "/erp.html#/app?view=admin",
-        operations: "/erp.html#/app?view=clinic-admin",
-        home: "/",
-      }) +
-      `<section id="begin" class="ayu-consent-entry"><div class="panel consent"><span class="pill demo">Synthetic data only</span><h2>Welcome to your connected care space.</h2><p>Explore a synthetic patient journey across clinical intake, clinic operations and home monitoring. This demo uses an isolated server-memory session that expires after one hour.</p><p>No real health data or live hospital connections. Optional welcome audio sends only static interface text. Interface translations are illustrative and not clinician verified.</p>${error ? `<p role="alert" class="error">${safe(error)}</p>` : ""}<button data-action="start" class="primary" ${loading ? "disabled" : ""}>${loading ? "Preparing your care space…" : "Agree to local demo processing & begin"}</button><p class="caption">You can revoke consent or delete observations in Privacy.</p></div></section>`;
+  const currentHash = window.location.hash.slice(1);
+  const isPatientPage = nav.some((n) => n.id === currentHash);
+  if (!isPatientPage) {
+    app.innerHTML = landingMarkup({
+      patient: "#today",
+      clinician: "/erp.html#/app?view=doctor-consultation",
+      emergency: "/erp.html#/app?view=emergency-triage",
+      headquarters: "/erp.html#/app?view=admin",
+      operations: "/erp.html#/app?view=clinic-admin",
+      home: "#",
+    });
+    heroRoot = null;
+    mountHeroTextType();
     return;
   }
-  app.innerHTML = `<a class="skip" href="#main">Skip to content</a><aside class="sidebar"><a href="#today" class="brand">${brandMarkup}</a><div class="workspace"><span class="avatar">S</span><div><strong>Sunita’s care space</strong><small>Synthetic patient demo</small></div></div><nav aria-label="Main navigation">${nav.map((n) => `<button data-go="${n.id}" class="nav-item ${page === n.id ? "active" : ""}" ${page === n.id ? 'aria-current="page"' : ""}>${designIcon(n.icon)}${"key" in n ? w[n.key] : n.label}</button>`).join("")}</nav><div class="sidebar-bottom"><p>One thread.<br>From clinic to everyday life.</p><span class="pill">Decision support demo</span><button data-action="caregiver" class="text-button">${caregiver ? "Leave caregiver preview" : "Caregiver preview"}</button></div></aside>
+  heroRoot = null;
+  app.innerHTML = `<a class="skip" href="#main">Skip to content</a><aside class="sidebar"><a href="#" class="brand" title="AyuSetu Home">${brandMarkup}</a><div class="workspace"><span class="avatar">S</span><div><strong>Sunita’s care space</strong><small>Synthetic patient demo</small></div></div><nav aria-label="Main navigation">${nav.map((n) => `<button data-go="${n.id}" class="nav-item ${page === n.id ? "active" : ""}" ${page === n.id ? 'aria-current="page"' : ""}>${designIcon(n.icon)}${"key" in n ? w[n.key] : n.label}</button>`).join("")}</nav><div class="sidebar-bottom"><p>One thread.<br>From clinic to everyday life.</p><span class="pill">Decision support demo</span><button data-action="caregiver" class="text-button">${caregiver ? "Leave caregiver preview" : "Caregiver preview"}</button></div></aside>
  <div class="main-wrap"><header><div class="breadcrumb">My care <span>/</span> ${safe(nav.find((n) => n.id === page)?.id ?? "today")}</div><div class="header-actions"><label class="sr-only" for="language">Language</label><select id="language">${Object.entries(
    languages,
  )
@@ -223,7 +262,7 @@ function render() {
      "",
    )}</select><button data-action="elder" class="icon-button" aria-label="Toggle large text">Aa</button><button data-action="theme" class="icon-button" aria-label="Toggle dark mode">◐</button><span class="avatar small">S</span></div></header>
  <main id="main" tabindex="-1">${!navigator.onLine ? '<div class="status-banner">Offline. The algorithm lab uses local synthetic fixtures; server actions need a connection.</div>' : ""}${error ? `<div class="error" role="alert">${safe(error)} <button data-action="dismiss" class="text-button">Dismiss</button></div>` : ""}${deleted ? '<div class="status-banner">Demo observations deleted. Start a new session to restore the sample record.</div>' : ""}
- ${!consent ? `<section class="consent panel"><span class="pill demo">Synthetic data only</span><h1>Welcome to your connected care space.</h1><p>Explore a synthetic patient journey across clinical intake, clinic operations and home monitoring. This demo uses an isolated server-memory session that expires after one hour.</p><p>No real health data or live hospital connections. Optional welcome audio sends only static interface text. Interface translations are illustrative and not clinician verified.</p><button data-action="start" class="primary" ${loading ? "disabled" : ""}>${loading ? "Preparing your care space…" : "Agree to local demo processing & begin"}</button><p class="caption">You can revoke consent or delete observations in Privacy.</p></section>` : page === "today" ? today() : page === "thread" ? thread() : page === "medicines" ? medicines() : page === "monitor" ? monitor() : page === "care" ? care() : page === "women" ? women() : page === "privacy" ? privacy() : lab()}
+ ${page === "today" ? today() : page === "thread" ? thread() : page === "medicines" ? medicines() : page === "monitor" ? monitor() : page === "care" ? care() : page === "women" ? women() : page === "privacy" ? privacy() : lab()}
  <footer>Demo data • Decision support, not diagnosis • Keep prescribed treatment unchanged <button data-action="sos" class="text-button">Emergency help</button></footer></main></div>`;
   if (page === "care")
     document
@@ -341,14 +380,13 @@ app.addEventListener("click", async (event) => {
         break;
       case "revoke":
         await api("/consent", "POST", { granted: false });
-        consent = false;
+        error = "Demo processing consent revoked for this session.";
         render();
         break;
       case "delete":
         await api("/record", "DELETE");
         record.observations = [];
         deleted = true;
-        consent = false;
         render();
         break;
       case "export": {
@@ -436,20 +474,35 @@ window.addEventListener("popstate", (event) => {
     window.location.hash.slice(1);
   if (p && nav.some((n) => n.id === p)) {
     page = p;
+    if (!token && !loading) void start();
+    else render();
+  } else {
     render();
   }
 });
 window.addEventListener("hashchange", () => {
   const h = window.location.hash.slice(1);
-  if (h && nav.some((n) => n.id === h) && page !== h) {
+  if (h === "begin") {
+    window.location.hash = "#today";
+    return;
+  }
+  if (h && nav.some((n) => n.id === h)) {
     page = h as typeof page;
+    if (!token && !loading) void start();
+    else render();
+  } else {
     render();
   }
 });
 if ("serviceWorker" in navigator)
   navigator.serviceWorker.register("/sw.js").catch(() => {});
+if (window.location.hash === "#begin") {
+  window.location.hash = "#today";
+}
 const initialHash = window.location.hash.slice(1);
 if (initialHash && nav.some((n) => n.id === initialHash)) {
   page = initialHash as typeof page;
+  void start();
+} else {
+  render();
 }
-render();

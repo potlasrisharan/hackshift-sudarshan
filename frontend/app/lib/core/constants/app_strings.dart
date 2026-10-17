@@ -62,4 +62,36 @@ class AppStrings {
   static const String sleepRecovery = "Sleep Regularity & Recovery";
   static const String copilotAssistant = "Vitalis Healthspan Copilot";
   static const String doctorSummary = "Doctor Longitudinal Summary";
+
+  // Prescription & Medicine Reminder
+  static const String prescriptionHeader = "My Prescription & Medicine Reminders";
+  static const String prescriptionSubtitle = "Dr. Ananya Sharma · OPD-3 AIIA";
+  static const String activeRxBadge = "ACTIVE PRESCRIPTION";
+  static const String rxIdLabel = "Rx ID";
+  static const String validTillLabel = "Valid Until";
+  static const String doctorAdviceHeader = "Doctor's Advice & Lifestyle Protocol";
+  static const String dietRestrictionsTitle = "Dietary Exclusions (Pathya / Apathya)";
+  static const String hydrationGoalTitle = "Daily Hydration Target";
+  static const String followUpScheduleTitle = "Next Clinical Follow-up";
+  static const String clinicalNotesTitle = "Doctor's Note";
+  static const String adherenceHeader = "Dosage Adherence & Streak";
+  static const String adherenceStreakSuffix = "Day Streak";
+  static const String configureRemindersButton = "Reminder Times";
+  static const String morningSlotTitle = "Morning Routine";
+  static const String afternoonSlotTitle = "Afternoon Routine";
+  static const String nightSlotTitle = "Night Routine";
+  static const String markSlotDone = "Mark Slot Done";
+  static const String allDosesCompleted = "All prescribed medicines taken for today!";
+  static const String reminderSettingsTitle = "Medication Alarm Routine";
+  static const String morningAlarmLabel = "Morning Dose Time";
+  static const String afternoonAlarmLabel = "Afternoon Dose Time";
+  static const String nightAlarmLabel = "Night Dose Time";
+  static const String soundAlertsLabel = "Audible Alarm Sound";
+  static const String vibrationAlertsLabel = "Haptic Vibration";
+  static const String saveRoutineButton = "Save Medication Routine";
+  static const String batchLabel = "Batch";
+  static const String expLabel = "Exp";
+  static const String emptyPrescriptionTitle = "No Active Prescriptions Found";
+  static const String emptyPrescriptionDesc = "You do not have any pending medication schedules from your consultations.";
+  static const String retryButton = "Retry";
 }

@@ -21,13 +21,20 @@ export const TaxInvoice: React.FC<TaxInvoiceProps> = ({ order, items, hospital, 
         <div className="bg-white p-8 max-w-4xl mx-auto shadow-lg border border-slate-200" id="tax-invoice">
             {/* Header */}
             <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-6">
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-black text-slate-900 uppercase">Tax Invoice</h1>
-                    <div className="text-sm space-y-1">
-                        <p className="font-bold text-lg">{hospital.name}</p>
-                        <p className="text-slate-600 font-medium">{hospital.address}</p>
-                        <p className="font-bold">GSTIN: {hospital.gst_number || 'N/A'}</p>
-                        <p>State: {hospital.state || 'N/A'} (Code: {hospital.state_code || 'N/A'})</p>
+                <div className="flex items-start gap-4">
+                    <img
+                        src="/assets/ayusetu_logo.png"
+                        alt="AyuSetu Logo"
+                        className="h-12 w-auto object-contain shrink-0 mt-1"
+                    />
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-black text-slate-900 uppercase">Tax Invoice</h1>
+                        <div className="text-sm space-y-1">
+                            <p className="font-bold text-lg">{hospital.name}</p>
+                            <p className="text-slate-600 font-medium">{hospital.address}</p>
+                            <p className="font-bold">GSTIN: {hospital.gst_number || 'N/A'}</p>
+                            <p>State: {hospital.state || 'N/A'} (Code: {hospital.state_code || 'N/A'})</p>
+                        </div>
                     </div>
                 </div>
                 <div className="text-right space-y-1">
@@ -189,6 +196,16 @@ export const TaxInvoice: React.FC<TaxInvoiceProps> = ({ order, items, hospital, 
                     </div>
                     <p className="text-[10px] font-bold text-slate-800 uppercase">Authorized Signatory</p>
                 </div>
+            </div>
+
+            {/* Platform Branding */}
+            <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                <div className="flex items-center gap-1.5 font-semibold">
+                    <span>Generated via</span>
+                    <img src="/assets/ayusetu_logo.png" alt="AyuSetu" className="h-3.5 w-auto object-contain inline-block" />
+                    <span className="font-semibold text-slate-600">AyuSetu Operations</span>
+                </div>
+                <span>Computer Generated Document &bull; Valid Without Physical Signature</span>
             </div>
         </div>
     );

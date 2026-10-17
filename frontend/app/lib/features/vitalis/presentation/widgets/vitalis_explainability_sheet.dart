@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "../../../../core/constants/app_colors.dart";
+import "../../../../core/widgets/app_scaffold_shell.dart";
 
 class VitalisExplainabilitySheet extends StatelessWidget {
   final String title;
@@ -74,6 +75,8 @@ class VitalisExplainabilitySheet extends StatelessWidget {
                     ),
                   ),
                 ),
+                const AyuSetuLogoBadge(height: 18),
+                const SizedBox(width: 4),
                 IconButton(
                   icon: const Icon(Icons.close, color: AppColors.textSecondary),
                   onPressed: () => Navigator.pop(context),

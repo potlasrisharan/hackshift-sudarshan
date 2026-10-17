@@ -120,7 +120,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-lg text-slate-100 mb-0.5">Contact via Phone</h4>
-                    <p className="text-blue-400 font-semibold tracking-wide">+91 87969 12201</p>
+                    <p className="text-blue-400 font-semibold tracking-wide">+91 1800 298 7388</p>
                   </div>
                 </div>
 
@@ -130,7 +130,7 @@ const Contact: React.FC = () => {
                   </p>
                   <div className="mt-4 flex items-center gap-3">
                     <div className="w-8 h-1 bg-blue-500 rounded-full"></div>
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Aarogya Nidhi Team</span>
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">AyuSetu Team</span>
                   </div>
                 </div>
               </div>
@@ -187,7 +187,7 @@ const Contact: React.FC = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="contact@facility.org"
                     className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:outline-none transition-all placeholder:text-slate-300"
                   />
                 </div>
@@ -198,7 +198,7 @@ const Contact: React.FC = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     type="tel"
-                    placeholder="e.g. +91 00000 00000"
+                    placeholder="e.g. +91 98765 43210"
                     className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:outline-none transition-all placeholder:text-slate-300"
                   />
                 </div>

@@ -2,6 +2,42 @@ import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 import "../constants/app_colors.dart";
 
+class AyuSetuLogoBadge extends StatelessWidget {
+  final double height;
+  final EdgeInsetsGeometry padding;
+  final double borderRadius;
+
+  const AyuSetuLogoBadge({
+    super.key,
+    this.height = 20,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    this.borderRadius = 8,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 4,
+            offset: const Offset(0, 1.5),
+          ),
+        ],
+      ),
+      child: Image.asset(
+        "assets/images/ayusetu_logo.png",
+        height: height,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+}
+
 class AppScaffoldShell extends StatelessWidget {
   final Widget child;
   final String title;
@@ -97,29 +133,20 @@ class AppScaffoldShell extends StatelessWidget {
               ),
           ],
         ),
-        actions: actions ??
-            [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.asset(
-                    "assets/images/ayusetu_logo.png",
-                    height: 22,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.apps_rounded, color: AppColors.textSecondary),
-                tooltip: "Portals",
-                onPressed: () => context.go("/"),
-              ),
-            ],
+        actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: AyuSetuLogoBadge(height: 20),
+          ),
+          if (actions != null)
+            ...actions!
+          else
+            IconButton(
+              icon: const Icon(Icons.apps_rounded, color: AppColors.textSecondary),
+              tooltip: "Portals",
+              onPressed: () => context.go("/"),
+            ),
+        ],
       ),
       body: SafeArea(child: child),
       bottomNavigationBar: _buildBottomNav(context, currentRoute),

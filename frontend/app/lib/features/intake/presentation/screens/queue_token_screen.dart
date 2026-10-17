@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "package:kiosk_app/core/constants/app_colors.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
 import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
 class QueueTokenScreen extends ConsumerWidget {
@@ -24,24 +25,12 @@ class QueueTokenScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        margin: const EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Image.asset(
-                          "assets/images/ayusetu_logo.png",
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: AyuSetuLogoBadge(
                           height: 32,
-                          fit: BoxFit.contain,
+                          borderRadius: 12,
+                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         ),
                       ),
                       const Icon(Icons.check_circle, color: AppColors.success, size: 64),

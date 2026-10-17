@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
 
         <div className="text-center pt-8 border-t border-slate-200">
           <p className="text-xs text-slate-500">
-            &copy; 2026 Aarogya Nidhi. All rights reserved. A Healthcare Solutions Company.
+            &copy; 2026 AyuSetu. All rights reserved. A Healthcare Solutions Company.
           </p>
         </div>
       </div>

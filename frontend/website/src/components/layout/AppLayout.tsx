@@ -110,16 +110,16 @@ export function AppLayout({
                 }
             }}
             disabled={disabled}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-xl transition-all group
                 ${disabled ? 'opacity-50 cursor-not-allowed text-slate-400' :
                     active
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-slate-500 hover:bg-slate-200/50'}
+                        ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/60 shadow-sm'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}
                 `}
         >
-            <SymbolIcon className={`material-symbols-outlined ${active ? '' : ''}`}>{icon}</SymbolIcon>
+            <SymbolIcon className={`material-symbols-outlined text-[20px] ${active ? 'text-teal-700' : 'text-slate-500 group-hover:text-slate-800'}`}>{icon}</SymbolIcon>
             <span className={`ayu-nav-label text-sm ${active ? 'font-semibold' : 'font-medium'}`}>{label}</span>
-            {disabled && <SymbolIcon className="material-symbols-outlined text-[16px] ml-auto opacity-50">lock</SymbolIcon>}
+            {disabled && !isCollapsed && <SymbolIcon className="material-symbols-outlined text-[16px] ml-auto opacity-50">lock</SymbolIcon>}
         </button>
     )
 
@@ -129,7 +129,7 @@ export function AppLayout({
     const getBrandName = () => {
         if (['SUPER_ADMIN', 'OWNER'].includes(role || '')) return 'SaaS Control';
         if (role === 'CLINIC_ADMIN' && myClinic) return myClinic.name;
-        return hospital?.name || 'Aarogya Nidhi';
+        return hospital?.name || 'AyuSetu';
     }
 
     const getBrandSubtitle = () => {
@@ -183,7 +183,7 @@ export function AppLayout({
                 transform transition-transform duration-300 ease-in-out
                 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                <div className="p-4 border-b border-slate-200 flex justify-between items-center">
+                <div className={`p-4 border-b border-slate-200 flex ${isCollapsed ? 'justify-center' : 'justify-between'} items-center`}>
                     <div className="flex items-center gap-2.5 min-w-0">
                         <img
                             src="/assets/ayusetu_logo.png"
@@ -199,19 +199,35 @@ export function AppLayout({
                             </div>
                         )}
                     </div>
-                    <button className="lg:hidden text-slate-500" onClick={() => setIsMobileMenuOpen(false)}>
-                        <SymbolIcon className="material-symbols-outlined">close</SymbolIcon>
-                    </button>
+                    {!isCollapsed && (
+                        <button className="lg:hidden text-slate-500" onClick={() => setIsMobileMenuOpen(false)}>
+                            <SymbolIcon className="material-symbols-outlined">close</SymbolIcon>
+                        </button>
+                    )}
                 </div>
 
-                <button type="button" className="ayu-sidebar-collapse hidden lg:flex" aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={()=>setIsCollapsed(!isCollapsed)}><SymbolIcon className="material-symbols-outlined">{isCollapsed?"chevron_right":"chevron_left"}</SymbolIcon><span className="ayu-nav-label">Collapse navigation</span></button>
+                <button
+                    type="button"
+                    className={`ayu-sidebar-collapse hidden lg:flex items-center ${isCollapsed ? 'justify-center px-0' : 'px-4 gap-2.5'} py-2 text-[11px] font-medium text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100`}
+                    aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                >
+                    <SymbolIcon className="material-symbols-outlined text-[18px]">
+                        {isCollapsed ? "chevron_right" : "chevron_left"}
+                    </SymbolIcon>
+                    {!isCollapsed && <span className="ayu-nav-label">Collapse navigation</span>}
+                </button>
                 <div className="flex-1 overflow-y-auto no-scrollbar py-4 px-2 space-y-1">
-                    {isClinicalPortal && <>
-                      <NavItem icon="stethoscope" label="Consultation" active={view==='doctor-consultation'} onClick={()=>setView('doctor-consultation')}/>
-                      <NavItem icon="warning" label="Emergency triage" active={view==='emergency-triage'} onClick={()=>setView('emergency-triage')}/>
-                      <NavItem icon="medical_information" label="Patient intake" active={false} onClick={()=>setView('patient-kiosk')}/>
-                      <NavItem icon="local_hospital" label="AYUSH assessment" active={view==='ayush-center'} onClick={()=>setView('ayush-center')}/>
-                    </>}
+                    {view === 'doctor-consultation' && (
+                      <NavItem icon="stethoscope" label="Consultation" active={true} onClick={()=>setView('doctor-consultation')}/>
+                    )}
+                    {view === 'emergency-triage' && (
+                      <NavItem icon="warning" label="Emergency triage" active={true} onClick={()=>setView('emergency-triage')}/>
+                    )}
+                    {view === 'ayush-center' && (
+                      <NavItem icon="local_hospital" label="AYUSH assessment" active={true} onClick={()=>setView('ayush-center')}/>
+                    )}
                     {/* HQ COMMAND CENTER MENU (PORTAL 04) */}
                     {!isClinicPortal && !isClinicalPortal && (
                         <>
@@ -333,13 +349,13 @@ export function AppLayout({
 
                 </div>
 
-                <div className="p-4 border-t border-slate-200 mt-auto shrink-0 bg-white">
+                <div className={`p-3 border-t border-slate-200 mt-auto shrink-0 bg-white ${isCollapsed ? 'space-y-2' : 'space-y-1'}`}>
                     {/* SETTINGS MENU ITEM - FIXED TO BOTTOM */}
-                    {['ADMIN', 'HOSPITAL_ADMIN', 'CLINIC_ADMIN', 'SUPER_ADMIN', 'OWNER'].includes(role || '') && (
-                        <div className="mb-2">
+                    {['ADMIN', 'HOSPITAL_ADMIN', 'CLINIC_ADMIN', 'SUPER_ADMIN', 'OWNER', 'DOCTOR'].includes(role || '') && (
+                        <div>
                             <NavItem
                                 id="tour-settings"
-                                icon="settings"
+                                icon="tune"
                                 label="Settings"
                                 active={view === 'settings'}
                                 onClick={() => setView('settings')}
@@ -348,19 +364,42 @@ export function AppLayout({
                         </div>
                     )}
 
-                    <button
-                        onClick={onLogout}
-                        className="w-full text-left flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-slate-50 rounded-lg transition-colors active:bg-slate-100"
-                    >
-                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">
-                            {userProfile?.full_name?.[0] || 'U'}
+                    {isCollapsed ? (
+                        <div className="flex flex-col items-center gap-2 pt-2 border-t border-slate-100">
+                            <div
+                                title={`${userProfile?.full_name || 'Doctor'} (${getBrandSubtitle()})`}
+                                className="w-9 h-9 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs ring-2 ring-teal-50 shadow-sm cursor-default"
+                            >
+                                {userProfile?.full_name?.[0] || 'D'}
+                            </div>
+                            <button
+                                onClick={onLogout}
+                                title="Sign Out"
+                                className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all active:scale-95"
+                            >
+                                <SymbolIcon className="material-symbols-outlined text-[18px] text-rose-500">logout</SymbolIcon>
+                            </button>
                         </div>
-                        <div className="overflow-hidden flex-1">
-                            <p className="text-xs font-semibold truncate">{userProfile?.full_name}</p>
-                            <p className="text-[10px] text-slate-500 truncate">{getBrandSubtitle()}</p>
+                    ) : (
+                        <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/60 mt-1">
+                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs shrink-0 ring-2 ring-white shadow-sm">
+                                    {userProfile?.full_name?.[0] || 'D'}
+                                </div>
+                                <div className="overflow-hidden min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-slate-800 truncate">{userProfile?.full_name || 'Dr. Potla Sri Sharan'}</p>
+                                    <p className="text-[10px] text-slate-400 font-mono truncate">{getBrandSubtitle()}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={onLogout}
+                                title="Sign Out"
+                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                            >
+                                <SymbolIcon className="material-symbols-outlined text-lg text-rose-500">logout</SymbolIcon>
+                            </button>
                         </div>
-                        <SymbolIcon className="material-symbols-outlined text-red-500 text-lg group-hover:text-red-700" title="Sign Out">logout</SymbolIcon>
-                    </button>
+                    )}
                 </div>
             </aside>
             )}
@@ -448,6 +487,26 @@ export function AppLayout({
                             onClose={() => setIsNotificationsOpen(false)}
                             onNavigate={setView}
                         />
+                        {/* HEADER USER PROFILE BADGE & LOGOUT */}
+                        <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
+                            <div
+                                title={`${userProfile?.full_name || 'Dr. Potla Sri Sharan'} (${getBrandSubtitle()})`}
+                                className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs ring-2 ring-white shadow-sm shrink-0"
+                            >
+                                {userProfile?.full_name?.[0] || 'D'}
+                            </div>
+                            <div className="hidden xl:flex flex-col text-left">
+                                <span className="text-xs font-bold text-slate-800 leading-none truncate max-w-[130px]">{userProfile?.full_name || 'Dr. Potla Sri Sharan'}</span>
+                                <span className="text-[10px] text-slate-400 font-mono mt-0.5 truncate">{getBrandSubtitle()}</span>
+                            </div>
+                            <button
+                                onClick={onLogout}
+                                title="Sign Out"
+                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ml-1"
+                            >
+                                <SymbolIcon className="material-symbols-outlined text-[18px]">logout</SymbolIcon>
+                            </button>
+                        </div>
                         {/* We leave the top right action area primarily to the child components, 
                         but we can provide a container for them if needed later. */}
                     </div>

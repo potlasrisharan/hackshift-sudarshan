@@ -262,8 +262,11 @@ class _YogaPrescriptionScreenState extends State<YogaPrescriptionScreen> {
                 child: Text(
                   "Personalized Asana Prescription",
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              SizedBox(width: 8),
+              AyuSetuLogoBadge(height: 18),
             ],
           ),
           const SizedBox(height: 6),

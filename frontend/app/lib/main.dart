@@ -22,5 +22,3 @@ class AyuSetuApp extends StatelessWidget {
     );
   }
 }
-
-typedef MediKioskApp = AyuSetuApp;

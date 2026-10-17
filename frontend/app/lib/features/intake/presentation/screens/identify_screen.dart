@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "package:kiosk_app/core/constants/app_colors.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
 import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
 class IdentifyScreen extends ConsumerStatefulWidget {
@@ -28,6 +29,12 @@ class _IdentifyScreenState extends ConsumerState<IdentifyScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.canPop() ? context.pop() : context.go("/"),
         ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            child: AyuSetuLogoBadge(height: 20),
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {

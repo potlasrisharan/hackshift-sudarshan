@@ -611,9 +611,13 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                     <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col bg-white text-slate-900 rounded-3xl border-0 shadow-2xl p-6">
                         <DialogHeader className="border-b border-slate-100 pb-4">
                             <div className="flex items-center justify-between">
-                                <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
-                                    <SymbolIcon className="material-symbols-outlined text-blue-600">receipt_long</SymbolIcon>
-                                    Today's Revenue Journal & Settlements
+                                <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2.5">
+                                    <img
+                                        src="/assets/ayusetu_logo.png"
+                                        alt="AyuSetu"
+                                        className="h-6 w-auto object-contain shrink-0"
+                                    />
+                                    <span>Today's Revenue Journal & Settlements</span>
                                 </DialogTitle>
                                 <span className="text-xs font-bold bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100">
                                     Total ₹{stats.revenue.toLocaleString('en-IN')}

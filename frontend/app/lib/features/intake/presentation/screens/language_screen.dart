@@ -3,6 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "package:kiosk_app/core/constants/app_colors.dart";
 import "package:kiosk_app/core/constants/app_strings.dart";
+import "package:kiosk_app/core/widgets/app_scaffold_shell.dart";
 import "package:kiosk_app/features/intake/presentation/providers/intake_provider.dart";
 
 class LanguageScreen extends ConsumerWidget {
@@ -48,17 +49,12 @@ class LanguageScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              margin: const EdgeInsets.only(bottom: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Image.asset(
-                                "assets/images/ayusetu_logo.png",
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 8),
+                              child: AyuSetuLogoBadge(
                                 height: 28,
-                                fit: BoxFit.contain,
+                                borderRadius: 10,
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               ),
                             ),
                             Text(

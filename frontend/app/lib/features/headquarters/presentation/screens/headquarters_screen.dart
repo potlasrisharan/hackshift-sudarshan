@@ -7,9 +7,9 @@ class HeadquartersScreen extends StatelessWidget {
   const HeadquartersScreen({super.key});
 
   final List<Map<String, dynamic>> _clinics = const [
-    {"name": "Delhi AIIA Central", "occupancy": "88%", "revenue": "₹3,42,800", "patients": 218, "status": "OPTIMAL"},
-    {"name": "Jaipur Rural OPD Hub", "occupancy": "72%", "revenue": "₹1,18,500", "patients": 142, "status": "NORMAL"},
-    {"name": "Bengaluru Sub-Center", "occupancy": "94%", "revenue": "₹4,20,900", "patients": 286, "status": "HIGH LOAD"},
+    {"name": "AyuSetu Central Hospital Hub (HQ)", "occupancy": "88%", "revenue": "₹3,42,800", "patients": 218, "status": "OPTIMAL"},
+    {"name": "AyuSetu North Satellite Clinic (OPD)", "occupancy": "72%", "revenue": "₹1,18,500", "patients": 142, "status": "NORMAL"},
+    {"name": "AyuSetu South Satellite Clinic (Trauma)", "occupancy": "94%", "revenue": "₹4,20,900", "patients": 286, "status": "HIGH LOAD"},
   ];
 
   @override
@@ -183,7 +183,7 @@ class HeadquartersScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 8),
-              Icon(Icons.verified, color: AppColors.primaryLight, size: 18),
+              AyuSetuLogoBadge(height: 18),
             ],
           ),
           SizedBox(height: 10),
