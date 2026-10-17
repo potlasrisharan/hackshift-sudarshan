@@ -477,6 +477,18 @@ export function createIntegrationApp() {
       message: "This integration capability is not implemented yet",
     });
   });
+  integrationApp.get("*", async (c, next) => {
+    if (
+      c.req.path.startsWith("/api/") ||
+      c.req.path === "/healthz" ||
+      c.req.path === "/openapi.json"
+    ) {
+      return next();
+    }
+    return c.env.ASSETS
+      ? c.env.ASSETS.fetch(c.req.raw)
+      : c.json({ error: { message: "Website assets not built" } }, 404);
+  });
   return integrationApp;
 }
 
