@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { dataService as db } from '@/lib/dataService'
 import * as XLSX from 'xlsx'
@@ -588,7 +589,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                 <div>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                            <span className="material-symbols-outlined text-[20px]">inventory_2</span>
+                            <SymbolIcon className="material-symbols-outlined text-[20px]">inventory_2</SymbolIcon>
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-slate-900 tracking-tight">Stock Management</h2>
@@ -643,7 +644,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="h-10 border-slate-200 text-slate-600 hover:bg-white hover:text-blue-600 hover:border-blue-200 shadow-sm px-4 rounded-xl flex items-center gap-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-[20px]">more_vert</span>
+                                            <SymbolIcon className="material-symbols-outlined text-[20px]">more_vert</SymbolIcon>
                                             Actions
                                         </div>
                                     </Button>
@@ -696,7 +697,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                         setHistoricalDate('');
                                     }}
                                 >
-                                    <span className="material-symbols-outlined text-[16px]">close</span>
+                                    <SymbolIcon className="material-symbols-outlined text-[16px]">close</SymbolIcon>
                                 </Button>
                             </div>
                         ) : (
@@ -723,7 +724,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-                            <span className="material-symbols-outlined text-[18px]">info</span>
+                            <SymbolIcon className="material-symbols-outlined text-[18px]">info</SymbolIcon>
                         </div>
                         <div>
                             <p className="text-sm font-semibold text-amber-900">Historical Mode Active</p>
@@ -752,7 +753,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 <button
                                     onClick={() => setFilterType('low')}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border transition-colors ${filterType === 'low' ? 'bg-orange-100 border-orange-200 text-orange-800' : 'bg-orange-50 text-orange-700 border-orange-100 hover:bg-orange-100'}`}>
-                                    <span className="material-symbols-outlined text-[18px]">warning</span>
+                                    <SymbolIcon className="material-symbols-outlined text-[18px]">warning</SymbolIcon>
                                     LOW STOCK ({lowStockCount})
                                 </button>
                             </Tooltip>
@@ -760,7 +761,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 <button
                                     onClick={() => setFilterType('expired')}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border transition-colors ${filterType === 'expired' ? 'bg-red-100 border-red-200 text-red-800' : 'bg-red-50 text-red-700 border-red-100 hover:bg-red-100'}`}>
-                                    <span className="material-symbols-outlined text-[18px]">event_busy</span>
+                                    <SymbolIcon className="material-symbols-outlined text-[18px]">event_busy</SymbolIcon>
                                     EXPIRED ({expiredCount})
                                 </button>
                             </Tooltip>
@@ -776,7 +777,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 <button
                                     onClick={() => setIsFullScreen(!isFullScreen)}
                                     className="hidden sm:flex items-center gap-1 px-3 py-2 rounded-full text-xs font-bold transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 ml-2 shadow-sm">
-                                    <span className="material-symbols-outlined text-[16px]">{isFullScreen ? 'fullscreen_exit' : 'fullscreen'}</span>
+                                    <SymbolIcon className="material-symbols-outlined text-[16px]">{isFullScreen ? 'fullscreen_exit' : 'fullscreen'}</SymbolIcon>
                                     {isFullScreen ? 'COLLAPSE' : 'EXPAND TABLE'}
                                 </button>
                             </Tooltip>
@@ -787,7 +788,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                     disabled={loading}
                                     className="flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold transition-all bg-red-600 text-white hover:bg-red-700 border border-red-700 shadow-sm ml-2 disabled:opacity-50"
                                 >
-                                    <span className="material-symbols-outlined text-[16px]">delete_sweep</span>
+                                    <SymbolIcon className="material-symbols-outlined text-[16px]">delete_sweep</SymbolIcon>
                                     REMOVE EXPIRED
                                 </button>
                             </Tooltip>
@@ -812,7 +813,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                         }}
                                         className="flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
                                     >
-                                        <span className="material-symbols-outlined text-[16px]">receipt_long</span>
+                                        <SymbolIcon className="material-symbols-outlined text-[16px]">receipt_long</SymbolIcon>
                                         CREATE PROCUREMENT BILL ({selectedItems.length})
                                     </button>
                                     <button
@@ -822,13 +823,13 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                         }}
                                         className="flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold transition-all bg-slate-200 text-slate-700 hover:bg-slate-300 shadow-sm"
                                     >
-                                        <span className="material-symbols-outlined text-[16px]">close</span>
+                                        <SymbolIcon className="material-symbols-outlined text-[16px]">close</SymbolIcon>
                                         CANCEL
                                     </button>
                                 </div>
                             )}
                             <div className="relative w-full sm:w-64">
-                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+                                <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</SymbolIcon>
                                 <input
                                     className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
                                     placeholder="Search by name or batch..."
@@ -895,7 +896,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                     <tr>
                                         <td colSpan={(effectiveClinicId ? 5 : 6) + (canEditInventory ? 1 : 0)} className="px-6 py-12 text-center text-slate-400 bg-slate-50/50">
                                             <div className="flex flex-col items-center">
-                                                <span className="material-symbols-outlined text-4xl mb-2 opacity-50">inventory_2</span>
+                                                <SymbolIcon className="material-symbols-outlined text-4xl mb-2 opacity-50">inventory_2</SymbolIcon>
                                                 <p>No inventory items match your current filters.</p>
                                             </div>
                                         </td>
@@ -931,7 +932,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3 w-max">
                                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color} shrink-0`}>
-                                                            <span className="material-symbols-outlined text-[20px]">{icon}</span>
+                                                            <SymbolIcon className="material-symbols-outlined text-[20px]">{icon}</SymbolIcon>
                                                         </div>
                                                         <div className="min-w-[150px]">
                                                             <p className="font-bold text-sm text-slate-900 line-clamp-2">{item.item_name}</p>
@@ -984,7 +985,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                                                  onClick={() => setRestockItem(item)}
                                                                  disabled={isHistoricalMode}
                                                                  className={`p-1.5 rounded transition-colors ${isHistoricalMode ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`} title={isHistoricalMode ? "Disabled in Historical View" : "Restock Item"}>
-                                                                 <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                                                                 <SymbolIcon className="material-symbols-outlined text-[20px]">add_shopping_cart</SymbolIcon>
                                                              </button>
                                                              {isLow && !effectiveClinicId && (
                                                                  <Button
@@ -1000,7 +1001,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                                                          });
                                                                      }}
                                                                  >
-                                                                     <span className="material-symbols-outlined text-sm mr-1">order_approve</span>
+                                                                     <SymbolIcon className="material-symbols-outlined text-sm mr-1">order_approve</SymbolIcon>
                                                                      Create PO
                                                                  </Button>
                                                              )}
@@ -1008,13 +1009,13 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                                                  onClick={() => setEditingItem(item)}
                                                                  disabled={isHistoricalMode}
                                                                  className={`p-1.5 rounded transition-colors ${isHistoricalMode ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`} title={isHistoricalMode ? "Disabled in Historical View" : "Edit Item"}>
-                                                                 <span className="material-symbols-outlined text-[20px]">edit_square</span>
+                                                                 <SymbolIcon className="material-symbols-outlined text-[20px]">edit_square</SymbolIcon>
                                                              </button>
                                                             {canBulkDeleteInventory && item.quantity <= 0 && (
                                                                 <button
                                                                     onClick={() => handleDeleteItem(item)}
                                                                     className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Delete Item">
-                                                                    <span className="material-symbols-outlined text-[20px]">delete</span>
+                                                                    <SymbolIcon className="material-symbols-outlined text-[20px]">delete</SymbolIcon>
                                                                 </button>
                                                             )}
                                                         </div>
@@ -1032,10 +1033,10 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                         <p className="text-xs text-slate-500 font-medium tracking-wide">Showing {filteredInventory.length} items available</p>
                         <div className="flex gap-2">
                             <button className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50">
-                                <span className="material-symbols-outlined text-sm">chevron_left</span>
+                                <SymbolIcon className="material-symbols-outlined text-sm">chevron_left</SymbolIcon>
                             </button>
                             <button className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors">
-                                <span className="material-symbols-outlined text-sm">chevron_right</span>
+                                <SymbolIcon className="material-symbols-outlined text-sm">chevron_right</SymbolIcon>
                             </button>
                         </div>
                     </div>
@@ -1047,14 +1048,14 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                         {canEditInventory && (
                             <div className="mb-10 lg:sticky lg:top-0 h-fit pb-4 z-10">
                                 <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6 tracking-tight">
-                                    <span className="material-symbols-outlined text-blue-600 p-1.5 bg-blue-100 rounded-lg">add_box</span>
+                                    <SymbolIcon className="material-symbols-outlined text-blue-600 p-1.5 bg-blue-100 rounded-lg">add_box</SymbolIcon>
                                     Quick Stock Entry
                                 </h2>
 
                                 <form onSubmit={handleRestock} className="space-y-5 bg-white p-5 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 relative overflow-hidden">
                                     {isHistoricalMode && (
                                         <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-20 flex flex-col items-center justify-center p-6 text-center">
-                                            <span className="material-symbols-outlined text-slate-400 text-3xl mb-2">history</span>
+                                            <SymbolIcon className="material-symbols-outlined text-slate-400 text-3xl mb-2">history</SymbolIcon>
                                             <p className="text-sm font-bold text-slate-600">Quick Entry Disabled</p>
                                             <p className="text-[10px] text-slate-400 leading-tight">Exit Historical Mode to add new stock records</p>
                                         </div>
@@ -1067,8 +1068,8 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                                     <option value="">Select Clinic</option>
                                                     {clinics.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                                 </select>
-                                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">domain</span>
-                                                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">expand_more</span>
+                                                <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">domain</SymbolIcon>
+                                                <SymbolIcon className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">expand_more</SymbolIcon>
                                             </div>
                                         </div>
                                     )}
@@ -1076,7 +1077,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Item Reference Name</label>
                                         <div className="relative">
-                                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">medical_information</span>
+                                            <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">medical_information</SymbolIcon>
                                             <input name="item_name" required className="w-full bg-slate-50 border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm" placeholder="e.g. Saline Bottle 1L" type="text" />
                                         </div>
                                     </div>
@@ -1084,21 +1085,21 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                          <div className="space-y-1">
                                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Packs Added</label>
                                              <div className="relative">
-                                                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">inventory_2</span>
+                                                 <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">inventory_2</SymbolIcon>
                                                  <input name="quantity" required min="1" className="w-full bg-slate-50 border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-sm font-bold font-mono text-slate-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm" placeholder="0" type="number" />
                                              </div>
                                          </div>
                                          <div className="space-y-1">
                                              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Units/Pack</label>
                                              <div className="relative">
-                                                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">widgets</span>
+                                                 <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">widgets</SymbolIcon>
                                                  <input name="units_per_pack" required min="1" defaultValue="1" className="w-full bg-slate-50 border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-sm font-bold font-mono text-slate-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm" placeholder="1" type="number" />
                                              </div>
                                          </div>
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Unit MRP (₹)</label>
                                             <div className="relative">
-                                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">currency_rupee</span>
+                                                <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">currency_rupee</SymbolIcon>
                                                 <input name="mrp" required step="0.01" min="0" className="w-full bg-slate-50 border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-sm font-bold font-mono text-slate-700 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm" placeholder="0.00" type="number" />
                                             </div>
                                         </div>
@@ -1113,7 +1114,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                     </div>
 
                                     <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:hover:translate-y-0 text-sm">
-                                        {loading ? <span className="material-symbols-outlined animate-spin text-xl">sync</span> : <span className="material-symbols-outlined text-xl">inventory_2</span>}
+                                        {loading ? <SymbolIcon className="material-symbols-outlined animate-spin text-xl">sync</SymbolIcon> : <SymbolIcon className="material-symbols-outlined text-xl">inventory_2</SymbolIcon>}
                                         {loading ? 'Adding Stock...' : 'Commit to Inventory'}
                                     </button>
                                 </form>
@@ -1123,7 +1124,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                         <div className={`pt-6 ${canEditInventory ? 'border-t border-slate-100' : ''} flex-1`}>
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-xs font-bold text-slate-900 flex items-center gap-2 uppercase tracking-widest">
-                                    <span className="material-symbols-outlined text-slate-400 text-[18px]">history</span>
+                                    <SymbolIcon className="material-symbols-outlined text-slate-400 text-[18px]">history</SymbolIcon>
                                     Critical Notices
                                 </h3>
                             </div>
@@ -1139,7 +1140,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 ))}
                                 {lowStockCount === 0 && (
                                     <div className="text-center py-6 px-4 bg-white rounded-xl border border-slate-100 border-dashed">
-                                        <span className="material-symbols-outlined text-3xl text-emerald-200 mb-2">inventory</span>
+                                        <SymbolIcon className="material-symbols-outlined text-3xl text-emerald-200 mb-2">inventory</SymbolIcon>
                                         <p className="text-xs font-medium text-slate-500">All inventory items are currently above their minimum thresholds.</p>
                                     </div>
                                 )}
@@ -1154,7 +1155,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                 <DialogContent className="sm:max-w-md bg-white text-slate-900 border border-slate-200 shadow-2xl rounded-2xl p-0 overflow-hidden">
                     <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                         <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
-                            <span className="material-symbols-outlined text-emerald-600">add_shopping_cart</span>
+                            <SymbolIcon className="material-symbols-outlined text-emerald-600">add_shopping_cart</SymbolIcon>
                         </div>
                         <div>
                             <DialogTitle className="text-lg font-bold text-slate-900 tracking-tight">Restock Item</DialogTitle>
@@ -1202,7 +1203,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                 <DialogContent className="sm:max-w-md bg-white text-slate-900 border border-slate-200 shadow-2xl rounded-2xl p-0 overflow-hidden">
                     <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                         <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
-                            <span className="material-symbols-outlined text-blue-600">edit_document</span>
+                            <SymbolIcon className="material-symbols-outlined text-blue-600">edit_document</SymbolIcon>
                         </div>
                         <div>
                             <DialogTitle className="text-lg font-bold text-slate-900 tracking-tight">Edit Inventory Record</DialogTitle>
@@ -1265,7 +1266,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                     <div className="p-8">
                         <DialogHeader className="mb-8">
                             <DialogTitle className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-                                <span className="material-symbols-outlined text-blue-600 bg-blue-50 p-2 rounded-xl">shopping_cart_checkout</span>
+                                <SymbolIcon className="material-symbols-outlined text-blue-600 bg-blue-50 p-2 rounded-xl">shopping_cart_checkout</SymbolIcon>
                                 Procurement Workflow
                             </DialogTitle>
                             <DialogDescription className="text-slate-500 mt-2 text-base">
@@ -1287,7 +1288,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 className="group flex items-start gap-4 p-5 rounded-2xl border-2 border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all text-left"
                             >
                                 <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-blue-600 text-2xl">inventory</span>
+                                    <SymbolIcon className="material-symbols-outlined text-blue-600 text-2xl">inventory</SymbolIcon>
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-900 text-lg">Procure Existing Products</h4>
@@ -1305,7 +1306,7 @@ export function InventoryDashboard({ clinicIdOverride, onNavigate }: InventoryDa
                                 className="group flex items-start gap-4 p-5 rounded-2xl border-2 border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all text-left"
                             >
                                 <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-emerald-600 text-2xl">add_shopping_cart</span>
+                                    <SymbolIcon className="material-symbols-outlined text-emerald-600 text-2xl">add_shopping_cart</SymbolIcon>
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-900 text-lg">Procure New Products</h4>

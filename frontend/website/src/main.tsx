@@ -23,6 +23,15 @@ import {
   type Principal,
 } from "../../../packages/shared/integration";
 import "./style.css";
+import "./design-system/workspace.css";
+import {
+  ClipboardPlus,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Search,
+} from "lucide-react";
+import { VoiceInput } from "./components/VoiceInput";
 
 type Client = ReturnType<typeof integrationClient>;
 const questions = [
@@ -90,24 +99,26 @@ function Login({
     <div className="login-page">
       <section className="login-story">
         <div className="wordmark">
-          <span className="brand-symbol">ध</span> dhaaga
-          <span className="brand-dot">.</span>
+          <span className="ds-wordmark">
+            Ayu<span lang="hi">सेतु</span>
+          </span>
         </div>
         <div>
           <p className="eyebrow">CARE THAT STAYS CONNECTED</p>
           <h1>
-            One patient.
+            From the first
             <br />
-            One thread.
-            <br />
-            <em>Every handoff.</em>
+            hello to a<br />
+            <em>healthier tomorrow.</em>
           </h1>
           <p className="story-description">
             From the first conversation to the clinician's desk. A shared
             workspace for care teams and the people they care for.
           </p>
         </div>
-        <p className="story-foot">ClinicOS operations × MediKiosk intake</p>
+        <a className="story-foot" href="/erp.html">
+          Explore AyuSetu and all workspaces →
+        </a>
       </section>
       <main className="login-panel">
         <div className="login-card">
@@ -180,6 +191,8 @@ function Intake({
   onCreated: (encounter: Encounter) => void;
 }) {
   const [answers, setAnswers] = useState<Answers>({});
+  const [complaint, setComplaint] = useState("");
+  const [language, setLanguage] = useState("en-IN");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const request = useRef({ body: "", key: "" });
@@ -270,7 +283,11 @@ function Intake({
             </label>
             <label>
               Preferred language
-              <select name="language">
+              <select
+                name="language"
+                value={language}
+                onChange={(event) => setLanguage(event.target.value)}
+              >
                 {patientSchema.shape.language.options.map((language) => (
                   <option key={language} value={language}>
                     {
@@ -287,10 +304,13 @@ function Intake({
               </select>
             </label>
           </div>
+          <VoiceInput language={language} onTranscript={setComplaint} />
           <label>
             What brings the patient in today?
             <textarea
               name="complaint"
+              value={complaint}
+              onChange={(event) => setComplaint(event.target.value)}
               required
               minLength={3}
               maxLength={2000}
@@ -299,8 +319,8 @@ function Intake({
             />
           </label>
           <div className="source-note">
-            Language preference is saved. Speech and clinical translation are
-            not connected in this milestone.
+            Language preference is saved. Browser dictation transcribes your
+            words; clinical translation is not connected.
           </div>
         </section>
         <section className="panel">
@@ -389,6 +409,15 @@ function Clinician({
   detailId?: string;
 }) {
   const [rows, setRows] = useState<Encounter[]>([]);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const visibleRows = rows.filter(
+    (row) =>
+      (statusFilter === "all" || row.status === statusFilter) &&
+      `${row.patientName} ${row.chiefComplaint} ${row.id}`
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [note, setNote] = useState("");
@@ -631,11 +660,43 @@ function Clinician({
               ↻ Refresh
             </button>
           </div>
-          {rows.length === 0 ? (
+          <div className="ayu-queue-toolbar">
+            <label className="ayu-search">
+              <Search size={17} aria-hidden="true" />
+              <span className="sr-only">Search clinic queue</span>
+              <input
+                placeholder="Search patients, concerns or encounter…"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+            <label className="sr-only" htmlFor="queue-status">
+              Filter queue status
+            </label>
+            <select
+              id="queue-status"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="all">All encounters</option>
+              <option value="waiting">Awaiting review</option>
+              <option value="emergency">Emergency</option>
+              <option value="reviewed">Reviewed</option>
+            </select>
+          </div>
+          {visibleRows.length === 0 ? (
             <div className="empty">
               <div className="empty-mark">↗</div>
-              <h3>Your next handoff starts here.</h3>
-              <p>No active consented encounters in this clinic yet.</p>
+              <h3>
+                {rows.length
+                  ? "No matching encounters"
+                  : "Your next handoff starts here."}
+              </h3>
+              <p>
+                {rows.length
+                  ? "Try a different patient name or status filter."
+                  : "No active consented encounters in this clinic yet."}
+              </p>
               <a href="#/kiosk" className="back-link">
                 Create the first intake →
               </a>
@@ -655,7 +716,7 @@ function Clinician({
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => (
+                  {visibleRows.map((row) => (
                     <tr key={row.id}>
                       <td>
                         <strong>{row.patientName}</strong>
@@ -692,8 +753,8 @@ function Clinician({
         <span className="small-symbol">↔</span>
         <p>
           <strong>A connected foundation.</strong> Intake and clinician review
-          share a persistent record. Pharmacy, ledger, live speech and Flutter
-          connectivity remain in the integration backlog.
+          share a persistent record. Browser dictation is available. Pharmacy,
+          ledger and Flutter connectivity remain in the integration backlog.
         </p>
         <Badge>LOCAL SYNTHETIC DATA</Badge>
       </div>
@@ -706,6 +767,8 @@ function App() {
     principal: Principal;
   } | null>(null);
   const [online, setOnline] = useState(navigator.onLine);
+  const [navOpen, setNavOpen] = useState(false);
+
   const [error, setError] = useState("");
   const route = useRoute();
   const [api, setApi] = useState<Client>(() => integrationClient());
@@ -740,11 +803,12 @@ function App() {
   const isKiosk = route === "/kiosk";
   const detailId = route.startsWith("/thread/") ? route.slice(8) : undefined;
   return (
-    <div className="workspace">
+    <div className={`workspace ${navOpen ? "nav-open" : ""}`}>
       <aside className="sidebar">
         <a href="#/clinician" className="wordmark">
-          <span className="brand-symbol">ध</span> dhaaga
-          <span className="brand-dot">.</span>
+          <span className="ds-wordmark">
+            Ayu<span lang="hi">सेतु</span>
+          </span>
         </a>
         <div className="clinic-label">
           <span className="clinic-avatar">
@@ -763,10 +827,10 @@ function App() {
         <span className="nav-caption">CARE WORKSPACE</span>
         <nav aria-label="Care workspace">
           <a href="#/clinician" className={!isKiosk ? "active" : ""}>
-            <span aria-hidden="true">▦</span> Clinician queue
+            <LayoutDashboard size={18} aria-hidden="true" /> Clinician queue
           </a>
           <a href="#/kiosk" className={isKiosk ? "active" : ""}>
-            <span aria-hidden="true">⊕</span> Patient intake
+            <ClipboardPlus size={18} aria-hidden="true" /> Patient intake
           </a>
         </nav>
         <div className="next-modules">
@@ -794,12 +858,21 @@ function App() {
             onClick={() => void logout()}
             aria-label="Sign out"
           >
-            ↪
+            <LogOut size={18} />
           </button>
         </div>
       </aside>
       <div className="main-column">
         <header className="topbar">
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-label="Toggle navigation"
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen(!navOpen)}
+          >
+            <Menu size={20} />
+          </button>
           <span>
             Workspace{" "}
             <span className="breadcrumb">
@@ -850,7 +923,7 @@ function App() {
           )}
         </main>
         <footer>
-          धागा · One thread from intake to ongoing care.
+          AyuSetu · One thread from intake to ongoing care.
           <span className="footer-model-note">
             Clinical model: illustrative · clinician review required
           </span>

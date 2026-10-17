@@ -1,8 +1,9 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import ReactGA from "react-ga4";
+import ReactGA from "@/lib/analytics-client";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,7 +78,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
-              <span className="material-symbols-outlined text-white text-xl">local_hospital</span>
+              <SymbolIcon className="material-symbols-outlined text-white text-xl">local_hospital</SymbolIcon>
             </div>
             <span className="text-2xl font-extrabold tracking-tight text-slate-900">Aarogya Nidhi</span>
           </Link>
@@ -116,7 +117,7 @@ const Navbar: React.FC = () => {
               className="bg-primary hover:opacity-90 px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-blue-500/20 transition-all text-white flex items-center gap-1.5"
             >
               <span>Launch Dashboards</span>
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              <SymbolIcon className="material-symbols-outlined text-[16px]">arrow_forward</SymbolIcon>
             </Link>
           </div>
 

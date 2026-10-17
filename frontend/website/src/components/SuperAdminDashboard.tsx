@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { dataService as db } from '@/lib/dataService'
@@ -197,7 +198,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <DialogTrigger asChild>
                             <button className="bg-[#2563eb] hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 active:scale-95 whitespace-nowrap">
-                                <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                                <SymbolIcon className="material-symbols-outlined text-[18px]">add_circle</SymbolIcon>
                                 <span className="hidden sm:inline">Add New Hospital</span>
                             </button>
                         </DialogTrigger>
@@ -251,7 +252,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                 </div>
                                 <DialogFooter className="pt-4">
                                     <Button type="submit" disabled={registerLoading} className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold">
-                                        {registerLoading ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <span className="material-symbols-outlined text-[18px] mr-2">corporate_fare</span>}
+                                        {registerLoading ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <SymbolIcon className="material-symbols-outlined text-[18px] mr-2">corporate_fare</SymbolIcon>}
                                         Launch Hospital Tenant
                                     </Button>
                                 </DialogFooter>
@@ -272,7 +273,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                             <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-blue-50 rounded-lg text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                        <span className="material-symbols-outlined">corporate_fare</span>
+                                        <SymbolIcon className="material-symbols-outlined">corporate_fare</SymbolIcon>
                                     </div>
                                     <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
                                         <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span> Active
@@ -297,7 +298,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                             <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-purple-50 rounded-lg text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                        <span className="material-symbols-outlined">group</span>
+                                        <SymbolIcon className="material-symbols-outlined">group</SymbolIcon>
                                     </div>
                                     <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">Overall</span>
                                 </div>
@@ -320,7 +321,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                             <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                                        <span className="material-symbols-outlined">verified</span>
+                                        <SymbolIcon className="material-symbols-outlined">verified</SymbolIcon>
                                     </div>
                                     <span className="text-[10px] font-bold text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded-full">Optimal</span>
                                 </div>
@@ -343,7 +344,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                             <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-orange-50 rounded-lg text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                                        <span className="material-symbols-outlined">storage</span>
+                                        <SymbolIcon className="material-symbols-outlined">storage</SymbolIcon>
                                     </div>
                                     <span className="text-[10px] font-bold text-gray-400 px-2 py-0.5">Aggregated</span>
                                 </div>
@@ -392,7 +393,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                         </thead>
                                         <tbody className="divide-y divide-gray-50">
                                             {loading && hospitals.length === 0 && (
-                                                <tr><td colSpan={6} className="text-center py-8 text-gray-400"><span className="material-symbols-outlined animate-spin text-2xl">sync</span></td></tr>
+                                                <tr><td colSpan={6} className="text-center py-8 text-gray-400"><SymbolIcon className="material-symbols-outlined animate-spin text-2xl">sync</SymbolIcon></td></tr>
                                             )}
                                             {hospitals.slice(0, 10).map((h, i) => {
                                                 // Generate an avatar initial based on hospital name
@@ -438,7 +439,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                                                 onClick={() => onView && onView(h.id)}
                                                                 className="text-gray-400 hover:text-blue-600 p-1 rounded-md hover:bg-blue-50 transition-colors"
                                                             >
-                                                                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                                                                <SymbolIcon className="material-symbols-outlined text-[18px]">chevron_right</SymbolIcon>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -477,7 +478,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                             <div key={log.id} className="flex gap-4 group">
                                                 <div className="relative">
                                                     <div className={`w-8 h-8 rounded-full ${iconBg} flex items-center justify-center z-10 relative`}>
-                                                        <span className="material-symbols-outlined text-[18px]">{icon}</span>
+                                                        <SymbolIcon className="material-symbols-outlined text-[18px]">{icon}</SymbolIcon>
                                                     </div>
                                                     <div className="absolute top-8 bottom-[-24px] left-1/2 -translate-x-1/2 w-px bg-gray-100 group-last:hidden"></div>
                                                 </div>

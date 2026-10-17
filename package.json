@@ -26,7 +26,9 @@
     "integration:worker:dev": "wrangler dev --config backend/wrangler.jsonc --var ENVIRONMENT:development",
     "integration:worker:migrate": "wrangler d1 migrations apply dhaaga-integration --local --config backend/wrangler.jsonc",
     "integration:e2e": "playwright test --config playwright.integration.config.ts",
-    "integration:worker:smoke": "node --import tsx scripts/integration-worker-smoke.ts"
+    "integration:worker:smoke": "node --import tsx scripts/integration-worker-smoke.ts",
+    "build:frontend": "npm run check:frontend && vite build --config apps/web/vite.config.ts",
+    "check:frontend": "tsc --noEmit -p tsconfig.frontend.json"
   },
   "dependencies": {
     "@hono/node-server": "2.1.5",

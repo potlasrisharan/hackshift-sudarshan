@@ -32,11 +32,15 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
           "Step 2: Voice Interview",
           overflow: TextOverflow.ellipsis,
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.canPop() ? context.pop() : context.go("/identify"),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.document_scanner),
             tooltip: "Proceed to Document Scan",
-            onPressed: () => context.go("/scan"),
+            onPressed: () => context.push("/scan"),
           )
         ],
       ),
@@ -186,7 +190,7 @@ class _ConverseScreenState extends ConsumerState<ConverseScreen> {
                       backgroundColor: AppColors.ayushGreen,
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     ),
-                    onPressed: () => context.go("/scan"),
+                    onPressed: () => context.push("/scan"),
                     child: const Text("Next ➔", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                   ),
                 ],

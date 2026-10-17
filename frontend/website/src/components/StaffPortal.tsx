@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect, useMemo } from 'react'
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog'
 import { Button, Input, Label } from '@/components/ui/basic'
@@ -335,7 +336,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                 <button
                     onClick={() => setIsAddStaffOpen(true)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
-                    <span className="material-symbols-outlined text-sm">add</span>
+                    <SymbolIcon className="material-symbols-outlined text-sm">add</SymbolIcon>
                     New Staff Member
                 </button>
             </div>
@@ -344,7 +345,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex items-center gap-5">
                     <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                        <span className="material-symbols-outlined text-2xl">groups</span>
+                        <SymbolIcon className="material-symbols-outlined text-2xl">groups</SymbolIcon>
                     </div>
                     <div>
                         <p className="text-sm font-medium text-slate-500">Total Staff</p>
@@ -353,7 +354,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                 </div>
                 <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex items-center gap-5 border-l-4 border-l-green-500">
                     <div className="w-12 h-12 bg-green-50 text-green-600 rounded-lg flex items-center justify-center">
-                        <span className="material-symbols-outlined text-2xl">person_check</span>
+                        <SymbolIcon className="material-symbols-outlined text-2xl">person_check</SymbolIcon>
                     </div>
                     <div>
                         <p className="text-sm font-medium text-slate-500">Active Duty</p>
@@ -365,12 +366,12 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                     className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4 hover:border-blue-200 hover:shadow-md transition-all text-left w-full group"
                 >
                     <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        <span className="material-symbols-outlined text-xl">hub</span>
+                        <SymbolIcon className="material-symbols-outlined text-xl">hub</SymbolIcon>
                     </div>
                     <div className="flex-1">
                         <div className="flex justify-between items-center">
                             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Live Attendance Hub</p>
-                            <span className="material-symbols-outlined text-slate-300 text-sm group-hover:text-blue-500 transition-colors">open_in_new</span>
+                            <SymbolIcon className="material-symbols-outlined text-slate-300 text-sm group-hover:text-blue-500 transition-colors">open_in_new</SymbolIcon>
                         </div>
                         <div className="flex gap-3 mt-0.5">
                             <span className="text-xs font-bold text-emerald-600">● {attendanceStats.onDuty} Active</span>
@@ -387,7 +388,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                         <DialogTitle className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
-                                    <span className="material-symbols-outlined">analytics</span>
+                                    <SymbolIcon className="material-symbols-outlined">analytics</SymbolIcon>
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-bold text-slate-900 tracking-tight">Today's Workforce Hub</h2>
@@ -417,7 +418,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                 <div className="space-y-3">
                                     {groupedStaff.active.length === 0 ? (
                                         <div className="py-12 flex flex-col items-center justify-center text-slate-400">
-                                            <span className="material-symbols-outlined text-4xl mb-2 opacity-20">person_off</span>
+                                            <SymbolIcon className="material-symbols-outlined text-4xl mb-2 opacity-20">person_off</SymbolIcon>
                                             <p className="text-xs italic">No staff currently clocked in.</p>
                                         </div>
                                     ) : (
@@ -459,7 +460,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                 <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                                     <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-50">
                                         <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-lg text-red-500">event_busy</span>
+                                            <SymbolIcon className="material-symbols-outlined text-lg text-red-500">event_busy</SymbolIcon>
                                             Absence & Records
                                         </h3>
                                         <span className="text-[10px] font-black bg-red-100 text-red-700 px-2 py-0.5 rounded-full uppercase">
@@ -469,7 +470,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                     <div className="space-y-3">
                                         {groupedStaff.absent.length === 0 ? (
                                             <div className="py-6 flex flex-col items-center justify-center text-slate-300">
-                                                <span className="material-symbols-outlined text-3xl mb-1 opacity-20">verified_user</span>
+                                                <SymbolIcon className="material-symbols-outlined text-3xl mb-1 opacity-20">verified_user</SymbolIcon>
                                                 <p className="text-[10px] font-bold italic">Full attendance today!</p>
                                             </div>
                                         ) : (
@@ -519,7 +520,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
             {/* FILTER BAR */}
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 flex flex-wrap gap-4 items-center">
                 <div className="flex-1 relative min-w-[300px]">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                    <SymbolIcon className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</SymbolIcon>
                     <input
                         className="w-full bg-white border-slate-200 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-blue-500"
                         placeholder="Search staff by name or ID..."
@@ -542,7 +543,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                     <option key={c.id} value={c.id}>{c.name}</option>
                                 ))}
                             </select>
-                            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-sm">filter_list</span>
+                            <SymbolIcon className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-sm">filter_list</SymbolIcon>
                         </div>
                     )}
 
@@ -558,10 +559,10 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                             <option>Administration</option>
                             <option>Support</option>
                         </select>
-                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-sm">expand_more</span>
+                        <SymbolIcon className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-sm">expand_more</SymbolIcon>
                     </div>
                     <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200/50 rounded-lg transition-colors">
-                        <span className="material-symbols-outlined text-lg">tune</span>
+                        <SymbolIcon className="material-symbols-outlined text-lg">tune</SymbolIcon>
                         Filters
                     </button>
                 </div>
@@ -590,7 +591,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                 <tr>
                                     <td colSpan={isHospitalAdmin ? 6 : 4} className="py-20 text-center text-slate-400 bg-slate-50/50">
                                         <div className="flex flex-col items-center">
-                                            <span className="material-symbols-outlined text-4xl mb-2 opacity-50">person_off</span>
+                                            <SymbolIcon className="material-symbols-outlined text-4xl mb-2 opacity-50">person_off</SymbolIcon>
                                             <p>No staff records found.</p>
                                         </div>
                                     </td>
@@ -632,7 +633,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                                     <button
                                                         onClick={() => { setSelectedStaff(staff); setIsAttendanceLogOpen(true); fetchAttendanceHistory(staff.id); }}
                                                         className="p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Attendance History">
-                                                        <span className="material-symbols-outlined text-xl">calendar_month</span>
+                                                        <SymbolIcon className="material-symbols-outlined text-xl">calendar_month</SymbolIcon>
                                                     </button>
                                                     <button
                                                         onClick={() => {
@@ -649,17 +650,17 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                                             setIsEditStaffOpen(true);
                                                         }}
                                                         className="p-2 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Staff globally">
-                                                        <span className="material-symbols-outlined text-xl">edit_document</span>
+                                                        <SymbolIcon className="material-symbols-outlined text-xl">edit_document</SymbolIcon>
                                                     </button>
                                                     <button
                                                         onClick={() => handleOpenPayroll(staff)}
                                                         className="p-2 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Process Payroll">
-                                                        <span className="material-symbols-outlined text-xl">payments</span>
+                                                        <SymbolIcon className="material-symbols-outlined text-xl">payments</SymbolIcon>
                                                     </button>
                                                     <button
                                                         onClick={() => { setSelectedStaff(staff); setIsGrantLoginOpen(true); }}
                                                         className="p-2 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Auth Access">
-                                                        <span className="material-symbols-outlined text-xl">key</span>
+                                                        <SymbolIcon className="material-symbols-outlined text-xl">key</SymbolIcon>
                                                     </button>
                                                 </div>
                                             </td>
@@ -745,7 +746,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
             <Dialog open={isEditStaffOpen} onOpenChange={setIsEditStaffOpen}>
                 <DialogContent className="sm:max-w-md bg-amber-50 border border-amber-200 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-bold flex items-center gap-2 text-amber-900"><span className="text-amber-600 p-1 bg-amber-100 rounded"><span className="material-symbols-outlined text-sm">edit_document</span></span> Global Edit Staff</DialogTitle>
+                        <DialogTitle className="text-xl font-bold flex items-center gap-2 text-amber-900"><span className="text-amber-600 p-1 bg-amber-100 rounded"><SymbolIcon className="material-symbols-outlined text-sm">edit_document</SymbolIcon></span> Global Edit Staff</DialogTitle>
                     </DialogHeader>
                     {selectedStaff && (
                         <form onSubmit={handleEditStaff} className="space-y-4 pt-4">
@@ -902,7 +903,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
             <Dialog open={isAttendanceLogOpen} onOpenChange={setIsAttendanceLogOpen}>
                 <DialogContent className="sm:max-w-xl bg-white border border-slate-200 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-bold flex items-center gap-2"><span className="text-indigo-600 p-1 bg-indigo-50 rounded"><span className="material-symbols-outlined text-sm">calendar_month</span></span> Attendance Log</DialogTitle>
+                        <DialogTitle className="text-xl font-bold flex items-center gap-2"><span className="text-indigo-600 p-1 bg-indigo-50 rounded"><SymbolIcon className="material-symbols-outlined text-sm">calendar_month</SymbolIcon></span> Attendance Log</DialogTitle>
                     </DialogHeader>
                     {selectedStaff && (
                         <div className="pt-4 space-y-4">

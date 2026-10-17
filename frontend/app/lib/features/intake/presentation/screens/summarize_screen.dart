@@ -116,7 +116,7 @@ class SummarizeScreen extends ConsumerWidget {
                     backgroundColor: AppColors.primary,
                     minimumSize: isCompact ? const Size.fromHeight(48) : null,
                   ),
-                  onPressed: () => context.go("/queue"),
+                  onPressed: () => context.push("/queue"),
                   icon: const Icon(Icons.send),
                   label: const Text("Confirm & Print Token ➔"),
                 );

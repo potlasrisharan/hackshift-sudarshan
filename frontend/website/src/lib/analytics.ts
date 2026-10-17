@@ -1,4 +1,4 @@
-import ReactGA from "react-ga4";
+import ReactGA from "./analytics-client";
 
 const GA_MEASUREMENT_ID = "G-QK3TJQZQXV";
 

@@ -241,7 +241,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
   const clinicId = hospitalContext?.managedClinic?.id || hospitalContext?.hospital?.id || 'ayusetu-casualty-clinic';
 
   // HUD & UI States
-  const [isDark, setIsDark] = useState<boolean>(true);
+  const [isDark, setIsDark] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [emergencies, setEmergencies] = useState<EmergencyCase[]>(INITIAL_EMERGENCIES);
   const [bays, setBays] = useState<ResusBay[]>(INITIAL_BAYS);
@@ -568,7 +568,7 @@ export function EmergencyTriage({ onAdmitToIpd }: EmergencyTriageProps) {
   }, [emergencies, statusFilter, selectedBayFilter, searchQuery]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${
+    <div className={`ayu-emergency min-h-screen transition-colors duration-200 ${
       isDark ? 'bg-[#0B0F19] text-slate-100' : 'bg-slate-50 text-slate-900'
     } p-3 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto`}>
 

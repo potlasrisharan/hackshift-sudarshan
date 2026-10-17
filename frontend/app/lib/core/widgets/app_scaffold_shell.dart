@@ -25,7 +25,16 @@ class AppScaffoldShell extends StatelessWidget {
       currentRoute = "/";
     }
 
-    final bool canPop = context.canPop();
+    bool canPop = false;
+    try {
+      canPop = context.canPop();
+    } catch (_) {
+      try {
+        canPop = Navigator.canPop(context);
+      } catch (_) {
+        canPop = false;
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -34,13 +43,32 @@ class AppScaffoldShell extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     color: AppColors.textPrimary),
                 tooltip: "Back",
-                onPressed: () => context.pop(),
+                onPressed: () {
+                  try {
+                    if (context.canPop()) {
+                      context.pop();
+                      return;
+                    }
+                  } catch (_) {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                      return;
+                    }
+                  }
+                  try {
+                    context.go("/");
+                  } catch (_) {}
+                },
               )
             : IconButton(
                 icon: const Icon(Icons.grid_view_rounded,
                     color: AppColors.textSecondary),
                 tooltip: "All Portals",
-                onPressed: () => context.go("/"),
+                onPressed: () {
+                  try {
+                    context.go("/");
+                  } catch (_) {}
+                },
               ),
         title: Column(
           mainAxisSize: MainAxisSize.min,

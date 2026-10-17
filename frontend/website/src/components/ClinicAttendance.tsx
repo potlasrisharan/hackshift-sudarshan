@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect } from 'react'
 import { Loader2, Clock, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { dataService as db } from '@/lib/dataService'
@@ -240,7 +241,7 @@ export function ClinicAttendance({ clinicId, onNavigate }: ClinicAttendanceProps
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <div>
                     <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                        <span className="material-symbols-outlined text-blue-600">how_to_reg</span>
+                        <SymbolIcon className="material-symbols-outlined text-blue-600">how_to_reg</SymbolIcon>
                         Daily Roster & Attendance
                     </h2>
                     <p className="text-sm text-slate-500 mt-1">Record punches for {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>

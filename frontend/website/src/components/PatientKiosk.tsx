@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { VoiceInput } from './VoiceInput';
+import { ArrowLeft, Volume2, VolumeX, ShieldCheck, Accessibility } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { dataService } from '@/lib/dataService';
 
@@ -919,127 +921,20 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
   };
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans select-none ${isHighContrast ? 'bg-black text-yellow-300' : 'bg-slate-50 text-slate-900'}`} style={{ fontSize: `${100 + fontSizeLevel * 10}%` }}>
+    <div data-screen={currentScreenIndex} className={`ayu-kiosk min-h-screen flex flex-col font-sans select-none ${isHighContrast ? 'bg-black text-yellow-300' : 'bg-slate-50 text-slate-900'}`} style={{ fontSize: `${100 + fontSizeLevel * 10}%` }}>
       
-      {/* 1. GIGW 3.0 National Indian Government Tricolor Bar */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]" />
-
-      {/* 2. GIGW 3.0 Accessibility & Institutional Header */}
-      <div className="bg-[#0B3C5D] text-white text-[11px] px-4 sm:px-8 py-1.5 flex flex-wrap items-center justify-between border-b border-[#0B3C5D]/40">
-        <div className="flex items-center space-x-2">
-          <span className="font-bold tracking-wider text-amber-300">भारत सरकार • Government of India</span>
-          <span className="text-slate-400">|</span>
-          <span className="text-slate-200 hidden sm:inline">Ministry of Ayush & National Health Authority (NHA)</span>
-        </div>
-        <div className="flex items-center space-x-3 mt-1 sm:mt-0 font-semibold">
-          <div className="flex items-center space-x-1 bg-[#07273D] px-2 py-0.5 rounded border border-white/20">
-            <span className="text-slate-300 text-[10px] mr-1 font-medium">Text:</span>
-            <button onClick={() => setFontSizeLevel(-1)} className={`px-1 font-bold transition ${fontSizeLevel < 0 ? 'text-amber-300 underline' : 'hover:text-amber-300'}`}>A-</button>
-            <button onClick={() => setFontSizeLevel(0)} className={`px-1 font-bold transition ${fontSizeLevel === 0 ? 'text-amber-300 underline' : 'hover:text-amber-300'}`}>A</button>
-            <button onClick={() => setFontSizeLevel(1)} className={`px-1 font-bold transition ${fontSizeLevel > 0 ? 'text-amber-300 underline' : 'hover:text-amber-300'}`}>A+</button>
-          </div>
-          <button onClick={() => setIsHighContrast(!isHighContrast)} className={`px-2.5 py-0.5 rounded border border-white/20 transition flex items-center gap-1 text-[10px] font-bold ${isHighContrast ? 'bg-amber-400 text-slate-900' : 'bg-[#07273D] hover:bg-amber-400 hover:text-slate-900 text-white'}`}>
-            <span>🌓 Contrast</span>
-          </button>
-          <span className="text-emerald-400 font-bold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>ABDM GIGW 3.0</span>
-          </span>
-        </div>
-      </div>
-
-      {/* 3. Unified 5-Dashboard Suite Navigation (5-Color Palette: #223D79, #77797C, #FFFFFF, #D9CDBA, #FFA530) */}
-      <nav className="bg-[#223D79] text-[#D9CDBA] border-b-2 border-[#FFA530] text-xs px-6 py-2.5 flex flex-wrap items-center justify-between sticky top-0 z-50 shadow-md">
-        <div className="flex items-center space-x-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FFA530] animate-pulse" />
-          <span className="font-extrabold text-white tracking-wide uppercase text-[11px]">MediKiosk Suite (PS 26047)</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-0">
-          <button onClick={() => setCurrentScreenIndex(0)} className="bg-[#FFA530] text-[#223D79] font-black shadow px-3 py-1 rounded-md">
-            📱 Patient Kiosk
-          </button>
-          <button onClick={() => onNavigate ? onNavigate('doctor-consultation') : (window.location.hash = '#/app?view=doctor-consultation')} className="text-[#D9CDBA] hover:text-white font-semibold px-3 py-1 rounded-md hover:bg-[#1a2f5e] border border-[#D9CDBA]/20 transition">
-            🩺 Doctor Portal
-          </button>
-          <button onClick={() => onNavigate ? onNavigate('emergency-triage') : (window.location.hash = '#/app?view=emergency-triage')} className="text-[#D9CDBA] hover:text-white font-semibold px-3 py-1 rounded-md hover:bg-[#1a2f5e] border border-[#D9CDBA]/20 transition">
-            🚨 Emergency Triage
-          </button>
-          <button onClick={() => onNavigate ? onNavigate('ayush-center') : (window.location.hash = '#/app?view=ayush-center')} className="text-[#D9CDBA] hover:text-white font-semibold px-3 py-1 rounded-md hover:bg-[#1a2f5e] border border-[#D9CDBA]/20 transition">
-            🌿 AYUSH Dashavidha
-          </button>
-          <button onClick={() => onNavigate ? onNavigate('admin') : (window.location.hash = '#/app?view=admin')} className="text-[#D9CDBA] hover:text-white font-semibold px-3 py-1 rounded-md hover:bg-[#1a2f5e] border border-[#D9CDBA]/20 transition">
-            📊 Admin & ABDM Hub
-          </button>
-          <a href="#/" className="text-slate-300 hover:text-amber-300 font-bold px-2 py-1 text-[11px] flex items-center gap-1 border-l border-white/20 ml-1">
-            <span>← Exit to Portals</span>
-          </a>
-        </div>
-      </nav>
-
-      {/* 4. Accessible Hospital Top Header */}
-      <header className="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-[45px] z-30 shadow-sm">
-        {/* Left Side: Back Button & Step Badges */}
-        <div className="flex items-center space-x-3 w-1/4">
-          {currentScreenIndex > 0 && (
-            <button onClick={() => setCurrentScreenIndex(currentScreenIndex - 1)} className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
-              <svg className="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              <span>{dict.headerBack || 'Back'}</span>
-            </button>
-          )}
-
-          <div className="hidden xl:flex items-center space-x-1.5 text-[11px] font-bold text-slate-600">
-            {['1. Lang', '2. ID', '3. Voice', '4. Scan', '5. Token'].map((stepName, idx) => (
-              <React.Fragment key={stepName}>
-                <button
-                  onClick={() => handleStepClick(idx)}
-                  className={`px-2.5 py-1 rounded transition text-xs font-bold ${idx === currentScreenIndex ? 'bg-[#FFA530] text-[#223D79] font-black shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-                >
-                  {stepName}
-                </button>
-                {idx < 4 && <span className="text-slate-300">➔</span>}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* Center: MediKiosk Title */}
-        <div className="text-center flex-1">
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
-            <img src="/assets/logo.jpg" alt="Ministry of Ayush Emblem" onError={(e: any) => { e.target.src = '/logo.jpg'; }} className="w-9 h-9 rounded-full shadow-md border border-amber-400/60 object-cover inline-block" />
-            <span>MediKiosk</span>
-          </h1>
-          <p className="text-[11px] text-slate-500 font-medium mt-0.5">All India Institute of Ayurveda (AIIA) • OPD Case-Taking</p>
-        </div>
-
-        {/* Right Side: Unified Voice Audio Toggle */}
-        <div className="flex items-center justify-end w-1/4">
-          <button
-            onClick={() => setIsVoiceActive(!isVoiceActive)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-sm ${isVoiceActive ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300' : 'bg-[#D9CDBA]/20 hover:bg-[#D9CDBA]/40 text-[#223D79] border border-blue-300'}`}
-          >
-            {isVoiceActive ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
-                <svg className="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                </svg>
-                <span>Stop Voice</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4 text-[#223D79]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Start Voice</span>
-              </>
-            )}
-          </button>
+      <header className="ayu-kiosk-header">
+        <a href="#/" className="ds-wordmark" aria-label="AyuSetu home">Ayu<span lang="hi">सेतु</span></a>
+        <nav className="ayu-stepper" aria-label="Intake progress">
+          {['Language','Identity','Voice','Scan','Complete'].map((label,index)=><button key={label} type="button" aria-current={index===currentScreenIndex?'step':undefined} onClick={()=>handleStepClick(index)}><span>{index+1}</span>{label}</button>)}
+        </nav>
+        <div className="ayu-kiosk-access">
+          <button type="button" onClick={()=>setFontSizeLevel(fontSizeLevel > 0 ? 0 : 1)} aria-label="Toggle larger text"><Accessibility size={18}/><span>Aa</span></button>
+          <button type="button" onClick={()=>setIsHighContrast(!isHighContrast)} aria-label="Toggle high contrast">Contrast</button>
+          <button type="button" onClick={()=>setIsVoiceActive(!isVoiceActive)} aria-label={isVoiceActive?'Turn spoken guidance off':'Turn spoken guidance on'}>{isVoiceActive?<Volume2 size={18}/>:<VolumeX size={18}/>}</button>
         </div>
       </header>
+      <div className="ayu-kiosk-subnav"><button type="button" onClick={()=>currentScreenIndex>0?setCurrentScreenIndex(currentScreenIndex-1):(window.location.hash='#/')}><ArrowLeft size={15}/> Back</button><span><ShieldCheck size={14}/> Synthetic demonstration · Review all extracted information</span><span>{currentScreenIndex+1} / 5</span></div>
 
       {/* Emergency Red-Flag Banner */}
       {showRedFlagBanner && (
@@ -1049,7 +944,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div>
-              <p className="font-extrabold text-sm tracking-wide">EMERGENCY SYMPTOM DETECTED (Sub-150ms Triage)</p>
+              <p className="font-extrabold text-sm tracking-wide">EMERGENCY SYMPTOM DETECTED (Safety screen)</p>
               <p className="text-xs text-red-100">Critical chest/cardiac symptom detected. Staff alerted. Please proceed directly to Room 1.</p>
             </div>
           </div>
@@ -1066,10 +961,10 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
         {/* SCREEN 1: LANGUAGE SELECTION */}
         {/* =================================================================== */}
         {currentScreenIndex === 0 && (
-          <section className="space-y-6 text-center">
+          <section className="ayu-language-screen space-y-6 text-center">
             <div className="py-4 space-y-1.5">
-              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Select Language</h2>
-              <p className="text-slate-500 text-xs">Touch any language below to begin case-taking • భాషను ఎంచుకోవడానికి తాకండి</p>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Choose your language</h2>
+              <p className="text-slate-500 text-xs">Select your preferred language to continue</p>
             </div>
 
             {/* Zero-Click Emergency Panic Button */}
@@ -1091,7 +986,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto pt-4">
+            <div className="ayu-language-grid grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-4">
               {[
                 { code: 'te-IN', native: 'తెలుగు', name: 'Telugu' },
                 { code: 'hi-IN', native: 'हिन्दी', name: 'Hindi' },
@@ -1105,7 +1000,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
                 <button
                   key={lang.code}
                   onClick={() => handleSelectLang(lang.code)}
-                  className={`bg-white border-2 hover:border-[#223D79] hover:bg-[#D9CDBA]/20 p-6 rounded-2xl text-center shadow-sm transition active:scale-98 ${currentLanguage === lang.code ? 'border-[#FFA530] ring-2 ring-[#FFA530]/30' : 'border-slate-300'}`}
+                  aria-label={`${lang.name} · ${lang.native}`} className={`bg-white border-2 hover:border-[#223D79] hover:bg-[#D9CDBA]/20 p-6 rounded-2xl text-center shadow-sm transition active:scale-98 ${currentLanguage === lang.code ? 'border-[#FFA530] ring-2 ring-[#FFA530]/30' : 'border-slate-300'}`}
                 >
                   <div className="text-3xl font-bold text-slate-900 mb-1">{lang.native}</div>
                   <div className="text-xs font-bold text-[#223D79]">{lang.name}</div>
@@ -1483,22 +1378,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate }: PatientKioskProps
                 </button>
               </div>
 
-              {/* Voice Mode */}
-              {intakeMode === 'voice' && (
-                <div className="flex flex-col items-center space-y-3">
-                  <button
-                    onClick={toggleMic}
-                    className={`w-20 h-20 rounded-full text-white flex items-center justify-center shadow-lg transition ${isRecording ? 'bg-red-600 animate-pulse ring-4 ring-red-300' : 'bg-blue-700 hover:bg-blue-800'}`}
-                  >
-                    <svg className="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
-                    </svg>
-                  </button>
-                  <p className="font-bold text-slate-900 text-sm">
-                    {isRecording ? '🎙️ Listening... Speak now (Tap to Stop)' : dict.micLabel}
-                  </p>
-                </div>
-              )}
+              {intakeMode === 'voice' && <VoiceInput language={currentLanguage} onTranscript={(text) => { setTypedSymptom(text); setCurrentPatient(prev => ({...prev, selectedSymptom:text, englishTranslation:text})); }} />}
 
               {/* Type Mode */}
               {intakeMode === 'type' && (

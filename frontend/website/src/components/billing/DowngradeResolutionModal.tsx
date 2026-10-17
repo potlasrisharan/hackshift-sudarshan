@@ -1,3 +1,4 @@
+import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useHospital } from '@/context/HospitalContext'
@@ -89,7 +90,7 @@ export function DowngradeResolutionModal({ isOpen }: DowngradeResolutionModalPro
                         className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center"
                     >
                         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <span className="material-symbols-outlined text-3xl text-red-600">block</span>
+                            <SymbolIcon className="material-symbols-outlined text-3xl text-red-600">block</SymbolIcon>
                         </div>
                         <h2 className="text-2xl font-bold text-slate-900 mb-2">Hospital Usage Limit Reached</h2>
                         <p className="text-slate-600 mb-8">
@@ -120,7 +121,7 @@ export function DowngradeResolutionModal({ isOpen }: DowngradeResolutionModalPro
                     <div className="bg-red-50 p-6 border-b border-red-100 shrink-0">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-red-600">warning</span>
+                                <SymbolIcon className="material-symbols-outlined text-red-600">warning</SymbolIcon>
                             </div>
                             <h2 className="text-xl font-bold text-red-900">Subscription Downgrade Requires Action</h2>
                         </div>
@@ -130,7 +131,7 @@ export function DowngradeResolutionModal({ isOpen }: DowngradeResolutionModalPro
                         </p>
 
                         <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-xl flex gap-3">
-                            <span className="material-symbols-outlined text-orange-600 shrink-0">info</span>
+                            <SymbolIcon className="material-symbols-outlined text-orange-600 shrink-0">info</SymbolIcon>
                             <div className="text-sm text-orange-800">
                                 <span className="font-semibold block mb-1">Important Data Deletion Notice</span>
                                 Paused clinics will be completely inaccessible and their data will be <strong>permanently deleted after 30 days</strong>.
@@ -175,7 +176,7 @@ export function DowngradeResolutionModal({ isOpen }: DowngradeResolutionModalPro
                                         : 'border-slate-300 bg-white'
                                         }`}>
                                         {selectedToPause.includes(clinic.id) && (
-                                            <span className="material-symbols-outlined text-[16px]">check</span>
+                                            <SymbolIcon className="material-symbols-outlined text-[16px]">check</SymbolIcon>
                                         )}
                                     </div>
                                     <input
