@@ -1,0 +1,25 @@
+{
+  "name": "dhaaga-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "prebuild": "expo prebuild --platform android",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "56.0.23",
+    "expo-dev-client": "56.0.27",
+    "expo-local-authentication": "56.0.5",
+    "expo-notifications": "56.0.26",
+    "expo-secure-store": "56.0.4",
+    "react": "19.2.3",
+    "react-native": "0.85.3"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "typescript": "7.0.2"
+  }
+}

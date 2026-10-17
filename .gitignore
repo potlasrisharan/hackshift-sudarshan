@@ -22,3 +22,16 @@ playwright-report/
 hackshift/projects/project-1/pentest/
 hackshift/projects/project-1/pentest_result*.txt
 hackshift/projects/project-1/*_output.txt
+
+# Native build outputs and local privacy assets
+apps/mobile/android/.gradle/
+apps/mobile/android/.kotlin/
+apps/mobile/android/app/build/
+apps/mobile/android/build/
+apps/mobile/android/local.properties
+apps/mobile/android/app/debug.keystore
+.privacy-node/
+*.log
+
+apps/mobile/android/app/.cxx/
+apps/mobile/android/.idea/

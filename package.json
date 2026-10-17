@@ -1,0 +1,37 @@
+{
+  "name": "dhaaga-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "node --import tsx apps/api/server.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check apps/api apps/web/src packages tests scripts/*.ts",
+    "format": "biome check --write apps/api apps/web/src packages tests scripts/*.ts",
+    "build": "npm run typecheck && vite build --config apps/web/vite.config.ts && esbuild apps/api/server.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/api.mjs",
+    "bench": "node --import tsx scripts/bench.ts",
+    "eval": "vitest run tests/safety.test.ts",
+    "e2e": "playwright test",
+    "verify-untouched": "bash scripts/verify-untouched.sh"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.5",
+    "hono": "4.13.13",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.5",
+    "esbuild": "0.28.2",
+    "fast-check": "4.10.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,213 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Synthetic-only Dhaaga demo. Single small instance, HTTPS CDN, budget and daily stop. No PHI storage.
+Parameters:
+  Revision:
+    Type: String
+    AllowedPattern: '[a-f0-9]{40}'
+    Description: Exact tested commit SHA in potlasrisharan/hackshift-sudarshan
+  OriginPrefixList:
+    Type: String
+    AllowedPattern: 'pl-[a-f0-9]+'
+    Description: CloudFront origin-facing AWS managed prefix list in this region
+  BillingEmail:
+    Type: String
+    Default: ''
+Conditions:
+  HasBillingEmail: !Not [!Equals [!Ref BillingEmail, '']]
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.44.0.0/24
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.44.0.0/26
+      MapPublicIpOnLaunch: true
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+  Route:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  RouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref Subnet
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: HTTP only from CloudFront origin-facing addresses; no SSH
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourcePrefixListId: !Ref OriginPrefixList
+  Instance:
+    Type: AWS::EC2::Instance
+    DependsOn: Route
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+      InstanceType: t3.micro
+      CreditSpecification:
+        CPUCredits: standard
+      SecurityGroupIds: [!Ref SecurityGroup]
+      SubnetId: !Ref Subnet
+      MetadataOptions:
+        HttpTokens: required
+        HttpEndpoint: enabled
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 12
+            VolumeType: gp3
+            Encrypted: true
+            DeleteOnTermination: true
+      Tags:
+        - Key: Name
+          Value: dhaaga-synthetic-demo
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euxo pipefail
+          dnf install -y docker git
+          systemctl enable --now docker
+          git clone https://github.com/potlasrisharan/hackshift-sudarshan.git /opt/dhaaga
+          cd /opt/dhaaga
+          git checkout ${Revision}
+          docker build -f infra/Dockerfile -t dhaaga:${Revision} .
+          docker run -d --name dhaaga --restart unless-stopped --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true -e TRUST_PROXY=true -p 80:8787 dhaaga:${Revision}
+  CachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${AWS::StackName}-no-cache'
+        DefaultTTL: 0
+        MinTTL: 0
+        MaxTTL: 0
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: false
+          EnableAcceptEncodingBrotli: false
+          CookiesConfig: {CookieBehavior: none}
+          HeadersConfig: {HeaderBehavior: none}
+          QueryStringsConfig: {QueryStringBehavior: none}
+  OriginPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${AWS::StackName}-forward-auth'
+        CookiesConfig: {CookieBehavior: none}
+        HeadersConfig:
+          HeaderBehavior: allViewerAndWhitelistCloudFront
+          Headers: [CloudFront-Forwarded-Proto]
+        QueryStringsConfig: {QueryStringBehavior: all}
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        PriceClass: PriceClass_100
+        DefaultRootObject: index.html
+        Origins:
+          - Id: server
+            DomainName: !GetAtt Instance.PublicDnsName
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior:
+          TargetOriginId: server
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+          CachedMethods: [GET, HEAD]
+          CachePolicyId: !Ref CachePolicy
+          OriginRequestPolicyId: !Ref OriginPolicy
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+  Budget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Sub '${AWS::StackName}-monthly-budget'
+        BudgetLimit: {Amount: 20, Unit: USD}
+        TimeUnit: MONTHLY
+        BudgetType: COST
+      NotificationsWithSubscribers: !If
+        - HasBillingEmail
+        - - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 80
+            Subscribers:
+              - SubscriptionType: EMAIL
+                Address: !Ref BillingEmail
+        - !Ref AWS::NoValue
+  StopRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StopOnlyThisDemo
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ec2:StopInstances
+                Resource: !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Instance}'
+  StopFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt StopRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          INSTANCE: !Ref Instance
+      Code:
+        ZipFile: |
+          import os, boto3
+          def handler(event, context):
+              boto3.client('ec2').stop_instances(InstanceIds=[os.environ['INSTANCE']])
+              return {'stopped': True}
+  NightlyStop:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: cron(0 21 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: stop
+          Arn: !GetAtt StopFunction.Arn
+  StopPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref StopFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyStop.Arn
+Outputs:
+  HttpsUrl:
+    Value: !Sub 'https://${Distribution.DomainName}'
+  InstanceId:
+    Value: !Ref Instance

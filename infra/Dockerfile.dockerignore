@@ -1,0 +1,9 @@
+.git
+node_modules
+**/node_modules
+.env*
+**/*.db
+hackshift
+HOSPITAL-MANAGEMENT-main
+medikiosk-sih2026-main
+apps/mobile
