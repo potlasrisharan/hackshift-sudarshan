@@ -143,7 +143,7 @@ export function createApp(
   app.get("/openapi.json", (c) => c.json(openapi));
   app.get("/docs", (c) =>
     c.html(
-      '<!doctype html><html lang="en"><meta charset="utf-8"><title>Dhaaga API</title><h1>Dhaaga API v1</h1><p>Synthetic demonstration only.</p><p><a href="/openapi.json">OpenAPI 3.1 specification</a></p><p>POST /api/v1/demo/session returns an opaque token. Supply Authorization: Bearer TOKEN, grant /api/v1/consent, then access records and algorithms.</p></html>',
+      '<!doctype html><html lang="en"><meta charset="utf-8"><title>AYUSETU API</title><h1>AYUSETU API v1</h1><p>Synthetic demonstration only.</p><p><a href="/openapi.json">OpenAPI 3.1 specification</a></p><p>POST /api/v1/demo/session returns an opaque token. Supply Authorization: Bearer TOKEN, grant /api/v1/consent, then access records and algorithms.</p></html>',
     ),
   );
   app.get("/healthz", (c) =>

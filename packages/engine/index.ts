@@ -295,3 +295,32 @@ export function threadPulse(raw: unknown) {
     },
   };
 }
+
+// AyuSetu HER Deterministic Algorithms
+export { herSafetyGate } from "./her/safety_gate";
+export { herCycleDetector } from "./her/cycle_detector";
+export { herScreeningEngine } from "./her/screening_engine";
+export { herWellnessRanker } from "./her/wellness_ranker";
+export { herTrendAnalyzer } from "./her/trend_analyzer";
+
+// AyuSetu Vitalis Deterministic Algorithms V0-V14
+export {
+  vitalisSafetyGate,
+  vitalisHealthspanIndex,
+  vitalisPreventiveRanker,
+  vitalisExerciseProgression,
+  vitalisBiomarkerTrends,
+  vitalisLifestyleCorrelations,
+  vitalisRecommendationSelector,
+  evaluateVO2maxRecord,
+  estimateNonExerciseVO2max,
+  vitalisRollingBaseline,
+  vitalisSleepRegularity,
+  vitalisDailyReadiness,
+  vitalisFunctionalCapacity,
+  vitalisIngestAndDeduplicate,
+  vitalisPreventiveEligibility,
+  vitalisBehaviorSimulator,
+} from "./vitalis";
+
+

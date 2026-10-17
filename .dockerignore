@@ -3,8 +3,4 @@ node_modules
 **/node_modules
 .env*
 **/*.db
-hackshift/projects/project-1/pentest
-**/.env
-HOSPITAL-MANAGEMENT-main
-medikiosk-sih2026-main
 apps/mobile

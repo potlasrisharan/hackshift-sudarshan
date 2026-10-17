@@ -1,4 +1,4 @@
-.PHONY: setup dev up down test lint build seed bench eval demo deploy destroy verify-untouched mobile e2e privacy
+.PHONY: setup dev up down test lint build seed bench eval demo deploy destroy mobile e2e privacy
 setup:
 	npm ci
 dev: build
@@ -21,8 +21,7 @@ bench:
 eval:
 	npm run eval
 demo: setup dev
-verify-untouched:
-	bash scripts/verify-untouched.sh
+
 e2e:
 	npm run e2e
 mobile:
@@ -32,4 +31,4 @@ privacy:
 deploy:
 	bash infra/aws/deploy.sh
 destroy:
-	aws cloudformation delete-stack --stack-name dhaaga-demo --region $${AWS_REGION:-ap-south-1}
+	aws cloudformation delete-stack --stack-name ayusetu-demo --region $${AWS_REGION:-ap-south-1}

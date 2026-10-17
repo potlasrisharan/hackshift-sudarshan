@@ -1,6 +1,6 @@
 # Source inventory
 
-Generated from source by `python3 scripts/discover.py`. This is a static inventory, not proof of runtime behaviour.
+Generated from source by `python3 scripts/discover.py`. This is a static historical inventory of the hackathon starter codebases (since retired and removed from the active repository).
 
 ## project-1
 

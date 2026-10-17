@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Synthetic-only Dhaaga demo. Single small instance, HTTPS CDN, budget and daily stop. No PHI storage.
+Description: Synthetic-only AYUSETU demo. Single small instance, HTTPS CDN, budget and daily stop. No PHI storage.
 Parameters:
   Revision:
     Type: String
@@ -82,18 +82,18 @@ Resources:
             DeleteOnTermination: true
       Tags:
         - Key: Name
-          Value: dhaaga-synthetic-demo
+          Value: ayusetu-synthetic-demo
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
           set -euxo pipefail
           dnf install -y docker git
           systemctl enable --now docker
-          git clone https://github.com/potlasrisharan/hackshift-sudarshan.git /opt/dhaaga
-          cd /opt/dhaaga
+          git clone https://github.com/potlasrisharan/hackshift-sudarshan.git /opt/ayusetu
+          cd /opt/ayusetu
           git checkout ${Revision}
-          docker build -f infra/Dockerfile -t dhaaga:${Revision} .
-          docker run -d --name dhaaga --restart unless-stopped --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true -e TRUST_PROXY=true -p 80:8787 dhaaga:${Revision}
+          docker build -f infra/Dockerfile -t ayusetu:${Revision} .
+          docker run -d --name ayusetu --restart unless-stopped --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true -e TRUST_PROXY=true -p 80:8787 ayusetu:${Revision}
   CachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:

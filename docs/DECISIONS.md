@@ -4,10 +4,10 @@
    older `hackshift/PROMPT.md` demands to rewrite fresh or use only Cloudflare.
    Preserve original code and favour an AWS deployment option. Keep deterministic
    TypeScript algorithms, paise, validation and honest synthetic labelling.
-2. **Canonical paths:** keep existing `hackshift/projects/project-{1,2}` paths.
-   Do not rename/move duplicate upstream source trees. New platform code is at
-   Git root in apps/packages/services/infra/docs. Original standalone dependencies
-   are installed only into temporary copies or container layers.
+2. **Retirement of reference projects:** The legacy `hackshift/projects/project-{1,2}`
+   source trees and hackshift directory have been permanently removed from the repository.
+   Platform code is self-contained at `backend/`, `frontend/website/`, `frontend/app/`,
+   `packages/`, `apps/`, and `services/`.
 3. **First slice:** Hono + Zod provides a versioned boundary that can be reused
    on Node or Workers. A Node host is isolated in server.ts. The web client uses
    typed DOM rendering + Vite: the small shell needs no additional UI runtime.

@@ -1,4 +1,4 @@
-# DHAAGA Team Collaboration & Cloudflare Deployment Guide
+# AYUSETU Team Collaboration & Cloudflare Deployment Guide
 
 > Master guide for the team working on `potlasrisharan/hackshift-sudarshan`.
 > Contains GitHub multi-collaborator setup, Cloudflare remote deployment instructions, and copy-paste prompts for all roles.
@@ -30,7 +30,7 @@ Every teammate works in their dedicated feature branch:
 
 ### Step 4: Connecting the Mobile App & Frontend to Backend
 - **Local Dev:** Point client API to `http://10.0.2.2:8787/api/v1` (Android Emulator) or `http://localhost:8787/api/v1` (Web/iOS).
-- **Remote Cloudflare:** Point client API to `https://dhaaga-api.<subdomain>.workers.dev/api/v1`.
+- **Remote Cloudflare:** Point client API to `https://ayusetu-api.<subdomain>.workers.dev/api/v1`.
 
 ### Step 5: Merge Workflow
 1. Test your slice: `npm test`
@@ -98,12 +98,12 @@ npm run deploy:web
 
 ```markdown
 # ROLE: Principal Flutter & Android Kiosk Systems Architect
-You are the Mobile & Kiosk Lead on DHAAGA OS (repository: `potlasrisharan/hackshift-sudarshan`).
+You are the Mobile & Kiosk Lead on AYUSETU OS (repository: `potlasrisharan/hackshift-sudarshan`).
 You are equipped with skills: `flutter-expert`, `android_ui_verification`, `dart-use-pattern-matching`, `ui-a11y`, and `poka-yoke`.
 Your task is to deliver the production-ready Patient Intake Kiosk application running on Android tablets and Web.
 
 # OBJECTIVE:
-Integrate and harden the Patient Intake Kiosk (`frontend/app/` / `kiosk_app`), connecting the 6-step bilingual intake flow directly to the Cloudflare Worker backend (`https://dhaaga-api.potlasrisharanchowdary.workers.dev/api/v1`).
+Integrate and harden the Patient Intake Kiosk (`frontend/app/` / `kiosk_app`), connecting the 6-step bilingual intake flow directly to the Cloudflare Worker backend (`https://ayusetu-api.potlasrisharanchowdary.workers.dev/api/v1`).
 
 # ARCHITECTURE & NON-NEGOTIABLES:
 1. Strict Clean Architecture:
@@ -128,8 +128,8 @@ Integrate and harden the Patient Intake Kiosk (`frontend/app/` / `kiosk_app`), c
      - `QueueTokenScreen`: Generated QR code and large queue token receipt (e.g. `OPD-A-042`) with estimated wait time.
 2. **Implement Network & API Client:**
    - Configure Dio client in `lib/core/network/api_client.dart`:
-     - Base URL: `https://dhaaga-api.potlasrisharanchowdary.workers.dev/api/v1` (configurable via `--dart-define=API_URL=...`).
-     - Connect `POST /intake/session` sending payload matching `@dhaaga/shared`:
+     - Base URL: `https://ayusetu-api.potlasrisharanchowdary.workers.dev/api/v1` (configurable via `--dart-define=API_URL=...`).
+     - Connect `POST /intake/session` sending payload matching `@ayusetu/shared`:
        ```json
        {
          "orgId": "org-sudarshan-01",
@@ -171,7 +171,7 @@ Integrate and harden the Patient Intake Kiosk (`frontend/app/` / `kiosk_app`), c
 
 ```markdown
 # ROLE: Principal Cloudflare Edge & Distributed Systems Engineer
-You are the Backend & Cloudflare Lead on DHAAGA OS (repository: `potlasrisharan/hackshift-sudarshan`).
+You are the Backend & Cloudflare Lead on AYUSETU OS (repository: `potlasrisharan/hackshift-sudarshan`).
 You are equipped with skills: `api-designer`, `database-admin`, `fp-errors`, `security-auditor`, and `poka-yoke`.
 Your task is to build out the high-throughput edge backend on Cloudflare Workers, Hono, D1, and Durable Objects.
 
@@ -247,7 +247,7 @@ Replace in-memory demo stores with Cloudflare D1 relational persistence, impleme
    - Maintain CORS support for `*.pages.dev` and local development origins with OPTIONS preflight handling.
 
 # DEFINITION OF DONE:
-- [ ] D1 migrations apply cleanly: `npx wrangler d1 migrations apply dhaaga-db --local`.
+- [ ] D1 migrations apply cleanly: `npx wrangler d1 migrations apply ayusetu-db --local`.
 - [ ] All API endpoints validated with Zod contracts in `packages/shared/contracts.ts`.
 - [ ] Vitest test suite passes with >= 90% coverage: `npm test`.
 - [ ] Local Worker runs without errors: `npm run dev:backend` or `npx wrangler dev`.
@@ -264,7 +264,7 @@ Replace in-memory demo stores with Cloudflare D1 relational persistence, impleme
 
 ```markdown
 # ROLE: Principal AI Systems & Clinical Algorithm Integration Engineer
-You are the AI, Voice & Clinical Algorithms Lead on DHAAGA OS (repository: `potlasrisharan/hackshift-sudarshan`).
+You are the AI, Voice & Clinical Algorithms Lead on AYUSETU OS (repository: `potlasrisharan/hackshift-sudarshan`).
 You are equipped with skills: `voice-agents`, `transformers-js`, `pydantic-models-py`, `privacy-by-design`, and `poka-yoke`.
 Your task is to wire Indic voice interactions (Sarvam AI), prescription document OCR, and the 4 deterministic clinical decision engines.
 
@@ -333,7 +333,7 @@ Integrate sub-800ms Indic voice triage, structured prescription OCR parsing with
 
 ```markdown
 # ROLE: Principal Frontend Engineer & Medical Systems Architect
-You are the Web Frontend & Operations Lead on DHAAGA OS (repository: `potlasrisharan/hackshift-sudarshan`).
+You are the Web Frontend & Operations Lead on AYUSETU OS (repository: `potlasrisharan/hackshift-sudarshan`).
 You are equipped with skills: `react-patterns`, `ui-review`, `design-spells`, `webapp-testing`, `performance-profiling`, and `poka-yoke`.
 Your task is to build the unified Clinician Consultation Portal and Pharmacy Point-of-Sale (POS) dashboard deployed on Cloudflare Pages.
 
@@ -344,7 +344,7 @@ Merge the clinician console and pharmacy POS (`frontend/website` / `HOSPITAL-MAN
 1. Stack: React 19 + TypeScript (Strict, zero `any`) + Vite + Tailwind CSS + TanStack Query.
 2. Styling: Google Stitch / Material 3 Dark theme with clean high-density layout suitable for busy OPD doctors and pharmacists.
 3. State & Sync: TanStack Query with optimistic UI mutations and WebSocket event subscriptions from `ClinicHub`.
-4. API Connectivity: Always route through `API_BASE = https://dhaaga-api.potlasrisharanchowdary.workers.dev/api/v1` (with relative fallback enabled by `_redirects`).
+4. API Connectivity: Always route through `API_BASE = https://ayusetu-api.potlasrisharanchowdary.workers.dev/api/v1` (with relative fallback enabled by `_redirects`).
 5. Performance: Zero jank, sub-100ms interaction latency, memoized heavy table renders, lightweight bundle (< 300KB initial gzip).
 
 # STEP-BY-STEP IMPLEMENTATION (Chain of Thought):
@@ -368,6 +368,6 @@ Merge the clinician console and pharmacy POS (`frontend/website` / `HOSPITAL-MAN
 - [ ] Doctor can approve an intake session and sign a prescription.
 - [ ] Pharmacy POS immediately displays the prescribed order with pre-allocated FEFO batches.
 - [ ] Dispensing an order generates a valid invoice and updates inventory view.
-- [ ] Web application verified on Cloudflare Pages (`https://dhaaga-web.pages.dev`).
+- [ ] Web application verified on Cloudflare Pages (`https://ayusetu-web.pages.dev`).
 - [ ] Work committed and pushed to `feat/web-pos`.
 ```

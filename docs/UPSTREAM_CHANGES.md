@@ -1,8 +1,9 @@
 # Upstream preservation
 
-No original source modifications are allowlisted. The canonical paths are
-`hackshift/projects/project-1` and `hackshift/projects/project-2`; they were already
-present here when work began. Duplicate sibling imports are retained locally.
+No original source modifications were made during preservation. As of repository
+finalization, `hackshift/projects/project-1` and `hackshift/projects/project-2` have been
+fully retired and removed from the active repository to leave only the production AYUSETU
+codebase.
 
 Publication excludes an existing populated SQLite database (provenance not
 established), historical authenticated JWT penetration-test scripts, captured test
