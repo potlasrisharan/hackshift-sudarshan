@@ -22,20 +22,30 @@ export interface SimulationResult {
  * Models schedule and volume feasibility of planned behavioral changes.
  * Strictly avoids biological age predictions or claims of years of life gained.
  */
-export function vitalisBehaviorSimulator(input: SimulationInput): SimulationResult {
+export function vitalisBehaviorSimulator(
+  input: SimulationInput,
+): SimulationResult {
   // Approximate 1 minute of purposeful walking ~ 100 steps
   const extraSteps = input.simulatedExtraWalkMinutes * 100;
   const projectedSteps = input.currentDailySteps + extraSteps;
 
   const extraActiveMinutesWeekly = input.simulatedExtraWalkMinutes * 7;
-  const projectedActiveWeekly = Math.round(extraActiveMinutesWeekly + (input.currentDailySteps / 100));
+  const projectedActiveWeekly = Math.round(
+    extraActiveMinutesWeekly + input.currentDailySteps / 100,
+  );
 
-  const projectedStrength = input.currentWeeklyStrengthSessions + input.simulatedExtraStrengthSessions;
+  const projectedStrength =
+    input.currentWeeklyStrengthSessions + input.simulatedExtraStrengthSessions;
   const extraSleepHours = input.simulatedEarlierBedtimeMinutes / 60;
-  const projectedSleep = Number((input.currentSleepHours + extraSleepHours).toFixed(1));
+  const projectedSleep = Number(
+    (input.currentSleepHours + extraSleepHours).toFixed(1),
+  );
 
   // WHO guideline benchmark: 150 minutes moderate activity / week
-  const guidelinePct = Math.min(200, Math.round((projectedActiveWeekly / 150) * 100));
+  const guidelinePct = Math.min(
+    200,
+    Math.round((projectedActiveWeekly / 150) * 100),
+  );
 
   return {
     projectedDailySteps: projectedSteps,

@@ -60,19 +60,26 @@ describe("AyuSetu HER — API Endpoints (/api/v1/her)", () => {
   });
 
   it("evaluates screening engine without diagnostic claims", async () => {
-    const screenRes = await backendApp.request("/api/v1/her/screening/evaluate", {
-      method: "POST",
-      headers: patientHeaders,
-      body: JSON.stringify({}),
-    });
+    const screenRes = await backendApp.request(
+      "/api/v1/her/screening/evaluate",
+      {
+        method: "POST",
+        headers: patientHeaders,
+        body: JSON.stringify({}),
+      },
+    );
     expect(screenRes.status).toBe(200);
     const data = (await screenRes.json()) as any;
     expect(Array.isArray(data.findings)).toBe(true);
 
-    const pcosFinding = data.findings.find((f: any) => f.domain === "PCOS_FEATURES");
+    const pcosFinding = data.findings.find(
+      (f: any) => f.domain === "PCOS_FEATURES",
+    );
     expect(pcosFinding).toBeDefined();
     expect(pcosFinding.isDiagnosis).toBe(false);
-    expect(["CLINICAL_REVIEW_SUGGESTED", "MONITOR_AND_TRACK"]).toContain(pcosFinding.category);
+    expect(["CLINICAL_REVIEW_SUGGESTED", "MONITOR_AND_TRACK"]).toContain(
+      pcosFinding.category,
+    );
     expect(pcosFinding.supportingEvidence.length).toBeGreaterThan(0);
     expect(pcosFinding.missingInformation.length).toBeGreaterThan(0);
   });
@@ -131,8 +138,16 @@ describe("AyuSetu HER — API Endpoints (/api/v1/her)", () => {
       method: "POST",
       headers: patientHeaders,
       body: JSON.stringify([
-        { date: "2026-10-15", restingHeartRateBpm: 68, sleepDurationMinutes: 460 },
-        { date: "2026-10-16", restingHeartRateBpm: 69, sleepDurationMinutes: 440 },
+        {
+          date: "2026-10-15",
+          restingHeartRateBpm: 68,
+          sleepDurationMinutes: 460,
+        },
+        {
+          date: "2026-10-16",
+          restingHeartRateBpm: 69,
+          sleepDurationMinutes: 440,
+        },
       ]),
     });
     expect(syncRes.status).toBe(200);
@@ -157,20 +172,27 @@ describe("AyuSetu HER — API Endpoints (/api/v1/her)", () => {
     expect(summary.shareToken).toBeDefined();
 
     // 2. View via share token
-    const viewRes = await backendApp.request(`/api/v1/her/doctor-summary/${summary.shareToken}`);
+    const viewRes = await backendApp.request(
+      `/api/v1/her/doctor-summary/${summary.shareToken}`,
+    );
     expect(viewRes.status).toBe(200);
     const viewed = (await viewRes.json()) as any;
     expect(viewed.id).toBe(summary.id);
 
     // 3. Revoke access
-    const revokeRes = await backendApp.request(`/api/v1/her/doctor-summary/${summary.id}/revoke`, {
-      method: "POST",
-      headers: patientHeaders,
-    });
+    const revokeRes = await backendApp.request(
+      `/api/v1/her/doctor-summary/${summary.id}/revoke`,
+      {
+        method: "POST",
+        headers: patientHeaders,
+      },
+    );
     expect(revokeRes.status).toBe(200);
 
     // 4. Verify access is now rejected
-    const reViewRes = await backendApp.request(`/api/v1/her/doctor-summary/${summary.shareToken}`);
+    const reViewRes = await backendApp.request(
+      `/api/v1/her/doctor-summary/${summary.shareToken}`,
+    );
     expect(reViewRes.status).toBe(403);
   });
 });

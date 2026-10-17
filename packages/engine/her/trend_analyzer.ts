@@ -23,9 +23,10 @@ export interface TrendResult {
 export function herTrendAnalyzer(
   series: TimeSeriesPoint[],
   windowDaysOrLabel: 7 | 14 | 30 | string = 14,
-  minimumCoverage: number = 0.5
+  minimumCoverage: number = 0.5,
 ): TrendResult {
-  const windowDays = typeof windowDaysOrLabel === "number" ? windowDaysOrLabel : 14;
+  const windowDays =
+    typeof windowDaysOrLabel === "number" ? windowDaysOrLabel : 14;
   if (!series || series.length === 0) {
     return {
       status: "INSUFFICIENT_DATA",
@@ -46,7 +47,9 @@ export function herTrendAnalyzer(
   }
 
   const distinctDates = Array.from(map.keys()).sort();
-  const latestDateMs = new Date(distinctDates[distinctDates.length - 1]!).getTime();
+  const latestDateMs = new Date(
+    distinctDates[distinctDates.length - 1]!,
+  ).getTime();
   const windowStartMs = latestDateMs - (windowDays - 1) * 24 * 60 * 60 * 1000;
 
   // Filter points inside the rolling window

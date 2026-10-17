@@ -5,13 +5,35 @@ import { tenantDb } from "../backend/src/db/tenant";
 function createMockD1() {
   const store: Record<string, Record<string, unknown>[]> = {
     patients: [
-      { id: "pat_1", org_id: "org-alpha", phone_hash: "hash123", preferred_lang: "hi" },
-      { id: "pat_2", org_id: "org-beta", phone_hash: "hash456", preferred_lang: "ta" }
+      {
+        id: "pat_1",
+        org_id: "org-alpha",
+        phone_hash: "hash123",
+        preferred_lang: "hi",
+      },
+      {
+        id: "pat_2",
+        org_id: "org-beta",
+        phone_hash: "hash456",
+        preferred_lang: "ta",
+      },
     ],
     encounters: [
-      { id: "enc_1", org_id: "org-alpha", clinic_id: "clinic_1", patient_id: "pat_1", status: "WAITING" },
-      { id: "enc_2", org_id: "org-beta", clinic_id: "clinic_2", patient_id: "pat_2", status: "IN_CONSULTATION" }
-    ]
+      {
+        id: "enc_1",
+        org_id: "org-alpha",
+        clinic_id: "clinic_1",
+        patient_id: "pat_1",
+        status: "WAITING",
+      },
+      {
+        id: "enc_2",
+        org_id: "org-beta",
+        clinic_id: "clinic_2",
+        patient_id: "pat_2",
+        status: "IN_CONSULTATION",
+      },
+    ],
   };
 
   const executedQueries: { sql: string; params: unknown[] }[] = [];
@@ -26,7 +48,9 @@ function createMockD1() {
               // Simple pattern matching for mock
               if (sql.includes("FROM patients WHERE id = ? AND org_id = ?")) {
                 const [id, orgId] = params as [string, string];
-                const found = store.patients?.find((p) => p.id === id && p.org_id === orgId);
+                const found = store.patients?.find(
+                  (p) => p.id === id && p.org_id === orgId,
+                );
                 return (found as T) ?? null;
               }
               return null;
@@ -35,12 +59,19 @@ function createMockD1() {
               executedQueries.push({ sql, params });
               if (sql.includes("FROM patients WHERE org_id = ?")) {
                 const [orgId] = params as [string];
-                const results = (store.patients?.filter((p) => p.org_id === orgId) ?? []) as T[];
+                const results = (store.patients?.filter(
+                  (p) => p.org_id === orgId,
+                ) ?? []) as T[];
                 return { results, success: true, meta: {} };
               }
-              if (sql.includes("FROM encounters") && sql.includes("org_id = ?")) {
+              if (
+                sql.includes("FROM encounters") &&
+                sql.includes("org_id = ?")
+              ) {
                 const [orgId] = params as [string];
-                const results = (store.encounters?.filter((e) => e.org_id === orgId) ?? []) as T[];
+                const results = (store.encounters?.filter(
+                  (e) => e.org_id === orgId,
+                ) ?? []) as T[];
                 return { results, success: true, meta: {} };
               }
               return { results: [], success: true, meta: {} };
@@ -48,11 +79,11 @@ function createMockD1() {
             async run() {
               executedQueries.push({ sql, params });
               return { success: true, meta: {} };
-            }
+            },
           };
-        }
+        },
       };
-    }
+    },
   } as unknown as D1Database;
 
   return { mockDb, executedQueries, store };
@@ -61,8 +92,12 @@ function createMockD1() {
 describe("tenantDb multi-tenancy isolation (AGENTS.md Rule 6)", () => {
   it("rejects empty orgId context to prevent cross-tenant data leaks", () => {
     const { mockDb } = createMockD1();
-    expect(() => tenantDb(mockDb, { orgId: "" })).toThrow(/valid, non-empty orgId/);
-    expect(() => tenantDb(mockDb, { orgId: "   " })).toThrow(/valid, non-empty orgId/);
+    expect(() => tenantDb(mockDb, { orgId: "" })).toThrow(
+      /valid, non-empty orgId/,
+    );
+    expect(() => tenantDb(mockDb, { orgId: "   " })).toThrow(
+      /valid, non-empty orgId/,
+    );
   });
 
   it("scopes findById to the tenant's org_id", async () => {

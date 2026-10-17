@@ -14,11 +14,17 @@ export const vitalisProfileSchema = z.object({
   diagnosedConditions: z.array(z.string()).default([]),
   medications: z.array(z.string()).default([]),
   allergies: z.array(z.string()).default([]),
-  dietPreference: z.enum(["vegetarian", "vegan", "eggetarian", "mixed"]).default("vegetarian"),
+  dietPreference: z
+    .enum(["vegetarian", "vegan", "eggetarian", "mixed"])
+    .default("vegetarian"),
   activityLimitations: z.array(z.string()).default([]),
   goals: z.array(z.string()).default([]),
-  smokingStatus: z.enum(["never", "former", "current", "declined"]).default("never"),
-  alcoholIntake: z.enum(["none", "occasional", "moderate", "high", "declined"]).default("none"),
+  smokingStatus: z
+    .enum(["never", "former", "current", "declined"])
+    .default("never"),
+  alcoholIntake: z
+    .enum(["none", "occasional", "moderate", "high", "declined"])
+    .default("none"),
   clinicianRestrictedExertion: z.boolean().default(false),
   onboardingVersion: z.string().default("2026.1"),
   updatedAt: z.string().optional(),
@@ -48,7 +54,15 @@ export const vitalisQuestionSchema = z.object({
   version: z.string().default("1.0"),
   section: z.string(),
   prompt: z.string(),
-  type: z.enum(["single", "multi", "number", "date", "scale", "text", "boolean"]),
+  type: z.enum([
+    "single",
+    "multi",
+    "number",
+    "date",
+    "scale",
+    "text",
+    "boolean",
+  ]),
   options: z.array(z.string()).optional(),
   required: z.boolean().default(false),
   clinicalRuleTags: z.array(z.string()).default([]),
@@ -60,9 +74,18 @@ export const vitalisAssessmentSchema = z.object({
   id: z.string(),
   patientId: z.string(),
   questionnaireVersion: z.string().default("1.0"),
-  status: z.enum(["in_progress", "completed", "abandoned"]).default("in_progress"),
+  status: z
+    .enum(["in_progress", "completed", "abandoned"])
+    .default("in_progress"),
   answers: z.record(z.string(), z.any()).default({}),
-  resultCategory: z.enum(["urgent_evaluation", "clinician_review", "wellness_plan_available", "insufficient_information"]).default("wellness_plan_available"),
+  resultCategory: z
+    .enum([
+      "urgent_evaluation",
+      "clinician_review",
+      "wellness_plan_available",
+      "insufficient_information",
+    ])
+    .default("wellness_plan_available"),
   triageNotes: z.array(z.string()).default([]),
   startedAt: z.string(),
   completedAt: z.string().nullable().optional(),
@@ -84,11 +107,18 @@ export const vitalisObservationSchema = z.object({
   observedStartUtc: z.string(),
   observedEndUtc: z.string().optional(),
   ianaTimezone: z.string().default("Asia/Kolkata"),
-  sourceType: z.enum(["lab_measured", "wearable_estimated", "model_estimated", "patient_reported"]),
+  sourceType: z.enum([
+    "lab_measured",
+    "wearable_estimated",
+    "model_estimated",
+    "patient_reported",
+  ]),
   sourceId: z.string().default("manual"),
   sourceRecordId: z.string().optional(),
   method: z.string().optional(),
-  quality: z.enum(["verified", "estimated", "unverified", "quarantined"]).default("verified"),
+  quality: z
+    .enum(["verified", "estimated", "unverified", "quarantined"])
+    .default("verified"),
   referenceRange: z.string().optional(),
   isAbnormal: z.boolean().default(false),
 });
@@ -103,12 +133,15 @@ export const vitalisScoreSchema = z.object({
   hpiScore: z.number().nullable(), // 0-100, null if coverage < minimum
   coverage: z.number().min(0).max(1),
   status: z.enum(["ADEQUATE_DATA", "INSUFFICIENT_DATA"]),
-  domains: z.record(z.string(), z.object({
-    score: z.number().min(0).max(100).nullable(),
-    weight: z.number().positive(),
-    observed: z.boolean(),
-    rationale: z.string(),
-  })),
+  domains: z.record(
+    z.string(),
+    z.object({
+      score: z.number().min(0).max(100).nullable(),
+      weight: z.number().positive(),
+      observed: z.boolean(),
+      rationale: z.string(),
+    }),
+  ),
   algorithmVersion: z.string().default("V1-HPI-2026.1"),
   computedAt: z.string(),
   limitations: z.array(z.string()),
@@ -127,14 +160,18 @@ export const vitalisExercisePlanSchema = z.object({
   recommendedActivities: z.array(z.string()),
   contraindicatedActivities: z.array(z.string()),
   intensityLevel: z.enum(["low", "moderate", "challenging_educational_only"]),
-  yogaAndMobilityRoutine: z.array(z.object({
-    asana: z.string(),
-    durationMins: z.number(),
-    focus: z.string(),
-    contraindications: z.array(z.string()),
-  })),
+  yogaAndMobilityRoutine: z.array(
+    z.object({
+      asana: z.string(),
+      durationMins: z.number(),
+      focus: z.string(),
+      contraindications: z.array(z.string()),
+    }),
+  ),
   policyVersion: z.string().default("V3-EX-2026.1"),
-  safetyStatus: z.enum(["ALLOWED", "BLOCKED", "CLINICIAN_REVIEW"]).default("ALLOWED"),
+  safetyStatus: z
+    .enum(["ALLOWED", "BLOCKED", "CLINICIAN_REVIEW"])
+    .default("ALLOWED"),
   safetyNotes: z.array(z.string()).default([]),
 });
 
@@ -144,14 +181,16 @@ export const vitalisNutritionPlanSchema = z.object({
   id: z.string(),
   patientId: z.string(),
   dietPreference: z.string(),
-  keyFoods: z.array(z.object({
-    foodName: z.string(),
-    hindiName: z.string().optional(),
-    category: z.string(),
-    proteinGramsPer100g: z.number(),
-    fiberGramsPer100g: z.number(),
-    benefits: z.string(),
-  })),
+  keyFoods: z.array(
+    z.object({
+      foodName: z.string(),
+      hindiName: z.string().optional(),
+      category: z.string(),
+      proteinGramsPer100g: z.number(),
+      fiberGramsPer100g: z.number(),
+      benefits: z.string(),
+    }),
+  ),
   exclusions: z.array(z.string()),
   guidelines: z.array(z.string()),
   herbalCautionNotes: z.array(z.string()),
@@ -169,7 +208,13 @@ export const vitalisPreventiveItemSchema = z.object({
   description: z.string(),
   evidenceGrade: z.string(),
   guidelineSource: z.string(),
-  status: z.enum(["due", "completed", "needs_discussion", "not_applicable", "unknown"]),
+  status: z.enum([
+    "due",
+    "completed",
+    "needs_discussion",
+    "not_applicable",
+    "unknown",
+  ]),
   recommendedIntervalMonths: z.number(),
   lastCompletedDate: z.string().nullable().optional(),
   nextDueDate: z.string().nullable().optional(),

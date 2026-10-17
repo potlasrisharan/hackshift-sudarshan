@@ -1,21 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
-  vitalisSafetyGate,
-  vitalisHealthspanIndex,
-  vitalisPreventiveRanker,
-  vitalisExerciseProgression,
-  vitalisBiomarkerTrends,
-  vitalisLifestyleCorrelations,
-  vitalisRecommendationSelector,
-  evaluateVO2maxRecord,
   estimateNonExerciseVO2max,
-  vitalisRollingBaseline,
-  vitalisSleepRegularity,
-  vitalisDailyReadiness,
-  vitalisFunctionalCapacity,
-  vitalisIngestAndDeduplicate,
-  vitalisPreventiveEligibility,
+  evaluateVO2maxRecord,
   vitalisBehaviorSimulator,
+  vitalisBiomarkerTrends,
+  vitalisDailyReadiness,
+  vitalisExerciseProgression,
+  vitalisFunctionalCapacity,
+  vitalisHealthspanIndex,
+  vitalisIngestAndDeduplicate,
+  vitalisLifestyleCorrelations,
+  vitalisPreventiveEligibility,
+  vitalisPreventiveRanker,
+  vitalisRecommendationSelector,
+  vitalisRollingBaseline,
+  vitalisSafetyGate,
+  vitalisSleepRegularity,
 } from "../packages/engine";
 
 describe("AyuSetu Vitalis — Algorithm V0: Safety Gate", () => {
@@ -70,7 +70,7 @@ describe("AyuSetu Vitalis — Algorithm V1: Healthspan Progress Index (HPI)", ()
     });
     expect(res.status).toBe("INSUFFICIENT_DATA");
     expect(res.hpiScore).toBeNull();
-    expect(res.coverage).toBeLessThan(0.40);
+    expect(res.coverage).toBeLessThan(0.4);
   });
 
   it("calculates weighted normalized score when coverage exceeds minimum", () => {
@@ -78,7 +78,7 @@ describe("AyuSetu Vitalis — Algorithm V1: Healthspan Progress Index (HPI)", ()
       domains: {
         physical_activity: { score: 80, observed: true }, // wt 1.5 -> 120
         strength_mobility: { score: 70, observed: true }, // wt 1.2 -> 84
-        sleep_recovery: { score: 90, observed: true },    // wt 1.4 -> 126
+        sleep_recovery: { score: 90, observed: true }, // wt 1.4 -> 126
         nutrition_quality: { score: 85, observed: true }, // wt 1.3 -> 110.5
       },
     });
@@ -97,19 +97,19 @@ describe("AyuSetu Vitalis — Algorithm V2: Preventive Ranker", () => {
         title: "Daily Brisk Walk",
         category: "lifestyle_activity" as const,
         evidenceStrength: 0.95,
-        relevanceScore: 0.90,
-        feasibilityScore: 0.90,
-        patientBurden: 0.10,
+        relevanceScore: 0.9,
+        feasibilityScore: 0.9,
+        patientBurden: 0.1,
         evidenceSource: "WHO",
       },
       {
         id: "ACT-2",
         title: "Complex Cold Plunge",
         category: "lifestyle_activity" as const,
-        evidenceStrength: 0.30,
-        relevanceScore: 0.40,
-        feasibilityScore: 0.20,
-        patientBurden: 0.80,
+        evidenceStrength: 0.3,
+        relevanceScore: 0.4,
+        feasibilityScore: 0.2,
+        patientBurden: 0.8,
         evidenceSource: "Anecdotal",
       },
     ];
@@ -219,7 +219,11 @@ describe("AyuSetu Vitalis — Algorithm V8: Rolling Baseline", () => {
       { value: 60, dateUtc: "2026-01-06", sourceDevice: "AppleWatch" },
       { value: 60, dateUtc: "2026-01-07", sourceDevice: "AppleWatch" },
     ];
-    const today = { value: 60, dateUtc: "2026-01-08", sourceDevice: "AppleWatch" };
+    const today = {
+      value: 60,
+      dateUtc: "2026-01-08",
+      sourceDevice: "AppleWatch",
+    };
 
     const res = vitalisRollingBaseline("RESTING_HR", samples, today);
     expect(res.status).toBe("ADEQUATE");
@@ -300,6 +304,8 @@ describe("AyuSetu Vitalis — Algorithm V14: Behavior Simulator", () => {
     expect(res.projectedDailySteps).toBe(7000);
     expect(res.projectedWeeklyStrengthTotal).toBe(2);
     expect(res.projectedSleepHours).toBe(7.0);
-    expect(res.illustrativeNotice).toContain("does not predict biological age reduction");
+    expect(res.illustrativeNotice).toContain(
+      "does not predict biological age reduction",
+    );
   });
 });

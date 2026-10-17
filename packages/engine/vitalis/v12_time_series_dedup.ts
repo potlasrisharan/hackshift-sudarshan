@@ -26,7 +26,7 @@ export interface BucketedDailySummary {
  */
 export function vitalisIngestAndDeduplicate(
   samples: RawTelemetrySample[],
-  targetTimezone: string = "Asia/Kolkata"
+  targetTimezone: string = "Asia/Kolkata",
 ): {
   deduplicatedSamples: RawTelemetrySample[];
   dailySummaries: BucketedDailySummary[];
@@ -42,7 +42,10 @@ export function vitalisIngestAndDeduplicate(
     let unit = s.unit.toLowerCase();
 
     // Glucose mmol/L to mg/dL conversion factor: 18.0182
-    if (s.metricCode === "blood_glucose" && (unit === "mmol/l" || unit === "mmol")) {
+    if (
+      s.metricCode === "blood_glucose" &&
+      (unit === "mmol/l" || unit === "mmol")
+    ) {
       val = Number((val * 18.0182).toFixed(1));
       unit = "mg/dL";
     }
@@ -68,11 +71,14 @@ export function vitalisIngestAndDeduplicate(
 
   // Group by local day in target timezone
   // For cumulative metrics (steps, active minutes) -> sum; for instantaneous (HR, HRV) -> mean
-  const dayMetricGroups = new Map<string, {
-    values: number[];
-    sources: Set<string>;
-    unit: string;
-  }>();
+  const dayMetricGroups = new Map<
+    string,
+    {
+      values: number[];
+      sources: Set<string>;
+      unit: string;
+    }
+  >();
 
   for (const s of deduplicated) {
     // Compute date string in local timezone
@@ -108,13 +114,18 @@ export function vitalisIngestAndDeduplicate(
 
   for (const [key, data] of dayMetricGroups.entries()) {
     const [dateLocal = "", metricCode = ""] = key.split(":");
-    const isCumulative = metricCode === "steps" || metricCode === "active_minutes";
+    const isCumulative =
+      metricCode === "steps" || metricCode === "active_minutes";
 
     let aggregatedValue = 0;
     if (isCumulative) {
       aggregatedValue = data.values.reduce((a, b) => a + b, 0);
     } else {
-      aggregatedValue = Number((data.values.reduce((a, b) => a + b, 0) / data.values.length).toFixed(1));
+      aggregatedValue = Number(
+        (data.values.reduce((a, b) => a + b, 0) / data.values.length).toFixed(
+          1,
+        ),
+      );
     }
 
     dailySummaries.push({

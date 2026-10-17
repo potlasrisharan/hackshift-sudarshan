@@ -21,7 +21,7 @@ export interface CorrelationResult {
 export function vitalisLifestyleCorrelations(
   xLabel: string,
   yLabel: string,
-  pairs: PairedSample[]
+  pairs: PairedSample[],
 ): CorrelationResult {
   const disclaimer =
     "Association does not establish causation. Observed statistical correlation does not guarantee clinical efficacy or health outcomes.";
@@ -32,14 +32,19 @@ export function vitalisLifestyleCorrelations(
       yLabel,
       sampleCount: pairs.length,
       pearsonR: null,
-      interpretation: "Insufficient paired data points (minimum 7 required) to evaluate statistical association.",
+      interpretation:
+        "Insufficient paired data points (minimum 7 required) to evaluate statistical association.",
       status: "INSUFFICIENT_SAMPLES",
       disclaimer,
     };
   }
 
   const n = pairs.length;
-  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+  let sumX = 0,
+    sumY = 0,
+    sumXY = 0,
+    sumX2 = 0,
+    sumY2 = 0;
 
   for (const p of pairs) {
     sumX += p.x;
@@ -50,7 +55,9 @@ export function vitalisLifestyleCorrelations(
   }
 
   const numerator = n * sumXY - sumX * sumY;
-  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+  const denominator = Math.sqrt(
+    (n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY),
+  );
 
   if (denominator === 0 || isNaN(denominator)) {
     return {
@@ -66,10 +73,14 @@ export function vitalisLifestyleCorrelations(
 
   const r = Number((numerator / denominator).toFixed(3));
   let interpretation = "No meaningful association detected.";
-  if (r >= 0.6) interpretation = `Strong positive association between ${xLabel} and ${yLabel}.`;
-  else if (r >= 0.3) interpretation = `Moderate positive association between ${xLabel} and ${yLabel}.`;
-  else if (r <= -0.6) interpretation = `Strong inverse association between ${xLabel} and ${yLabel}.`;
-  else if (r <= -0.3) interpretation = `Moderate inverse association between ${xLabel} and ${yLabel}.`;
+  if (r >= 0.6)
+    interpretation = `Strong positive association between ${xLabel} and ${yLabel}.`;
+  else if (r >= 0.3)
+    interpretation = `Moderate positive association between ${xLabel} and ${yLabel}.`;
+  else if (r <= -0.6)
+    interpretation = `Strong inverse association between ${xLabel} and ${yLabel}.`;
+  else if (r <= -0.3)
+    interpretation = `Moderate inverse association between ${xLabel} and ${yLabel}.`;
 
   return {
     xLabel,

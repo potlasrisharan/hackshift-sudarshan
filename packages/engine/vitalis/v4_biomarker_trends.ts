@@ -42,9 +42,12 @@ const PHYSIOLOGICAL_BOUNDS: Record<string, { min: number; max: number }> = {
  */
 export function vitalisBiomarkerTrends(
   metricKey: string,
-  readings: BiomarkerPoint[]
+  readings: BiomarkerPoint[],
 ): BiomarkerTrendResult {
-  const bounds = PHYSIOLOGICAL_BOUNDS[metricKey.toLowerCase()] || { min: 0, max: 999999 };
+  const bounds = PHYSIOLOGICAL_BOUNDS[metricKey.toLowerCase()] || {
+    min: 0,
+    max: 999999,
+  };
 
   const validPoints: BiomarkerPoint[] = [];
   const quarantinedPoints: BiomarkerPoint[] = [];
@@ -58,7 +61,9 @@ export function vitalisBiomarkerTrends(
   }
 
   // Sort chronologically
-  validPoints.sort((a, b) => new Date(a.dateUtc).getTime() - new Date(b.dateUtc).getTime());
+  validPoints.sort(
+    (a, b) => new Date(a.dateUtc).getTime() - new Date(b.dateUtc).getTime(),
+  );
 
   if (validPoints.length < 2) {
     const single = validPoints[0];
@@ -73,10 +78,14 @@ export function vitalisBiomarkerTrends(
       slopePerMonth: null,
       rollingMean: single?.value ?? null,
       direction: "INSUFFICIENT_DATA",
-      status: quarantinedPoints.length > 0 ? "QUARANTINED_OUTLIERS" : "NORMAL_PROGRESSION",
+      status:
+        quarantinedPoints.length > 0
+          ? "QUARANTINED_OUTLIERS"
+          : "NORMAL_PROGRESSION",
       quarantinedPoints,
       validPoints,
-      clinicalNote: "Minimum two valid chronological measurements required to evaluate trajectory.",
+      clinicalNote:
+        "Minimum two valid chronological measurements required to evaluate trajectory.",
     };
   }
 
@@ -110,7 +119,10 @@ export function vitalisBiomarkerTrends(
     slopePerMonth,
     rollingMean,
     direction,
-    status: quarantinedPoints.length > 0 ? "QUARANTINED_OUTLIERS" : "NORMAL_PROGRESSION",
+    status:
+      quarantinedPoints.length > 0
+        ? "QUARANTINED_OUTLIERS"
+        : "NORMAL_PROGRESSION",
     quarantinedPoints,
     validPoints,
     clinicalNote: `Observed trend over ${Math.round(daysDiff)} days shows a net change of ${delta > 0 ? "+" : ""}${delta} ${latest.unit}. Associations require clinical context.`,

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  herSafetyGate,
   herCycleDetector,
+  herSafetyGate,
   herScreeningEngine,
-  herWellnessRanker,
   herTrendAnalyzer,
+  herWellnessRanker,
 } from "../packages/engine";
 
 describe("AyuSetu HER — Algorithm A0: Safety Gate", () => {
@@ -60,18 +60,32 @@ describe("AyuSetu HER — Algorithm A1: Cycle Detector", () => {
     const stats = herCycleDetector(dates, { age: 28 });
 
     expect(stats.status).toBe("INSUFFICIENT_DATA"); // only 2 intervals
-    expect(stats.irregularityFlags.some((f) => f.includes("Oligomenorrhea"))).toBe(true);
-    expect(stats.irregularityFlags.some((f) => f.includes("Secondary Amenorrhea"))).toBe(true);
+    expect(
+      stats.irregularityFlags.some((f) => f.includes("Oligomenorrhea")),
+    ).toBe(true);
+    expect(
+      stats.irregularityFlags.some((f) => f.includes("Secondary Amenorrhea")),
+    ).toBe(true);
   });
 
   it("applies adolescent-safe thresholds where up to 45 days is physiologically normal", () => {
     const dates = ["2026-01-01", "2026-02-10", "2026-03-22"]; // intervals: 40 days, 40 days
-    const adultStats = herCycleDetector(dates, { age: 28, yearsSinceMenarche: 12 });
-    const teenStats = herCycleDetector(dates, { age: 15, yearsSinceMenarche: 1 });
+    const adultStats = herCycleDetector(dates, {
+      age: 28,
+      yearsSinceMenarche: 12,
+    });
+    const teenStats = herCycleDetector(dates, {
+      age: 15,
+      yearsSinceMenarche: 1,
+    });
 
-    expect(adultStats.irregularityFlags.some((f) => f.includes("Oligomenorrhea"))).toBe(true);
+    expect(
+      adultStats.irregularityFlags.some((f) => f.includes("Oligomenorrhea")),
+    ).toBe(true);
     // In teenager with menarche 1 year ago, 40 days is within 21-45 days normal range
-    expect(teenStats.irregularityFlags.some((f) => f.includes("Infrequent"))).toBe(false);
+    expect(
+      teenStats.irregularityFlags.some((f) => f.includes("Infrequent")),
+    ).toBe(false);
   });
 
   it("marks context-limited status during pregnancy or lactation", () => {
@@ -116,7 +130,11 @@ describe("AyuSetu HER — Algorithm A2: Screening Engine", () => {
 
     const pcosFinding = findings.find((f) => f.domain === "PCOS_FEATURES");
     expect(pcosFinding?.category).toBe("MONITOR_AND_TRACK");
-    expect(pcosFinding?.limitations.some((l) => l.includes("prohibit using ovarian ultrasound"))).toBe(true);
+    expect(
+      pcosFinding?.limitations.some((l) =>
+        l.includes("prohibit using ovarian ultrasound"),
+      ),
+    ).toBe(true);
   });
 
   it("suggests pelvic pain review for recurrent severe dysmenorrhea interfering with function", () => {
@@ -130,7 +148,9 @@ describe("AyuSetu HER — Algorithm A2: Screening Engine", () => {
       },
     });
 
-    const endoFinding = findings.find((f) => f.domain === "ENDOMETRIOSIS_PELVIC_PAIN");
+    const endoFinding = findings.find(
+      (f) => f.domain === "ENDOMETRIOSIS_PELVIC_PAIN",
+    );
     expect(endoFinding).toBeDefined();
     expect(endoFinding?.category).toBe("CLINICAL_REVIEW_SUGGESTED");
     expect(endoFinding?.isDiagnosis).toBe(false);

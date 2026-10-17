@@ -78,9 +78,10 @@ Persisted clinical hash routes `/clinician`, `/kiosk` and `/thread/:id` use the 
 - [x] Frontend production builds completed for deployed and clinical bundles.
 - [x] Focused frontend TypeScript check passed.
 - [x] Scoped Biome checks passed for new/shared components and entry points.
-- [x] 104 existing unit/API/engine tests passed in the development checkout.
+- [x] Unit/API tests run in the isolated review checkout: 97 passed, 18 failed in existing backend compatibility/HER/Vitalis endpoint tests. Those test files and backend implementations are unchanged by this frontend branch. The separately modified shared development checkout passed 104 tests; that result is not used to claim this isolated branch has a clean backend test suite.
 - [x] Seven patient-site browser tests passed, including new navigation, dictation lifecycle and unsupported-browser fallback tests.
 - [x] Three unchanged clinical browser tests passed against an isolated database initialized with the existing `0001_intake.sql` schema.
+- [x] 40 additional patient-view checks: eight views at 1440, 1280, 1024, 768 and 390px, with no JavaScript page errors or document overflow.
 - [x] 53 ERP route/viewport inspections: 29 routes at 1440px, plus six key routes at 1280, 1024, 768 and 390px. No blank screens, JavaScript page errors or document horizontal overflow after fixes.
 
 ### Existing limitations, not production-readiness claims
@@ -89,6 +90,6 @@ The original ERP includes synthetic data, local/demo sessions and simulated inte
 
 In the shared development checkout, the standard clinical browser run was blocked by incompatible legacy and intake `patients` table definitions across migration families. The isolated schema run verifies the frontend workflow independently; it does not certify the combined migration set.
 
-Repository-wide Biome reported 1,422 errors across the existing tree. The original broad TypeScript configuration also includes dormant ERP/archive/Supabase files with existing strict-type errors. New frontend code has its own focused typecheck. These wider cleanup items remain outside a visual frontend change.
+The isolated branch retains the baseline backend API/test mismatch: 18 tests expect legacy compatibility endpoints that the baseline backend does not expose. Repository-wide Biome reported 1,422 errors across the shared existing tree. The original broad TypeScript configuration also includes dormant ERP/archive/Supabase files with existing strict-type errors. New frontend code has its own focused typecheck. These wider cleanup items remain outside a visual frontend change.
 
 Automated inspection does not establish full WCAG conformance or validate every nested modal with every role and dataset. Live speech provider quality, real microphone hardware, clinical validity and production operations require separate verification.

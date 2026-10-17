@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createApp } from "../apps/api/app";
-import { demoPlan } from "../packages/shared/demo";
 import backendApp from "../backend/src/index";
+import { demoPlan } from "../packages/shared/demo";
 
 const app = createApp();
 async function session() {
@@ -218,20 +218,34 @@ describe("Unified Cloudflare Worker API & Frontends Integration", () => {
       body: JSON.stringify({ abha_number: "91-4829-1029-4821" }),
     });
     expect(res.status).toBe(200);
-    const data = (await res.json()) as { patient_id: string; abha_number: string; name: string };
+    const data = (await res.json()) as {
+      patient_id: string;
+      abha_number: string;
+      name: string;
+    };
     expect(data.patient_id).toBe("pat-048291");
     expect(data.abha_number).toBe("91-4829-1029-4821");
     expect(data.name).toBe("Ramesh Chandra");
   });
 
   it("checks PM-JAY coverage eligibility for Flutter App", async () => {
-    const res = await backendApp.request("/api/v1/insurance/coverage-eligibility/check", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ abha_number: "91-4829-1029-4821", patient_id: "pat-048291" }),
-    });
+    const res = await backendApp.request(
+      "/api/v1/insurance/coverage-eligibility/check",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          abha_number: "91-4829-1029-4821",
+          patient_id: "pat-048291",
+        }),
+      },
+    );
     expect(res.status).toBe(200);
-    const data = (await res.json()) as { eligible: boolean; scheme_name: string; coverage_amount_inr: number };
+    const data = (await res.json()) as {
+      eligible: boolean;
+      scheme_name: string;
+      coverage_amount_inr: number;
+    };
     expect(data.eligible).toBe(true);
     expect(data.scheme_name).toBe("Ayushman Bharat PM-JAY");
     expect(data.coverage_amount_inr).toBe(500000.0);
@@ -249,7 +263,9 @@ describe("Unified Cloudflare Worker API & Frontends Integration", () => {
       }),
     });
     expect(normalRes.status).toBe(200);
-    const normalData = (await normalRes.json()) as { red_flag: { is_triggered: boolean } };
+    const normalData = (await normalRes.json()) as {
+      red_flag: { is_triggered: boolean };
+    };
     expect(normalData.red_flag.is_triggered).toBe(false);
 
     // Emergency red-flag input (chest pain)
@@ -291,10 +307,15 @@ describe("Unified Cloudflare Worker API & Frontends Integration", () => {
 
   it("serves demo and legacy compatibility endpoints on unified worker", async () => {
     // Session creation
-    const sessRes = await backendApp.request("/api/v1/demo/session", { method: "POST" });
+    const sessRes = await backendApp.request("/api/v1/demo/session", {
+      method: "POST",
+    });
     expect(sessRes.status).toBe(201);
     const { token } = (await sessRes.json()) as { token: string };
-    const h = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+    const h = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
 
     // Consent
     const consentRes = await backendApp.request("/api/v1/consent", {
@@ -305,22 +326,29 @@ describe("Unified Cloudflare Worker API & Frontends Integration", () => {
     expect(consentRes.status).toBe(200);
 
     // Record
-    const recordRes = await backendApp.request("/api/v1/record", { headers: h });
+    const recordRes = await backendApp.request("/api/v1/record", {
+      headers: h,
+    });
     expect(recordRes.status).toBe(200);
 
     // FHIR
-    const fhirRes = await backendApp.request("/api/v1/record/fhir", { headers: h });
+    const fhirRes = await backendApp.request("/api/v1/record/fhir", {
+      headers: h,
+    });
     expect(fhirRes.status).toBe(200);
 
     // Summary
-    const summaryRes = await backendApp.request("/api/v1/summary", { headers: h });
+    const summaryRes = await backendApp.request("/api/v1/summary", {
+      headers: h,
+    });
     expect(summaryRes.status).toBe(200);
 
     // Audit verify
-    const auditRes = await backendApp.request("/api/v1/audit/verify", { headers: h });
+    const auditRes = await backendApp.request("/api/v1/audit/verify", {
+      headers: h,
+    });
     expect(auditRes.status).toBe(200);
     const auditData = (await auditRes.json()) as { valid: boolean };
     expect(auditData.valid).toBe(true);
   });
 });
-
