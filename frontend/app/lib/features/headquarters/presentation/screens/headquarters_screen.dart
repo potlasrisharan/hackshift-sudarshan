@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
@@ -7,9 +8,9 @@ class HeadquartersScreen extends StatelessWidget {
   const HeadquartersScreen({super.key});
 
   final List<Map<String, dynamic>> _clinics = const [
-    {"name": "AyuSetu Central Hospital Hub (HQ)", "occupancy": "88%", "revenue": "₹3,42,800", "patients": 218, "status": "OPTIMAL"},
-    {"name": "AyuSetu North Satellite Clinic (OPD)", "occupancy": "72%", "revenue": "₹1,18,500", "patients": 142, "status": "NORMAL"},
-    {"name": "AyuSetu South Satellite Clinic (Trauma)", "occupancy": "94%", "revenue": "₹4,20,900", "patients": 286, "status": "HIGH LOAD"},
+    {"id": "clinic-central-hq", "name": "AyuSetu Central Hospital Hub (HQ)", "occupancy": "88%", "revenue": "₹3,42,800", "patients": 218, "status": "OPTIMAL"},
+    {"id": "clinic-north-opd", "name": "AyuSetu North Satellite Clinic (OPD)", "occupancy": "72%", "revenue": "₹1,18,500", "patients": 142, "status": "NORMAL"},
+    {"id": "clinic-south-trauma", "name": "AyuSetu South Satellite Clinic (Trauma)", "occupancy": "94%", "revenue": "₹4,20,900", "patients": 286, "status": "HIGH LOAD"},
   ];
 
   @override
@@ -29,7 +30,7 @@ class HeadquartersScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 12),
-            _buildClinicsList(),
+            _buildClinicsList(context),
             const SizedBox(height: 20),
             _buildFinancialRunRateCard(),
             const SizedBox(height: 20),
@@ -97,64 +98,88 @@ class HeadquartersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildClinicsList() {
+  Widget _buildClinicsList(BuildContext context) {
     return Column(
       children: [
         for (final clinic in _clinics)
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                context.push("/clinical", extra: {
+                  "id": clinic["id"] as String,
+                  "name": clinic["name"] as String,
+                  "occupancy": clinic["occupancy"] as String,
+                  "status": clinic["status"] as String,
+                });
+              },
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.surfaceElevated),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        clinic["name"],
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Occupancy: ${clinic['occupancy']} · ${clinic['patients']} patients seen today",
-                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.surfaceElevated),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                child: Row(
                   children: [
-                    Text(
-                      clinic["revenue"],
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.pmjayGold),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  clinic["name"] as String,
+                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.primaryLight),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Occupancy: ${clinic['occupancy']} · ${clinic['patients']} patients seen today",
+                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 2),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: clinic["status"] == "HIGH LOAD"
-                            ? AppColors.error.withValues(alpha: 0.2)
-                            : AppColors.success.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        clinic["status"],
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          color: clinic["status"] == "HIGH LOAD" ? AppColors.error : AppColors.success,
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          clinic["revenue"] as String,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.pmjayGold),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: clinic["status"] == "HIGH LOAD"
+                                ? AppColors.error.withValues(alpha: 0.2)
+                                : AppColors.success.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            clinic["status"] as String,
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: clinic["status"] == "HIGH LOAD" ? AppColors.error : AppColors.success,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
       ],

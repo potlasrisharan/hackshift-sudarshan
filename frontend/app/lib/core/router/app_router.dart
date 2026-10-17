@@ -93,7 +93,15 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: "/clinical",
-      builder: (context, state) => const ClinicalManagementScreen(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return ClinicalManagementScreen(
+          clinicId: state.uri.queryParameters["id"] ?? extra?["id"] as String?,
+          clinicName: state.uri.queryParameters["name"] ?? extra?["name"] as String?,
+          occupancy: state.uri.queryParameters["occupancy"] ?? extra?["occupancy"] as String?,
+          status: state.uri.queryParameters["status"] ?? extra?["status"] as String?,
+        );
+      },
     ),
     // Wellness & Longevity Innovations
     GoRoute(

@@ -58,7 +58,7 @@ const PAYMENT_COLOR_MAP: Record<string, { fill: string; gradStart: string; gradE
 };
 
 export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdminDashboardProps) {
-    const { inventory, managedClinic, setPendingRestockId } = useHospital()
+    const { inventory, managedClinic, setPendingRestockId, clinics } = useHospital()
     const [stats, setStats] = useState({ revenue: 0, transactions: 0, staffCount: 0 })
     const [dailySales, setDailySales] = useState<any[]>([])
     const [weeklyData, setWeeklyData] = useState<any[]>([])
@@ -240,6 +240,11 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
     }, [dailySales, searchQuery, selectedSaleType, selectedPaymentMode]);
 
     useEffect(() => {
+        // Reset or immediately populate clinic data on clinicId switch
+        const matched = clinics?.find((c: any) => c.id === clinicId) || (managedClinic?.id === clinicId ? managedClinic : null);
+        if (matched) {
+            setClinicData(matched);
+        }
         fetchData();
 
         // Real-time listener for sales in this clinic via Cloudflare DataService
@@ -250,17 +255,18 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
         }, '*');
 
         return () => unsubscribe();
-    }, [clinicId, managedClinic, dateRange]);
+    }, [clinicId, managedClinic, clinics, dateRange]);
 
     const fetchData = async (isBackground = false) => {
         if (!isBackground) setLoading(true);
         else setRefreshing(true);
 
         try {
-            // 1. Clinic Metadata
-            if (managedClinic && managedClinic.id === clinicId) {
-                setClinicData(managedClinic);
-            } else if (!clinicData) {
+            // 1. Clinic Metadata: Match from shared hospital context or fetch from D1
+            const matchedClinic = clinics?.find((c: any) => c.id === clinicId) || (managedClinic?.id === clinicId ? managedClinic : null);
+            if (matchedClinic) {
+                setClinicData(matchedClinic);
+            } else {
                 const clinic = await db.get('clinics', clinicId);
                 if (clinic) setClinicData(clinic);
             }
@@ -427,10 +433,11 @@ export function ClinicAdminDashboard({ clinicId, onBack, onNavigate }: ClinicAdm
                         {onBack && (
                             <button
                                 onClick={onBack}
-                                className="w-11 h-11 rounded-2xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 flex items-center justify-center text-slate-700 transition-all shadow-sm"
-                                title="Back to Network Overview"
+                                className="group flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-700 transition-all shadow-sm font-semibold text-xs"
+                                title="Back to AyuSetu Central Hospital Network (HQ)"
                             >
-                                <ArrowLeft className="w-5 h-5" />
+                                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+                                <span className="hidden sm:inline">HQ Network</span>
                             </button>
                         )}
                         <div className="relative">

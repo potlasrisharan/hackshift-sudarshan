@@ -4,7 +4,18 @@ import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 
 class ClinicalManagementScreen extends StatefulWidget {
-  const ClinicalManagementScreen({super.key});
+  final String? clinicId;
+  final String? clinicName;
+  final String? occupancy;
+  final String? status;
+
+  const ClinicalManagementScreen({
+    super.key,
+    this.clinicId,
+    this.clinicName,
+    this.occupancy,
+    this.status,
+  });
 
   @override
   State<ClinicalManagementScreen> createState() => _ClinicalManagementScreenState();
@@ -41,11 +52,61 @@ class _ClinicalManagementScreenState extends State<ClinicalManagementScreen> wit
 
   @override
   Widget build(BuildContext context) {
+    final String activeClinicName = widget.clinicName ?? "AyuSetu North Satellite Clinic (OPD)";
+    final String activeStatus = widget.status ?? "OPTIMAL";
+    final bool isHighLoad = activeStatus == "HIGH LOAD";
+
     return AppScaffoldShell(
       title: AppStrings.clinicalManagement,
-      subtitle: "Operations, FEFO & Fast POS",
+      subtitle: activeClinicName,
       child: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(bottom: BorderSide(color: AppColors.surfaceElevated)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.hub_rounded, size: 16, color: AppColors.primaryLight),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        activeClinicName,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Text(
+                        "Linked to AyuSetu Central Hospital Network (HQ)",
+                        style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: (isHighLoad ? AppColors.error : AppColors.success).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    activeStatus,
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: isHighLoad ? AppColors.error : AppColors.success,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Container(
             color: AppColors.surface,
             child: TabBar(

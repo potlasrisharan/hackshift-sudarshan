@@ -75,6 +75,21 @@ void main() {
       expect(find.text(AppStrings.clinicalManagement), findsOneWidget);
     });
 
+    testWidgets("ClinicalManagementScreen renders HQ connection badge and satellite clinic name", (tester) async {
+      await testScreen(
+        tester,
+        const ClinicalManagementScreen(
+          clinicId: "clinic-north-opd",
+          clinicName: "AyuSetu North Satellite Clinic (OPD)",
+          status: "NORMAL",
+          occupancy: "72%",
+        ),
+      );
+      expect(find.text("AyuSetu North Satellite Clinic (OPD)"), findsWidgets);
+      expect(find.text("Linked to AyuSetu Central Hospital Network (HQ)"), findsOneWidget);
+      expect(find.text("NORMAL"), findsOneWidget);
+    });
+
     testWidgets("YogaPrescriptionScreen renders on 360px width with no overflow", (tester) async {
       await testScreen(tester, const YogaPrescriptionScreen());
       expect(find.text(AppStrings.yogaHeader), findsOneWidget);
