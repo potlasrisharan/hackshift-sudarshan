@@ -15,7 +15,44 @@ at http://127.0.0.1:8790 with persistent synthetic records. See the
 [runbook](docs/INTEGRATION_RUNBOOK.md) for local credentials, verification and remaining scope.
 The earlier demo below remains separate until the integration cutover gates pass.
 
-## Run locally
+## Flutter patient intake kiosk
+
+The active Android tablet/Web kiosk is in [frontend/app](frontend/app/README.md).
+Its Phase 2 implementation includes Hindi, English, Punjabi and Tamil, dark/Elder
+Mode, staff sign-in, entered synthetic demographics and symptoms, required care
+consent, emergency guidance, a server-issued encounter receipt and a visible
+60-second inactivity reset. Optional Android speech source is implemented; Web
+uses typed input and Android microphone/device behavior remains unverified.
+
+Use **Flutter 3.35.7 / Dart 3.9.2**, pinned in frontend/app/.fvmrc:
+
+```sh
+cd frontend/app
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter analyze
+flutter test --coverage
+```
+
+The kiosk follows packages/shared/integration.ts and backend/src/index.ts:
+staff-authenticated POST /api/v1/encounters persists the intake. The response is
+an encounter receipt; OPD tokens, wait estimates, QR and phone/ABHA lookup are
+explicitly unavailable. No phone number or ABHA is collected. For functional Web
+integration, serve the Flutter assets and persistent API behind the same HTTPS
+origin; see the [kiosk setup guide](frontend/app/README.md#api-configuration-and-running)
+and [backend runbook](docs/INTEGRATION_RUNBOOK.md).
+
+The configured public Worker still served the legacy API at Phase 2 verification;
+its successful health check does not establish live encounter/OCR support. No
+backend deployment was performed. Use synthetic information only.
+
+Phase 2 evidence: **49 Flutter tests**, **zero analyzer issues**, **91.1% domain/data
+coverage**, release Web builds and real local-backend routine/emergency Chrome
+walkthroughs. See [the phase report](docs/MOBILE_KIOSK_PHASE2.md) for measured scope.
+OCR, encrypted offline replay, lockdown, debug APK and Android device verification
+remain later gates. The separate Expo app below is the earlier mobile project.
+
+## Earlier demo: run locally
 
 Node >=22.13, npm and Git:
 

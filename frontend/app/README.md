@@ -1,138 +1,174 @@
-# DHAAGA Flutter kiosk — Phase 2 synthetic intake
+# DHAAGA Flutter kiosk
 
-Active project: frontend/app. Android tablet + Web source. The synthetic intake now uses the shared staff-authenticated encounter API: entered demographics → complaint/structured safety questions → consent → server receipt. Optional Android speech is implemented with a typed Web fallback. OPD tokens, wait estimates, QR and identifier lookup are explicitly unavailable in the current contract.
+Patient intake for Android tablets and Web, in **frontend/app/**. The Phase 2
+implementation uses the existing shared synthetic encounter API. It is a
+staff-assisted demonstration; use synthetic information only.
 
-See [the Phase 2 gate](../../docs/MOBILE_KIOSK_PHASE2.md) for evidence and limitations. The public Worker still exposes the legacy API, so local persistent integration verification does not imply live hosted intake. OCR, encrypted offline sync, lockdown, APK and device speech verification remain later gates. Use synthetic information only.
+## What works
 
-## Toolchain and run
+- Hindi, English, Punjabi and Tamil interface with bundled Noto fonts.
+- Material 3 dark theme and high-contrast Elder Mode.
+- Staff sign-in, entered demographics, complaint and structured safety answers.
+- Mandatory care consent before submission, with duplicate taps blocked.
+- Server-issued encounter receipt and emergency guidance to inform clinic staff.
+- Client-generated UUID-v4 idempotency key; an uncertain request keeps the same
+  immutable payload and key for retry during the current app session.
+- Visible 60-second receipt inactivity countdown. Activity extends the deadline;
+  expiry or reset clears app-held intake, sign-in and voice state.
+- Optional Android speech input source with an editable transcript, audio-level
+  animation, silence timeout and typed fallback. Web uses typed input.
 
-Use **Flutter 3.35.7 / Dart 3.9.2**, pinned in `.fvmrc`. Riverpod remains **2.6.1**
-with generator **2.6.5**, as requested. Its analyzer 7.x crashes when resolving
-the installed Flutter 3.47 SDK's newer language constructs. `go_router` 16.2.4
-is pinned to the compatible SDK. Do not silently upgrade Riverpod to 3.x or
-override the analyzer constraint.
+The API does **not** provide OPD tokens, wait estimates, QR payloads or phone/ABHA
+lookup. The UI marks those features unavailable. An encounter reference is not a
+queue token. No phone number or ABHA is collected or transmitted.
 
-On this machine, a separate SDK is at
-`Desktop/IIITD hackshift/.tools/flutter-3.35.7`; the original SDK is unchanged.
-On another machine, install this Flutter version or use FVM.
+See [Phase 2 verification](../../docs/MOBILE_KIOSK_PHASE2.md) for the detailed
+implementation record and [Phase 1](../../docs/MOBILE_KIOSK_PHASE1.md) for the
+historical foundation audit.
 
-From this directory, using that SDK's `flutter` and `dart`:
+## Toolchain
+
+Use **Flutter 3.35.7 / Dart 3.9.2**, pinned in [.fvmrc](.fvmrc). Riverpod 2.6.1
+and its 2.6.5 generator are retained. The generator's analyzer is incompatible
+with the newer Flutter SDK previously installed on the development machine;
+use the pinned SDK rather than overriding analyzer constraints.
+
+On the original development machine the separate SDK is in
+Desktop/IIITD hackshift/.tools/flutter-3.35.7. Other collaborators can install
+that version or use FVM. Android also needs a configured Android SDK and
+compatible JDK; JDK 21 was prepared during setup. Open frontend/app in Android
+Studio and select the pinned Flutter SDK.
+
+## Install, generate and verify
+
+From the repository root:
 
 ```sh
+cd frontend/app
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 flutter analyze
 flutter test --coverage
+```
+
+Run build_runner after changing DTO annotations, Riverpod providers or ARBs.
+Do not edit generated Dart files manually. The build-only tool/typed_json package
+uses json_serializable for DTOs and generates typed AppStrings from the four
+ARB files. Its current ARB support is plain string messages; ICU parameters and
+plurals require an explicit extension. All four translations need native-speaker
+review.
+
+## API configuration and running
+
+API_BASE_URL is injected at build/run time. It must use HTTPS and end in
+/api/v1, with no embedded credentials, query or fragment. No privileged value
+belongs in a Dart define or committed configuration.
+
+[config/production.json](config/production.json) points to the requested public
+Worker. At Phase 2 verification that Worker served the legacy synthetic-demo
+API: health worked, but encounter intake and OCR were not deployed there.
+These commands run/build against that configuration; they do not make live
+intake available:
+
+```sh
 flutter run -d chrome --dart-define-from-file=config/production.json
 flutter build web --release --no-web-resources-cdn --pwa-strategy=none --dart-define-from-file=config/production.json
 ```
 
-Android: open this folder in Android Studio, select the pinned Flutter SDK and
-a compatible JDK (21), configure the Android SDK, and run with the same defines.
-Android build, tablet emulator tests and device-owner setup are later gates.
+For functional synthetic intake, follow the
+[integration runbook](../../docs/INTEGRATION_RUNBOOK.md) to start the persistent
+backend and obtain its explicitly seeded local staff accounts. Serve the API and
+Flutter assets behind the **same HTTPS origin**, and build with that origin:
 
-The API URL exists only in `config/production.json`, injected with a Dart define.
-No URL is embedded in feature source. Missing configuration is a localized safe
-failure. Configuration accepts HTTPS `/api/v1` URLs only; credentials, query
-strings and fragments are rejected. No environment secrets belong in this file.
+```sh
+flutter build web --release --no-web-resources-cdn --pwa-strategy=none --dart-define=API_BASE_URL=https://YOUR-SAME-ORIGIN/api/v1
+```
 
-## Architecture
+Replace YOUR-SAME-ORIGIN with your configured HTTPS host. The backend deliberately
+rejects cross-origin browser requests. Do not disable certificate checks in the
+app or embed staff credentials. Production authentication is disabled in this
+backend milestone; the local demonstration is not a production kiosk deployment.
 
-- `lib/core/constants`: environment configuration and palette.
-- `lib/core/network`: Dio, bounded idempotent retries, safe diagnostic events,
-  and exception-to-failure mapping.
-- `lib/core/error`: sealed failures/results and localized error text.
-- `lib/core/theme`, `router`, `localization`: Material 3, Elder Mode, guarded
-  GoRouter and generated ARB strings.
-- `lib/core/storage`: documents the disabled storage boundary pending Phase 4.
-- `features/intake/domain`: immutable entities, sealed flow states, repository
-  interfaces and health/intake use cases. No Flutter/Dio/Riverpod dependencies here.
-- `features/intake/data`: typed generated health/intake DTOs, speech adapter, remote source and repositories.
-- `features/intake/presentation`: generated Riverpod providers and responsive UI.
+## Shared contracts
 
-Health recognizes both actual backend contracts. Intake DTOs follow packages/shared/integration.ts and backend/src/index.ts. Staff tokens and drafts remain in memory; completion retains only receipt metadata. A failed/uncertain submit freezes its body and UUID key for replay; this is not durable offline support. The router cannot fabricate a receipt or skip required input/consent. The actual API provides no OPD token, wait estimate or QR specification.
-Archived originals under `hackshift/projects/` remain unchanged.
+The authoritative sources are
+[shared integration schemas](../../packages/shared/integration.ts),
+[patient/symptom schemas](../../packages/shared/contracts.ts) and
+[Worker handlers](../../backend/src/index.ts).
 
-## Type-safe generation and localization
+| Operation | Contract used by the kiosk |
+|---|---|
+| Health | GET at origin /healthz; both actual backend response shapes are recognized |
+| Staff sign-in | POST /api/v1/auth/login; token held in memory |
+| Intake | POST /api/v1/encounters with Bearer authorization and Idempotency-Key |
+| Intake body | patient {name, birthDate, gender, language}, chiefComplaint, answers, careConsent:true, synthetic:true |
+| Response | Actual server encounter; status controls emergency presentation and id is the receipt reference |
 
-Run `build_runner`; do not edit generated files. The small local build-only
-package `tool/typed_json`:
+The requested /intake/session token response and /ocr/prescription upload are
+not current contracts. No substitute token, QR payload or phone hashing scheme
+is invented by this app.
 
-1. delegates field generation to `json_serializable`, replacing its generated
-   JSON `dynamic` boundary type with `Object?`;
-2. generates a typed Flutter `AppStrings` delegate from the four ARB files,
-   validating identical keys and avoiding generated null assertions/untyped
-   delegate lists.
+## Architecture and privacy
 
-No handwritten or generated `lib/` code uses `dynamic` or null assertions.
-The ARB builder currently supports plain string messages; future pluralized or
-parameterized messages require an explicit builder extension with tests.
-Riverpod's normal generator creates the providers; intake flow and health use
-AsyncNotifier. Preferences use a synchronous generated Notifier for local UI
-settings, with immutable values and no `setState` business logic.
+- lib/core contains environment configuration, Dio/retry/failure mapping, theme,
+  localization and routing. Diagnostics allowlist method/status/outcome only;
+  bodies, headers, URLs, raw exceptions and patient identifiers are not logged.
+- features/intake/domain contains immutable entities, sealed flow states,
+  repository interfaces and use cases, without Flutter, Dio or Riverpod imports.
+- features/intake/data contains generated DTOs, remote repositories and the
+  singleton Android speech adapter.
+- features/intake/presentation contains Riverpod 2 codegen providers, screens
+  and widgets. Business state uses AsyncNotifier; routes enforce the flow gates.
+- Drafts, complaints and staff tokens stay in app memory. Completion retains
+  receipt metadata only. Current storage has no pending-session disk cache;
+  memory reset does not delete the synthetic record persisted by the backend.
+- An uncertain request is lost on process exit. This phase does not provide
+  durable offline replay. Ask staff before abandoning an uncertain submission.
+- Client reset discards the staff token. Server sessions follow the existing
+  backend's expiry/revocation rules.
 
-Four Noto font families and their SIL Open Font Licenses are bundled in
-`assets/fonts/`; no runtime Google Fonts request is made. Noto Sans is also registered under
-Flutter Web's default Roboto family so the engine's fallback stays local. Source:
-https://github.com/google/fonts/tree/main/ofl
-Translations are draft interface translations and need native-speaker review.
-AAA claims are limited to tested Elder Mode foreground/background text pairs;
-this is not a full accessibility conformance certification.
+Speech uses speech_to_text 7.3.0 with Android microphone permission and
+recognition-service discovery. A five-second silence timeout and 45-second hard
+limit bound capture. On-device recognition is requested; actual language packs,
+permission UX, recognition behavior and audio capture still require Android
+device verification. Use synthetic speech only. No continuous ASR claim is made.
 
-## Network and privacy boundaries
+Bundled Noto fonts include their SIL Open Font Licenses. Flutter Web's Roboto
+fallback is also mapped to a bundled font. Elder Mode contrast evidence is
+limited to tested text pairs, not full accessibility certification.
 
-- Dio timeouts: connect 10 s, send 15 s, receive 20 s; automatic redirects off.
-- Up to two retries for transient GET/HEAD/OPTIONS failures, with 250/500 ms
-  backoff; numeric Retry-After is capped at 10 s. Cancellation stops retries.
-- A future write must explicitly assert a server-verified idempotency contract,
-  have a nonempty Idempotency-Key, and use replayable JSON to be retried. No
-  current feature submits a write. Multipart uploads are not auto-replayed.
-- Diagnostics are disabled unless a sink is injected. The interceptor emits
-  only allowlisted HTTP method, numeric status and success/failure category:
-  no URL, headers, body, response text or raw exception. Sink failures cannot
-  interrupt the request. No crash reporting provider is configured.
-- Raw server messages never reach the UI. All failures use localized ARB text.
-- No phone, ABHA, complaint, image or unsent session is collected or persisted
-  in this phase. No empty-string phone hash or invented salt is used.
+## Verified Phase 2 results
 
-## Contract discrepancies blocking live intake
+- Dependency resolution, code generation and release Web builds passed.
+- Strict analyzer: zero issues. Flutter: 49 tests passed; domain/data line
+  coverage was 91.1%, including generated DTOs and the partially exercised
+  Android adapter. These figures are a Phase 2 checkpoint, not a fresh CI claim.
+- Four-language mocked-Dio walkthroughs cover consent, serialization, receipts,
+  inactivity reset and retry safeguards. Hindi/Tamil run at 2x text in Elder Mode.
+- The backend's 11 integration tests passed. Chrome routine English and emergency
+  Hindi/portrait/Elder flows reached a separate real local SQLite backend and
+  appeared in the authenticated clinician queue, with no page errors or external
+  requests. Screenshots were visually inspected.
+- All updated ARB characters were covered by bundled fonts. Original-source
+  baseline and configured secret-pattern checks passed.
 
-Audited against remote `main` 0e7dba9 and the live published OpenAPI:
-
-- The deployed Worker uses `apps/api/worker.ts` → `apps/api/app.ts`.
-  `GET /healthz` is public at the origin root. `/api/v1/healthz` returns 401.
-- Neither `/api/v1/intake/session` nor `/api/v1/ocr/prescription` is deployed.
-- The separate `backend/src/modules/intake/routes.ts` stub returns
-  `sessionId,status,triageTier,timestamp`; it does not validate input or issue
-  `tier,tokenNumber,estimatedWaitMinutes`.
-- `packages/shared/index.ts` declares `phoneHash: string` but no normalization,
-  hash domain/version/salt, intake request schema or QR payload specification.
-- Live capabilities explicitly report `rawPhiAllowed:false`,
-  `liveUpstreams:false`; health reports `persistentStorage:false`.
-
-Agree and implement shared request/response, privacy, idempotency and QR
-contracts before Phase 2 integration. Synthetic fixtures are not evidence of
-live ABHA verification. No real patient data may be used against this demo.
-Backend deployment remains a separate step; this phase changes no Worker.
-
-## Phase 1 verification
-
-See `docs/MOBILE_KIOSK_PHASE1.md` at the repository root for exact measured
-results and remaining gates. `test/live_health_test.dart` is an opt-in **read**
-smoke, not a live session submission:
+The opt-in public Worker smoke test is a read-only health check:
 
 ```sh
 flutter test test/live_health_test.dart --dart-define=LIVE_API=true --dart-define-from-file=config/production.json
 ```
 
-The full Definition of Done remains unmet until the later gates: real contracted
-session/token response, OCR, encryption/offline exactly-once sync, automatic reset,
-lockdown, APK and tablet emulator/device checks.
+The Flutter CI template at tool/ci/kiosk-flutter.yml.example is optional and not
+enabled. No current remote Flutter CI result is claimed.
 
-Optional CI: `tool/ci/kiosk-flutter.yml.example` contains a Flutter verification
-workflow template. It is not enabled; copy it into `.github/workflows/` when
-CI ownership and workflow publishing permissions are configured.
+## Remaining gates
 
-## Same-origin synthetic integration
+- Phase 3: prescription camera/OCR upload and editable medication list.
+- Phase 4: one encrypted local queue, background replay and purge policy.
+- Phase 5: kiosk lockdown, device-owner setup and global inactivity handling.
+- Phase 6: debug APK, Android tablet portrait/landscape and microphone checks.
+- Shared contracts/deployment: OPD token/wait/QR, identifier lookup/privacy,
+  device authentication and production readiness.
 
-Use the backend/local server and synthetic staff accounts documented in docs/INTEGRATION_RUNBOOK.md. Build with --dart-define=API_BASE_URL=https://YOUR-SAME-ORIGIN/api/v1 and serve API and Flutter assets behind that HTTPS origin. No staff password or token belongs in a Dart define. Cross-origin browser calls are deliberately rejected by this backend. The production config points at the legacy public service and currently cannot submit encounters.
+The full Definition of Done remains open. No APK, hosted intake deployment,
+airplane-mode exactly-once guarantee or real-patient readiness is claimed.
