@@ -94,7 +94,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                             <Input
                                 id="contact_name"
                                 name="contact_name"
-                                placeholder="e.g. Dr. John Doe"
+                                placeholder="e.g. Dr. A. Sen"
                                 required
                                 defaultValue={profile?.full_name || ''}
                                 className="bg-slate-50 border-slate-200 focus:bg-white transition-all"
@@ -106,7 +106,7 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
                                 id="contact_email"
                                 name="contact_email"
                                 type="email"
-                                placeholder="john@hospital.com"
+                                placeholder="doctor@ayusetu.in"
                                 required
                                 defaultValue={profile?.email || ''}
                                 className="bg-slate-50 border-slate-200 focus:bg-white transition-all"
