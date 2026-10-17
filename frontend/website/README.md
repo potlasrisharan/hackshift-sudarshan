@@ -47,7 +47,7 @@ Every transaction—from a strip of Paracetamol dispensed at a remote clinic cou
 
 ## 🏗 System Architecture
 
-AarogyaNidhi is built with a **Zero-Trust, Database-First Security Model**. All business invariants (stock deductions, ledger balancing, role isolation) are enforced via PostgreSQL Row Level Security (RLS) policies, database triggers, and atomic Stored Procedures (RPCs).
+AyuSetu is built with a **Zero-Trust, Database-First Security Model**. All business invariants (stock deductions, ledger balancing, role isolation) are enforced via PostgreSQL Row Level Security (RLS) policies, database triggers, and atomic Stored Procedures (RPCs).
 
 ### Architecture Flowchart
 
@@ -173,7 +173,7 @@ The system enforces granular permissions across five distinct operational roles:
 
 ## 🛡️ Battle-Tested Security Matrix
 
-AarogyaNidhi was engineered under rigorous security standards and has undergone complete black-box and white-box penetration testing:
+AyuSetu was engineered under rigorous security standards and has undergone complete black-box and white-box penetration testing:
 
 ```
 =================== SECURITY AUDIT & PENTEST RESULTS ===================
@@ -218,7 +218,7 @@ AarogyaNidhi was engineered under rigorous security standards and has undergone 
 
 ## ⚙️ Function & API Specification Matrix
 
-Every mission-critical workflow in AarogyaNidhi is encapsulated in dedicated serverless edge functions, PostgreSQL stored procedures, or core client services.
+Every mission-critical workflow in AyuSetu is encapsulated in dedicated serverless edge functions, PostgreSQL stored procedures, or core client services.
 
 ### 1. Serverless Edge Functions (`supabase/functions/`)
 
@@ -406,7 +406,7 @@ npm run video:build
 
 ## 🔒 Compliance & Standards Alignment
 
-AarogyaNidhi was designed to adhere to healthcare technology guidelines:
+AyuSetu was designed to adhere to healthcare technology guidelines:
 * **NABH / Indian Healthcare Standards**: Strict tracking of drug batch numbers, manufacturing/expiry dates, and prescription dispensing trails.
 * **Audit-Proof Financial Books**: Financial locks prevent manipulation of closed accounting periods.
 * **Data Sovereignty & Encryption**: All patient health identifiers (PHI) and clinical transaction histories are encrypted at rest and in transit via TLS 1.3 and database-level AES-256.
