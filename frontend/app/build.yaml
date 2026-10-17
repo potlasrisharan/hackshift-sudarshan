@@ -1,7 +1,0 @@
-targets:
-  $default:
-    builders:
-      json_serializable:
-        enabled: false
-      dhaaga_typed_json:typed_json:
-        generate_for: [lib/features/intake/data/dtos/*.dart]
