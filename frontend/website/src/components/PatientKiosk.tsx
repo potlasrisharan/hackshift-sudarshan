@@ -872,34 +872,9 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
   };
 
   return (
-    <div data-screen={currentScreenIndex} className={`ayu-kiosk min-h-screen flex flex-col font-sans select-none relative overflow-x-hidden ${isHighContrast ? 'bg-black text-yellow-300' : 'bg-slate-50 text-slate-900'}`} style={{ fontSize: `${100 + fontSizeLevel * 10}%` }}>
+    <div data-screen={currentScreenIndex} className={`ayu-kiosk min-h-screen flex flex-col font-sans select-none ${isHighContrast ? 'bg-black text-yellow-300' : 'bg-slate-50 text-slate-900'}`} style={{ fontSize: `${100 + fontSizeLevel * 10}%` }}>
       
-      {/* Full-screen background for Language Selection Screen */}
-      {currentScreenIndex === 0 && (
-        <div 
-          className="ayu-kiosk-hero-bg pointer-events-none fixed inset-0 z-0 overflow-hidden" 
-          aria-hidden="true"
-        >
-          <div 
-            className="absolute inset-0 bg-cover bg-no-repeat bg-[center_right] md:bg-right transition-opacity duration-500 max-md:opacity-20 md:opacity-[0.88]"
-            style={{
-              backgroundImage: `url('/assets/design/care-continuum.jpg')`,
-              ...(isHighContrast ? { opacity: 0.05 } : {}),
-              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.03) 15%, rgba(0,0,0,0.3) 35%, rgba(0,0,0,0.85) 55%, #000 70%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.03) 15%, rgba(0,0,0,0.3) 35%, rgba(0,0,0,0.85) 55%, #000 70%)',
-            }}
-          />
-          <div 
-            className={`absolute inset-0 pointer-events-none ${
-              isHighContrast 
-                ? 'bg-gradient-to-r from-black via-black/80 to-transparent' 
-                : 'bg-gradient-to-r from-[#fffdf8] via-[#fffdf8]/90 to-transparent'
-            } w-full md:w-3/5 lg:w-1/2`}
-          />
-        </div>
-      )}
-
-      <header className="ayu-kiosk-header relative z-10">
+      <header className="ayu-kiosk-header">
         <a href="#/" className="ds-wordmark flex items-center gap-2.5" aria-label="AyuSetu home">
           {!logoError ? (
             <img
@@ -921,11 +896,11 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
           <button type="button" onClick={()=>setIsVoiceActive(!isVoiceActive)} aria-label={isVoiceActive?'Turn spoken guidance off':'Turn spoken guidance on'}>{isVoiceActive?<Volume2 size={18}/>:<VolumeX size={18}/>}</button>
         </div>
       </header>
-      <div className="ayu-kiosk-subnav relative z-10"><button type="button" onClick={()=>currentScreenIndex>0?setCurrentScreenIndex(currentScreenIndex-1):(window.location.hash='#/')}><ArrowLeft size={15}/> Back</button><span><ShieldCheck size={14}/> Patient Verification · Review all extracted information</span><span>{currentScreenIndex+1} / 5</span></div>
+      <div className="ayu-kiosk-subnav"><button type="button" onClick={()=>currentScreenIndex>0?setCurrentScreenIndex(currentScreenIndex-1):(window.location.hash='#/')}><ArrowLeft size={15}/> Back</button><span><ShieldCheck size={14}/> Synthetic demonstration · Review all extracted information</span><span>{currentScreenIndex+1} / 5</span></div>
 
       {/* Emergency Red-Flag Banner */}
       {showRedFlagBanner && (
-        <div className="bg-red-600 text-white px-6 py-3.5 shadow-md flex items-center justify-between animate-pulse relative z-10">
+        <div className="bg-red-600 text-white px-6 py-3.5 shadow-md flex items-center justify-between animate-pulse">
           <div className="flex items-center space-x-3">
             <svg className="w-6 h-6 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -942,20 +917,20 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
       )}
 
       {/* Main Container */}
-      <main className={`flex-1 w-full mx-auto px-4 sm:px-6 pt-6 pb-12 flex flex-col justify-start relative z-10 ${currentScreenIndex === 0 ? 'max-w-7xl' : 'max-w-5xl'}`}>
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pt-6 pb-12 flex flex-col justify-start">
 
         {/* =================================================================== */}
         {/* SCREEN 1: LANGUAGE SELECTION */}
         {/* =================================================================== */}
         {currentScreenIndex === 0 && (
-          <section className="ayu-language-screen space-y-6 text-left w-full max-w-2xl">
+          <section className="ayu-language-screen space-y-6 text-center">
             <div className="py-4 space-y-1.5">
               <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Choose your language</h2>
               <p className="text-slate-500 text-xs">Select your preferred language to continue</p>
             </div>
 
             {/* Zero-Click Emergency Panic Button */}
-            <div className="w-full">
+            <div className="max-w-3xl mx-auto">
               <button onClick={handleZeroClickEmergency} className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-base md:text-lg shadow-xl shadow-red-600/30 border-2 border-red-400 flex items-center justify-between transition transform hover:scale-[1.01] active:scale-[0.98] animate-pulse">
                 <div className="flex items-center gap-3">
                   <span className="w-4 h-4 rounded-full bg-white animate-ping" />
@@ -973,7 +948,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
               </button>
             </div>
 
-            <div className="ayu-language-grid grid grid-cols-2 sm:grid-cols-3 gap-4 w-full pt-4">
+            <div className="ayu-language-grid grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-4">
               {[
                 { code: 'te-IN', native: 'తెలుగు', name: 'Telugu' },
                 { code: 'hi-IN', native: 'हिन्दी', name: 'Hindi' },
@@ -987,7 +962,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
                 <button
                   key={lang.code}
                   onClick={() => handleSelectLang(lang.code)}
-                  aria-label={`${lang.name} · ${lang.native}`} className={`bg-white/95 backdrop-blur-sm border-2 hover:border-[#223D79] hover:bg-[#D9CDBA]/20 p-6 rounded-2xl text-center shadow-sm transition active:scale-98 ${currentLanguage === lang.code ? 'border-[#FFA530] ring-2 ring-[#FFA530]/30' : 'border-slate-300'}`}
+                  aria-label={`${lang.name} · ${lang.native}`} className={`bg-white border-2 hover:border-[#223D79] hover:bg-[#D9CDBA]/20 p-6 rounded-2xl text-center shadow-sm transition active:scale-98 ${currentLanguage === lang.code ? 'border-[#FFA530] ring-2 ring-[#FFA530]/30' : 'border-slate-300'}`}
                 >
                   <div className="text-3xl font-bold text-slate-900 mb-1">{lang.native}</div>
                   <div className="text-xs font-bold text-[#223D79]">{lang.name}</div>
@@ -1518,7 +1493,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
 
                 <div className="space-y-2 text-xs">
                   <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
-                    <span className="font-bold text-slate-900">Current Medication:</span> Telmisartan 40mg OD • Paracetamol 650mg SOS
+                    <span className="font-bold text-slate-900">Current Medication:</span> Telmisartan 40mg OD • Yograj Guggulu 2 tab BD
                   </div>
                   <div className="p-2.5 bg-[#D9CDBA]/30 rounded-lg border border-amber-200">
                     <span className="font-bold text-amber-900">Lab Results:</span> Serum Uric Acid: 7.8 mg/dL (High) • HbA1c: 6.1%
@@ -1638,11 +1613,11 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FFA530] animate-ping" />
               <span className="text-xs font-black tracking-wider text-[#FFA530] uppercase">
-                Clinical Test Profiles
+                Try a synthetic patient
               </span>
             </div>
             <button onClick={() => setIsFooterVisible(!isFooterVisible)} className="text-[11px] bg-white/10 hover:bg-white/20 text-[#D9CDBA] px-2 py-0.5 rounded border border-[#D9CDBA]/30">
-              {isFooterVisible ? 'Hide' : 'Show profiles'}
+              {isFooterVisible ? 'Hide' : 'Show samples'}
             </button>
           </div>
 

@@ -365,10 +365,10 @@ function AppContent() {
 
                     {/* ATTENDANCE DASHBOARD */}
                     {view === 'attendance' && selectedClinicId && (
-                        <ClinicAttendance clinicId={selectedClinicId} onNavigate={(v) => setView(v as View)} />
+                        <ClinicAttendance clinicId={selectedClinicId} onNavigate={(v: string) => setView(v as View)} />
                     )}
                     {view === 'attendance' && profile?.role === 'CLINIC_ADMIN' && profile.clinic_id && (
-                        <ClinicAttendance clinicId={profile.clinic_id} onNavigate={(v) => setView(v as View)} />
+                        <ClinicAttendance clinicId={profile.clinic_id} onNavigate={(v: string) => setView(v as View)} />
                     )}
 
                     {/* SHIFT MANAGEMENT */}
@@ -532,13 +532,6 @@ function AppContent() {
                     {view === 'patient-kiosk' && (
                         <PatientKiosk 
                             onNavigate={(targetView: any) => setView(targetView)}
-                            onTokenGenerated={(tokenData: any) => {
-                                if (tokenData?.hasRedFlag) {
-                                    setView('emergency-triage');
-                                } else {
-                                    setView('doctor-consultation');
-                                }
-                            }}
                         />
                     )}
 
