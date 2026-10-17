@@ -24,8 +24,8 @@ const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'Solutions', path: 'offers', isSection: true },
-    { name: 'Pricing', path: 'pricing', isSection: true },
+    { name: 'Solutions', path: '/clinic-operations', isSection: false },
+    { name: 'Pricing', path: '/app?view=billing', isSection: false },
     { name: 'About', path: '/about', isSection: false },
     { name: 'News', path: '/news', isSection: false },
     { name: 'Contact', path: '/contact', isSection: false },

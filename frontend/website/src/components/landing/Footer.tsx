@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, Facebook, Instagram } from 'lucide-react';
+
 
 const Footer: React.FC = () => {
   return (
@@ -19,12 +19,7 @@ const Footer: React.FC = () => {
             <p className="text-slate-600 max-w-xs mb-8 leading-relaxed">
               Revolutionizing healthcare management through integrated technology. Empowering providers, improving lives.
             </p>
-            <div className="flex space-x-5 text-slate-400">
-              <a href="#" className="hover:text-primary transition-colors"><Linkedin className="w-6 h-6" /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Twitter className="w-6 h-6" /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Facebook className="w-6 h-6" /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Instagram className="w-6 h-6" /></a>
-            </div>
+            <Link to="/contact" className="text-sm font-semibold text-primary">Contact the team</Link>
           </div>
 
           <div>

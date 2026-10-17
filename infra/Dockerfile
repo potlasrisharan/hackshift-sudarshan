@@ -9,6 +9,7 @@ COPY services/lang-gateway ./services/lang-gateway
 COPY apps/web ./apps/web
 COPY backend ./backend
 COPY frontend/website ./frontend/website
+RUN npm ci --prefix frontend/website --ignore-scripts
 RUN npm run build
 FROM node:22-bookworm-slim
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=8787
