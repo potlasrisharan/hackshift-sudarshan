@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🩺 DHAAGA (धागा)
+# 🩺 AYUSETU (आयुसेतु)
 ### *The Continuity-of-Care Operating System*
 **"One continuous thread from first symptom to full recovery."**
 
@@ -38,7 +38,7 @@ In healthcare systems across India and emerging economies, **care breaks at the 
 3. **The Post-Discharge Black Box:** Once discharged, patients stop adherence or silently deteriorate until they land in the emergency ICU.
 4. **Neglected Longitudinal Care:** Women's hormonal health, menstrual patterns, and preventive healthspan are ignored in acute OPD visits.
 
-**DHAAGA (धागा)** unifies this fragmented journey into an unbroken, consented, digital **Patient Thread** connecting **Voice Triage**, **Clinic Operations & FEFO Pharmacy**, **Remote Patient Monitoring**, and **Preventive Longitudinal Intelligence** into a closed-loop operating system powered by **pure deterministic mathematical engines**.
+**AYUSETU (आयुसेतु)** unifies this fragmented journey into an unbroken, consented, digital **Patient Thread** connecting **Voice Triage**, **Clinic Operations & FEFO Pharmacy**, **Remote Patient Monitoring**, and **Preventive Longitudinal Intelligence** into a closed-loop operating system powered by **pure deterministic mathematical engines**.
 
 ---
 
@@ -46,29 +46,29 @@ In healthcare systems across India and emerging economies, **care breaks at the 
 
 ```mermaid
 journey
-    title The Patient Journey: Broken Care vs. DHAAGA Closed-Loop Care
+    title The Patient Journey: Broken Care vs. AYUSETU Closed-Loop Care
     section 1. Triage & Intake
       Traditional Care: 1: Hurried 2-min triage, language barrier, lost paper slips
-      DHAAGA Experience: 5: Indic voice kiosk, adaptive SOCRATES history, <3ms emergency red-flag bypass
+      AYUSETU Experience: 5: Indic voice kiosk, adaptive SOCRATES history, <3ms emergency red-flag bypass
     section 2. Consultation
       Traditional Care: 2: Illegible handwriting, manual interrogations, no pre-visit timeline
-      DHAAGA Experience: 5: Source-linked bilingual SOAP draft & FHIR R4 bundle ready before consult
+      AYUSETU Experience: 5: Source-linked bilingual SOAP draft & FHIR R4 bundle ready before consult
     section 3. Pharmacy & Billing
       Traditional Care: 1: "Medicine out of stock", costly branded drugs, expired batches
-      DHAAGA Experience: 5: Atomic FEFO allocation, expiry >= courseEnd + 14d, generic Savings Meter
+      AYUSETU Experience: 5: Atomic FEFO allocation, expiry >= courseEnd + 14d, generic Savings Meter
     section 4. Home RPM & Follow-Up
       Traditional Care: 1: Zero post-discharge tracking, silent BP spike, preventable ICU readmission
-      DHAAGA Experience: 5: WhatsApp check-in, camera OCR, personalized CUSUM Drift Radar alerts nurse
+      AYUSETU Experience: 5: WhatsApp check-in, camera OCR, personalized CUSUM Drift Radar alerts nurse
     section 5. Preventive Health
       Traditional Care: 1: Episodic acute treatment only; lifestyle & hormonal health neglected
-      DHAAGA Experience: 5: AyuSetu HER cycle anomaly detection & Vitalis healthspan progression
+      AYUSETU Experience: 5: AyuSetu HER cycle anomaly detection & Vitalis healthspan progression
 ```
 
 ---
 
 ## 🏗️ System Architecture
 
-DHAAGA is built on a **Cloudflare-first edge architecture** designed for sub-millisecond algorithmic latency, zero-floating-point financial integrity, and strict multi-tenant isolation.
+AYUSETU is built on a **Cloudflare-first edge architecture** designed for sub-millisecond algorithmic latency, zero-floating-point financial integrity, and strict multi-tenant isolation.
 
 ```mermaid
 flowchart TB
@@ -123,10 +123,10 @@ flowchart TB
 
 ```mermaid
 graph LR
-    M1["1. DHAAGA INTAKE\n(Voice & Multimodal Door)"] -->|"Prescription & Encounter"| M2["2. DHAAGA OPS\n(Clinic ERP & Pharmacy)"]
-    M2 -->|"Dispense & Refill Window"| M3["3. DHAAGA HOME\n(Remote Patient Monitoring)"]
+    M1["1. AYUSETU INTAKE\n(Voice & Multimodal Door)"] -->|"Prescription & Encounter"| M2["2. AYUSETU OPS\n(Clinic ERP & Pharmacy)"]
+    M2 -->|"Dispense & Refill Window"| M3["3. AYUSETU HOME\n(Remote Patient Monitoring)"]
     M3 -->|"Deterioration Alerts"| M1
-    M4["4. DHAAGA ENGINE\n(Shared Algorithmic Brain)"] -. Powers .-> M1
+    M4["4. AYUSETU ENGINE\n(Shared Algorithmic Brain)"] -. Powers .-> M1
     M4 -. Powers .-> M2
     M4 -. Powers .-> M3
 
@@ -141,28 +141,28 @@ graph LR
     class M4 engine;
 ```
 
-### 1. 🎙️ Dhaaga Intake — Multilingual Voice & Multimodal Front Door
+### 1. 🎙️ AyuSetu Intake — Multilingual Voice & Multimodal Front Door
 * **Voice-First Indic UX:** Built for low-literacy patients with large-target touch controls and voice navigation in **Hindi, English, Tamil, Telugu, and Punjabi**.
 * **Adaptive Clinical History (SOCRATES):** Dynamically selects high-yield questions using Sparse Bayesian Information Gain, reducing intake questions from 20 down to 6–8 without diagnostic loss.
 * **Instant Red-Flag Emergency Bypass:** Hard deterministic rules (< 3ms) override all conversational flows immediately on identifying red flags (chest pain, acute dyspnea, syncope, severe hemorrhage).
 * **Prescription & Lab OCR:** Extracts active salts, dosages, frequency, and duration with field-level confidence badges.
 * **Clinician SOAP Draft:** Compiles structured Subjective, Objective, Assessment, and Plan notes with interactive citation chips linking directly back to audio timestamps and document segments.
 
-### 2. 🏥 Dhaaga Ops — Multi-Clinic Hub & Spoke ERP
+### 2. 🏥 AyuSetu Ops — Multi-Clinic Hub & Spoke ERP
 * **Atomic FEFO Pharmacy POS:** First-Expiry-First-Out dispensing serialized through Cloudflare Durable Objects to guarantee zero overselling during peak clinic rushes.
 * **Course-Validity Guard:** Enforces that allocated medicine batches have an expiry date strictly exceeding `courseEnd + 14 days`, eliminating mid-course expired drug ingestion.
 * **Savings Meter (Generic Optimization):** Identifies therapeutically bioequivalent generic salts, slashing medication bills by up to 60% with one-click doctor approval.
 * **Double-Entry Financial Ledger:** Every financial transaction logs immutable debit and credit entries stored in **Integer Paise** (`₹100.50` = `10050 paise`) with real-time balance sheets and audit locks.
 * **Inter-Clinic Transfer Routing:** Calculates batch logistics fees against expiry risk when pooling inventory across satellite clinics.
 
-### 3. 🏡 Dhaaga Home — Zero-Hardware Remote Patient Monitoring
+### 3. 🏡 AyuSetu Home — Zero-Hardware Remote Patient Monitoring
 * **WhatsApp-Native Daily Check-ins:** Patients or family members submit quick voice notes, plain numbers, or simple photos of blood pressure and glucometer monitors.
 * **Camera OCR Display Reader:** Automatically extracts numeric vitals from standard household meters without requiring costly Bluetooth hardware.
 * **Personalized Drift Radar:** Replaces rigid universal thresholds with an individualized baseline using non-parametric Median/MAD CUSUM to eliminate false-alarm fatigue.
 * **Nurse Triage Prioritization:** Dynamically surfaces deteriorating patients to the top of the clinical care coordinator's queue with plain-language diagnostic rationale.
 * **Proactive Refill Warnings:** Predicts stock-out dates 3 days in advance and automatically reserves the next batch at the patient's nearest clinic.
 
-### 4. 🧠 Dhaaga Engine — Pure Deterministic Algorithms
+### 4. 🧠 AyuSetu Engine — Pure Deterministic Algorithms
 > **Architectural Rule:** *"Algorithms decide, AI translates."*  
 > All medical triaging, stock allocations, deterioration alerts, and inventory forecasts are computed by provable, deterministic math; LLMs are strictly confined to language translation and text formatting with deterministic fallbacks.
 
@@ -226,7 +226,7 @@ flutter test --coverage
 
 ## 🔒 Security, Privacy & DPDP Compliance
 
-DHAAGA strictly complies with the **Digital Personal Data Protection (DPDP) Act 2023** and Indian healthcare data standards:
+AYUSETU strictly complies with the **Digital Personal Data Protection (DPDP) Act 2023** and Indian healthcare data standards:
 
 ```mermaid
 flowchart LR
@@ -256,7 +256,7 @@ Evaluated across 500 clinical test scenarios (Reproducible with `make bench`):
 </div>
 
 ### 1. Safety & Optimization Comparison
-| Metric | DHAAGA Engine | Naive / Baseline Approach | Improvement |
+| Metric | AYUSETU Engine | Naive / Baseline Approach | Improvement |
 |---|:---:|:---:|:---:|
 | **Unsafe Stock Selections** *(Expired before course end / allergy clash)* | **0** | 276 | **100% Elimination of Unsafe Dispensing** |
 | **Average Prescription Cost** | **₹78.93** | ₹51.06 *(Unusable/Expired)* | **Cost-optimized & 100% course-valid** |
@@ -277,14 +277,14 @@ Evaluated across 500 clinical test scenarios (Reproducible with `make bench`):
 ### Desktop Clinician & Operations Console
 *OPD queue management, live FEFO stock allocation, and interactive algorithm verification*
 
-![DHAAGA Desktop Console](docs/images/dashboard-desktop.png)
+![AYUSETU Desktop Console](docs/images/dashboard-desktop.png)
 
 <br/>
 
 ### Mobile Kiosk & Remote Patient Monitoring
 *High-contrast Indic interface, elder accessibility, and proactive WhatsApp vital check-ins*
 
-![DHAAGA Mobile PWA](docs/images/dashboard-mobile.png)
+![AYUSETU Mobile PWA](docs/images/dashboard-mobile.png)
 
 </div>
 
@@ -375,5 +375,5 @@ Developed with ❤️ for **HackShift 2026 at IIIT Delhi**
 <div align="center">
   <sub>Built with engineering rigor, clinical safety guards, and empathy for every patient.</sub>
   <br/>
-  <b>DHAAGA — One continuous thread from first symptom to full recovery.</b>
+  <b>AYUSETU — One continuous bridge from first symptom to full recovery.</b>
 </div>
