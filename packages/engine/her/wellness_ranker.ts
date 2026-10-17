@@ -6,7 +6,11 @@
 
 export interface WellnessCatalogItem {
   id: string;
-  category: "nutrition" | "yoga_movement" | "sleep_circadian" | "stress_somatic";
+  category:
+    | "nutrition"
+    | "yoga_movement"
+    | "sleep_circadian"
+    | "stress_somatic";
   title: string;
   description: string;
   evidenceGrade: "A" | "B" | "C"; // A: Strong clinical trial, B: Moderate evidence, C: Traditional practice
@@ -18,7 +22,12 @@ export interface WellnessCatalogItem {
 }
 
 export interface WellnessUserContext {
-  dietPreference?: "vegetarian" | "vegan" | "eggetarian" | "non_vegetarian" | "non-vegetarian";
+  dietPreference?:
+    | "vegetarian"
+    | "vegan"
+    | "eggetarian"
+    | "non_vegetarian"
+    | "non-vegetarian";
   allergies?: string[];
   mobilityRestrictions?: string[];
   activeRedFlags?: boolean;
@@ -36,9 +45,11 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     id: "nutr-01-besan-chilla",
     category: "nutrition",
     title: "High-Protein Besan & Sprouted Moong Chilla",
-    description: "Low-glycemic complex carbohydrate breakfast rich in plant protein and prebiotic fiber to steady insulin response.",
+    description:
+      "Low-glycemic complex carbohydrate breakfast rich in plant protein and prebiotic fiber to steady insulin response.",
     evidenceGrade: "A",
-    evidenceSource: "American Diabetes Association & ICMR Guidelines for Glycemic Index Management",
+    evidenceSource:
+      "American Diabetes Association & ICMR Guidelines for Glycemic Index Management",
     contraindications: ["chickpea_allergy"],
     dietaryTags: ["vegetarian", "vegan"],
     utilityWeight: 88,
@@ -47,9 +58,11 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     id: "nutr-02-curd-seed-cycle",
     category: "nutrition",
     title: "Probiotic Curd with Flax & Pumpkin Seeds",
-    description: "Provides gut microbiome probiotics and essential lignans / zinc for natural endocrine co-factor support.",
+    description:
+      "Provides gut microbiome probiotics and essential lignans / zinc for natural endocrine co-factor support.",
     evidenceGrade: "B",
-    evidenceSource: "Nutrients Journal: Dietary Phytoestrogens and Metabolic Health",
+    evidenceSource:
+      "Nutrients Journal: Dietary Phytoestrogens and Metabolic Health",
     contraindications: ["dairy_allergy"],
     dietaryTags: ["vegetarian"],
     utilityWeight: 82,
@@ -58,7 +71,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     id: "nutr-03-iron-greens",
     category: "nutrition",
     title: "Iron-Rich Palak & Methi Dal with Lemon Juice",
-    description: "Non-heme plant iron paired with vitamin C (ascorbic acid) to maximize non-heme bioavailability and combat menstrual fatigue.",
+    description:
+      "Non-heme plant iron paired with vitamin C (ascorbic acid) to maximize non-heme bioavailability and combat menstrual fatigue.",
     evidenceGrade: "A",
     evidenceSource: "WHO Nutritional Anemia Clinical Guidelines",
     contraindications: [],
@@ -69,31 +83,37 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     id: "yoga-01-supta-baddha",
     category: "yoga_movement",
     title: "Supta Baddha Konasana (Reclined Bound Angle Pose)",
-    description: "Gentle restorative pelvic opening with bolster support to ease pelvic congestion and downregulate sympathetic tension.",
+    description:
+      "Gentle restorative pelvic opening with bolster support to ease pelvic congestion and downregulate sympathetic tension.",
     evidenceGrade: "B",
-    evidenceSource: "Journal of Alternative and Complementary Medicine: Restorative Yoga for Pelvic Comfort",
+    evidenceSource:
+      "Journal of Alternative and Complementary Medicine: Restorative Yoga for Pelvic Comfort",
     contraindications: ["recent_groin_injury"],
     dietaryTags: [],
-    disclaimer: "Gentle restorative support for pelvic relaxation; not an evidence-proven medical cure for endometriosis or PCOS.",
+    disclaimer:
+      "Gentle restorative support for pelvic relaxation; not an evidence-proven medical cure for endometriosis or PCOS.",
     utilityWeight: 85,
   },
   {
     id: "yoga-02-cat-cow",
     category: "yoga_movement",
     title: "Marjaryasana-Bitilasana (Cat-Cow Dynamic Breath)",
-    description: "Spinal mobilization synchronized with deep diaphragmatic breath to relieve lumbosacral tension during menses.",
+    description:
+      "Spinal mobilization synchronized with deep diaphragmatic breath to relieve lumbosacral tension during menses.",
     evidenceGrade: "B",
     evidenceSource: "International Journal of Yoga Therapy",
     contraindications: ["acute_spinal_herniation"],
     dietaryTags: [],
-    disclaimer: "Movement support to relieve muscular stiffness; consult your physician if pain persists.",
+    disclaimer:
+      "Movement support to relieve muscular stiffness; consult your physician if pain persists.",
     utilityWeight: 80,
   },
   {
     id: "sleep-01-morning-light",
     category: "sleep_circadian",
     title: "Morning 15-Minute Solar Retinal Exposure",
-    description: "Direct morning sunlight anchors the master circadian clock (suprachiasmatic nucleus), optimizing evening melatonin secretion.",
+    description:
+      "Direct morning sunlight anchors the master circadian clock (suprachiasmatic nucleus), optimizing evening melatonin secretion.",
     evidenceGrade: "A",
     evidenceSource: "Cell / Nature Neuroscience Circadian Entrainment Reviews",
     contraindications: [],
@@ -104,16 +124,20 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     id: "stress-01-nadi-shodhana",
     category: "stress_somatic",
     title: "Nadi Shodhana Pranayama (Alternate Nostril Breath)",
-    description: "Slow 1:1 or 1:2 paced breathwork stimulating vagal afferent tone and reducing salivary cortisol spikes.",
+    description:
+      "Slow 1:1 or 1:2 paced breathwork stimulating vagal afferent tone and reducing salivary cortisol spikes.",
     evidenceGrade: "A",
-    evidenceSource: "Frontiers in Human Neuroscience: Autonomic Vagal Modulation by Paced Breathing",
+    evidenceSource:
+      "Frontiers in Human Neuroscience: Autonomic Vagal Modulation by Paced Breathing",
     contraindications: ["acute_respiratory_distress"],
     dietaryTags: [],
     utilityWeight: 89,
   },
 ];
 
-export function herWellnessRanker(context: WellnessUserContext): WellnessCatalogItem[] {
+export function herWellnessRanker(
+  context: WellnessUserContext,
+): WellnessCatalogItem[] {
   // If active urgent safety red flags exist, suppress wellness tips to prioritize emergency care
   if (context.activeRedFlags) {
     return [];
@@ -146,9 +170,17 @@ export function herWellnessRanker(context: WellnessUserContext): WellnessCatalog
     // Boost evidence grade A
     if (item.evidenceGrade === "A") score += 10;
     // Boost relevance for PCOS features
-    if (context.hasPcosFeatures && (item.id.includes("chilla") || item.id.includes("seed"))) score += 15;
+    if (
+      context.hasPcosFeatures &&
+      (item.id.includes("chilla") || item.id.includes("seed"))
+    )
+      score += 15;
     // Boost pelvic comfort
-    if (context.hasPelvicPain && (item.id.includes("supta") || item.id.includes("cat-cow"))) score += 20;
+    if (
+      context.hasPelvicPain &&
+      (item.id.includes("supta") || item.id.includes("cat-cow"))
+    )
+      score += 20;
     // Boost iron for fatigue
     if (context.hasFatigue && item.id.includes("iron")) score += 18;
 

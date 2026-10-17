@@ -1,11 +1,16 @@
 export interface CandidateAction {
   id: string;
   title: string;
-  category: "preventive_screening" | "lifestyle_activity" | "nutrition" | "sleep" | "functional";
+  category:
+    | "preventive_screening"
+    | "lifestyle_activity"
+    | "nutrition"
+    | "sleep"
+    | "functional";
   evidenceStrength: number; // 0.0 to 1.0 (based on WHO / AHA guidelines)
-  relevanceScore: number;   // 0.0 to 1.0 (patient age, condition, goal fit)
+  relevanceScore: number; // 0.0 to 1.0 (patient age, condition, goal fit)
   feasibilityScore: number; // 0.0 to 1.0 (time, equipment, access)
-  patientBurden: number;    // 0.0 to 1.0 (cost, invasiveness, complexity)
+  patientBurden: number; // 0.0 to 1.0 (cost, invasiveness, complexity)
   evidenceSource: string;
 }
 
@@ -21,7 +26,7 @@ export interface RankedAction extends CandidateAction {
 
 export interface RankerConfig {
   alpha?: number; // evidence weight, default 0.35
-  beta?: number;  // relevance weight, default 0.35
+  beta?: number; // relevance weight, default 0.35
   gamma?: number; // feasibility weight, default 0.20
   delta?: number; // burden penalty weight, default 0.10
 }
@@ -32,12 +37,12 @@ export interface RankerConfig {
  */
 export function vitalisPreventiveRanker(
   actions: CandidateAction[],
-  config?: RankerConfig
+  config?: RankerConfig,
 ): RankedAction[] {
   const alpha = config?.alpha ?? 0.35;
   const beta = config?.beta ?? 0.35;
-  const gamma = config?.gamma ?? 0.20;
-  const delta = config?.delta ?? 0.10;
+  const gamma = config?.gamma ?? 0.2;
+  const delta = config?.delta ?? 0.1;
 
   return actions
     .map((action) => {
@@ -51,8 +56,11 @@ export function vitalisPreventiveRanker(
       const feasibilityComp = gamma * f;
       const burdenComp = delta * b;
 
-      const rawScore = evidenceComp + relevanceComp + feasibilityComp - burdenComp;
-      const priorityScore = Number(Math.max(0, Math.min(1, rawScore)).toFixed(3));
+      const rawScore =
+        evidenceComp + relevanceComp + feasibilityComp - burdenComp;
+      const priorityScore = Number(
+        Math.max(0, Math.min(1, rawScore)).toFixed(3),
+      );
 
       return {
         ...action,

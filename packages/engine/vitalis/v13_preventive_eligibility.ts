@@ -9,8 +9,18 @@ export interface PreventiveProfileInput {
 export interface PreventiveRuleEvaluation {
   ruleId: string;
   title: string;
-  category: "metabolic" | "cardiovascular" | "cancer_screening" | "musculoskeletal" | "immunization";
-  status: "due" | "completed" | "needs_discussion" | "not_applicable" | "unknown";
+  category:
+    | "metabolic"
+    | "cardiovascular"
+    | "cancer_screening"
+    | "musculoskeletal"
+    | "immunization";
+  status:
+    | "due"
+    | "completed"
+    | "needs_discussion"
+    | "not_applicable"
+    | "unknown";
   recommendedIntervalMonths: number;
   lastDate?: string;
   dueDate?: string;
@@ -23,7 +33,7 @@ export interface PreventiveRuleEvaluation {
  * Evidence-based screening schedule mapping based on national and global clinical guidelines.
  */
 export function vitalisPreventiveEligibility(
-  profile: PreventiveProfileInput
+  profile: PreventiveProfileInput,
 ): PreventiveRuleEvaluation[] {
   const evaluations: PreventiveRuleEvaluation[] = [];
   const now = new Date();
@@ -31,14 +41,23 @@ export function vitalisPreventiveEligibility(
   function monthsSince(dateStr?: string): number {
     if (!dateStr) return 9999;
     const d = new Date(dateStr);
-    return Math.max(0, (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth()));
+    return Math.max(
+      0,
+      (now.getFullYear() - d.getFullYear()) * 12 +
+        (now.getMonth() - d.getMonth()),
+    );
   }
 
   // 1. Diabetes / HbA1c Screening
-  const hasPreDiabetes = profile.diagnosedConditions.some((c) => c.toLowerCase().includes("prediabetes"));
-  const familyDiabetes = profile.familyHistory.some((f) => f.toLowerCase().includes("diabetes"));
+  const hasPreDiabetes = profile.diagnosedConditions.some((c) =>
+    c.toLowerCase().includes("prediabetes"),
+  );
+  const familyDiabetes = profile.familyHistory.some((f) =>
+    f.toLowerCase().includes("diabetes"),
+  );
   const diabetesInterval = hasPreDiabetes ? 12 : 36; // 1 year for prediabetes, 3 years standard
-  const eligibleDiabetes = profile.age >= 35 || familyDiabetes || hasPreDiabetes;
+  const eligibleDiabetes =
+    profile.age >= 35 || familyDiabetes || hasPreDiabetes;
 
   if (eligibleDiabetes) {
     const lastDate = profile.lastCompletedDates["PREV-DIABETES-HBA1C"];
@@ -68,23 +87,28 @@ export function vitalisPreventiveEligibility(
     recommendedIntervalMonths: 12,
     lastDate: lastBp,
     guidelineSource: "AHA / Indian Society of Hypertension Guidelines",
-    rationale: "Annual professional blood pressure screening recommended for all adults.",
+    rationale:
+      "Annual professional blood pressure screening recommended for all adults.",
   });
 
   // 3. Lipid Profile
-  const eligibleLipid = profile.age >= (profile.sex === "MALE" ? 35 : 40) || profile.familyHistory.includes("cad");
+  const eligibleLipid =
+    profile.age >= (profile.sex === "MALE" ? 35 : 40) ||
+    profile.familyHistory.includes("cad");
   if (eligibleLipid) {
     const lastLipid = profile.lastCompletedDates["PREV-LIPID-PANEL"];
     const lipidMonths = monthsSince(lastLipid);
     evaluations.push({
       ruleId: "PREV-LIPID-PANEL",
-      title: "Comprehensive Lipid Profile (Cholesterol, LDL, HDL, Triglycerides)",
+      title:
+        "Comprehensive Lipid Profile (Cholesterol, LDL, HDL, Triglycerides)",
       category: "cardiovascular",
       status: lipidMonths >= 36 ? "due" : "completed",
       recommendedIntervalMonths: 36,
       lastDate: lastLipid,
       guidelineSource: "AHA / NLA Primary Prevention of Atherosclerotic CVD",
-      rationale: "Fasting lipid panel to assess cardiovascular atherogenic risk.",
+      rationale:
+        "Fasting lipid panel to assess cardiovascular atherogenic risk.",
     });
   }
 
@@ -100,7 +124,8 @@ export function vitalisPreventiveEligibility(
       recommendedIntervalMonths: 12,
       lastDate: lastFunctional,
       guidelineSource: "WHO Integrated Care for Older People (ICOPE)",
-      rationale: "Annual locomotor and balance check to prevent accidental falls and preserve independence.",
+      rationale:
+        "Annual locomotor and balance check to prevent accidental falls and preserve independence.",
     });
   }
 

@@ -30,7 +30,10 @@ export function vitalisDailyReadiness(input: ReadinessInput): ReadinessResult {
     "Experimental wellness indicator based on wearable telemetry. Not clinical clearance. Subjective fatigue and clinical symptoms always supersede algorithmic scores.";
 
   // Immediate symptom or high fatigue override
-  if (input.symptomsReported || (input.subjectiveFatigue && input.subjectiveFatigue >= 8)) {
+  if (
+    input.symptomsReported ||
+    (input.subjectiveFatigue && input.subjectiveFatigue >= 8)
+  ) {
     return {
       readinessScore: 35,
       coveragePercentage: 100,
@@ -42,7 +45,8 @@ export function vitalisDailyReadiness(input: ReadinessInput): ReadinessResult {
         regularityComponent: 40,
       },
       wellnessLabel: "REST_RECOVERY",
-      clinicalNotice: "Elevated fatigue or symptoms reported. Rest prioritized over physical loading.",
+      clinicalNotice:
+        "Elevated fatigue or symptoms reported. Rest prioritized over physical loading.",
     };
   }
 
@@ -69,22 +73,34 @@ export function vitalisDailyReadiness(input: ReadinessInput): ReadinessResult {
 
   // 3. Sleep Efficiency (Weight: 0.20). [70% -> 50, 95% -> 100]
   let sleepEffSub: number | null = null;
-  if (input.sleepEfficiencyPercent !== null && input.sleepEfficiencyPercent !== undefined) {
-    sleepEffSub = Math.max(20, Math.min(100, Math.round(input.sleepEfficiencyPercent)));
-    weightedSum += 0.20 * sleepEffSub;
-    totalWeight += 0.20;
+  if (
+    input.sleepEfficiencyPercent !== null &&
+    input.sleepEfficiencyPercent !== undefined
+  ) {
+    sleepEffSub = Math.max(
+      20,
+      Math.min(100, Math.round(input.sleepEfficiencyPercent)),
+    );
+    weightedSum += 0.2 * sleepEffSub;
+    totalWeight += 0.2;
   }
 
   // 4. Sleep Regularity (Weight: 0.20)
   let regSub: number | null = null;
-  if (input.sleepRegularityScore !== null && input.sleepRegularityScore !== undefined) {
-    regSub = Math.max(20, Math.min(100, Math.round(input.sleepRegularityScore)));
-    weightedSum += 0.20 * regSub;
-    totalWeight += 0.20;
+  if (
+    input.sleepRegularityScore !== null &&
+    input.sleepRegularityScore !== undefined
+  ) {
+    regSub = Math.max(
+      20,
+      Math.min(100, Math.round(input.sleepRegularityScore)),
+    );
+    weightedSum += 0.2 * regSub;
+    totalWeight += 0.2;
   }
 
   const coverage = Number((totalWeight / 1.0).toFixed(2));
-  if (totalWeight < 0.40) {
+  if (totalWeight < 0.4) {
     return {
       readinessScore: null,
       coveragePercentage: Math.round(coverage * 100),
@@ -96,7 +112,8 @@ export function vitalisDailyReadiness(input: ReadinessInput): ReadinessResult {
         regularityComponent: regSub,
       },
       wellnessLabel: "MODERATE_CAPACITY",
-      clinicalNotice: "Insufficient wearable telemetry streams available to calibrate readiness index.",
+      clinicalNotice:
+        "Insufficient wearable telemetry streams available to calibrate readiness index.",
     };
   }
 

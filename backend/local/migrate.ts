@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { LocalDatabase } from "./database";
 
@@ -64,9 +64,9 @@ export function splitSqlScript(sql: string): string[] {
   return statements;
 }
 export function migrationScripts() {
-  return readdirSync("backend/migrations")
-    .filter((name) => /^\d+.*\.sql$/.test(name))
-    .sort()
+  // This standalone clinical workspace uses the intake/pharmacy schema.
+  // The legacy operational schema defines different patients/encounters tables.
+  return ["0001_intake.sql", "0002_pharmacy.sql"]
     .map((name) => readFileSync(join("backend/migrations", name), "utf8"));
 }
 export function migrateLocal(db: LocalDatabase) {

@@ -22,6 +22,14 @@ class LanguageScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          tooltip: "Back to Portals",
+          onPressed: () => context.canPop() ? context.pop() : context.go("/"),
+        ),
+        title: const Text("Select Language / भाषा चुनें"),
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -105,7 +113,7 @@ class LanguageScreen extends ConsumerWidget {
                       return InkWell(
                         onTap: () {
                           ref.read(intakeProvider.notifier).setLanguage(l["name"]!);
-                          context.go("/identify");
+                          context.push("/identify");
                         },
                         borderRadius: BorderRadius.circular(16),
                         child: Container(

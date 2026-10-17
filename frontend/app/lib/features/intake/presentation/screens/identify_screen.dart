@@ -189,7 +189,7 @@ class _IdentifyScreenState extends ConsumerState<IdentifyScreen> {
                         ),
                         const SizedBox(height: 12),
                         ElevatedButton(
-                          onPressed: () => context.go("/converse"),
+                          onPressed: () => context.push("/converse"),
                           child: const Text("Begin Voice Intake ➔"),
                         ),
                       ],

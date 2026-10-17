@@ -296,31 +296,29 @@ export function threadPulse(raw: unknown) {
   };
 }
 
+export { herCycleDetector } from "./her/cycle_detector";
 // AyuSetu HER Deterministic Algorithms
 export { herSafetyGate } from "./her/safety_gate";
-export { herCycleDetector } from "./her/cycle_detector";
 export { herScreeningEngine } from "./her/screening_engine";
-export { herWellnessRanker } from "./her/wellness_ranker";
 export { herTrendAnalyzer } from "./her/trend_analyzer";
+export { herWellnessRanker } from "./her/wellness_ranker";
 
 // AyuSetu Vitalis Deterministic Algorithms V0-V14
 export {
-  vitalisSafetyGate,
-  vitalisHealthspanIndex,
-  vitalisPreventiveRanker,
-  vitalisExerciseProgression,
-  vitalisBiomarkerTrends,
-  vitalisLifestyleCorrelations,
-  vitalisRecommendationSelector,
-  evaluateVO2maxRecord,
   estimateNonExerciseVO2max,
-  vitalisRollingBaseline,
-  vitalisSleepRegularity,
-  vitalisDailyReadiness,
-  vitalisFunctionalCapacity,
-  vitalisIngestAndDeduplicate,
-  vitalisPreventiveEligibility,
+  evaluateVO2maxRecord,
   vitalisBehaviorSimulator,
+  vitalisBiomarkerTrends,
+  vitalisDailyReadiness,
+  vitalisExerciseProgression,
+  vitalisFunctionalCapacity,
+  vitalisHealthspanIndex,
+  vitalisIngestAndDeduplicate,
+  vitalisLifestyleCorrelations,
+  vitalisPreventiveEligibility,
+  vitalisPreventiveRanker,
+  vitalisRecommendationSelector,
+  vitalisRollingBaseline,
+  vitalisSafetyGate,
+  vitalisSleepRegularity,
 } from "./vitalis";
-
-

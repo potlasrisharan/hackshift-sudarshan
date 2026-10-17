@@ -76,10 +76,13 @@ describe("AyuSetu Vitalis — API Routes (/api/v1/vitalis)", () => {
     });
 
     // 3. Complete assessment
-    const completeRes = await app.request(`/api/v1/vitalis/assessments/${asmtId}/complete`, {
-      method: "POST",
-      headers: { "X-Patient-Id": "test_patient_003" },
-    });
+    const completeRes = await app.request(
+      `/api/v1/vitalis/assessments/${asmtId}/complete`,
+      {
+        method: "POST",
+        headers: { "X-Patient-Id": "test_patient_003" },
+      },
+    );
     expect(completeRes.status).toBe(200);
     const compBody = (await completeRes.json()) as any;
     expect(compBody.data.status).toBe("completed");
@@ -113,7 +116,9 @@ describe("AyuSetu Vitalis — API Routes (/api/v1/vitalis)", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as any;
     expect(body.data.projectedDailySteps).toBe(7000);
-    expect(body.data.illustrativeNotice).toContain("models planned routine feasibility and schedule volume only");
+    expect(body.data.illustrativeNotice).toContain(
+      "models planned routine feasibility and schedule volume only",
+    );
   });
 
   it("GET /api/v1/vitalis/doctor-summary returns clinician report with disclaimer and algorithm versions", async () => {

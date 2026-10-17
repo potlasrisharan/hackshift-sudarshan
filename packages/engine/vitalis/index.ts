@@ -5,7 +5,10 @@ export { vitalisExerciseProgression } from "./v3_exercise_progression";
 export { vitalisBiomarkerTrends } from "./v4_biomarker_trends";
 export { vitalisLifestyleCorrelations } from "./v5_lifestyle_correlations";
 export { vitalisRecommendationSelector } from "./v6_recommendation_selector";
-export { evaluateVO2maxRecord, estimateNonExerciseVO2max } from "./v7_vo2_provenance";
+export {
+  estimateNonExerciseVO2max,
+  evaluateVO2maxRecord,
+} from "./v7_vo2_provenance";
 export { vitalisRollingBaseline } from "./v8_rolling_baseline";
 export { vitalisSleepRegularity } from "./v9_sleep_regularity";
 export { vitalisDailyReadiness } from "./v10_daily_readiness";

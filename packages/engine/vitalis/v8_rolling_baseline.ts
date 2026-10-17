@@ -30,7 +30,7 @@ export function vitalisRollingBaseline(
   metricName: "RESTING_HR" | "HRV",
   samples: BaselineSample[],
   todaySample?: BaselineSample,
-  hrvType?: HRVMetricType
+  hrvType?: HRVMetricType,
 ): BaselineResult {
   const minSamples = 7;
   const windowDays = 21;
@@ -41,7 +41,10 @@ export function vitalisRollingBaseline(
     // Take only the primary device (most frequent)
     const deviceCounts = new Map<string, number>();
     for (const s of samples) {
-      deviceCounts.set(s.sourceDevice, (deviceCounts.get(s.sourceDevice) || 0) + 1);
+      deviceCounts.set(
+        s.sourceDevice,
+        (deviceCounts.get(s.sourceDevice) || 0) + 1,
+      );
     }
     let topDevice = "";
     let topCount = 0;
@@ -74,7 +77,7 @@ export function vitalisRollingBaseline(
   const n = values.length;
   const mean = Number((values.reduce((a, b) => a + b, 0) / n).toFixed(1));
 
-  const variance = values.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) / n;
+  const variance = values.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n;
   const stdDev = Number(Math.max(0.5, Math.sqrt(variance)).toFixed(2));
 
   let todayZScore: number | null = null;

@@ -100,3 +100,12 @@ Automated inspection does not establish full WCAG conformance or validate every 
 The workspace tour is now opt-in and specific to the current view. It no longer switches clinician pages to Headquarters. The spotlight and dialog share the active tour lifecycle and unmount together on Finish, Close, or Escape; storage failures cannot prevent dismissal. The dialog fits mobile viewports, keeps keyboard focus within its controls, and restores focus when dismissed.
 
 Validation: frontend typecheck and production build passed. Eleven browser regressions passed, including completion/close/Escape at 1440, 768, and 390 pixels, normal interaction after dismissal, completion persistence, and dismissal when browser storage throws. Existing patient navigation, speech fallback, microphone release, offline, and privacy regressions also passed.
+
+
+## CI and public-site publishing correction
+
+The public site is `https://dhaaga-web.pages.dev/`. Deployment now explicitly targets that existing Pages project and its production branch, and writes `deployment.json` with the Git revision for verification. The unified-platform publishing branch includes the redesign and tour fixes.
+
+Removed the obsolete untouched-source CI gate using the newer platform workflow. Restored the integration capability response expected by the existing test contract, restored static assets in the standalone clinical server, and selected only the compatible intake/pharmacy migrations for that local workspace. The container build now installs the React website dependencies. Frontend type checking is included in CI. CSS formatting satisfies the existing lint gate without changing the design.
+
+Local verification: lint completed without errors (existing warnings remain), both type checks passed, 115 unit tests passed, eight safety evaluations passed, 11 frontend browser regressions and three clinical browser tests passed. Both frontend bundles and Worker bundles built, the local workerd/D1 smoke passed, and the dependency audit reported no vulnerabilities. The Docker dependency installation stalled locally; GitHub Actions retains the required container build and health check before deployment.

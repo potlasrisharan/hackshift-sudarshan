@@ -1,4 +1,7 @@
-export type VO2SourceType = "lab_measured" | "wearable_estimated" | "model_estimated";
+export type VO2SourceType =
+  | "lab_measured"
+  | "wearable_estimated"
+  | "model_estimated";
 
 export interface VO2Record {
   vo2MaxMlKgMin: number;
@@ -35,19 +38,23 @@ export interface VO2EvaluationResult {
  * Discloses provenance clearly. The research non-exercise regression remains strictly disabled
  * unless an explicit experimental flag is enabled, displaying validation status.
  */
-export function evaluateVO2maxRecord(record: VO2Record, age?: number): VO2EvaluationResult {
+export function evaluateVO2maxRecord(
+  record: VO2Record,
+  age?: number,
+): VO2EvaluationResult {
   const isLab = record.sourceType === "lab_measured";
   const label =
     record.sourceType === "lab_measured"
       ? "Laboratory Measured (Cardiopulmonary Exercise Testing - CPET)"
       : record.sourceType === "wearable_estimated"
-      ? `Wearable Submaximal Estimate (${record.device || "Fitness Tracker"})`
-      : "Algorithmic Non-Exercise Estimate (Experimental)";
+        ? `Wearable Submaximal Estimate (${record.device || "Fitness Tracker"})`
+        : "Algorithmic Non-Exercise Estimate (Experimental)";
 
   // Reference bands (approximated population medians for 20-59 age brackets)
-  const cohortBand = age && age >= 50
-    ? { low: 22, moderate: 32, high: 42 }
-    : { low: 28, moderate: 38, high: 48 };
+  const cohortBand =
+    age && age >= 50
+      ? { low: 22, moderate: 32, high: 42 }
+      : { low: 28, moderate: 38, high: 48 };
 
   return {
     record,
@@ -64,14 +71,17 @@ export function evaluateVO2maxRecord(record: VO2Record, age?: number): VO2Evalua
  * Experimental Non-Exercise VO2max Formula (Nes et al. 2011 candidate)
  * BLOCKED by default per Specification Section 1.1 & Section 6.
  */
-export function estimateNonExerciseVO2max(
-  input: ResearchEquationInput
-): { estimatedVO2: number | null; status: string; notice: string } {
+export function estimateNonExerciseVO2max(input: ResearchEquationInput): {
+  estimatedVO2: number | null;
+  status: string;
+  notice: string;
+} {
   if (!input.enableExperimentalFlag) {
     return {
       estimatedVO2: null,
       status: "DISABLED_PENDING_CLINICAL_VALIDATION",
-      notice: "Estimation unavailable: research equation validation and calibration pending. Wearable or lab measurements are preferred.",
+      notice:
+        "Estimation unavailable: research equation validation and calibration pending. Wearable or lab measurements are preferred.",
     };
   }
 
@@ -81,12 +91,13 @@ export function estimateNonExerciseVO2max(
     4.47 * input.sexBinary -
     0.381 * input.age -
     0.754 * input.bmi -
-    0.190 * input.nightRhr +
+    0.19 * input.nightRhr +
     0.325 * input.pai;
 
   return {
     estimatedVO2: Number(Math.max(10, Math.min(85, raw)).toFixed(1)),
     status: "EXPERIMENTAL_ESTIMATE",
-    notice: "Experimental non-exercise estimation provided for research comparison only. Not validated for clinical triage.",
+    notice:
+      "Experimental non-exercise estimation provided for research comparison only. Not validated for clinical triage.",
   };
 }

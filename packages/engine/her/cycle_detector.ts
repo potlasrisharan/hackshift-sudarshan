@@ -41,7 +41,7 @@ export function herCycleDetector(
         isPregnantOrLactating?: boolean;
         hormonalContraception?: boolean;
       },
-  maybeContext: CycleAnalysisContext = {}
+  maybeContext: CycleAnalysisContext = {},
 ): CycleStatsResult {
   const ruleVersion = "A1-CYCLE-2026.1";
   const caveats: string[] = [];
@@ -55,9 +55,12 @@ export function herCycleDetector(
   } else if (input && typeof input === "object") {
     context = {
       age: input.age ?? maybeContext.age,
-      yearsSinceMenarche: input.yearsSinceMenarche ?? maybeContext.yearsSinceMenarche,
-      isPregnantOrLactating: input.isPregnantOrLactating ?? maybeContext.isPregnantOrLactating,
-      hormonalContraception: input.hormonalContraception ?? maybeContext.hormonalContraception,
+      yearsSinceMenarche:
+        input.yearsSinceMenarche ?? maybeContext.yearsSinceMenarche,
+      isPregnantOrLactating:
+        input.isPregnantOrLactating ?? maybeContext.isPregnantOrLactating,
+      hormonalContraception:
+        input.hormonalContraception ?? maybeContext.hormonalContraception,
     };
     if (Array.isArray(input.dates)) {
       rawDates = input.dates;
@@ -74,7 +77,9 @@ export function herCycleDetector(
     .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
   if (context.isPregnantOrLactating) {
-    caveats.push("Active pregnancy or lactation alters normal cyclic ovulatory physiology.");
+    caveats.push(
+      "Active pregnancy or lactation alters normal cyclic ovulatory physiology.",
+    );
     return {
       status: "CONTEXT_LIMITED",
       totalIntervals: 0,
@@ -95,11 +100,15 @@ export function herCycleDetector(
   }
 
   if (context.hormonalContraception) {
-    caveats.push("Hormonal contraception suppresses spontaneous hypothalamic-pituitary-ovarian ovulation; withdrawal bleeds do not reflect natural menstrual regularity.");
+    caveats.push(
+      "Hormonal contraception suppresses spontaneous hypothalamic-pituitary-ovarian ovulation; withdrawal bleeds do not reflect natural menstrual regularity.",
+    );
   }
 
   if (uniqueDates.length < 2) {
-    caveats.push("At least 2 recorded cycles are required to compute cycle intervals.");
+    caveats.push(
+      "At least 2 recorded cycles are required to compute cycle intervals.",
+    );
     return {
       status: "INSUFFICIENT_DATA",
       totalIntervals: 0,
@@ -153,7 +162,7 @@ export function herCycleDetector(
   // Statistics: Mean, Variance, StdDev, CV
   const n = intervals.length;
   const mean = intervals.reduce((acc, v) => acc + v, 0) / n;
-  const variance = intervals.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) / n;
+  const variance = intervals.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n;
   const stdDev = Math.sqrt(variance);
   const cv = mean > 0 ? (100 * stdDev) / mean : 0;
 
@@ -162,13 +171,17 @@ export function herCycleDetector(
   const median =
     n % 2 === 1
       ? (sortedIntervals[Math.floor(n / 2)] ?? mean)
-      : ((sortedIntervals[n / 2 - 1] ?? mean) + (sortedIntervals[n / 2] ?? mean)) / 2;
+      : ((sortedIntervals[n / 2 - 1] ?? mean) +
+          (sortedIntervals[n / 2] ?? mean)) /
+        2;
 
   const shortest = sortedIntervals[0] ?? 0;
   const longest = sortedIntervals[sortedIntervals.length - 1] ?? 0;
 
   // Age-Aware Clinical Irregularity Rules
-  const isAdolescent = (context.age !== undefined && context.age < 19) || ((context.yearsSinceMenarche ?? 5) < 3);
+  const isAdolescent =
+    (context.age !== undefined && context.age < 19) ||
+    (context.yearsSinceMenarche ?? 5) < 3;
 
   if (isAdolescent) {
     // ACOG adolescent criteria: 21 to 45 days is physiologically normal in first 3 years post-menarche
@@ -176,7 +189,9 @@ export function herCycleDetector(
       flags.push("Frequent cycles (<21 days) observed in adolescent profile.");
     }
     if (longest > 45) {
-      flags.push("Infrequent cycles (>45 days) observed in adolescent profile.");
+      flags.push(
+        "Infrequent cycles (>45 days) observed in adolescent profile.",
+      );
     }
   } else {
     // 2023 International Adult PCOS Guideline criteria:
@@ -191,7 +206,9 @@ export function herCycleDetector(
       flags.push("Secondary Amenorrhea: Cycle gap of 90+ days detected.");
     }
     if (stdDev > 7 || cv > 20) {
-      flags.push("Elevated cycle length variability (standard deviation > 7 days).");
+      flags.push(
+        "Elevated cycle length variability (standard deviation > 7 days).",
+      );
     }
   }
 
@@ -204,13 +221,18 @@ export function herCycleDetector(
     const lastDate = new Date(lastDateStr);
     const spread = Math.max(Math.round(stdDev), 2);
 
-    const projectedStartMs = lastDate.getTime() + (median - spread) * 24 * 60 * 60 * 1000;
-    const projectedEndMs = lastDate.getTime() + (median + spread) * 24 * 60 * 60 * 1000;
+    const projectedStartMs =
+      lastDate.getTime() + (median - spread) * 24 * 60 * 60 * 1000;
+    const projectedEndMs =
+      lastDate.getTime() + (median + spread) * 24 * 60 * 60 * 1000;
 
-    windowStartISO = new Date(projectedStartMs).toISOString().split("T")[0] ?? null;
+    windowStartISO =
+      new Date(projectedStartMs).toISOString().split("T")[0] ?? null;
     windowEndISO = new Date(projectedEndMs).toISOString().split("T")[0] ?? null;
   } else {
-    caveats.push("Next period estimation requires at least 3 historical cycles for reliable spread computation.");
+    caveats.push(
+      "Next period estimation requires at least 3 historical cycles for reliable spread computation.",
+    );
   }
 
   return {

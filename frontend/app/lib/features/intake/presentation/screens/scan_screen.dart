@@ -201,7 +201,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                       backgroundColor: AppColors.success,
                       minimumSize: isCompact ? const Size.fromHeight(48) : null,
                     ),
-                    onPressed: () => context.go("/summarize"),
+                    onPressed: () => context.push("/summarize"),
                     icon: const Icon(Icons.check_circle),
                     label: const Text("Generate SOAP Summary ➔"),
                   ),

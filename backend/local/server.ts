@@ -18,6 +18,12 @@ const assets = new Hono();
 assets.use("*", serveStatic({ root: "dist/integration" }));
 assets.get("*", serveStatic({ path: "dist/integration/index.html" }));
 const app = createIntegrationApp();
+// The unified Worker serves assets itself; the standalone local server needs
+// the same fallback after the clinical API routes have been registered.
+app.get("*", (c) => {
+  if (c.req.path.startsWith("/api/") || !c.env.ASSETS) return c.notFound();
+  return c.env.ASSETS.fetch(c.req.raw);
+});
 const integrationPort = Number(process.env.INTEGRATION_PORT ?? 8790);
 serve(
   {

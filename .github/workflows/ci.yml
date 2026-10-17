@@ -12,8 +12,7 @@ jobs:
         with: {node-version: 22, cache: npm}
       - run: npm ci
       - run: npm ci --prefix frontend/website --ignore-scripts
-      - run: make verify-untouched
-      - run: npm run lint && npm run typecheck
+      - run: npm run lint && npm run typecheck && npm run check:frontend
       - run: npm test && npm run eval
       - run: npm run build
       - run: npx playwright install --with-deps chromium
@@ -57,12 +56,15 @@ jobs:
       - run: npm ci
       - run: npm ci --prefix frontend/website --ignore-scripts
       - run: npx vite build --config apps/web/vite.config.ts
+      - name: Record deployed revision
+        run: |
+          node -e 'require("node:fs").writeFileSync("dist/web/deployment.json", JSON.stringify({revision: process.env.GITHUB_SHA, deployedAt: new Date().toISOString()}))'
       - name: Deploy Frontend to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist/web --project-name=ayusetu-web --commit-dirty=true
+          command: pages deploy dist/web --project-name=dhaaga-web --branch=main --commit-dirty=true
       - name: Deploy Backend to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:

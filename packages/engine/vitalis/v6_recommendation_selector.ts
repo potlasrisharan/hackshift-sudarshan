@@ -1,5 +1,9 @@
 import { vitalisSafetyGate } from "./v0_safety_gate";
-import { vitalisPreventiveRanker, CandidateAction, RankedAction } from "./v2_preventive_ranker";
+import {
+  type CandidateAction,
+  type RankedAction,
+  vitalisPreventiveRanker,
+} from "./v2_preventive_ranker";
 
 export interface RecommendationProfileInput {
   age: number;
@@ -22,17 +26,19 @@ const EVIDENCE_LIBRARY: CandidateAction[] = [
     relevanceScore: 0.9,
     feasibilityScore: 0.85,
     patientBurden: 0.2,
-    evidenceSource: "WHO 2020 Guidelines on Physical Activity and Sedentary Behaviour",
+    evidenceSource:
+      "WHO 2020 Guidelines on Physical Activity and Sedentary Behaviour",
   },
   {
     id: "REC-STRENGTH-BIWEEKLY",
     title: "Twice-Weekly Major Muscle Resistance Training",
     category: "functional",
-    evidenceStrength: 0.90,
+    evidenceStrength: 0.9,
     relevanceScore: 0.85,
     feasibilityScore: 0.75,
     patientBurden: 0.25,
-    evidenceSource: "AHA Life's Essential 8 & WHO Healthy Ageing Recommendations",
+    evidenceSource:
+      "AHA Life's Essential 8 & WHO Healthy Ageing Recommendations",
   },
   {
     id: "REC-INDIAN-LEGUMES",
@@ -40,7 +46,7 @@ const EVIDENCE_LIBRARY: CandidateAction[] = [
     category: "nutrition",
     evidenceStrength: 0.85,
     relevanceScore: 0.95,
-    feasibilityScore: 0.90,
+    feasibilityScore: 0.9,
     patientBurden: 0.15,
     evidenceSource: "WHO Healthy Diet & ICMR Dietary Guidelines for Indians",
   },
@@ -49,19 +55,20 @@ const EVIDENCE_LIBRARY: CandidateAction[] = [
     title: "Consistent Bedtime and Wake Window (±30 mins)",
     category: "sleep",
     evidenceStrength: 0.85,
-    relevanceScore: 0.80,
-    feasibilityScore: 0.80,
+    relevanceScore: 0.8,
+    feasibilityScore: 0.8,
     patientBurden: 0.15,
-    evidenceSource: "National Sleep Foundation & AHA Cardiovascular Health Metrics",
+    evidenceSource:
+      "National Sleep Foundation & AHA Cardiovascular Health Metrics",
   },
   {
     id: "REC-MOBILITY-YOGA",
     title: "Gentle Morning Somatic Mobility & Surya Namaskar",
     category: "lifestyle_activity",
-    evidenceStrength: 0.80,
-    relevanceScore: 0.80,
-    feasibilityScore: 0.90,
-    patientBurden: 0.10,
+    evidenceStrength: 0.8,
+    relevanceScore: 0.8,
+    feasibilityScore: 0.9,
+    patientBurden: 0.1,
     evidenceSource: "Ministry of AYUSH & WHO Traditional Medicine Benchmark",
   },
   {
@@ -70,8 +77,8 @@ const EVIDENCE_LIBRARY: CandidateAction[] = [
     category: "preventive_screening",
     evidenceStrength: 0.95,
     relevanceScore: 0.85,
-    feasibilityScore: 0.80,
-    patientBurden: 0.30,
+    feasibilityScore: 0.8,
+    patientBurden: 0.3,
     evidenceSource: "ICMR-INDIAB & ADA Standards of Care in Diabetes",
   },
   {
@@ -79,10 +86,11 @@ const EVIDENCE_LIBRARY: CandidateAction[] = [
     title: "High-Intensity Interval Training (HIIT) Educational Protocol",
     category: "lifestyle_activity",
     evidenceStrength: 0.85,
-    relevanceScore: 0.70,
-    feasibilityScore: 0.60,
-    patientBurden: 0.50,
-    evidenceSource: "Cardiorespiratory Fitness & Exercise Physiology Literature",
+    relevanceScore: 0.7,
+    feasibilityScore: 0.6,
+    patientBurden: 0.5,
+    evidenceSource:
+      "Cardiorespiratory Fitness & Exercise Physiology Literature",
   },
 ];
 
@@ -91,7 +99,7 @@ const EVIDENCE_LIBRARY: CandidateAction[] = [
  * Filters candidate actions through clinical safety gates, aligns to profile, and applies multi-factor ranking.
  */
 export function vitalisRecommendationSelector(
-  profile: RecommendationProfileInput
+  profile: RecommendationProfileInput,
 ): {
   recommendedActions: RankedAction[];
   suppressedActions: Array<{ id: string; reason: string }>;
@@ -119,7 +127,10 @@ export function vitalisRecommendationSelector(
 
     // Dynamic relevance boost based on user goals
     let adjustedRelevance = action.relevanceScore;
-    if (profile.primaryGoals.includes("strength") && action.category === "functional") {
+    if (
+      profile.primaryGoals.includes("strength") &&
+      action.category === "functional"
+    ) {
       adjustedRelevance = Math.min(1.0, adjustedRelevance + 0.1);
     }
     if (profile.primaryGoals.includes("sleep") && action.category === "sleep") {
@@ -137,6 +148,7 @@ export function vitalisRecommendationSelector(
   return {
     recommendedActions: ranked,
     suppressedActions,
-    safetyStatus: suppressedActions.length > 0 ? "FILTERED_FOR_SAFETY" : "ALL_CLEAR",
+    safetyStatus:
+      suppressedActions.length > 0 ? "FILTERED_FOR_SAFETY" : "ALL_CLEAR",
   };
 }

@@ -22,14 +22,13 @@
     "jsx": "react-jsx"
   },
   "include": [
+    "worker-configuration.d.ts",
+    "backend/**/*.ts",
     "apps/api/**/*.ts",
     "apps/web/**/*.ts",
     "packages/**/*.ts",
     "services/lang-gateway/**/*.ts",
     "tests/**/*.ts",
-    "scripts/**/*.ts",
-    "backend/**/*.ts",
-    "frontend/website/**/*.ts",
-    "frontend/website/**/*.tsx"
+    "scripts/**/*.ts"
   ]
 }
