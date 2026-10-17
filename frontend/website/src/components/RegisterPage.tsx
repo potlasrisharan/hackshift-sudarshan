@@ -136,7 +136,7 @@ export function RegisterPage() {
                             <Input
                                 id="fullName"
                                 type="text"
-                                placeholder="Dr. John Doe"
+                                placeholder="Dr. Potla Sri Sharan"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 className="h-11 bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl"
@@ -151,7 +151,7 @@ export function RegisterPage() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="john@ayusetu.in"
+                                    placeholder="doctor@ayusetu.in"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="pl-10 h-11 bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl"

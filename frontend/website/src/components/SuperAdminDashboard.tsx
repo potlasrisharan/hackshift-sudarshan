@@ -215,7 +215,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                     <Input
                                         name="hospital_name"
                                         required
-                                        placeholder="e.g. City General Hospital"
+                                        placeholder="e.g. Metro Care Hospital"
                                         className="h-11"
                                         value={hospitalName}
                                         onChange={(e) => setHospitalName(e.target.value)}
@@ -226,7 +226,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                     <Input
                                         name="hospital_slug"
                                         required
-                                        placeholder="e.g. city-general-ny"
+                                        placeholder="e.g. metro-care-delhi"
                                         className="h-11 font-mono text-sm"
                                         value={hospitalSlug}
                                         onChange={(e) => setHospitalSlug(e.target.value)}
@@ -238,7 +238,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                     <div className="grid grid-cols-2 gap-4 mb-4">
                                         <div className="space-y-2">
                                             <Label className="text-gray-700 font-medium">Admin Full Name</Label>
-                                            <Input name="admin_name" required placeholder="John Doe" className="h-11" />
+                                            <Input name="admin_name" required placeholder="Dr. Rajesh Sharma" className="h-11" />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="text-gray-700 font-medium">Temporary Password</Label>
@@ -247,7 +247,7 @@ export function SuperAdminDashboard({ onView }: SuperAdminDashboardProps) {
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-gray-700 font-medium">Admin Email (Login ID)</Label>
-                                        <Input name="admin_email" type="email" required placeholder="admin@citygeneral.com" className="h-11" />
+                                        <Input name="admin_email" type="email" required placeholder="admin@metrocare.in" className="h-11" />
                                     </div>
                                 </div>
                                 <DialogFooter className="pt-4">
