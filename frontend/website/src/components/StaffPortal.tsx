@@ -821,7 +821,7 @@ export function StaffPortal({ clinicIdOverride }: { clinicIdOverride?: string })
                                     type="email" required
                                     value={loginEmail}
                                     onChange={e => setLoginEmail(e.target.value)}
-                                    placeholder="doctor@hospital.com"
+                                    placeholder="doctor@ayusetu.in"
                                     className="border-slate-300"
                                 />
                             </div>
