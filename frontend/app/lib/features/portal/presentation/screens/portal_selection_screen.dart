@@ -129,17 +129,25 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6F7F2),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFF087D71).withValues(alpha: 0.2)),
-                ),
-                child: const Icon(
-                  Icons.spa_rounded,
-                  size: 18,
-                  color: Color(0xFF087D71),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  "assets/images/ayusetu_logo.png",
+                  height: 32,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6F7F2),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFF087D71).withValues(alpha: 0.2)),
+                    ),
+                    child: const Icon(
+                      Icons.spa_rounded,
+                      size: 18,
+                      color: Color(0xFF087D71),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),

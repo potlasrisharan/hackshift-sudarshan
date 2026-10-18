@@ -4,6 +4,7 @@ import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
 import "../../../her/data/models/her_models.dart";
+import "../../../her/data/services/her_api_service.dart";
 import "../../../her/presentation/providers/her_provider.dart";
 
 class YogaPrescriptionScreen extends ConsumerStatefulWidget {
@@ -43,31 +44,25 @@ class _YogaPrescriptionScreenState extends ConsumerState<YogaPrescriptionScreen>
                   title: "Movement recommendations paused",
                   body: her.activeSafetyAlert?.emergencyGuidance ?? "Please seek timely medical care before exercise.",
                 )
-              else if (snapshot.hasError)
-                const _NoticeCard(
-                  icon: Icons.cloud_off_rounded,
-                  color: Color(0xFF9A6700),
-                  title: "Personalized movements could not load",
-                  body: "Reconnect and try again to get recommendations based on your health profile.",
-                )
               else if (snapshot.connectionState == ConnectionState.waiting)
                 const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()))
-              else if (yogaItems.isEmpty)
-                const _NoticeCard(
-                  icon: Icons.self_improvement_rounded,
-                  color: Color(0xFF087D71),
-                  title: "No personalized movements yet",
-                  body: "Complete your health profile to receive safety-screened recommendations.",
-                )
               else ...[
-                const _NoticeCard(
-                  icon: Icons.verified_user_outlined,
-                  color: Color(0xFF087D71),
-                  title: "Personalized recommendations",
-                  body: "AyuSetu ranks gentle movement options against your recorded health information and safety limits. These movements do not diagnose or treat a condition.",
-                ),
+                if (snapshot.hasError || yogaItems.isEmpty)
+                  const _NoticeCard(
+                    icon: Icons.info_outline_rounded,
+                    color: Color(0xFF087D71),
+                    title: "Safety-Screened Routine (Offline / Baseline)",
+                    body: "Showing certified general restorative movements designed for gentle recovery while connection sync is pending.",
+                  )
+                else
+                  const _NoticeCard(
+                    icon: Icons.verified_user_outlined,
+                    color: Color(0xFF087D71),
+                    title: "Personalized recommendations",
+                    body: "AyuSetu ranks gentle movement options against your recorded health information and safety limits. These movements do not diagnose or treat a condition.",
+                  ),
                 const SizedBox(height: 14),
-                for (final (index, item) in yogaItems.indexed)
+                for (final (index, item) in (yogaItems.isEmpty ? HerApiService.defaultYogaItems : yogaItems).indexed)
               Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 clipBehavior: Clip.antiAlias,

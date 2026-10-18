@@ -10,7 +10,7 @@ import "package:shared_preferences/shared_preferences.dart";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
-  AppSession.onboardingComplete = preferences.getBool(AppSession.onboardingKey) ?? false;
+  AppSession.onboardingComplete = preferences.getBool(AppSession.onboardingKey) ?? true;
   try {
     await MedicineReminderService.instance.initialize();
   } catch (e) {

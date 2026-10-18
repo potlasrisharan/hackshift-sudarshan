@@ -258,16 +258,9 @@ class AppScaffoldShell extends StatelessWidget {
   }
 
   Widget? _buildBottomNav(BuildContext context, String currentRoute) {
-    if (currentRoute == "/") return null;
-
     final isClinical = currentRoute.startsWith("/nurse") ||
         currentRoute.startsWith("/hq") ||
         currentRoute.startsWith("/clinical");
-
-    final isWellness = currentRoute.startsWith("/yoga") ||
-        currentRoute.startsWith("/longevity") ||
-        currentRoute.startsWith("/womens-health") ||
-        currentRoute.startsWith("/her");
 
     if (isClinical) {
       int currentIndex = 0;
@@ -322,58 +315,73 @@ class AppScaffoldShell extends StatelessWidget {
       return navBar;
     }
 
-    if (isWellness) {
-      int currentIndex = 0;
-      if (currentRoute.startsWith("/longevity")) currentIndex = 1;
-      if (currentRoute.startsWith("/womens-health") || currentRoute.startsWith("/her")) currentIndex = 2;
-
-      final navBar = NavigationBar(
-        backgroundColor: isLight ? AppColors.clinicalCard : null,
-        indicatorColor: isLight ? AppColors.medicalTeal.withValues(alpha: 0.15) : null,
-        selectedIndex: currentIndex,
-        onDestinationSelected: (idx) {
-          switch (idx) {
-            case 0:
-              context.go("/yoga");
-              break;
-            case 1:
-              context.go("/longevity");
-              break;
-            case 2:
-              context.go("/her");
-              break;
-          }
-        },
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.self_improvement_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
-            selectedIcon: Icon(Icons.self_improvement, color: isLight ? AppColors.medicalTeal : null),
-            label: "Yoga",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.favorite_outline, color: isLight ? AppColors.clinicalTextMuted : null),
-            selectedIcon: Icon(Icons.favorite, color: isLight ? AppColors.medicalTeal : null),
-            label: "Longevity",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.female_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
-            selectedIcon: Icon(Icons.female, color: isLight ? AppColors.medicalTeal : null),
-            label: "HER / Women's",
-          ),
-        ],
-      );
-
-      if (isLight) {
-        return Container(
-          decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: AppColors.clinicalBorder, width: 1)),
-          ),
-          child: navBar,
-        );
-      }
-      return navBar;
+    // Unified Patient Bottom Navigation (Home, Records, Health, Yoga)
+    int currentIndex = 0;
+    if (currentRoute.startsWith("/prescription")) {
+      currentIndex = 1;
+    } else if (currentRoute.startsWith("/vitalis") ||
+        currentRoute.startsWith("/her") ||
+        currentRoute.startsWith("/longevity") ||
+        currentRoute.startsWith("/womens-health")) {
+      currentIndex = 2;
+    } else if (currentRoute.startsWith("/yoga")) {
+      currentIndex = 3;
+    } else if (currentRoute == "/") {
+      currentIndex = 0;
     }
 
-    return null;
+    final navBar = NavigationBar(
+      backgroundColor: isLight ? AppColors.clinicalCard : null,
+      indicatorColor: isLight ? AppColors.medicalTeal.withValues(alpha: 0.15) : null,
+      selectedIndex: currentIndex,
+      onDestinationSelected: (idx) {
+        switch (idx) {
+          case 0:
+            context.go("/");
+            break;
+          case 1:
+            context.go("/prescription");
+            break;
+          case 2:
+            context.go("/vitalis");
+            break;
+          case 3:
+            context.go("/yoga");
+            break;
+        }
+      },
+      destinations: [
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+          selectedIcon: Icon(Icons.home_rounded, color: isLight ? AppColors.medicalTeal : null),
+          label: "Home",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.description_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+          selectedIcon: Icon(Icons.description_rounded, color: isLight ? AppColors.medicalTeal : null),
+          label: "Records",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.favorite_outline, color: isLight ? AppColors.clinicalTextMuted : null),
+          selectedIcon: Icon(Icons.favorite_rounded, color: isLight ? AppColors.medicalTeal : null),
+          label: "Health",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.self_improvement_outlined, color: isLight ? AppColors.clinicalTextMuted : null),
+          selectedIcon: Icon(Icons.self_improvement_rounded, color: isLight ? AppColors.medicalTeal : null),
+          label: "Yoga",
+        ),
+      ],
+    );
+
+    if (isLight) {
+      return Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.clinicalBorder, width: 1)),
+        ),
+        child: navBar,
+      );
+    }
+    return navBar;
   }
 }

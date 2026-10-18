@@ -155,6 +155,63 @@ class HerApiService {
     ];
   }
 
+  static const List<HerWellnessItemModel> defaultYogaItems = [
+    HerWellnessItemModel(
+      id: "yoga_sukhasana",
+      category: "yoga_movement",
+      title: "Sukhasana (Easy Pose & Breathwork)",
+      description: "5 minutes of seated grounding with steady diaphragmatic pranayama. Reduces sympathetic overdrive and stabilizes blood pressure.",
+      rationale: "Safety screened for gentle restorative movement across all doshas and energy levels.",
+      targetPhase: "all",
+      contraindications: ["Acute knee inflammation (sit on folded blanket)"],
+    ),
+    HerWellnessItemModel(
+      id: "yoga_balasana",
+      category: "yoga_movement",
+      title: "Balasana (Child's Pose)",
+      description: "3 to 5 minutes gentle restorative back and hip elongator. Rest forehead gently on mat or support block.",
+      rationale: "Decompresses lumbar spine, relieves pelvic congestion, and reduces daily fatigue.",
+      targetPhase: "all",
+      contraindications: ["Severe knee joint injury"],
+    ),
+    HerWellnessItemModel(
+      id: "yoga_tadasana",
+      category: "yoga_movement",
+      title: "Tadasana (Mountain Pose Alignment)",
+      description: "3 minutes active postural grounding. Focus on symmetric weight distribution through arches and lengthened spine.",
+      rationale: "Builds core neuromuscular stability and improves circulation without musculoskeletal strain.",
+      targetPhase: "all",
+      contraindications: ["Acute dizziness or vertigo (perform against wall)"],
+    ),
+    HerWellnessItemModel(
+      id: "yoga_cat_cow",
+      category: "yoga_movement",
+      title: "Marjaryasana-Bitilasana (Cat-Cow Movement)",
+      description: "8-10 breath-synchronized gentle spinal flexions. Inhale to open chest, exhale to round spine smoothly.",
+      rationale: "Improves spinal disc mobility, eases pelvic floor tension, and stimulates digestive agni.",
+      targetPhase: "all",
+      contraindications: ["Recent wrist injury (modify by supporting on forearms)"],
+    ),
+    HerWellnessItemModel(
+      id: "yoga_virabhadrasana",
+      category: "yoga_movement",
+      title: "Virabhadrasana I (Gentle Warrior I)",
+      description: "3 minutes per side holding a supported stance with hips squared forward and arms gently raised.",
+      rationale: "Strengthens pelvic and thigh musculature, expands thoracic capacity, and builds stamina.",
+      targetPhase: "all",
+      contraindications: ["Uncontrolled high blood pressure (keep hands on hips)"],
+    ),
+    HerWellnessItemModel(
+      id: "yoga_supta_rest",
+      category: "yoga_movement",
+      title: "Supta Baddha Konasana (Reclined Restorative)",
+      description: "5 minutes supine relaxation with knees gently supported by cushions and arms open by sides.",
+      rationale: "Aids lymphatic drainage, relieves abdominal discomfort, and promotes systemic cellular recovery.",
+      targetPhase: "all",
+      contraindications: ["Active acid reflux (elevate torso with bolster)"],
+    ),
+  ];
+
   Future<List<HerWellnessItemModel>> fetchWellness({String? category}) async {
     try {
       final uri = Uri.parse("$baseUrl/wellness").replace(
@@ -166,11 +223,11 @@ class HerApiService {
         final list = (data["recommendations"] as List<Object?>? ?? [])
             .map((w) => HerWellnessItemModel.fromJson(w as Map<String, Object?>))
             .toList();
-        return list;
+        if (list.isNotEmpty) return list;
       }
     } catch (_) {}
 
-    return const [];
+    return defaultYogaItems;
   }
 
   Future<HerDoctorSummaryModel?> generateDoctorSummary() async {

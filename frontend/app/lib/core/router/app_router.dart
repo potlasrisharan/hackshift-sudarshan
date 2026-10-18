@@ -1,5 +1,4 @@
 import "package:go_router/go_router.dart";
-import "../app_session.dart";
 import "../../features/portal/presentation/screens/portal_selection_screen.dart";
 import "../../features/nurse/presentation/screens/nurse_triage_screen.dart";
 import "../../features/headquarters/presentation/screens/headquarters_screen.dart";
@@ -37,13 +36,6 @@ import "../../features/prescription/presentation/screens/medicine_reminder_scree
 
 final appRouter = GoRouter(
   initialLocation: "/",
-  redirect: (context, state) {
-    final onOnboarding = state.matchedLocation == "/onboarding" ||
-        state.matchedLocation == "/vitalis/onboarding";
-    if (!AppSession.onboardingComplete && !onOnboarding) return "/onboarding";
-    if (AppSession.onboardingComplete && onOnboarding) return "/";
-    return null;
-  },
   routes: [
     GoRoute(
       path: "/",
