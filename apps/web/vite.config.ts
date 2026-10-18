@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
+import { cbcAssets } from "../../scripts/cbc-assets";
 
 // Resolve CSS tooling from the root package so clean Pages installs need no nested install.
 const require = createRequire(import.meta.url);
@@ -8,6 +9,7 @@ const tailwindcss = require("tailwindcss");
 const autoprefixer = require("autoprefixer");
 
 export default defineConfig({
+  plugins: [cbcAssets()],
   root: "apps/web",
   resolve: {
     alias: { "@": resolve("frontend/website/src") },

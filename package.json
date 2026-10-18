@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "node --import tsx apps/api/server.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p backend/tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p backend/tsconfig.json && npm run check:cbc",
     "lint": "biome check apps/api apps/web/src packages tests scripts/*.ts",
     "format": "biome check --write apps/api apps/web/src packages tests scripts/*.ts",
     "build": "npm ci --prefix frontend/website --ignore-scripts && npm run typecheck && vite build --config apps/web/vite.config.ts && esbuild apps/api/server.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/api.mjs",
@@ -22,20 +22,27 @@
     "verify-untouched": "bash scripts/verify-untouched.sh",
     "integration:build": "npm run typecheck && vite build --config frontend/website/vite.config.ts",
     "integration:dev": "npm run integration:build && node --import tsx backend/local/server.ts",
-    "integration:worker:build": "wrangler deploy --config backend/wrangler.jsonc --dry-run --outdir ../dist/integration-worker",
+    "integration:worker:build": "node --import tsx scripts/build-integration-worker.ts",
     "integration:worker:dev": "wrangler dev --config backend/wrangler.jsonc --var ENVIRONMENT:development",
-    "integration:worker:migrate": "wrangler d1 migrations apply dhaaga-integration --local --config backend/wrangler.jsonc",
+    "integration:worker:migrate": "node --import tsx scripts/prepare-integration-migrations.ts && wrangler d1 migrations apply dhaaga-integration --local --config backend/wrangler.jsonc",
     "integration:e2e": "playwright test --config playwright.integration.config.ts",
     "integration:worker:smoke": "node --import tsx scripts/integration-worker-smoke.ts",
     "build:frontend": "npm run check:frontend && vite build --config apps/web/vite.config.ts",
-    "check:frontend": "tsc --noEmit -p tsconfig.frontend.json"
+    "check:frontend": "tsc --noEmit -p tsconfig.frontend.json && npm run check:cbc",
+    "check:cbc": "tsc --noEmit -p tsconfig.cbc.json",
+    "cbc:export": "model-api/.venv/bin/python scripts/export-cbc-model.py",
+    "cbc:e2e": "playwright test --config playwright.cbc.config.ts",
+    "cbc:worker:smoke": "node --import tsx scripts/cbc-worker-smoke.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.5",
+    "@tesseract.js-data/eng": "1.0.0",
     "gsap": "^3.15.0",
     "hono": "4.13.13",
+    "pdfjs-dist": "6.4.299",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tesseract.js": "7.0.0",
     "zod": "4.6.7"
   },
   "devDependencies": {

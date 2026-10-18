@@ -1,3 +1,4 @@
+import { confirmCbcNavigation } from "./features/cbc/navigation";
 import { useState, useEffect, lazy, Suspense, Component, type ErrorInfo, type ReactNode } from 'react'
 
 function lazyWithRetry<T extends React.ComponentType<any>>(
@@ -300,7 +301,13 @@ function AppContent() {
         setSelectedHospitalId(null);
     };
 
+    const guardedSetView = (nextView: View) => {
+        if (nextView !== view && !confirmCbcNavigation()) return;
+        setView(nextView);
+    };
+
     const handleLogout = async () => {
+        if (!confirmCbcNavigation()) return;
         try {
             await authService.signOut();
         } catch (err) {
@@ -324,7 +331,7 @@ function AppContent() {
         <AppLayout
             onLogout={handleLogout}
             view={view}
-            setView={setView}
+            setView={guardedSetView}
             lockNavigation={view === 'setup'}
             selectedClinicId={selectedClinicId}
             onSelectClinicId={setSelectedClinicId}
@@ -514,20 +521,20 @@ function AppContent() {
 
                     {view === 'doctor-consultation' && (
                         <DoctorConsultation 
-                            onSendToPos={() => setView('pos')} 
-                            onAdmitToIpd={() => setView('ipd')}
+                            onSendToPos={() => guardedSetView('pos')}
+                            onAdmitToIpd={() => guardedSetView('ipd')}
                         />
                     )}
 
                     {view === 'emergency-triage' && (
                         <EmergencyTriage 
-                            onAdmitToIpd={() => setView('ipd')}
+                            onAdmitToIpd={() => guardedSetView('ipd')}
                         />
                     )}
 
                     {view === 'ayush-center' && (
                         <AyushDashboard 
-                            onSendToPos={() => setView('pos')}
+                            onSendToPos={() => guardedSetView('pos')}
                         />
                     )}
 

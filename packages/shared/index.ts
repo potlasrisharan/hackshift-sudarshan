@@ -1,5 +1,6 @@
 export * from "./contracts";
 export * from "./integration";
+export * from "./cbc_contracts";
 
 /** Display only; domain calculations remain integer paise. */
 export function formatPaiseToRupees(paise: number): string {

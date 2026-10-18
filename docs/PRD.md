@@ -24,6 +24,14 @@
 
 ## PART 0 — DUAL-PROJECT ANALYSIS & INTEGRATION
 
+### Additive implementation: clinician CBC research reports
+
+The Doctor Consultation dashboard embeds CBC report selection, local PDF/image text extraction, five-field evidence review, explicit confirmation, persistent revisions and optional execution of the unchanged frozen Indian CBC model. This release uses authenticated synthetic clinical encounters only; legacy/demo login tokens do not grant report access. Both report persistence and inference use the shared Cloudflare `/api/v1/cbc` boundary. No patient/kiosk/mobile feature or clinical diagnosis is introduced.
+
+Required measurements are WBC (`10^9/L`), RBC (`10^12/L`), and neutrophil/lymphocyte/monocyte percentages. Deterministic code normalizes units; the frozen model alone performs its saved rounding/imputation/scaling. A human confirms a coherent source panel before any model execution. Unclear units, absolute differential counts, competing panels or mismatched labelled identity require correction or a different report. Scores remain research outputs and never automatically alter triage, diagnosis codes, notes or prescriptions.
+
+Private R2 original retention is optional, separately permissioned and subject to cleanup. The clinical and operational migration families must remain explicitly separated. Production login/real-record identity remain unavailable; enabling production requires a separate reviewed milestone. See [CBC runbook](CBC_RUNBOOK.md) for the actual route contracts, limits, flags, migration choice, local workflow, numerical parity checks and remaining boundaries.
+
 ### 0.0 Top-3 concept directions considered → chosen
 
 | # | Concept | One-liner | Verdict |

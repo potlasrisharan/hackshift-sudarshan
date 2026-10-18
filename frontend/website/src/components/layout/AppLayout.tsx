@@ -1,3 +1,4 @@
+import { confirmCbcNavigation } from "../../features/cbc/navigation";
 import { SymbolIcon } from "@/components/ui/SymbolIcon";
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -439,6 +440,7 @@ export function AppLayout({
                         <button
                             type="button"
                             onClick={() => {
+                                if (!confirmCbcNavigation()) return;
                                 onSelectClinicId?.(null);
                                 navigate('/');
                             }}

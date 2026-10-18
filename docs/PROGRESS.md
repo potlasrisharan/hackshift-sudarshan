@@ -106,3 +106,11 @@ Last implementation commit before pause: 8834d46. Platform: 50 tests passed, fou
 - Implemented staff sign-in, entered demographics, typed/Android speech complaint, structured safety answers, consent, emergency receipt, idempotent retry and 60-second receipt reset.
 - Flutter: 49 tests pass, strict analyzer zero issues, domain/data coverage 91.1%; independent live health read passes. Existing backend integration: 11 tests pass. See MOBILE_KIOSK_PHASE2.md for browser/build evidence and limits.
 - No hosted backend deployment, Android APK/device verification, OCR, encrypted offline queue or lockdown claimed. Stop at Phase 2 pending the next gate.
+
+## CBC Doctor Consultation integration — 18 October 2026
+
+Added an embedded CBC Reports workflow to the existing clinician consultation: local PDF/image extraction and source preview, conservative deterministic parsing/unit conversion, clinician confirmation, tenant-scoped immutable report revisions, and explicit frozen-model research inference/history. Authorized clinical encounter IDs remain distinct from patient IDs; legacy mock tokens cannot access CBC. The original model artifact is unchanged and runs through a parity-tested portable Worker representation. No Flutter/Expo or patient/kiosk feature was added.
+
+Availability is deliberately limited to authenticated synthetic clinical records. Private source retention is optional through `CBC_DOCUMENTS`; default local Node storage saves measurements without claiming to retain originals. Production authentication, real-record identity and operational rollout remain separate prerequisites. See [CBC_RUNBOOK.md](CBC_RUNBOOK.md) for implementation decisions, reproducible verification and configuration.
+
+Verified: 155 Vitest tests, four actual-dashboard browser tests, six original Python model tests, strict CBC/Doctor Consultation typechecking, both frontend builds, and Worker dry-run builds. The 1,049-case Python/workerd comparison passed with maximum absolute score error `2.220446049250313e-16`; real local D1/R2 report and model lifecycle checks passed. Original model SHA256 is unchanged. Python 3.12 hosting-runtime verification remains unclaimed; numerical verification used Python 3.11 with the pinned model package versions.

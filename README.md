@@ -54,6 +54,8 @@ The repository includes two web build paths and two mobile codebases. `apps/web`
 
 The Worker modules currently include intake, operations, bridge, home follow-up, platform, HER, and Vitalis routes. Common route prefixes include `/api/v1/intake`, `/api/v1/ops`, `/api/v1/bridge`, `/api/v1/home`, `/api/v1/her`, and `/api/v1/vitalis`. Consult each module's route file for request schemas and current behavior.
 
+The Doctor Consultation dashboard also includes a **CBC Reports** workflow: local PDF/image extraction, reviewed measurement revisions, and explicit frozen-model research analysis through `/api/v1/cbc`. It currently requires the authenticated synthetic clinical workspace; production patient-record access remains disabled. See [the CBC runbook](docs/CBC_RUNBOOK.md) for local setup, model parity evidence, and optional private source retention.
+
 ## Deterministic algorithms
 
 The core decision logic lives in `packages/engine`. The product rule is **algorithms decide; AI may translate or format**. Safety gates and ranking rules should remain deterministic and reviewable; language services must not make diagnoses or override safety decisions.

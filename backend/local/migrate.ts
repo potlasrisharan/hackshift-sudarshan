@@ -71,7 +71,8 @@ export function migrationScripts() {
     "0002_pharmacy.sql",
     "0002_ayusetu_her.sql",
     "0003_ayusetu_vitalis.sql",
-  ].map((name) => readFileSync(join("backend/migrations", name), "utf8"));
+  ].map((name) => readFileSync(join("backend/migrations", name), "utf8"))
+    .concat(readFileSync("backend/cbc-migrations/0006_cbc.sql", "utf8"));
 }
 export function migrateLocal(db: LocalDatabase) {
   // Current scripts are additive/idempotent. Keep the schema files in order.
