@@ -284,7 +284,9 @@ describe("Unified Cloudflare Worker API & Frontends Integration", () => {
       red_flag: { is_triggered: boolean; trigger_symptoms: string[] };
     };
     expect(redFlagData.red_flag.is_triggered).toBe(true);
-    expect(redFlagData.red_flag.trigger_symptoms).toContain("chest pain");
+    expect(redFlagData.red_flag.trigger_symptoms).toEqual(
+      expect.arrayContaining(["chest_pain", "breathlessness"]),
+    );
     expect(redFlagData.reply_text).toContain("EMERGENCY ALERT");
   });
 
