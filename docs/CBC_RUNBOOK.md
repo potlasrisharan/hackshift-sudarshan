@@ -1,5 +1,11 @@
 # CBC reports in Doctor Consultation
 
+## Quick experimental demo
+
+Doctor Consultation includes a separate **CBC Research Explorer** above clinical session access. Select **Try demo** to load illustrative values, edit the five synthetic measurements if desired, then select **Run research model**. The **Demo values** menu offers **Risk signal · experimental** (score approximately 0.653) and **No risk signal · experimental** (score approximately 0.286). These are synthetic examples above and below the unchanged cutoff, not clinically established risk labels. Selecting an example fills all five inputs and clears the previous result; **Clear** removes inputs and results. Editing any input clears the previous result.
+
+This browser-only explorer uses the existing frozen model representation, not the Render API. It needs no clinical login and remains available when persisted clinical CBC capabilities are disabled. It does not upload reports, persist measurements, or attach results to patients. Numeric validation uses the existing CBC model contract; medical normal ranges are not used as input limits. Scores and the development evidence are explicitly labelled experimental, not cancer probabilities or diagnoses. The authenticated report workflow below retains its existing access and consent requirements.
+
 ## Delivered scope
 
 The existing Doctor Consultation workspace embeds a CBC Reports panel. A doctor selects a verified clinical encounter, selects a PDF/JPEG/PNG, reviews the five extracted values and their units, confirms an immutable revision, and explicitly runs the frozen research model. Saved reports, revisions, evidence, results and deletion are available in that panel. There is no new patient/kiosk/Flutter/Expo screen.

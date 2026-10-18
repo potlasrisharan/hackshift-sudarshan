@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { DoctorCbcAccess } from '../features/cbc/DoctorCbcAccess';
 import { CbcBoundary } from '../features/cbc/CbcBoundary';
+import CbcResearchDemo from '../features/cbc/CbcResearchDemo';
 import type { DoctorSession } from '../features/cbc/api';
 import type { Encounter } from '../../../../packages/shared/integration';
 const CbcConsultationPanel = lazy(() => import('../features/cbc/CbcConsultationPanel'));
@@ -1716,6 +1717,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
         </div>
       </div>
 
+      <CbcBoundary><CbcResearchDemo /></CbcBoundary>
       <DoctorCbcAccess onConnect={connectCbc} />
 
       {/* Main Grid: Left Sidebar Queue (4 cols) + Right Clinical Pad (8 cols) */}

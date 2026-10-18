@@ -116,6 +116,7 @@ The repository has multiple clients and deployment paths. A checked-in screen is
 | **Kiosk and intake** | Language choice, QR/mobile/ABHA/Aadhaar or new-patient entry in demo, reviewed voice transcript, translation, symptom capture, red-flag escalation, serial OPD flow | [`PatientKiosk`](frontend/website/src/components/PatientKiosk.tsx), [`intake routes`](backend/src/modules/intake/routes.ts); external identity is not verified by the demo |
 | **Doctor workspace** | Live intake queue, encounter selection, vitals, source citations, SOAP review, dual coding, prescription and emergency escalation | [`DoctorConsultation`](frontend/website/src/components/DoctorConsultation.tsx), [`EmergencyTriage`](frontend/website/src/components/EmergencyTriage.tsx); synthetic consultation records |
 | **CBC reports** | Local PDF/image OCR, units and evidence review, explicit confirmation, revision history, frozen research inference and deletion | [`CBC feature`](frontend/website/src/features/cbc), [`Worker routes`](backend/src/modules/cbc/routes.ts); authenticated **synthetic** encounters in development/test only |
+| **CBC Research Explorer** | Editable synthetic inputs and two demo presets showing above/below-cutoff research signals | [`Browser demo`](frontend/website/src/features/cbc/CbcResearchDemo.tsx); runs locally in-browser without clinical login, Render calls or patient-record writes |
 | **Clinical and administrative portals** | AYUSH, staff, attendance, shift management, IPD, clinic administration, hospital registry, equipment and audit views | [`App view map`](frontend/website/src/App.tsx), [`components`](frontend/website/src/components); coverage differs by view |
 | **Clinic commerce** | Stock radar, procurement, prescription-to-shelf planning, POS, generic savings, billing, expenses, earnings, ledger and financial views | [`ops routes`](backend/src/modules/ops/routes.ts), [`bridge routes`](backend/src/modules/bridge/routes.ts); some operational flows use seeded data |
 | **Localization** | English, Hindi, Punjabi and Tamil interface dictionaries; translated intake review | [`packages/i18n`](packages/i18n), [`website language control`](frontend/website/src/components/WebsiteLanguageSelect.tsx); clinical translations need human review |
@@ -339,6 +340,15 @@ Research work is deliberately separated from clinical decisions. It comprises a 
 
 ### CBC: from source document to a versioned research score
 
+**Quick pitch demo — CBC Research Explorer.** In **Doctor Consultation**, select **Try demo**, choose a **Demo values** preset, then select **Run research model**. All five measurements remain editable, with units and numeric validation. Changing inputs or presets clears the previous result.
+
+| Synthetic preset | WBC (×10⁹/L) | RBC (×10¹²/L) | Neutrophils | Lymphocytes | Monocytes | Model output |
+|---|---:|---:|---:|---:|---:|---|
+| Risk signal · experimental | 8.95 | 4.41 | 65% | 25% | 9% | `0.653` — Potential risk signal detected |
+| No risk signal · experimental | 7 | 4.8 | 60% | 32% | 5% | `0.286` — No risk signal detected by this model |
+
+Both presets run the existing frozen model with the unchanged cutoff `0.626816175626443`. The browser computes the score on-device; this explorer needs no clinical login, makes no Render inference call and saves nothing to patient records. It remains separate from the authenticated report workflow below. **These are experimental model flags, not established clinical risk categories, cancer probabilities or diagnoses. A result below the cutoff does not rule out cancer.** The expandable **Why experimental?** panel explains development metrics, data limitations and the need for representative data and independent validation.
+
 The Doctor Consultation dashboard now embeds a **CBC Reports** workflow for authenticated synthetic encounters in development/test. The clinician can select a PDF, PNG or JPEG; same-origin PDF.js/Tesseract extracts candidate rows in the browser; the clinician reviews units and source evidence, corrects all five fields, confirms a revision, then explicitly runs the frozen model in the Cloudflare Worker. The isolated Python [`model-api`](model-api) remains the original model oracle and optional standalone research service; the web app does **not** call Render at runtime. [Detailed runbook](docs/CBC_RUNBOOK.md)
 
 ```mermaid
@@ -449,6 +459,18 @@ npm run integration:dev
 ```
 
 The persisted clinical integration server prints its local address (normally `http://127.0.0.1:8790`). Open `/erp.html#/app?view=doctor-consultation` for the doctor dashboard. Follow the [CBC local workflow](docs/CBC_RUNBOOK.md) for the separately seeded synthetic doctor account. The root `npm run dev` starts a different legacy API demo.
+
+For the live development preview, after installing dependencies, run these in two terminals from the repository root:
+
+```bash
+# Terminal 1: synthetic clinical demo backend
+node --import tsx backend/local/server.ts
+
+# Terminal 2: website with hot reload
+node node_modules/vite/bin/vite.js --config frontend/website/vite.config.ts --host 127.0.0.1 --port 5173
+```
+
+Open `http://127.0.0.1:5173/erp.html#/app?view=doctor-consultation`. The **CBC Research Explorer** is above clinical session access and can be demonstrated without connecting a clinical account. GitHub source updates do not themselves publish the website or enable production CBC report access.
 
 <details>
 <summary><b>Flutter Android / iOS / web</b></summary>
