@@ -1264,7 +1264,7 @@ const createPatientSchema = z.object({
   allergies: z.array(z.string()).optional(),
   chronicConditions: z.array(z.string()).optional(),
   chronic_conditions: z.array(z.string()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 const updatePatientSchema = z.object({
@@ -1292,7 +1292,7 @@ const updatePatientSchema = z.object({
   allergies: z.array(z.string()).optional(),
   chronicConditions: z.array(z.string()).optional(),
   chronic_conditions: z.array(z.string()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const patientsRouter = new Hono<{ Bindings: Env }>();
