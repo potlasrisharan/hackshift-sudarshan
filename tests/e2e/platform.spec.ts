@@ -102,22 +102,37 @@ test("real-time clinical translation converts vernacular input into clinical Eng
 test("patient intake updates doctor consultation queue and emergency triage in real time", async ({
   page,
 }) => {
-  await page.route("**/api/v1/intake/encounter", (route) =>
-    route.fulfill({
+  let submittedEmergency: {
+    triage_priority?: string;
+    status?: string;
+    is_emergency?: boolean;
+  } | null = null;
+  await page.route("**/api/v1/intake/encounter", (route) => {
+    submittedEmergency = route.request().postDataJSON() as {
+      triage_priority?: string;
+      status?: string;
+      is_emergency?: boolean;
+    };
+    return route.fulfill({
       status: 201,
       contentType: "application/json",
       body: JSON.stringify({
         success: true,
         encounter: { token: "E-045", token_number: "E-045" },
       }),
-    }),
-  );
+    });
+  });
   await start(page);
 
   // Trigger emergency override at kiosk
   await page.getByRole("button", { name: /EMERGENCY \/ STAT/ }).click();
   await expect(page.locator(".ayu-kiosk")).toHaveAttribute("data-screen", "4");
   await expect(page.getByText("E-045").first()).toBeVisible();
+  expect(submittedEmergency).toMatchObject({
+    triage_priority: "EMERGENCY_RED",
+    status: "STAT_ALERT",
+    is_emergency: true,
+  });
 
   // Navigate to Doctor Consultation Cockpit
   await page.goto("/erp.html#/app?view=doctor-consultation");
@@ -126,12 +141,9 @@ test("patient intake updates doctor consultation queue and emergency triage in r
   ).toBeVisible();
 
   // Verify the intake patient appears in Doctor queue and is active with STAT alert
-  await expect(page.getByText("E-045").first()).toBeVisible();
-  await expect(
-    page
-      .getByText("Priority 1 Acute Undifferentiated Medical Emergency")
-      .first(),
-  ).toBeVisible();
+  const emergencyQueueCard = page.getByText("E-045").first().locator("xpath=../../..");
+  await expect(emergencyQueueCard).toBeVisible();
+  await expect(emergencyQueueCard.getByText("STAT Alert")).toBeVisible();
 
   // Navigate to Emergency Triage (STAT)
   await page.goto("/erp.html#/app?view=emergency-triage");
@@ -139,4 +151,5 @@ test("patient intake updates doctor consultation queue and emergency triage in r
     page.getByRole("heading", { name: "Casualty Resus Bay 1" }),
   ).toBeVisible();
   await expect(page.getByText("E-045").first()).toBeVisible();
+  await expect(page.getByText("ESI-1 Resuscitation").first()).toBeVisible();
 });

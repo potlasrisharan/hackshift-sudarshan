@@ -536,6 +536,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                     : (encStatus === 'STAT_ALERT' || (isEmergencyPriority && encStatus !== 'STABILIZED')
                         ? 'STAT_ALERT'
                         : 'WAITING'));
+            const soap = enc.soap && typeof enc.soap === 'object' ? enc.soap : null;
             return {
               token: enc.token_number || enc.token || '#042',
               patientId: enc.patient_id || enc.id,
@@ -558,33 +559,19 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 ? { bp: '158/96 mmHg', pulse: 104, spo2: 95, temp: '98.6°F' }
                 : { bp: '124/82 mmHg', pulse: 74, spo2: 98, temp: '98.4°F' }
               ),
-              soap: enc.soap || {
-                subjective: enc.chief_complaint || enc.english_translation || 'Patient reported somatic symptoms at intake kiosk.',
-                objective: status === 'STAT_ALERT'
+              soap: {
+                subjective: soap?.subjective || enc.chief_complaint || enc.english_translation || 'Patient reported somatic symptoms at intake kiosk.',
+                objective: soap?.objective || (status === 'STAT_ALERT'
                   ? 'BP 158/96 mmHg (Critical elevation). Pulse 104 bpm regular. SpO2 95% on room air.'
-                  : 'BP 124/82 mmHg normotensive. Pulse 74 regular. SpO2 98% room air. Afebrile.',
-                assessment: status === 'STAT_ALERT'
+                  : 'BP 124/82 mmHg normotensive. Pulse 74 regular. SpO2 98% room air. Afebrile.'),
+                assessment: soap?.assessment || (status === 'STAT_ALERT'
                   ? 'Acute Cardiorespiratory Red-Flag / Critical Emergency Triage required.'
-                  : 'Acute OPD consultation - symptomatic clinical management.',
-                icd11Code: status === 'STAT_ALERT' ? 'BA41 (Acute Myocardial Infarction)' : 'FA00 (Osteoarthritis) / MG30 (Pain)',
-                icd11Description: status === 'STAT_ALERT' ? 'Acute Coronary Syndrome Rule-Out' : 'Clinical evaluation indicated',
-                namasteCode: status === 'STAT_ALERT' ? 'AHA/ACC 2023 NSTE-ACS Guideline' : 'AYUSH Clinical Protocol Standard',
-                namasteDescription: status === 'STAT_ALERT' ? 'STAT Aspirin 300mg + Clopidogrel 300mg + Cath Lab alert' : 'Comprehensive OPD care regimen',
-                plan: enc.plan || [
-                  {
-                    drug: status === 'STAT_ALERT' ? 'Aspirin 300mg (Soluble Dispersible)' : 'Paracetamol 650mg',
-                    dosage: status === 'STAT_ALERT' ? '300mg' : '650mg',
-                    frequency: status === 'STAT_ALERT' ? 'STAT' : '1-0-1',
-                    duration: status === 'STAT_ALERT' ? '1 Day' : '5 Days',
-                    availableInClinic: true,
-                    instructions: status === 'STAT_ALERT' ? 'Dissolve in water STAT' : 'After meals',
-                    shelfLocation: status === 'STAT_ALERT' ? 'Shelf A-01 (Emergency Tray)' : 'Shelf B-04 (Analgesics)',
-                    brandName: status === 'STAT_ALERT' ? 'Ecosprin 300' : 'Dolo 650',
-                    brandPrice: status === 'STAT_ALERT' ? 45 : 32,
-                    genericName: status === 'STAT_ALERT' ? 'Aspirin Dispersible 300mg' : 'Paracetamol 650mg',
-                    genericPrice: status === 'STAT_ALERT' ? 6 : 4
-                  }
-                ]
+                  : 'Acute OPD consultation - symptomatic clinical management.'),
+                icd11Code: soap?.icd11Code || (status === 'STAT_ALERT' ? 'BA41 (Acute Myocardial Infarction)' : 'FA00 (Osteoarthritis) / MG30 (Pain)'),
+                icd11Description: soap?.icd11Description || (status === 'STAT_ALERT' ? 'Acute Coronary Syndrome Rule-Out' : 'Clinical evaluation indicated'),
+                namasteCode: soap?.namasteCode || (status === 'STAT_ALERT' ? 'AHA/ACC 2023 NSTE-ACS Guideline' : 'AYUSH Clinical Protocol Standard'),
+                namasteDescription: soap?.namasteDescription || (status === 'STAT_ALERT' ? 'Emergency escalation required; clinician assessment pending.' : 'Comprehensive OPD care regimen'),
+                plan: Array.isArray(soap?.plan) ? soap.plan : Array.isArray(enc.plan) ? enc.plan : [],
               }
             };
           });
