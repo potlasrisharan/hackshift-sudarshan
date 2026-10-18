@@ -35,3 +35,28 @@ apps/mobile/android/.idea/
 .local/
 frontend/app/.dart_tool/
 frontend/app/build/
+
+# Mobile Release Artifacts & Large Binaries
+*.apk
+*.aab
+*.ipa
+*.dill
+
+# Build artifacts & compiler caches
+*.tsbuildinfo
+build/
+**/build/
+.dart_tool/
+**/.dart_tool/
+.gradle/
+**/.gradle/
+.cxx/
+**/.cxx/
+
+# Secrets, Keystores & Platform Credentials
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+**/local.properties
+
