@@ -103,20 +103,28 @@ class UserProfileRepository {
       };
 
       // Sync Profile
+      final profilePayload = <String, dynamic>{
+        "name": profile.name,
+        "dob": profile.dob,
+        "sex": profile.sex,
+        "allergies": profile.allergies,
+        "chronicConditions": profile.chronicConditions,
+        "preferredLang": profile.language,
+      };
+      if (profile.bloodGroup != null && profile.bloodGroup!.isNotEmpty) {
+        profilePayload["bloodGroup"] = profile.bloodGroup;
+      }
+      if (profile.address != null && profile.address!.isNotEmpty) {
+        profilePayload["address"] = profile.address;
+      }
+      if (profile.emergencyContact != null && profile.emergencyContact!.isNotEmpty) {
+        profilePayload["emergencyContact"] = profile.emergencyContact;
+      }
+
       await http.put(
         Uri.parse("${ApiConfig.baseUrl}/patient/${profile.patientId}/profile"),
         headers: headers,
-        body: jsonEncode({
-          "name": profile.name,
-          "dob": profile.dob,
-          "sex": profile.sex,
-          "bloodGroup": profile.bloodGroup,
-          "address": profile.address,
-          "emergencyContact": profile.emergencyContact,
-          "allergies": profile.allergies,
-          "chronicConditions": profile.chronicConditions,
-          "preferredLang": profile.language,
-        }),
+        body: jsonEncode(profilePayload),
       );
 
       // Sync Preferences

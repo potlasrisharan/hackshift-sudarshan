@@ -1074,7 +1074,11 @@ class _AnimatedCycleWheelState extends State<_AnimatedCycleWheel>
               ),
               const SizedBox(height: 6),
               Text(
-                widget.daysUntilNext == 0 ? "Period starts today" : "Period in ${widget.daysUntilNext} days",
+                widget.daysUntilNext == 0
+                    ? "Period starts today"
+                    : (widget.daysUntilNext < 0
+                        ? "Period overdue by ${widget.daysUntilNext.abs()} ${widget.daysUntilNext.abs() == 1 ? 'day' : 'days'}"
+                        : "Period in ${widget.daysUntilNext} ${widget.daysUntilNext == 1 ? 'day' : 'days'}"),
                 style: const TextStyle(
                   color: Color(0xFF64748B),
                   fontSize: 11,

@@ -1,4 +1,5 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "../../../auth/presentation/providers/auth_provider.dart";
 import "../../data/models/her_models.dart";
 import "../../data/services/her_api_service.dart";
 import "../../data/services/wearable_adapter.dart";
@@ -235,7 +236,12 @@ class HerNotifier extends StateNotifier<HerState> {
 }
 
 final herApiServiceProvider = Provider<HerApiService>((ref) {
-  return const HerApiService();
+  final authState = ref.watch(authProvider);
+  final patientId = authState.session?.patientId;
+  final effectivePatientId = (patientId != null && patientId.isNotEmpty)
+      ? patientId
+      : "demo_patient_her";
+  return HerApiService(patientId: effectivePatientId);
 });
 
 final wearableAdapterProvider = Provider<HealthPlatformAdapter>((ref) {

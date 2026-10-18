@@ -178,8 +178,8 @@ class HerCycleAnalysisModel {
       predictedNextWindowEnd: json["predictedNextWindowEnd"] as String?,
       hasIrregularity: json["hasIrregularity"] as bool? ?? false,
       hasAmenorrhea: json["hasAmenorrhea"] as bool? ?? false,
-      irregularityFlags: (json["irregularityFlags"] as List<Object?>?)?.cast<String>() ?? const [],
-      caveats: (json["caveats"] as List<Object?>?)?.cast<String>() ?? const [],
+      irregularityFlags: (json["irregularityFlags"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      caveats: (json["caveats"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }
 
@@ -239,7 +239,7 @@ class HerSymptomModel {
       headache: (json["headache"] as num?)?.toInt() ?? 0,
       acneSeverity: json["acneSeverity"] as String?,
       sleepHours: (json["sleepHours"] as num?)?.toDouble(),
-      tags: (json["tags"] as List<Object?>?)?.cast<String>() ?? const [],
+      tags: (json["tags"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       notes: json["notes"] as String?,
     );
   }
@@ -283,7 +283,7 @@ class SafetyCheckResultModel {
       category: json["category"] as String? ?? "NORMAL",
       ruleId: json["ruleId"] as String?,
       emergencyGuidance: json["emergencyGuidance"] as String?,
-      evidence: (json["evidence"] as List<Object?>?)?.cast<String>() ?? const [],
+      evidence: (json["evidence"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       suppressWellnessAdvice: json["suppressWellnessAdvice"] as bool? ?? false,
     );
   }
@@ -353,8 +353,8 @@ class HerScreeningFindingModel {
       supportingEvidence: evList
           .map((e) => HerEvidenceItemModel.fromJson(e as Map<String, Object?>))
           .toList(),
-      missingInformation: (json["missingInformation"] as List<Object?>?)?.cast<String>() ?? const [],
-      limitations: (json["limitations"] as List<Object?>?)?.cast<String>() ?? const [],
+      missingInformation: (json["missingInformation"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      limitations: (json["limitations"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       ruleVersion: json["ruleVersion"] as String? ?? "",
       suggestedAction: json["suggestedAction"] as String? ?? "",
     );
@@ -403,7 +403,7 @@ class HerWellnessItemModel {
       description: json["description"] as String? ?? "",
       rationale: json["rationale"] as String? ?? "",
       targetPhase: json["targetPhase"] as String? ?? "all",
-      contraindications: (json["contraindications"] as List<Object?>?)?.cast<String>() ?? const [],
+      contraindications: (json["contraindications"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }
 }
@@ -631,11 +631,11 @@ class HerPcodAssessmentModel {
       riskLevel: json["riskLevel"] as String? ?? "LOW_RISK",
       rotterdamCriteriaMet: (json["rotterdamCriteriaMet"] as num?)?.toInt() ?? 0,
       maxCriteria: (json["maxCriteria"] as num?)?.toInt() ?? 3,
-      evidence: (json["evidence"] as List<Object?>?)?.cast<String>() ?? const [],
+      evidence: (json["evidence"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       summary: json["summary"] as String? ?? "",
       clinicalAction: json["clinicalAction"] as String? ?? "",
       doshaFocus: ayurveda["doshaFocus"] as String? ?? "Tridoshic Balance",
-      recommendedHerbs: rawHerbs?.cast<String>() ?? const ["Shatavari", "Ashoka"],
+      recommendedHerbs: rawHerbs?.map((e) => e.toString()).toList() ?? const ["Shatavari", "Ashoka"],
       lifestyleAdvice: ayurveda["lifestyle"] as String? ?? "Balanced daily movement.",
     );
   }

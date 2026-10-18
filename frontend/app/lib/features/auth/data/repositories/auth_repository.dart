@@ -109,20 +109,26 @@ class AuthRepository {
   }) async {
     final uri = Uri.parse("${ApiConfig.baseUrl}/auth/patient/signup");
     try {
+      final payload = <String, dynamic>{
+        "name": name,
+        "phone": phone,
+        "password": password,
+        "dob": dob,
+        "sex": sex,
+        "preferredLang": preferredLang,
+      };
+      if (email != null && email.trim().isNotEmpty) {
+        payload["email"] = email.trim();
+      }
+      if (abhaNumber != null && abhaNumber.trim().isNotEmpty) {
+        payload["abhaNumber"] = abhaNumber.trim();
+      }
+
       final response = await http
           .post(
             uri,
             headers: {"Content-Type": "application/json"},
-            body: jsonEncode({
-              "name": name,
-              "phone": phone,
-              "password": password,
-              "dob": dob,
-              "sex": sex,
-              "email": email,
-              "abhaNumber": abhaNumber,
-              "preferredLang": preferredLang,
-            }),
+            body: jsonEncode(payload),
           )
           .timeout(const Duration(seconds: 10));
 

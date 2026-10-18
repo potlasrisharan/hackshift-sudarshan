@@ -515,9 +515,13 @@ class HerApiService {
 
   Future<(HerSymptomModel, SafetyCheckResultModel)> logSymptom(
       Map<String, Object?> payload) async {
-    final sym = HerSymptomModel.fromJson(payload);
-    final pain = (payload["pelvicPain"] as num?)?.toInt() ?? 0;
-    final sudden = payload["suddenSeverePain"] == true;
+    final effectivePayload = Map<String, Object?>.from(payload);
+    if ((effectivePayload["id"] as String?)?.isEmpty ?? true) {
+      effectivePayload["id"] = "sym_${DateTime.now().millisecondsSinceEpoch}";
+    }
+    final sym = HerSymptomModel.fromJson(effectivePayload);
+    final pain = (effectivePayload["pelvicPain"] as num?)?.toInt() ?? 0;
+    final sudden = effectivePayload["suddenSeverePain"] == true;
     final isUrgent = pain >= 8 || sudden;
     final safetyCheck = SafetyCheckResultModel(
       isUrgent: isUrgent,
@@ -535,7 +539,7 @@ class HerApiService {
       final res = await http.post(
         Uri.parse("$baseUrl/symptoms"),
         headers: _headers,
-        body: jsonEncode(payload),
+        body: jsonEncode(effectivePayload),
       );
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as Map<String, Object?>;
