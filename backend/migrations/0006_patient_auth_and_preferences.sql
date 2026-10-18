@@ -3,7 +3,6 @@
 -- Ayurvedic Tridosha/Prakriti profiles, and app customization preferences.
 
 -- 1. Extend patients table with rich demographics & contact attributes
-ALTER TABLE patients ADD COLUMN phone_hash TEXT;
 ALTER TABLE patients ADD COLUMN phone_encrypted TEXT;
 ALTER TABLE patients ADD COLUMN blood_group TEXT;
 ALTER TABLE patients ADD COLUMN address TEXT;
