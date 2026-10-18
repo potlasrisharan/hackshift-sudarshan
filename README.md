@@ -1,446 +1,449 @@
 <div align="center">
 
-<img src="docs/images/banner-ayusetu.svg" alt="AYUSETU · आयुसेतु — The Continuity-of-Care Operating System" width="100%"/>
+<img src="docs/images/banner-ayusetu.svg" alt="AYUSETU — The continuity of care operating system" width="100%" />
 
-<br/>
+<br />
 
-**One thread from first symptom to full recovery.**
-Intake → Clinic Operations → Home Follow-up → back to Intake, joined by deterministic, reviewable algorithms,
-plus an independent **cancer-detection research** programme.
+### One thread from first symptom to better days at home.
 
-<br/>
+**A connected care prototype for patient intake, clinical review, pharmacy, follow-up, women's health and healthspan.**<br />
+Rule engines produce inspectable decisions. Clinicians retain control. Language tools help people communicate.
+
+<br />
 
 [![CI](https://github.com/potlasrisharan/hackshift-sudarshan/actions/workflows/ci.yml/badge.svg)](https://github.com/potlasrisharan/hackshift-sudarshan/actions/workflows/ci.yml)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1%20%2B%20KV%20%2B%20DO-F38020?logo=cloudflare&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
-![Hono](https://img.shields.io/badge/API-Hono-E36002?logo=hono&logoColor=white)
-![React](https://img.shields.io/badge/Web-React%20%2B%20Vite-61DAFB?logo=react&logoColor=black)
-![Flutter](https://img.shields.io/badge/Kiosk-Flutter-02569B?logo=flutter&logoColor=white)
-![Expo](https://img.shields.io/badge/Mobile-Expo%20React%20Native-000020?logo=expo&logoColor=white)
-![FastAPI](https://img.shields.io/badge/Research%20API-FastAPI-009688?logo=fastapi&logoColor=white)
-![Research](https://img.shields.io/badge/Research-Cancer%20Detection-C084FC)
-![Status](https://img.shields.io/badge/status-hackathon%20prototype-orange)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers%20%7C%20Pages%20%7C%20D1-F38020?logo=cloudflare&logoColor=white)](wrangler.jsonc)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7%20%7C%20strict-3178C6?logo=typescript&logoColor=white)](package.json)
+[![React](https://img.shields.io/badge/Web-React%20%2B%20Vite-149ECA?logo=react&logoColor=white)](frontend/website)
+[![Flutter](https://img.shields.io/badge/Android%20%2F%20iOS-Flutter-02569B?logo=flutter&logoColor=white)](frontend/app)
+[![Hono](https://img.shields.io/badge/API-Hono-E36002?logo=hono&logoColor=white)](backend)
+[![Research](https://img.shields.io/badge/Research-CBC%20%2B%20BreathSense-7256AD)](#research)
 
-[**Overview**](#-overview) &nbsp;·&nbsp;
-[**Architecture**](#-architecture) &nbsp;·&nbsp;
-[**Algorithms**](#-deterministic-algorithms) &nbsp;·&nbsp;
-[**🔬 Research**](#-cancer-detection-research) &nbsp;·&nbsp;
-[**Quick Start**](#-quick-start) &nbsp;·&nbsp;
-[**Status**](#-project-status) &nbsp;·&nbsp;
-[**Docs**](#-project-documents)
+[Explore the product](#product) · [Screenshots](#screenshots) · [Features](#features) · [Architecture](#architecture) · [Algorithms](#algorithms) · [Research](#research) · [Run locally](#run-locally) · [Evidence](#evidence)
+
+<br />
+
+<img src="docs/images/continuity-loop.svg" alt="Care continuum: intake, consultation, pharmacy, at home, review" width="100%" />
 
 </div>
 
----
+> [!IMPORTANT]
+> **Project status: engineering and hackathon prototype.** Screens and benchmark fixtures use synthetic people and measurements. Several modules use local or in-memory stores. The research model has no independent clinical validation. Do not use the system for patient care or upload real patient records. [Current progress](docs/PROGRESS.md) · [Product requirements](docs/PRD.md) · [Deployment boundaries](docs/DEPLOYMENT.md)
 
-> [!WARNING]
-> **Prototype software, not a medical device.** Some API paths use in-memory stores or synthetic demonstration records. Do **not** use this application for real patient care, and do **not** send real patient information to demo or research services. Read [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and [`docs/PRD.md`](docs/PRD.md) before making implementation or deployment decisions.
+The vector care strip includes subtle motion where supported; GitHub may display its static frame. GitHub README pages do not support custom page fonts or transitions, so the layout uses portable SVG artwork, diagrams and Markdown.
 
-<table align="center">
-  <tr>
-    <td align="center"><h2>24</h2><sub><b>deterministic engines</b><br/>4 core · 5 HER · 15 Vitalis</sub></td>
-    <td align="center"><h2>4</h2><sub><b>interface languages</b><br/>English · हिन्दी · ਪੰਜਾਬੀ · தமிழ்</sub></td>
-    <td align="center"><h2>0</h2><sub><b>unsafe stock picks</b><br/>500-case synthetic benchmark</sub></td>
-    <td align="center"><h2>2</h2><sub><b>cancer-detection tracks</b><br/>BreathSense X · CBC model</sub></td>
-  </tr>
-</table>
+<a id="product"></a>
+## The idea
 
-## 🧭 What's Inside
+A person's story usually breaks at every handoff: the intake form does not reach the doctor, the prescription does not know which stock is usable, and the home reading loses its clinical context. **AYUSETU keeps those handoffs visible as one consented Patient Thread.** It brings together the kiosk, doctor, pharmacy, clinic operations and patient follow-up while keeping deterministic safety rules ahead of language generation.
 
-| | **Pillar 1 · Care Platform** | **Pillar 2 · Cancer-Detection Research** |
+| The thread | What the prototype demonstrates | Distinctive mechanism |
 |---|---|---|
-| **What** | AYUSETU: patient intake, clinic operations, and home follow-up on one consented Patient Thread | **BreathSense X** (breast-cancer breath VOC e-nose) and a **CBC blood-count research model** |
-| **Stack** | Cloudflare Workers · Hono · D1 · React · Flutter · Expo · TypeScript engines | ESP32 + BME688 / SGP40 sensing · Python · FastAPI · scikit-learn |
-| **Principle** | *Algorithms decide; AI may translate or format.* | *Measure, don't assume.* Every claim is tagged and bounded |
-| **Go to** | [Overview](#-overview) · [Architecture](#-architecture) · [Algorithms](#-deterministic-algorithms) | [Research programme](#-cancer-detection-research) · [BreathSense X](#1--breathsense-x--breast-cancer-breath-voc-research) · [CBC model](#2--cbc-research-model--blood-count-cancer-risk-score) |
+| **Listen and triage** | Indic language intake, transcription/translation review, adaptive questions and emergency flags | Mandatory red-flag screen before information-gain question selection |
+| **Review and prescribe** | Consultation queue, source-linked notes, vitals and research-only CBC report review | Clinician sign-off; CBC result is isolated from diagnosis and prescriptions |
+| **Fulfil safely** | Inventory, batch eligibility, generic savings, FEFO dispensing and POS | Exact salt/strength/form, full-course stock and expiry constraints before cost |
+| **Stay connected** | Medicine plan, home observations, nurse queue and refill risk | Personal baseline change detection alongside an independent absolute alert |
+| **Support daily health** | HER cycle and symptom tracking; Vitalis healthspan; personalized gentle yoga | Contraindication gates, data coverage and provenance before ranking advice |
 
-<details>
-<summary><b>🎯 HackShift 2026 requirement coverage (PS-1 to PS-7)</b></summary>
+### Why this is different
 
-<br/>
-
-**Event:** HackShift 2026 · IIIT Delhi · Theme *Healthcare & Well-being: Reimagining Healthcare Through Technology*
-
-| ID | Area | How AYUSETU approaches it |
-|---|---|---|
-| PS-1 | Accessibility | Voice-first Indic UX, WhatsApp-native flows, offline-capable kiosk and algorithm lab |
-| PS-2 | Affordability | Generic-substitution savings, FEFO expiry-aware allocation, integer-paise cost model |
-| PS-3 | Quality of care | Hard-rule red-flag bypass, course-valid batch dispensing, tested safety gates |
-| PS-4 | AI-assisted guidance | Adaptive questioning, source-cited clinician summaries |
-| PS-5 | Remote monitoring | Home check-ins and baseline-aware Drift Radar |
-| PS-6 | Digital health management | Single Patient Thread, FHIR R4 collection export, multi-clinic inventory and ledger |
-| PS-7 | Responsible AI and privacy | PHI redaction gate, consent receipts with revoke/delete, tamper-evident audit chain |
-
-Design intent comes from the [hackathon brief](docs/HACKATHON_BRIEF.md). Coverage varies by client and module: see [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) for traceability, [`docs/PILLARS.md`](docs/PILLARS.md) for shipped slices mapped to evidence, and [`docs/PROGRESS.md`](docs/PROGRESS.md) for current status.
-
-</details>
-
-<details>
-<summary><b>👩 The demo story: Sunita, 52</b></summary>
-
-<br/>
-
-Sunita (diabetes and hypertension, Hindi speaker, low literacy) taps "हिंदी" at a clinic kiosk. **Sentinel** asks adaptive questions and screens for red flags. A source-cited clinician brief is ready for the doctor. The prescription flows to **Rx-to-Shelf**, which rejects the cheapest batch that would expire mid-course and the wrong-strength batch, then proposes the cheapest *feasible* plan across clinics for a pharmacist to confirm. At home, **Drift Radar** compares her blood-pressure readings against her *own* baseline and flags a sustained upward shift that a fixed population threshold would miss. Every step is consented, auditable, and revocable.
-
-The scripted six-minute and two-minute journeys are in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md). All demo data is synthetic.
-
-</details>
-
-## 🖼️ Screenshots
-
-<table>
-  <tr>
-    <td align="center"><img src="docs/design/previews/landing-desktop.png" alt="Landing" width="100%"/><br/><sub><b>Landing</b></sub></td>
-    <td align="center"><img src="docs/design/previews/clinical-desktop.png" alt="Clinical workspace" width="100%"/><br/><sub><b>Clinical workspace</b></sub></td>
-    <td align="center"><img src="docs/design/previews/kiosk-desktop.png" alt="Kiosk" width="100%"/><br/><sub><b>Kiosk</b></sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/design/previews/emergency-desktop.png" alt="Emergency view" width="100%"/><br/><sub><b>Emergency</b></sub></td>
-    <td align="center"><img src="docs/design/previews/headquarters-desktop.png" alt="Headquarters" width="100%"/><br/><sub><b>Headquarters</b></sub></td>
-    <td align="center"><img src="docs/images/dashboard-desktop.png" alt="Dashboard" width="100%"/><br/><sub><b>Dashboard</b></sub></td>
-  </tr>
-</table>
-
-## 🏗️ Architecture
+1. **One journey across roles.** Patient, clinician, pharmacist, nurse and operations views share contracts instead of telling unrelated stories.
+2. **Algorithms decide; AI translates.** Urgency, stock feasibility and safety gates come from versioned rules. Speech and language services assist communication and require review.
+3. **A visible reason for every result.** Rejected batches, red-flag rule IDs, model limitations, data coverage and source evidence are exposed to the user or clinician.
+4. **Economics without unsafe shortcuts.** All money is integer paise; a cheaper batch is never selected when composition, quantity, allergy or expiry fails.
+5. **Healthspan, not lifespan prediction.** The Vitalis V1 engine tracks modifiable behaviors and preventive-care coverage; it does not calculate biological age or years of life gained.
+6. **Research stays research.** CBC scoring and BreathSense X are labelled with their evidence limits and are not fed into care decisions.
 
 ```mermaid
 flowchart LR
-  APP["Patient / kiosk app<br/>Flutter"] --> API
-  WEB["Clinician & ops web<br/>React / Vite"] --> API
-  RN["Mobile client<br/>Expo / React Native"] --> API
-
-  subgraph CF["☁️ Cloudflare"]
-    API["Worker API<br/>Hono · /api/v1"]
-    D1[("D1")]
-    KV[("KV")]
-    DO["Durable Objects"]
-  end
-
-  API --> D1
-  API --> KV
-  API --> DO
-  API --> ENGINE["packages/engine<br/>deterministic algorithms"]
-  CONTRACTS["packages/shared<br/>Zod contracts · FHIR mappers"] --> API
-  CONTRACTS --> WEB
-  MODEL["model-api<br/>research-only CBC model"] -.->|"not called by the main app"| API
+  classDef patient fill:#e9f6ef,stroke:#0c806a,color:#123d35,stroke-width:2px
+  classDef clinician fill:#e9f2ff,stroke:#4266a8,color:#182f58,stroke-width:2px
+  classDef operations fill:#fff3e0,stroke:#c7862d,color:#553817,stroke-width:2px
+  classDef home fill:#f5ecfb,stroke:#8b61a5,color:#492b5f,stroke-width:2px
+  P["PATIENT<br/>language · consent · symptoms"]:::patient --> K["INTAKE<br/>voice · red flags · queue"]:::patient
+  K --> D["CLINICIAN<br/>review · assessment · prescription"]:::clinician
+  D --> F["PHARMACY<br/>course-valid stock · savings"]:::operations
+  F --> H["AT HOME<br/>medicines · observations · HER · Vitalis"]:::home
+  H --> N["CARE TEAM<br/>drift · refill · follow-up"]:::clinician
+  N --> D
 ```
 
-Cloudflare is the deployment target. The Worker entry point is `backend/src/index.ts`; the root `wrangler.jsonc` configures the Worker, D1, KV, and Durable Object bindings. GitHub Actions builds the web app, applies D1 migrations, publishes the Pages artifact, and deploys the Worker on the configured branches once verification passes.
+<a id="screenshots"></a>
+## Product gallery
 
-The repository has **two web build paths** and **two mobile codebases**:
+The images below are captures/previews of **synthetic demo screens** in this repository. They show the interface, not evidence of a production clinical deployment. The Android images were captured from the Flutter app on a Pixel 8a emulator.
 
-- `apps/web` is the lightweight web build used by the root build and Cloudflare Pages workflow. It compiles source from `frontend/website/src`.
-- `frontend/website` also has a standalone Vite project and lockfile.
-- `frontend/app` is the Flutter patient and kiosk client (Dhaaga); `apps/mobile` is the Expo / React Native client.
+The home screen's age-delta card and the Vitalis wearable values are illustrative demo content. The V1 healthspan engine does not produce a biological-age estimate, and the pictured values do not prove a device connection.
 
-Check the workflow and app configuration before assuming the clients have identical feature coverage.
+<table>
+  <tr>
+    <td width="50%" align="center"><img src="docs/design/previews/landing-desktop.png" alt="AYUSETU website landing page" width="100%" /><br /><sub><b>01 / Website landing</b> · React</sub></td>
+    <td width="50%" align="center"><img src="docs/design/previews/clinical-desktop.png" alt="Doctor consultation workspace with synthetic queue and patient information" width="100%" /><br /><sub><b>02 / Doctor consultation</b> · synthetic queue</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/design/previews/kiosk-desktop.png" alt="Multilingual patient kiosk" width="100%" /><br /><sub><b>03 / Patient kiosk</b> · language-first intake</sub></td>
+    <td align="center"><img src="docs/design/previews/headquarters-desktop.png" alt="Clinic headquarters dashboard" width="100%" /><br /><sub><b>04 / Headquarters</b> · operations overview</sub></td>
+  </tr>
+</table>
 
-### Applications and services
+<table>
+  <tr>
+    <td width="33%" align="center"><img src="docs/images/android-home.png" alt="Flutter Android app home on Pixel 8a emulator" width="100%" /><br /><sub><b>Android / Home</b></sub></td>
+    <td width="33%" align="center"><img src="docs/images/android-yoga.png" alt="Flutter Android app personalized yoga catalog on Pixel 8a emulator" width="100%" /><br /><sub><b>Android / Yoga</b></sub></td>
+    <td width="33%" align="center"><img src="docs/images/android-vitalis.png" alt="Flutter Android app Vitalis screen on Pixel 8a emulator" width="100%" /><br /><sub><b>Android / Vitalis</b></sub></td>
+  </tr>
+</table>
 
-| Path | Technology | Purpose |
+<details>
+<summary><b>More interface previews</b></summary>
+
+<br />
+
+[Emergency triage](docs/design/previews/emergency-desktop.png) · [Responsive patient web](docs/design/previews/patient-390.png) · [Wide patient web](docs/design/previews/patient-1440.png) · [Measured benchmark chart](docs/benchmarks/measured-results.png). The earlier responsive patient web preview is a web capture, not an Android screenshot.
+
+</details>
+
+<a id="features"></a>
+## Complete feature map
+
+The repository has multiple clients and deployment paths. A checked-in screen is not automatically a live Cloudflare feature. The matrix points to the implementation and names the current boundary.
+
+### Web: patient, clinical and operations
+
+| Area | Included capabilities | Implementation / boundary |
 |---|---|---|
-| `backend/` | TypeScript, Hono, Cloudflare Workers | Shared `/api/v1` API, module routes, D1 migrations, Durable Objects |
-| `frontend/website/` | React, Vite, Tailwind CSS | Clinician and operations portal |
-| `apps/web/` | Vite | Root build and Pages entry points |
-| `frontend/app/` | Flutter, Dart, Riverpod, GoRouter | Patient and kiosk application |
-| `apps/mobile/` | Expo, React Native, TypeScript | Native mobile app and Android build configuration |
-| `packages/engine/` | TypeScript | Deterministic triage, pharmacy, follow-up, HER, and Vitalis algorithms |
-| `packages/shared/` | TypeScript, Zod | Shared contracts, models, interoperability helpers |
-| `services/` | TypeScript, Python | Language gateway and local privacy node |
-| `model-api/` | Python, FastAPI, scikit-learn | Isolated, research-only CBC model API |
-| `Breath_Sense_Cancer_Detection_Research/` | PDF, figures | BreathSense X research and engineering report |
+| **Public site and patient web** | Landing, solutions, about, news, support, contact, privacy, patient thread, medicine access, home monitoring, accessibility controls | [`frontend/website/src/pages`](frontend/website/src/pages), [`frontend/website/src/main.tsx`](frontend/website/src/main.tsx); responsive synthetic demo |
+| **Kiosk and intake** | Language choice, QR/mobile/ABHA/Aadhaar or new-patient entry in demo, reviewed voice transcript, translation, symptom capture, red-flag escalation, serial OPD flow | [`PatientKiosk`](frontend/website/src/components/PatientKiosk.tsx), [`intake routes`](backend/src/modules/intake/routes.ts); external identity is not verified by the demo |
+| **Doctor workspace** | Live intake queue, encounter selection, vitals, source citations, SOAP review, dual coding, prescription and emergency escalation | [`DoctorConsultation`](frontend/website/src/components/DoctorConsultation.tsx), [`EmergencyTriage`](frontend/website/src/components/EmergencyTriage.tsx); synthetic consultation records |
+| **CBC reports** | Local PDF/image OCR, units and evidence review, explicit confirmation, revision history, frozen research inference and deletion | [`CBC feature`](frontend/website/src/features/cbc), [`Worker routes`](backend/src/modules/cbc/routes.ts); authenticated **synthetic** encounters in development/test only |
+| **Clinical and administrative portals** | AYUSH, staff, attendance, shift management, IPD, clinic administration, hospital registry, equipment and audit views | [`App view map`](frontend/website/src/App.tsx), [`components`](frontend/website/src/components); coverage differs by view |
+| **Clinic commerce** | Stock radar, procurement, prescription-to-shelf planning, POS, generic savings, billing, expenses, earnings, ledger and financial views | [`ops routes`](backend/src/modules/ops/routes.ts), [`bridge routes`](backend/src/modules/bridge/routes.ts); some operational flows use seeded data |
+| **Localization** | English, Hindi, Punjabi and Tamil interface dictionaries; translated intake review | [`packages/i18n`](packages/i18n), [`website language control`](frontend/website/src/components/WebsiteLanguageSelect.tsx); clinical translations need human review |
 
-**API route prefixes:** `/api/v1/intake` · `/ops` · `/bridge` · `/home` · `/her` · `/vitalis`. Consult each module's route file for request schemas and current behavior.
+### Flutter patient and kiosk application
 
-The Doctor Consultation dashboard also includes a **CBC Reports** workflow: local PDF/image extraction, reviewed measurement revisions, and explicit frozen-model research analysis through `/api/v1/cbc`. It currently requires the authenticated synthetic clinical workspace; production patient-record access remains disabled. See [the CBC runbook](docs/CBC_RUNBOOK.md) for local setup, model parity evidence, and optional private source retention.
-
-## 🧠 Deterministic Algorithms
-
-The core decision logic lives in [`packages/engine`](packages/engine). Specifications are in [`docs/PRD.md`](docs/PRD.md) and [`docs/algorithms/`](docs/algorithms/). Read them before changing any clinical or operational rule.
-
-| Engine | What it does | How |
+| Journey | Screens and behavior | Source |
 |---|---|---|
-| 🚨 **Sentinel** | Selects intake questions, evaluates red flags | Bayesian posterior over latent classes; next question maximizes expected entropy reduction *after* mandatory danger screens. An affirmative chest-pain, breathlessness, or fainting screen returns emergency |
-| 💊 **Rx-to-Shelf** | Plans medicine allocation | Exact integer optimization of course cost plus transfer cost. Salt, strength, form, quantity, and expiry must hold (stock must outlive the course by 14 days). No fuzzy drug match is auto-accepted; every plan needs a pharmacist |
-| 📈 **Drift Radar** | Flags sustained change from a patient's own baseline | Robust baseline (median and MAD of first 7 days) with one-sided CUSUM. An independent absolute-limit alert (systolic ≥ 180) always fires, even during cold start |
-| 🔁 **ThreadPulse** | Estimates demand and stock-out risk | Exact demand distribution by convolving per-patient refill probabilities; reorder quantity from a service-level quantile |
-| 🌸 **HER A0–A4** | Women's health | A0 safety gate · A1 cycle deviation detector · A2 screening evidence routing · A3 wellness ranker with contraindications · A4 longitudinal trend analyzer |
-| 🌿 **Vitalis V0–V14** | Longevity and preventive health | Safety gate, healthspan index, preventive ranker, exercise progression, biomarker trends, lifestyle correlations, readiness, functional capacity, deduplication, eligibility, behavior simulator |
+| **Entry** | Portal selection, patient sign-up/login, once-only onboarding and profile preferences | [`router`](frontend/app/lib/core/router/app_router.dart), [`onboarding`](frontend/app/lib/features/onboarding), [`auth`](frontend/app/lib/features/auth) |
+| **Care** | Prescribed medicine list and reminders, clinical management, nurse triage and legacy consultation views | [`prescription`](frontend/app/lib/features/prescription), [`clinical management`](frontend/app/lib/features/clinical_mgmt), [`nurse`](frontend/app/lib/features/nurse) |
+| **HER** | Cycle calendar, symptom journal, questionnaires, wellness studio, doctor summary and wearable view | [`HER screens`](frontend/app/lib/features/her); backed by A0–A4 rules where connected |
+| **Vitalis** | Healthspan dashboard, questionnaire, activity, nutrition, sleep, cardio, biomarkers, functional tests, preventive care, simulator, trajectory and summary | [`Vitalis screens`](frontend/app/lib/features/vitalis); V0–V14 engine and `/api/v1/vitalis` routes |
+| **Personalized yoga** | Gentle movement catalog, category/search, safety precautions and ranked suggestions from recorded context | [`Yoga screen`](frontend/app/lib/features/yoga/presentation/screens/yoga_prescription_screen.dart), [`HER ranker`](packages/engine/her/wellness_ranker.ts) |
+| **In-app notices** | Medication timing and care reminders shown inside the app | [`Reminder service`](frontend/app/lib/core/services/medicine_reminder_service.dart); no push-notification delivery is claimed |
 
-Each engine returns explanatory payloads (inputs, constraints, intermediate values, rejection reasons), so every decision can be inspected. The algorithms produce software outputs, **not** a medical diagnosis or a substitute for clinician judgment.
+[`apps/mobile`](apps/mobile) is a separate Expo / React Native client and Android build path. It is not feature-parity with Flutter. The currently verified mobile coverage is in [PROGRESS.md](docs/PROGRESS.md); an APK or store release is not implied by the source tree.
 
-### Measured mechanisms (synthetic benchmark)
+<a id="architecture"></a>
+## System architecture
 
-Seed `26047` · 500 synthetic cases · reproduce with `make bench` · raw output in [`docs/benchmarks/`](docs/benchmarks/).
+### Runtime topology
 
-| Measure | AYUSETU | Naive baseline |
-|---|---:|---:|
-| Unsafe stock selections | **0** | 276 |
-| Injected BP ramps detected (of 250) | **250** | 0 |
-| Unchanged streams falsely alerted (of 250) | 4 | 0 |
+```mermaid
+flowchart TB
+  classDef client fill:#e9f6ef,stroke:#087f68,color:#123d35,stroke-width:2px
+  classDef compute fill:#e9f2ff,stroke:#456dad,color:#1d355c,stroke-width:2px
+  classDef data fill:#fff2de,stroke:#cb8528,color:#5e3a12,stroke-width:2px
+  classDef optional fill:#f3ebfb,stroke:#8c66aa,color:#4b2c63,stroke-dasharray:5 4
+  WEB["React / Vite<br/>website + ERP"]:::client --> PAGES["Cloudflare Pages<br/>dist/web"]:::compute
+  FLUTTER["Flutter<br/>patient + kiosk"]:::client --> API
+  EXPO["Expo client<br/>separate native path"]:::client --> API
+  PAGES --> API["Cloudflare Worker<br/>Hono · /api/v1"]:::compute
+  API --> RULES["packages/engine<br/>deterministic rules"]:::compute
+  API --> CONTRACTS["packages/shared<br/>Zod + FHIR mappers"]:::compute
+  API --> D1[("D1<br/>tenant records")]
+  API --> KV[("KV<br/>configured binding")]
+  API --> DO["Durable Objects<br/>clinic / triage / audit"]
+  API -.-> R2[("R2<br/>optional private CBC source")]
+  class D1,KV,DO data
+  class R2 optional
+  OCR["Browser-local PDF.js + Tesseract<br/>CBC extraction"]:::client --> API
+  ORACLE["Isolated Python FastAPI<br/>frozen-model oracle"]:::optional -.->|"parity / research; no runtime request"| RULES
+```
 
-| Algorithm | Mean latency per call (1,000 iterations) |
-|---|---:|
-| Sentinel | 0.006 ms |
-| Rx-to-Shelf | 0.013 ms |
-| Drift Radar | 0.031 ms |
-| ThreadPulse | 0.040 ms |
+**Cloudflare configuration is explicit.** The root [`wrangler.jsonc`](wrangler.jsonc) declares the production Worker, D1, KV and Durable Object bindings. [`backend/wrangler.jsonc`](backend/wrangler.jsonc) is a separate integration Worker configuration for the persisted clinical slice. [`backend/src/index.ts`](backend/src/index.ts) mounts module routes and the clinical integration app. R2 storage for original CBC source files is optional; it is not present in the root Wrangler binding by default. Cloudflare Queues and a fully durable event outbox are roadmap items, not deployed bindings.
 
-A real k6 transport test against the health route (5 virtual users, 15 s) completed 117,589 iterations; see [`docs/benchmarks/k6-health.txt`](docs/benchmarks/k6-health.txt).
+**Two web builds:** [`apps/web`](apps/web) is the root Pages build and compiles website source into `dist/web`. [`frontend/website`](frontend/website) also has its own Vite build for the clinical integration environment. The two mobile trees likewise have different scopes. Do not infer parity from a shared brand.
 
-> [!IMPORTANT]
-> These numbers show **mechanisms on hand-constructed synthetic cases**, not clinical performance. The naive baseline ignores clinical constraints, so its lower cost is not a valid saving. The load test is not an authenticated or database workload. No independent clinical dataset was used. See [`docs/benchmarks/RESULTS.md`](docs/benchmarks/RESULTS.md).
+### API route map
 
----
+| `/api/v1` prefix | Responsibility | Implementation |
+|---|---|---|
+| `/intake` | Registration, symptom intake, translation and encounter/token flow | [Intake](backend/src/modules/intake/routes.ts) |
+| `/auth/patient`, `/patient`, `/patients` | Patient login, profile/preferences and patient records | [Patient auth](backend/src/modules/patient_auth/routes.ts), [patient route](backend/src/index.ts) |
+| `/prescriptions`, `/documents` | Prescribed care and document endpoints | [Prescriptions](backend/src/index.ts#L989), [documents](backend/src/index.ts#L781) |
+| `/ops`, `/bridge` | Stock, POS, ledger, procurement and prescription-to-shelf/refill bridges | [Operations](backend/src/modules/ops/routes.ts), [bridge](backend/src/modules/bridge/routes.ts) |
+| `/home` | Home vitals, drift and nurse follow-up queue | [Home](backend/src/modules/home/routes.ts) |
+| `/her`, `/vitalis` | Women's health and healthspan workflows | [HER](backend/src/modules/her/routes.ts), [Vitalis](backend/src/modules/vitalis/routes.ts) |
+| `/abdm`, `/insurance`, `/platform` | Interoperability, insurance and administrative demo surfaces | [ABDM](backend/src/index.ts#L703), [insurance](backend/src/index.ts#L756), [platform](backend/src/modules/platform/routes.ts) |
+| `/cbc` | Doctor-only synthetic CBC report and frozen-model research workflow | [CBC](backend/src/modules/cbc/routes.ts); disabled in production |
 
-## 🔬 Cancer-Detection Research
+Some routes have seeded or in-memory behavior. An endpoint name does not establish a live external integration or regulatory certification.
+
+### One intake, many guarded handoffs
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Patient
+  participant K as Kiosk / mobile
+  participant W as Cloudflare Worker
+  participant E as Deterministic engine
+  participant D as Doctor workspace
+  participant P as Pharmacy
+  participant H as Home follow-up
+  Patient->>K: Consent and report symptoms
+  K->>W: Validated intake
+  W->>E: Sentinel answers
+  E-->>W: Tier + red flags + explanation
+  W-->>D: Consented encounter and queue event
+  D->>W: Clinician review and prescription
+  W->>E: Rx-to-Shelf constraints
+  E-->>P: Eligible batches + rejection reasons
+  P->>W: Pharmacist-confirmed dispense
+  H->>W: Home observations and check-ins
+  W->>E: Drift Radar / ThreadPulse
+  E-->>D: Reviewable trend or refill signal
+```
+
+Some screen paths still use synthetic or in-memory state; the diagram describes the intended connected workflow and the implemented algorithm boundaries. See [integration design](docs/INTEGRATION_DESIGN.md) and [progress](docs/PROGRESS.md) for persistence by slice.
+
+### Trust and data rules
+
+- **Validation:** Zod checks shared TS API boundaries; the Flutter client has its own typed models. Patient and tenant identifiers come from server sessions for protected clinical routes.
+- **Tenant isolation:** D1 access uses [`tenantDb`](backend/src/db/tenant.ts) and an `org_id` scope. The CBC route additionally checks doctor role, same-clinic encounter and active care consent.
+- **Consent and provenance:** The clinical slice records consent receipts, revisions and audit events. Revocation removes access to protected reports. CBC source retention uses private R2 only when bound.
+- **Privacy at language boundaries:** Identifiers should be redacted before external AI requests; browser CBC OCR stays local and sends only clinician-confirmed measurements to the Worker.
+- **Finance:** Prices, costs and ledger totals are integer paise, avoiding floating-point currency errors.
+- **Safety:** A red flag overrides wellness ranking. A score never writes a diagnosis, prescription, queue priority or emergency decision without a separate rule and clinician action.
+
+<a id="algorithms"></a>
+## The algorithm handbook
+
+The [PRD](docs/PRD.md) is the product specification; **checked-in engine code and algorithm notes describe the implemented slice**. The equations below reflect that code. None is clinically calibrated. All four core algorithms have direct [technical notes](docs/algorithms), and source lives in [`packages/engine`](packages/engine).
+
+### 01 · Sentinel: ask useful questions, keep danger first
+
+For latent review class `c` and answered symptoms `E`, the engine computes stable log weights and normalizes them:
+
+```text
+log w(c) = log prior(c) + Σ answered i log P(answer_i | c)
+P(c | E) = exp(log w(c) − max log w) / Σ_j exp(log w(j) − max log w)
+H(C) = −Σ_c P(c) log₂ P(c)
+IG(q) = H(C) − P(yes)H(C | yes) − P(no)H(C | no)
+```
+
+An unanswered **chest pain, breathlessness or fainting** question is asked before other high-information questions. Any affirmative one returns `emergency`; otherwise the output remains `clinician-review`. `unsure` does not alter likelihoods. The current closed ontology has **four illustrative classes and seven symptoms**, not the larger target model in the PRD. [Source](packages/engine/index.ts) · [Design note](docs/algorithms/sentinel.md)
+
+### 02 · Rx-to-Shelf: cheapest *feasible* full course
+
+```text
+minimize  Σ_b (pricePaise_b × units_b) + transferPaise × numberOfUsedRemoteClinics
+subject to Σ_b units_b = requiredUnits;  0 ≤ units_b ≤ stock_b; units_b integer
+           same salt + strength + form;  expiry_b ≥ courseEnd + 14 days
+           at most two source clinics; recorded exact-salt allergy blocks planning
+```
+
+The planner filters unsafe batches, enumerates all one- or two-clinic subsets and fills eligible stock by unit price. Under its declared single-composition, linear-cost constraints this is exact; it is not a general mixed-drug optimizer. The dispensing layer adds FEFO within an approved brand and still requires pharmacist confirmation. [Planner](packages/engine/index.ts) · [Dispensing](packages/engine/dispensing.ts) · [Proof and limits](docs/algorithms/rx-to-shelf.md)
+
+### 03 · Drift Radar: change from *your* starting pattern
+
+For systolic readings, same-day samples are averaged and sorted. The first seven observed days define `m = median(x)` and `s = max(3, 1.4826 × MAD(x))`. Later readings update a one-sided CUSUM:
+
+```text
+Cₜ = max(0, Cₜ₋₁ + (xₜ − m)/s − 0.5)
+trend flag ⇔ Cₜ ≥ 5; absolute flag ⇔ xₜ ≥ 180 mmHg
+```
+
+A gap over three days resets CUSUM, missing days are not imputed, and the absolute flag works during cold start. This is an **illustrative single-channel BP mechanism**, not the BOCPD/multisensor target described in the PRD. [Source](packages/engine/index.ts) · [Limits](docs/algorithms/drift-radar.md)
+
+### 04 · ThreadPulse: a distribution, not a single forecast
+
+Each synthetic patient contributes one independent Bernoulli refill event `Xᵢ ~ Bernoulli(pᵢ)`. The exact Poisson-binomial distribution is built by convolution:
+
+```text
+f₀(0) = 1
+fᵢ(k) = (1 − pᵢ)fᵢ₋₁(k) + pᵢ fᵢ₋₁(k−1)
+q = smallest k with P(N ≤ k) ≥ serviceLevel
+suggestedOrder = max(0, q − stock); stockoutRisk = P(N > stock)
+```
+
+The method runs in `O(n²)` time and `O(n)` space for `n ≤ 500`. Refill probabilities are supplied by a synthetic scenario; this slice does not learn them from real patient histories or place a purchase order. [Source](packages/engine/index.ts) · [Design note](docs/algorithms/threadpulse.md)
+
+### 05 · HER: A0–A4 women's health rules
+
+```mermaid
+flowchart LR
+  classDef stop fill:#ffe8e8,stroke:#d24848,color:#6b2020,stroke-width:2px
+  classDef work fill:#f5eafa,stroke:#9064ab,color:#4b2e5d,stroke-width:2px
+  classDef data fill:#e9f6ef,stroke:#087f68,color:#123d35,stroke-width:2px
+  A0["A0 Safety gate"]:::stop -->|safe to continue| A1["A1 Cycle intervals"]:::data
+  A1 --> A2["A2 Evidence routing"]:::work
+  A2 --> A3["A3 Wellness + yoga rank"]:::work
+  A3 --> A4["A4 Longitudinal trend"]:::data
+  A0 -->|urgent| U["Urgent review<br/>suppress wellness advice"]:::stop
+```
+
+| Engine | Implemented method | Guardrail |
+|---|---|---|
+| **A0 safety gate** | Ordered rules for possible pregnancy with pain/bleeding, sudden severe pelvic pain, bleeding with fainting, severe breathlessness and crisis signals | Urgent result suppresses wellness advice; [source](packages/engine/her/safety_gate.ts) |
+| **A1 cycle detector** | `Lᵢ = startᵢ₊₁ − startᵢ`; mean `μ = ΣLᵢ/n`, population `σ = √[Σ(Lᵢ−μ)²/n]`, variability `CV = 100σ/μ`; date sorting, deduplication, phase windows and age-aware flags | Pregnancy/lactation returns context-limited output; low history returns insufficient data; [source](packages/engine/her/cycle_detector.ts) |
+| **A2 screening** | Maps cycle, questionnaire and verified lab evidence to review categories for PCOS features, pelvic pain/endometriosis features and heavy-bleeding/anemia features | No diagnostic probability; adolescent rules differ; [source](packages/engine/her/screening_engine.ts) |
+| **A3 wellness ranker** | Excludes contraindications, pregnancy/lactation movement variants and incompatible diets, then scores `base utility + evidence/relevance/context boosts` | Urgent flags yield no recommendations; up to 25 yoga items in the movement category; [source](packages/engine/her/wellness_ranker.ts) |
+| **A4 trends** | Deduplicated 7/14/30-day window; `coverage = daysLogged/windowDays`; rolling mean only when coverage meets the configured minimum | Descriptive association, never causation; [source](packages/engine/her/trend_analyzer.ts) |
+
+The yoga screen requests the ranked `yoga_movement` catalog and shows precautions and rationale. Exercises are selected against recorded conditions, fatigue, pain, mobility restrictions and safety rules; it is not a prescription for treating an illness. [Mobile UI](frontend/app/lib/features/yoga/presentation/screens/yoga_prescription_screen.dart)
+
+### 06 · Vitalis: V0–V14 healthspan toolkit
+
+**V1 healthspan progress index** is a coverage-aware weighted average over eight modifiable domains: activity `1.5`, strength/mobility `1.2`, sleep/recovery `1.4`, nutrition `1.3`, cardio `1.2`, metabolic `1.4`, preventive care `1.0`, psychosocial wellbeing `1.0`.
+
+```text
+coverage = Σ weight(observed domains) / Σ weight(all eight domains)
+HPI = round[Σ weightᵢ × observedScoreᵢ / Σ weight(observed domains)]
+HPI = unavailable when coverage < 0.40; missing domains are never silently scored zero
+```
+
+| Engine | Rule or calculation | Source |
+|---|---|---|
+| **V0** safety | Chest pain/syncope → urgent; clinician exertion restriction or cardiovascular history blocks/reviews vigorous activity; CKD blocks unsupervised protein loading | [Safety gate](packages/engine/vitalis/v0_safety_gate.ts) |
+| **V1** healthspan index | Eight-domain weighted mean with observed-weight coverage threshold | [HPI](packages/engine/vitalis/v1_healthspan_index.ts) |
+| **V2** preventive ranker | `clamp(0.35 evidence + 0.35 relevance + 0.20 feasibility − 0.10 burden, 0, 1)` | [Ranker](packages/engine/vitalis/v2_preventive_ranker.ts) |
+| **V3** exercise progression | Adjusts weekly target using current minutes, tolerance and recovery; safety/clinical holds outrank progression | [Progression](packages/engine/vitalis/v3_exercise_progression.ts) |
+| **V4** biomarker trends | Quarantines implausible points; `Δ = latest − previous`, `slope/day = Δ / elapsedDays`, monthly slope uses `30.4375` days | [Trends](packages/engine/vitalis/v4_biomarker_trends.ts) |
+| **V5** lifestyle correlations | Pearson `r = [nΣxy − ΣxΣy] / √[(nΣx²−(Σx)²)(nΣy²−(Σy)²)]`; explicitly non-causal | [Correlations](packages/engine/vitalis/v5_lifestyle_correlations.ts) |
+| **V6** recommendation selector | Evidence library → V0 contraindication filter → context relevance → V2 ranking | [Selector](packages/engine/vitalis/v6_recommendation_selector.ts) |
+| **V7** VO₂ provenance | Labels measured vs wearable-estimated values; a separate non-exercise estimate is marked research-only | [VO₂](packages/engine/vitalis/v7_vo2_provenance.ts) |
+| **V8** rolling baseline | 21-day source-aware window, minimum seven samples; `z = (today − mean)/max(0.5, σ)` | [Baseline](packages/engine/vitalis/v8_rolling_baseline.ts) |
+| **V9** sleep regularity | Circular bedtime mean across midnight; dispersion `√(−2 ln R) × 1440/(2π)` and bounded consistency score | [Sleep](packages/engine/vitalis/v9_sleep_regularity.ts) |
+| **V10** daily readiness | Available streams reweighted from HRV `.35`, resting HR `.25`, efficiency `.20`, regularity `.20`; symptoms/high fatigue override | [Readiness](packages/engine/vitalis/v10_daily_readiness.ts) |
+| **V11** functional capacity | Grip, five chair rises, falls and mobility history route to functional review suggestions | [Function](packages/engine/vitalis/v11_functional_capacity.ts) |
+| **V12** telemetry ingest | Source-record deduplication, UTC-to-local-day buckets, metric harmonization and daily aggregation | [Ingest](packages/engine/vitalis/v12_time_series_dedup.ts) |
+| **V13** preventive eligibility | Age, risk, last-completed date and interval rules create due/overdue items | [Eligibility](packages/engine/vitalis/v13_preventive_eligibility.ts) |
+| **V14** behavior simulator | Illustrative walking `≈100 steps/min`; projects schedule volume and percentage of the 150-min/week activity reference | [Simulator](packages/engine/vitalis/v14_behavior_simulator.ts) |
+
+The readiness score and simulator are **wellness indicators**, not exercise clearance, mortality predictions or lifespan estimates. Backend route coverage and demo values vary by endpoint; inspect [`/api/v1/vitalis`](backend/src/modules/vitalis/routes.ts) before using a screen as proof of a persistent record.
+
+### 07 · Other operational mathematics
+
+| Utility | Calculation / constraint | Source |
+|---|---|---|
+| **Savings meter** | `brandTotal = units × brandPricePaise`; `genericTotal = units × eligibleUnitPricePaise`; `savings = max(0, brandTotal − genericTotal)`. Exact composition, stock, course expiry, allergies and NTI block substitution | [Engine](packages/engine/index.ts) |
+| **FEFO dispensing** | Among clinician-allowed complete courses, select total cost; within the selected brand consume earliest-expiring valid batches first | [Dispensing](packages/engine/dispensing.ts) |
+| **Double-entry ledger** | Every journal line is nonnegative integer paise; balance requires `Σdebits = Σcredits`; `profit = revenue − COGS − operating expenses` | [Engine](packages/engine/index.ts) |
+| **Refill warning** | `daysToExhaustion = floor(remainingUnits / max(1, dailyDoseUnits))`; warn when within configured lead time | [Engine](packages/engine/index.ts) |
+
+<a id="research"></a>
+## Research programme
+
+Research work is deliberately separated from clinical decisions. It comprises a **CBC blood-count model** and the **BreathSense X** e-nose concept. Neither is validated for patient diagnosis.
+
+### CBC: from source document to a versioned research score
+
+The Doctor Consultation dashboard now embeds a **CBC Reports** workflow for authenticated synthetic encounters in development/test. The clinician can select a PDF, PNG or JPEG; same-origin PDF.js/Tesseract extracts candidate rows in the browser; the clinician reviews units and source evidence, corrects all five fields, confirms a revision, then explicitly runs the frozen model in the Cloudflare Worker. The isolated Python [`model-api`](model-api) remains the original model oracle and optional standalone research service; the web app does **not** call Render at runtime. [Detailed runbook](docs/CBC_RUNBOOK.md)
+
+```mermaid
+sequenceDiagram
+  actor Doctor
+  participant Browser as Doctor portal + local OCR
+  participant Worker as Cloudflare Worker /api/v1/cbc
+  participant D1 as D1 clinical schema
+  participant Model as Frozen TS inference
+  Doctor->>Browser: Choose synthetic encounter and CBC source
+  Browser-->>Doctor: Candidate values, units, page/row evidence
+  Doctor->>Browser: Correct and confirm all five measurements
+  Browser->>Worker: Authorized report + immutable revision
+  Worker->>D1: Check doctor, clinic, encounter and care consent
+  D1-->>Worker: Permitted context
+  Doctor->>Browser: Run research analysis explicitly
+  Browser->>Worker: Prediction request for confirmed revision
+  Worker->>Model: Frozen preprocessing + logistic score
+  Model-->>Worker: Research score + version + cutoff
+  Worker->>D1: Save result and audit event
+  Worker-->>Doctor: Research-only result with limitations
+```
+
+**Inputs and units:** WBC/TLC `10⁹/L`; RBC `10¹²/L`; neutrophils, lymphocytes and monocytes `%`. Differential percentages are rounded to whole percentages inside the frozen preprocessing. The seven model features are `[WBC, lymphocytes, neutrophils, monocytes, RBC, NLR, LMR]`, with `NLR = N/L` and `LMR = L/M`. Undefined ratios use the frozen training imputation statistics and indicators. Each standardized feature contributes to `z = intercept + Σ coefficientᵢ × (xᵢ − meanᵢ)/scaleᵢ`; `score = 1/(1+e⁻ᶻ)` and the frozen cutoff is `0.626816175626443`. [Frozen TS representation](packages/engine/cbc/frozen-model.json) · [Inference](packages/engine/cbc/inference.ts)
+
+The saved model is `india-cbc-logistic-c87ec8485159`. Internal nested cross-validation on 752 published, reconstructed records reported AUC `0.713`, accuracy `63.2%`, sensitivity `35.9%`, specificity `90.4%`. These are **internal study metrics, not independent validation of this deployed workflow**. A score is neither a calibrated cancer probability nor a diagnosis. Source document retention in R2 is optional. CBC does not change SOAP, codes, prescription, queue priority or emergency routing. [Model details](model-api/README.md) · [Clinical boundary](docs/CBC_RUNBOOK.md)
+
+### BreathSense X: an assessable instrument concept
+
+<div align="center"><img src="docs/images/banner-breathsense.svg" alt="BreathSense X breast-cancer breath VOC research banner" width="100%" /></div>
+
+BreathSense X explores low-cost, **nonclinical** volatile-organic-compound sensing. Version 1 is a proposed benign bench/ambient-air instrument, with no patient sampling. The central question is whether a shared sensor chamber, an ambient reference, quality rejection and drift monitoring improve repeatability on held-out sessions. It makes **no breast-cancer diagnostic-performance claim**. [Research and engineering report](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)
+
+```mermaid
+flowchart LR
+  classDef hardware fill:#e9f6ef,stroke:#087f68,color:#123d35,stroke-width:2px
+  classDef evaluate fill:#f4e9fb,stroke:#8a5aad,color:#482a61,stroke-width:2px
+  A["Ambient reference"]:::hardware --> V{"One source<br/>at a time"}
+  S["Benign bench sample"]:::hardware --> V
+  V --> C["Shared chamber<br/>2× BME688 · SGP40 · SHT31-D"]:::hardware
+  C --> P["Pump + safe exhaust"]:::hardware
+  C --> E["ESP32 raw logger"]:::hardware
+  E --> Q["Quality gate · drift · held-out ablation"]:::evaluate
+```
+
+| Study phase | Evidence required before advancing |
+|---|---|
+| **A / B** | Electrical integrity and within/between-session repeatability |
+| **C / D** | Ambient correction, drift ablation, carryover and recovery on unseen days |
+| **E** | Separate ethics-approved clinical collaboration with appropriate controls and independent sites |
+
+The full report specifies experiments E1–E7, an approximately ₹15,000 nonclinical hardware envelope, component contingencies and claim tags. A rendered concept image is **not** evidence that the pneumatic system has been built. [Conventional concept](Breath_Sense_Cancer_Detection_Research/Conventional_model.png) · [Proposed concept](Breath_Sense_Cancer_Detection_Research/Proposed_Model_Prototype.jpeg)
+
+<a id="stack"></a>
+## Technology stack
+
+| Layer | Technologies | Why they are here |
+|---|---|---|
+| **Web UX** | React 18, TypeScript, Vite 5/8, Tailwind CSS 3, GSAP | Responsive public, patient, kiosk and ERP surfaces across two web builds |
+| **Patient / kiosk app** | Flutter, Dart, Riverpod, GoRouter | Android, iOS and web app routes with typed state |
+| **Second native path** | Expo, React Native, TypeScript | Separate mobile prototype/build path |
+| **API** | Cloudflare Workers, Hono, Zod | Shared `/api/v1` contracts and edge request handling |
+| **Storage / coordination** | D1, Durable Objects, KV; optional private R2 for CBC sources | Tenant records, coordination and opt-in original-document retention |
+| **Decision engines** | Pure TypeScript in `packages/engine` | Reviewable algorithms reusable across API and demos |
+| **Documents and language** | PDF.js, Tesseract.js, browser Speech APIs, optional server-side language providers | Local CBC extraction and multilingual intake assistance |
+| **Research model** | Python 3.12, FastAPI, scikit-learn; frozen TS Worker representation | Reproducibility/oracle and optional isolated research endpoint |
+| **Quality / delivery** | Vitest, Playwright, Biome, Wrangler, GitHub Actions, Docker smoke build | Verification, Pages publish, D1 migration and Worker deployment |
 
 <div align="center">
 
-<img src="docs/images/banner-breathsense.svg" alt="BreathSense X — Breast-cancer breath VOC research" width="100%"/>
+![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?logo=cloudflare&logoColor=white) ![React](https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white) ![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white) ![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 
 </div>
 
-<br/>
+<a id="run-locally"></a>
+## Run locally
 
-Alongside the care platform, Team Sudarshan runs a **cancer-detection research programme** with two independent tracks. Both are **research-only**, **not clinically validated**, and **never used by the main application to make care decisions**.
-
-| | **BreathSense X** | **CBC research model** |
-|---|---|---|
-| **Cancer focus** | Breast cancer | Cancer-risk scoring from routine blood counts |
-| **Signal** | Breath volatile organic compounds (VOCs) via a low-cost e-nose | Complete blood count (WBC, RBC, differentials, NLR, LMR) |
-| **Stage** | Research concept, nonclinical V1 hardware plan (report v2.0) | Frozen exploratory model served by an isolated API |
-| **Evidence** | Experiments E1–E7 planned; no patient data | Internal nested cross-validation, AUC 0.713 |
-| **Read** | [Research report (PDF)](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf) | [`model-api/README.md`](model-api/README.md) |
-
-### 1 · BreathSense X: breast-cancer breath VOC research
-
-📄 **[BreathSense X: Research and Engineering Report, v2.0](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)** · revised 18 October 2026
-
-Exhaled air carries numerous VOCs shaped by metabolism, oxidative stress, diet, medication, smoking, and environment. There is **no accepted single breast-cancer-specific breath biomarker**, so BreathSense X asks a deliberately narrower, testable question first:
-
-> *Can an affordable electronic nose obtain reproducible gas-response signatures, identify compromised measurements, and reduce environmental and day-to-day drift on held-out nonclinical sessions?*
-
-Only after that instrument question is answered should biomedical and clinical partners assess whether breath profiles carry a robust breast-cancer-related signal. **V1 involves no patients and tests no disease hypothesis.**
-
-<table>
-  <tr>
-    <td align="center"><img src="Breath_Sense_Cancer_Detection_Research/Conventional_model.png" alt="Simplified conventional single-path e-nose baseline" width="100%"/><br/><sub><b>Simplified conventional baseline</b><br/>single air path, no reference, no drift awareness</sub></td>
-    <td align="center"><img src="Breath_Sense_Cancer_Detection_Research/Proposed_Model_Prototype.jpeg" alt="Proposed BreathSense X prototype" width="100%"/><br/><sub><b>Proposed BreathSense X prototype</b><br/>concept visualization, not a built device</sub></td>
-  </tr>
-</table>
-
-#### Five researched concepts, one assessable platform
-
-| # | Concept | What must be demonstrated | Status |
-|---|---|---|---|
-| 1 | **Ambient-reference measurement** | Lower environmental sensitivity than a sample-only baseline on held-out days | Proposed |
-| 2 | **Drift monitoring and recalibration flags** | Drift detected and stability improved on later unseen sessions, without hiding sensor failure | Proposed |
-| 3 | **Sample-quality gate with abstain / retest** | Known poor runs rejected; false-reject rate and coverage reported | Proposed |
-| 4 | **Multi-heater gas-sensing features** | Held-out gain over single-resistance features, weighed against power and time | Proposed |
-| 5 | **Clinical multimodal fusion** | Added predictive value over a clinical-only baseline in ethics-approved cohorts | Future clinical phase |
-
-The novelty claim is a **measurably improved low-cost integration**, not the invention of e-noses, and **not** diagnostic effectiveness. Ambient-air purge already exists in prior work, and the report says so explicitly.
-
-#### Proposed instrument
-
-```mermaid
-flowchart LR
-  A["🌬️ Ambient reference inlet (A)<br/>room air"] --> V{{"3-way selector valve<br/>one source active at a time"}}
-  S["🧪 Nonclinical sample inlet (S)<br/>benign bench gas only"] --> V
-  V --> C["Common sensing chamber<br/>2× BME688 · SGP40 · SHT31-D"]
-  C --> P["Downstream pump"] --> X["Safe exhaust"]
-  C --> E["ESP32 data logger"] --> M["PC pipeline<br/>quality gate · drift monitor · research-only model"]
-```
-
-A **single switched chamber** (rather than two parallel chambers) lets ambient and sample streams visit the *same* sensors at different times, avoiding sensor-to-sensor manufacturing variability. The trade-off is carryover and a longer cycle, which the experiments measure. Sources are **never mixed**.
-
-<details>
-<summary><b>⚙️ Control sequence (state machine)</b></summary>
-
-<br/>
-
-```mermaid
-stateDiagram-v2
-  direction LR
-  state "PURGE / RECOVERY" as PURGE_A
-  state "PURGE / RECOVERY" as PURGE_B
-  state "QUALITY CHECK" as QC
-  [*] --> BOOT
-  BOOT --> REFERENCE: sensors respond
-  REFERENCE --> PURGE_A: stable baseline
-  PURGE_A --> SAMPLE
-  SAMPLE --> PURGE_B
-  PURGE_B --> QC
-  QC --> SAVE: pass
-  QC --> REFERENCE: fail, retest
-  SAVE --> [*]
-```
-
-Any state can drop to **FAULT / FAILSAFE**: pump off, valve to its verified safe default, acquisition stopped, fault flag logged, manual reset required. This is proposed logic, not yet implemented.
-
-</details>
-
-<details>
-<summary><b>🧰 Hardware envelope: ≈ INR 15,000 (nonclinical, USB-powered)</b></summary>
-
-<br/>
-
-| Phase | Contents | INR |
-|---|---|---:|
-| **Phase 1: sensor logger** (always deliverable) | 2× BME688, SGP40, ESP32, optional SHT31-D, wiring, status screen | 6,600 |
-| **Phase 2: pneumatic platform** | Valve, pump, drivers and power, PTFE and fittings, chamber and enclosure, consumables | 5,900 |
-| **Reserve** | Shipping, spares, price and GST uncertainty | 2,500 |
-| **Total** | | **15,000** |
-
-**Go / no-go rule:** if the exact valve and pump cannot be sourced and verified within budget, the deliverable becomes a reliable ESP32 + BME688 + SGP40 logger with raw-data integrity (Phase 1). Pump, valve, and flow sensor are marked *procurement not approved* until verified. A passive 3D render is never presented as a working fluidic subsystem. Prices are V1 planning allowances and were not re-verified; GC-MS, ethics approval, and regulatory validation are excluded.
-
-</details>
-
-<details>
-<summary><b>🧪 Validation plan: phases A–E and experiments E1–E7</b></summary>
-
-<br/>
-
-| Phase | Purpose |
-|---|---|
-| **A** · Electrical and data integrity | Stable reads, traceable logs, versioned hardware config, raw-data hashes |
-| **B** · Instrument repeatability | Within-session, between-session, and between-device (BME688 A vs B) variation |
-| **C** · Environmental correction ablation | Raw → fused → + ambient reference → + drift correction → + quality rejection, on the same held-out sessions |
-| **D** · Carryover assessment | Reference after a test condition vs a reference-only baseline; recovery time; never claim zero carryover without evidence |
-| **E** · Future clinical validation | Ethics-approved recruitment, benign-disease controls, independent sites, GC-MS where feasible. *Separate future stage* |
-
-| ID | Experiment |
-|---|---|
-| E1 | Warm-up and baseline stabilization |
-| E2 | Valve isolation and leakage |
-| E3 | Purge and carryover |
-| E4 | Humidity robustness |
-| E5 | Drift and sensor duplication |
-| E6 | ML ablation (linear vs Random Forest vs SVM; no deep learning by default) |
-| E7 | Reliability stress cases |
-
-**Methodology guardrails:** split by independent session or held-out day (never randomly across correlated readings), include humidity-only controls to expose label leakage, fit pipelines on training folds only, pre-register thresholds before final testing, report paired differences with confidence intervals, and publish a model card with forbidden medical uses. Engineered ambient-air conditions are **never** labelled cancer-positive or cancer-negative.
-
-</details>
-
-<details>
-<summary><b>📚 Evidence base and honesty tags</b></summary>
-
-<br/>
-
-The report keeps every claim visibly tagged so nothing is overstated:
-
-| Tag | Meaning |
-|---|---|
-| `[SUPPORTED IN V1]` | Stated in the original report and its cited sources; full-text re-verification pending |
-| `[PROPOSED]` | Design intent added in v2.0; not yet built or measured |
-| `[EXPERIMENTALLY UNVERIFIED]` | A performance claim that only the planned bench experiments can confirm |
-| `[OPEN ITEM]` | Could not be verified; left open instead of guessed |
-| `[FUTURE CLINICAL PHASE]` | Belongs to a separate, ethics-approved clinical stage |
-
-Core literature carried into the report (figures as quoted there; re-verification against full texts is a listed open task):
-
-| Source | Design | Takeaway |
-|---|---|---|
-| Leemans et al., 2022 | Systematic review, 32 breast-cancer VOC studies | VOC candidates are inconsistent across specimens and methods; supports standardized collection |
-| Chemical Nose study, 2025 | 267 women (131 breast cancer, 136 healthy); Cyranose 320 + SVM | 91% accuracy for *its* design; not transferable to a BME688 system |
-| JAMA Oncology review, 2018 | 63 publications across cancers | Pooled sensitivity 79%, specificity 89%; methods and physiology affect estimates |
-| Clinical Biochemistry meta-analysis, 2025 | 125 datasets, 8,768 cancer patients | Pooled sensitivity 87%, specificity 81%; cross-cancer, not breast-specific |
-
-Key gaps the project targets: poor reproducibility of named VOC biomarkers, scarce comparable benign-disease controls, under-handled humidity and ambient effects, sensor drift and carryover, and limited external validation.
-
-</details>
-
-> [!NOTE]
-> **Evidence boundary.** Breast-cancer breath studies report encouraging classifications, but small cohorts, varying collection practices, and weak external validation prevent transferring those accuracies to this design. BreathSense X claims no diagnostic performance. **V1 is an ambient-air / benign bench demonstrator and must not be used for patient sampling or clinical testing.**
-
-### 2 · CBC research model: blood-count cancer-risk score
-
-📄 [`model-api/README.md`](model-api/README.md) · Based on a [published Indian CBC study](https://www.nature.com/articles/s41598-023-27548-w)
-
-A frozen, **India-only logistic regression** that scores a complete blood count. It is served by an isolated FastAPI service that the main Cloudflare application does **not** call.
-
-| | |
-|---|---|
-| **Inputs** | WBC, RBC, neutrophil %, lymphocyte %, monocyte % (derived: NLR and LMR, 7 model features) |
-| **Model** | `india-cbc-logistic-c87ec8485159` · fixed cutoff `0.6268` |
-| **Evaluation** | Internal nested cross-validation on 752 published records with reconstructed labels |
-| **AUC** | 0.713 (95% CI 0.677–0.749) |
-| **Accuracy · Sensitivity · Specificity** | 63.2% · 35.9% · 90.4% |
-| **Output** | `score`, `cutoff`, `above_cutoff`, always flagged `research_only` |
-
-```bash
-curl -X POST http://127.0.0.1:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"wbc":8.95,"rbc":4.41,"neutrophils":65,"lymphocytes":25,"monocytes":9}'
-```
-
-Units: WBC in 10⁹/L, RBC in 10¹²/L, differentials in **percentages**. All five values are required and the three differentials must total at most 100.
-
-> [!CAUTION]
-> The score is **not** a diagnosis and **not** a calibrated cancer probability. Sensitivity is low (35.9%), the metrics come from internal validation rather than independent validation, and labels, hospital-source confounding, and measurement precision all limit interpretation. Haemoglobin is excluded because source units are uncertain. Never use this to guide patient care, and never send identifiable patient data to it. The API currently has no authentication or application-level rate limiting.
-
-### Research integrity commitments
-
-- **No claim without a measurement.** Unverified parts, prices, and literature are left tagged *open*, never guessed.
-- **No patient data** in either track. Do not send identifiers to the model API or to the e-nose pipeline.
-- **No integration into care decisions.** Any future link goes through the shared Cloudflare backend and must honour tenant and consent boundaries.
-- **Clinical translation is a separate, ethics-approved stage** with independent-site validation, calibration, and benign-disease controls.
-
----
-
-## 🚀 Quick Start
-
-### Requirements
-
-- **Node.js** `>=22.13` and **npm** `>=10` (root TypeScript project and Cloudflare tooling)
-- **Flutter / Dart** compatible with `frontend/app/pubspec.yaml` (patient and kiosk app)
-- **Android Studio / SDK** for Android builds; **Xcode** for iOS builds on macOS
-- **Python 3.12** for the isolated `model-api` service
-- A **Cloudflare account** and GitHub Actions secrets for deployment only. Local development needs no Cloudflare credentials
-
-### Clone and install
+**Prerequisites:** Node.js `≥22.13`, npm `≥10`; Flutter and Android SDK for the Flutter app; Python 3.12 only for the isolated model oracle. A Cloudflare account is needed for deployment, not for the local synthetic demo.
 
 ```bash
 git clone https://github.com/potlasrisharan/hackshift-sudarshan.git
 cd hackshift-sudarshan
 npm ci
-```
-
-<details open>
-<summary><b>🌐 Web and API integration demo</b></summary>
-
-```bash
 npm ci --prefix frontend/website --ignore-scripts
 npm run integration:dev
 ```
 
-The integration server starts at `http://127.0.0.1:8790` (exact ports are printed by the command). For the root Pages build and bundled API build:
-
-```bash
-npm run build
-```
-
-The root `build` installs the website package from its lockfile before compiling, so Cloudflare Pages can use a root `npm ci` followed by `npm run build` with no separate dashboard build command.
-
-</details>
+The persisted clinical integration server prints its local address (normally `http://127.0.0.1:8790`). Open `/erp.html#/app?view=doctor-consultation` for the doctor dashboard. Follow the [CBC local workflow](docs/CBC_RUNBOOK.md) for the separately seeded synthetic doctor account. The root `npm run dev` starts a different legacy API demo.
 
 <details>
-<summary><b>📱 Flutter patient and kiosk app</b></summary>
+<summary><b>Flutter Android / iOS / web</b></summary>
 
 ```bash
 cd frontend/app
 flutter pub get
-flutter run -d chrome
+flutter devices
+flutter run -d <device-id>
 ```
 
-Use `flutter devices` to pick an Android or iOS device. Run tests with `flutter test`.
+The Flutter patient experience uses the configured API base URL. Emulator, browser and physical device networking have different host addresses; see [`api_config.dart`](frontend/app/lib/core/network/api_config.dart).
 
 </details>
 
 <details>
-<summary><b>📲 Expo / React Native app</b></summary>
+<summary><b>Expo native prototype</b></summary>
 
 ```bash
 cd apps/mobile
@@ -448,198 +451,111 @@ npm ci
 npm run start
 ```
 
-For local Android native generation, run `npm run prebuild` and `npm run android` on a machine with the Android toolchain.
+Android native generation needs the Android toolchain and the separate `npm run prebuild` / `npm run android` path.
 
 </details>
 
 <details>
-<summary><b>🧪 CBC research model API (Python)</b></summary>
+<summary><b>Frozen CBC Python oracle</b></summary>
 
 ```bash
 cd model-api
 python -m venv .venv
-# activate the environment for your platform
+# Activate .venv using your platform's command.
 python -m pip install -r requirements-dev.txt
-python -m unittest discover -s tests -v
 python -m uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-access-log
 ```
 
-Interactive schema at `http://127.0.0.1:8000/docs` · health at `GET /health`. Hosting notes and the Render migration steps are in [`model-api/README.md`](model-api/README.md).
+The sample request and exact expected response are in [`model-api/README.md`](model-api/README.md). The main portal computes its frozen result in the Worker and makes no runtime request to this service.
 
 </details>
 
-### Shortcuts
-
-| Command | Does |
-|---|---|
-| `make setup` | `npm ci` |
-| `make dev` | Build, then start the dev server |
-| `make test` · `make e2e` | Vitest suite · Playwright browser suite |
-| `make bench` | Reproduce the synthetic benchmark |
-| `make eval` | Safety-focused evaluation tests |
-| `make privacy` | Run the local privacy node |
-| `make up` · `make down` | Docker Compose stack up · down |
-
-## ✅ Build and Verification
-
-| Command | Purpose |
-|---|---|
-| `npm run typecheck` | TypeScript checks for root and backend projects |
-| `npm run check:frontend` | TypeScript check for the Pages frontend configuration |
-| `npm run build` | Typecheck, build Pages web assets, bundle the Node API demo |
-| `npm run build:worker` | Wrangler Worker dry-run build |
-| `npm run integration:build` | Build the standalone website integration app |
-| `npm run integration:worker:build` | Build the integration Worker with Wrangler |
-| `npm test` | Root Vitest suite |
-| `npm run eval` | Safety-focused evaluation tests |
-| `npm run e2e` | Playwright browser suite |
-| `npm run lint` | Biome checks on configured source paths |
-| `cd apps/mobile && npm run typecheck` | Expo / React Native TypeScript check |
-| `cd frontend/app && flutter analyze` | Analyze Flutter / Dart sources |
-| `cd frontend/app && flutter test` | Flutter tests |
-
-GitHub Actions runs the broader pipeline: builds, browser and integration checks, a secret scan, a container smoke check, and a mobile typecheck. A green local build does **not** confirm a successful Cloudflare deployment. Inspect the Actions run and the deployed app separately.
-
-## ☁️ Cloudflare Deployment
-
-The workflow uses Wrangler to apply D1 migrations, publish `dist/web` to the Pages project `ayuseva`, and deploy the Worker described by `wrangler.jsonc`. It triggers on pushes to `main` (and the configured feature branch) after verification passes.
-
-**Required GitHub Actions secrets**
-
-| Secret | Purpose |
-|---|---|
-| `CLOUDFLARE_API_TOKEN` | Token with permissions for the configured Pages, Worker, and D1 deployment actions |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account identifier |
-
-Never place these in source files, commit them, or expose them to frontend code. For local Worker development, use Wrangler's local bindings and git-ignored `.dev.vars` files ([Wrangler docs](https://developers.cloudflare.com/workers/wrangler/)).
+### Verification commands
 
 ```bash
+npm run lint
+npm run typecheck
+npm run check:frontend
+npm test
+npm run eval
+npm run e2e
+npm run cbc:worker:smoke
+npm run cbc:e2e
+npm run build
 npm run build:worker
-npx wrangler d1 migrations apply dhaaga-db --local --config wrangler.jsonc
-npx wrangler pages deploy dist/web --project-name=ayuseva --branch=main
-npx wrangler deploy
 ```
+
+These are available repository commands, not a claim that every command passed for this README edit. The [CI workflow](.github/workflows/ci.yml) runs verification before deploy; CBC has additional focused smoke/browser commands. Build outcomes and deployed behavior should be checked per revision.
+
+### Cloudflare delivery
+
+The CI deployment job runs on configured push branches after verification, applies remote D1 migrations, publishes `dist/web` to the `ayuseva` Pages project, and deploys the root Worker. Deployment requires the GitHub Actions secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`; local development uses Wrangler local bindings and git-ignored environment variables. No key belongs in client code or this README. [Workflow](.github/workflows/ci.yml) · [Runbook](docs/DEPLOYMENT.md) · [Wrangler config](wrangler.jsonc)
+
+<a id="evidence"></a>
+## Evidence, status and limitations
+
+The numbers below are **synthetic mechanism checks**, not clinical sensitivity, safety or operational savings claims. Seed `26047`, 500 constructed cases; reproduce with `npm run bench`. [Full results and methodology](docs/benchmarks/RESULTS.md)
+
+| Synthetic benchmark | AYUSETU mechanism | Naive comparator |
+|---|---:|---:|
+| Unsafe stock selections | **0** | 276 |
+| Injected BP ramps flagged, out of 250 | **250** | 0 |
+| Unchanged BP streams flagged, out of 250 | 4 | 0 |
+
+The comparator deliberately lacks the safety constraints, and the BP scenarios favor the injected change pattern. These values do not establish clinical performance. The [raw benchmark artifacts](docs/benchmarks) and [current progress](docs/PROGRESS.md) describe what has actually been measured.
+
+| Scope | Present state | Next evidence needed |
+|---|---|---|
+| Core Sentinel / Rx / Drift / ThreadPulse | Deterministic TypeScript demos, tests and synthetic benchmarks | Clinician-reviewed ontology, independent datasets, prospective utility |
+| Web clinical integration and CBC | Authenticated synthetic local/Worker workflow; research score isolated from care | Production identity, real-record authorization, clinical validation and security review |
+| HER, Vitalis and yoga | Implemented rules, routes and mobile screens; some seeded/in-memory state | Durable longitudinal data, reviewed content and device verification |
+| Flutter app | Android/iOS/web source and emulator demo | Device coverage, store packaging and release verification |
+| Expo app | Separate prototype and typecheck path | Native device build and feature-parity decisions |
+| BreathSense X | v2.0 report and instrument validation plan | Bench hardware, held-out repeatability, then separate ethics-approved study |
+| Cloudflare deployment | Workflow for Pages, D1 and Worker | Check the latest workflow run and deployed revision before claiming live status |
 
 > [!CAUTION]
-> Production migrations and deployments are external side effects. Review the target account, project, branch, migration status, and CI results before running them manually. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md). An AWS CloudFormation template exists in `infra/aws` but has only been statically validated, never applied.
+> Do not put real patient data into demo screens, screenshots, public issues, the research API or synthetic clinical accounts. The README describes software mechanisms and design intent; it is not evidence of medical-device approval, ABDM integration, DPDP compliance or clinical accuracy.
 
-## 🔐 Configuration and Secrets
-
-- `wrangler.jsonc` holds non-secret Worker configuration and Cloudflare resource identifiers.
-- `.dev.vars` and `.env*` are git-ignored. Keep local credentials there; use `.env.example` for variable names only.
-- Optional AI or speech providers must be configured as **server-side Worker secrets**. Never embed provider keys in Flutter, React, or static web bundles.
-- The build works from a clean root `npm ci`; Tailwind and Autoprefixer for the Pages Vite config are declared in the root package manifest for Cloudflare's root-only install.
-
-## 🛡️ Data, Privacy, and Clinical Limitations
-
-- Treat every current flow as development or demonstration software unless a specific feature has been reviewed and approved for clinical use.
-- Do not enter real patient identifiers or records into synthetic demo flows, screenshots, issue reports, model requests, or third-party services.
-- Persistence varies by route. Some HER, Vitalis, intake, and demo flows still use in-memory stores or seeded data, which is not durable or suitable for multi-instance production.
-- Both cancer-detection research tracks are research-only. Their outputs are neither diagnoses nor calibrated disease probabilities.
-- Before handling real health data, complete security, access-control, consent, retention, audit, privacy, clinical-safety, backup, and disaster-recovery reviews. Do not claim regulatory compliance (including ABDM or DPDP) based on this README or a technical design alone.
-- A security-clean production release is **not** claimed: dependency audit findings remain in the Expo build-tool graph and in inherited upstream code.
-- Financial amounts use **integer paise**. Tenant-scoped data access and input validation follow the architecture rules in [`AGENTS.md`](AGENTS.md) and [`docs/PRD.md`](docs/PRD.md).
-
-## 📊 Project Status
-
-A completed checkpoint, **not** a finished product. "Done" means only the verified slice described. Full detail in [`docs/PROGRESS.md`](docs/PROGRESS.md) and [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md).
-
-| Area | State | Notes |
-|---|:---:|---|
-| Hono + Zod API, tenant-scoped D1 slice, hashed expiring sessions, role checks | ✅ | Local synthetic slice; production login disabled |
-| Intake → clinician flow with replay protection and consent revoke | ✅ | Verified API and browser flows |
-| Consent, provenance, FHIR R4 collection export, hash-chained audit | ✅ | Demo boundary; not an ABDM Bundle |
-| Four core engines + benchmarks | ✅ | Property and exhaustive tests; no clinical calibration |
-| HER (A0–A4) and Vitalis (V0–V14) engines and routes | ✅ | Some flows use seeded or in-memory data |
-| Responsive PWA: 4 languages, elder mode, dark mode, offline algorithm lab | ✅ | Clinical translations are draft |
-| Flutter kiosk (synthetic encounter intake, speech input on Android) | ✅ | Staff-assisted; OPD token and QR unavailable |
-| Cloudflare CI/CD (verify, mobile typecheck, deploy) | ✅ | Later commits need their own CI run |
-| Local privacy node (offline recall proof) | ✅ | Standalone proof; not connected to app records |
-| Expo native app | 🚧 | Typecheck and JS export pass; no APK or device verification yet |
-| **BreathSense X** (report v2.0, figures, validation plan) | 🚧 | Research concept; Phase 1 logger first, then Phase 2 pneumatics |
-| **CBC research model** API | 🚧 | Exploratory; independent validation pending |
-| Production SSO / MPI / RBAC, durable events and outbox | ⏳ | Pending |
-| End-to-end-encrypted sync, wearables (Health Connect / HealthKit / BLE) | ⏳ | Simulated source only today |
-| Prescription OCR, full multilingual voice and clinical translation | ⏳ | Needs provider keys and clinical glossary review |
-| Clinical validation, calibrated models, regulatory review | ⏳ | Required before any real use |
-
-## 🗂️ Repository Layout
+<a id="repository"></a>
+## Repository map
 
 ```text
-.
-├── apps/
-│   ├── mobile/                  # Expo / React Native client
-│   └── web/                     # Vite build entry points for Pages
-├── backend/
-│   ├── migrations/              # D1 SQL migrations
-│   └── src/
-│       ├── do/                  # Cloudflare Durable Objects
-│       ├── db/                  # Tenant-aware database helpers
-│       └── modules/             # intake · ops · bridge · home · platform · her · vitalis
-├── Breath_Sense_Cancer_Detection_Research/   # 🔬 BreathSense X report + figures
-├── docs/                        # PRD, design, algorithms, benchmarks, modules
-├── frontend/
-│   ├── app/                     # Flutter patient and kiosk app
-│   └── website/                 # Clinician web portal source
-├── infra/                       # Dockerfile, Compose, AWS template (validated only)
-├── model-api/                   # 🔬 Research-only CBC model service
-├── packages/
-│   ├── engine/                  # Sentinel · Rx-to-Shelf · Drift Radar · ThreadPulse · HER · Vitalis
-│   └── shared/                  # Zod contracts, models, FHIR mappers
-├── scripts/                     # Benchmarks, load test, secret scan
-├── services/                    # lang-gateway, privacy-node
-├── tests/                       # Root Vitest and browser tests
-├── .github/workflows/ci.yml     # Verification and Cloudflare deployment
-├── Makefile                     # Developer shortcuts
-├── package.json                 # Root build and developer commands
-└── wrangler.jsonc               # Main Cloudflare Worker configuration
+backend/              Cloudflare Worker, Hono modules, D1 migrations, Durable Objects
+frontend/website/      React public site, patient web, ERP and clinician workspace
+frontend/app/          Flutter patient and kiosk application
+apps/web/              Root Pages build and static assets
+apps/mobile/           Separate Expo / React Native client
+packages/engine/       Sentinel, Rx, Drift, ThreadPulse, HER, Vitalis, CBC utilities
+packages/shared/       Zod contracts, models and interoperability helpers
+packages/i18n/         Web interface dictionaries
+model-api/             Isolated frozen Python CBC service and tests
+services/              Supporting language/privacy service prototypes
+docs/                  PRD, architecture, algorithms, runbooks, benchmarks, design
+Breath_Sense_Cancer_Detection_Research/  Nonclinical research report and figures
+.github/workflows/     Verification and Cloudflare deployment
 ```
 
-## 🤝 Contributing
+### Read further
 
-1. Read [`AGENTS.md`](AGENTS.md), [`docs/PRD.md`](docs/PRD.md), and relevant architecture decisions first.
-2. Keep each change focused and preserve unrelated working-tree changes.
-3. Update schemas, migrations, docs, and clients together when a shared API contract changes.
-4. Use deterministic rules for clinical or operational decisions; generated text must never override a safety rule.
-5. Run the checks relevant to your change and report any that could not run.
-6. Keep secrets, generated build outputs, release packages, and real patient data out of commits.
-7. Write clear, scoped commit messages, for example `fix(web): resolve Pages Tailwind dependency` or `docs: refresh repository setup guide`.
-
-## 📚 Project Documents
-
-| Document | What it covers |
+| Document | Best for |
 |---|---|
-| [`docs/PRD.md`](docs/PRD.md) | Product requirements and blueprint; primary source of truth |
-| [`docs/HACKATHON_BRIEF.md`](docs/HACKATHON_BRIEF.md) | HackShift 2026 problem statement and requirement mapping |
-| [`docs/INTEGRATION_DESIGN.md`](docs/INTEGRATION_DESIGN.md) | Patient Thread design, contracts, and provenance |
-| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Deployment status and operational constraints |
-| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Architecture decisions |
-| [`docs/algorithms/`](docs/algorithms/) | Algorithm specifications (Sentinel, Rx-to-Shelf, Drift Radar, ThreadPulse) |
-| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) · [`docs/PILLARS.md`](docs/PILLARS.md) | Requirement traceability and evidence mapping |
-| [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) | Controls and compliance notes |
-| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · [`docs/JUDGE_QA.md`](docs/JUDGE_QA.md) | Tested demo journeys and honest Q&A |
-| [`docs/benchmarks/`](docs/benchmarks/) | Reproducible benchmark outputs and limitations |
-| [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Known setup and deployment issues |
-| [`docs/PROGRESS.md`](docs/PROGRESS.md) · [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md) | Progress notes and checkpoint report |
-| [`model-api/README.md`](model-api/README.md) | CBC research model API |
-| [`Breath_Sense_Cancer_Detection_Research/`](Breath_Sense_Cancer_Detection_Research/) | BreathSense X research report and figures |
-
-## 👥 Team Sudarshan
+| [PRD](docs/PRD.md) | Vision, acceptance boundaries, planned algorithms and schemas |
+| [Progress](docs/PROGRESS.md) · [Final report](docs/FINAL_REPORT.md) | What shipped and what remains |
+| [Requirements](docs/REQUIREMENTS.md) · [Pillars](docs/PILLARS.md) | HackShift traceability |
+| [Integration design](docs/INTEGRATION_DESIGN.md) · [Runbook](docs/INTEGRATION_RUNBOOK.md) | Clinical integration and seeded local workflow |
+| [CBC runbook](docs/CBC_RUNBOOK.md) · [Model card](model-api/README.md) | Report workflow, frozen model and research limits |
+| [Algorithm notes](docs/algorithms) · [Benchmarks](docs/benchmarks/RESULTS.md) | Equations, complexity, test conditions and raw evidence |
+| [Deployment](docs/DEPLOYMENT.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) | Cloudflare and CI operations |
+| [BreathSense report](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf) | Instrument design, experiments and evidence tags |
 
 <div align="center">
-
-**Saksham Goswami** &nbsp;·&nbsp; **Paarth Goswami** &nbsp;·&nbsp; **Rohan Singh** &nbsp;·&nbsp; **Potla Sri Sharan**
-
-</div>
 
 ---
 
-<div align="center">
+**AYUSETU · आयुसेतु**<br />
+*Care stays connected. Decisions stay accountable.*
 
-**Built for HackShift 2026 · IIIT Delhi**
-
-AYUSETU is a software prototype for improving continuity across healthcare workflows.
-BreathSense X and the CBC model are research concepts, not clinically validated.
-None of it is a medical device or a substitute for professional care.
+<img src="frontend/website/public/assets/ayusetu_logo.png" alt="AYUSETU logo" width="180" />
 
 </div>

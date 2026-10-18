@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 138" role="img" aria-labelledby="title description">
+  <title id="title">The AyuSetu care continuum</title>
+  <desc id="description">A subtle animated line connects intake, consultation, pharmacy, home follow-up and review. The diagram remains readable without animation.</desc>
+  <defs>
+    <linearGradient id="track" gradientUnits="userSpaceOnUse" x1="102" y1="62" x2="1098" y2="62">
+      <stop offset="0" stop-color="#087f68"/>
+      <stop offset=".53" stop-color="#249b86"/>
+      <stop offset="1" stop-color="#e7a642"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop stop-color="#53e0c0" stop-opacity=".65"/>
+      <stop offset="1" stop-color="#53e0c0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="138" rx="24" fill="#f9f8f3"/>
+  <rect x="1" y="1" width="1198" height="136" rx="23" fill="none" stroke="#dfe9e2" stroke-width="2"/>
+  <path id="route" d="M102 62H1098" fill="none" stroke="#d5e6db" stroke-width="5" stroke-linecap="round"/>
+  <path d="M102 62H1098" fill="none" stroke="url(#track)" stroke-width="3" stroke-linecap="round"/>
+  <g fill="#fff" stroke="#087f68" stroke-width="3">
+    <circle cx="102" cy="62" r="13"/><circle cx="351" cy="62" r="13"/><circle cx="600" cy="62" r="13"/><circle cx="849" cy="62" r="13"/><circle cx="1098" cy="62" r="13"/>
+  </g>
+  <g fill="#087f68">
+    <circle cx="102" cy="62" r="5"/><circle cx="351" cy="62" r="5"/><circle cx="600" cy="62" r="5"/><circle cx="849" cy="62" r="5"/><circle cx="1098" cy="62" r="5"/>
+  </g>
+  <circle r="23" fill="url(#glow)" opacity="0">
+    <animate attributeName="opacity" values="1;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion dur="8s" repeatCount="indefinite"><mpath href="#route"/></animateMotion>
+  </circle>
+  <circle r="6" fill="#e7a642" opacity="0">
+    <animate attributeName="opacity" values="1;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion dur="8s" repeatCount="indefinite"><mpath href="#route"/></animateMotion>
+  </circle>
+  <g fill="#22483f" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" text-anchor="middle">
+    <text x="102" y="108">INTAKE</text><text x="351" y="108">CONSULT</text><text x="600" y="108">PHARMACY</text><text x="849" y="108">AT HOME</text><text x="1098" y="108">REVIEW</text>
+  </g>
+</svg>
