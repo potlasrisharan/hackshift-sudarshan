@@ -24,7 +24,7 @@ One connected loop for patients, clinicians, and pharmacies, driven by determini
 [Overview](#-overview) ·
 [Architecture](#-architecture) ·
 [Algorithms](#-deterministic-algorithms) ·
-[CBC Research Model](#-cbc-research-model) ·
+[Cancer-Detection Research](#-cancer-detection-research) ·
 [Quick Start](#-quick-start) ·
 [Deployment](#-cloudflare-deployment) ·
 [Docs](#-project-documents)
@@ -172,7 +172,39 @@ Seed `26047` · 500 synthetic cases · reproduce with `make bench`. Raw output: 
 > [!IMPORTANT]
 > These numbers demonstrate **mechanisms on hand-constructed synthetic cases**, not clinical performance. The baseline ignores clinical constraints, so its lower cost is not a valid saving, and no independent clinical dataset was used. See [`docs/benchmarks/RESULTS.md`](docs/benchmarks/RESULTS.md) for the full list of limitations.
 
-## 🔬 CBC Research Model
+## 🔬 Cancer-Detection Research
+
+Alongside the care platform, the team is exploring **cancer detection research** along two independent tracks. Both are **research-only**, are **not clinically validated**, and are **not used by the main application** to make care decisions.
+
+### 1 · BreathSense X: breast-cancer breath VOC research
+
+📄 [Research & engineering report (v2.0)](Breath_Sense_Career_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)
+
+A low-cost electronic-nose platform for investigating breath volatile-organic-compound (VOC) patterns associated with breast cancer. The present deliverable is a **nonclinical sensing and reliability platform**: it asks whether an affordable e-nose can produce reproducible signatures, flag compromised measurements, and reduce environmental drift *before* any biomedical signal question is attempted. No patients are involved in the V1 hardware.
+
+<table>
+  <tr>
+    <td align="center"><img src="Breath_Sense_Career_Detection_Research/Conventional_model.png" alt="Conventional single-path e-nose baseline" width="100%"/><br/><sub><b>Simplified conventional baseline</b></sub></td>
+    <td align="center"><img src="Breath_Sense_Career_Detection_Research/Proposed_Model_Prototype.jpeg" alt="Proposed BreathSense X prototype" width="100%"/><br/><sub><b>Proposed BreathSense X prototype</b></sub></td>
+  </tr>
+</table>
+
+**Five researched concepts, one assessable platform**
+
+| # | Concept | Status |
+|---|---|---|
+| 1 | Ambient-reference measurements (switched reference vs. sample path) | Proposed |
+| 2 | Drift monitoring and recalibration flags | Proposed |
+| 3 | Sample-quality rejection with abstain / retest | Proposed |
+| 4 | Multi-heater gas-sensing features | Proposed |
+| 5 | Clinical multimodal fusion | Future clinical phase |
+
+**Hardware envelope (≈ INR 15,000):** 2 × Bosch BME688 + Sensirion SGP40 + optional SHT31-D, ESP32 controller, and a single switched sensing chamber with an isolated ambient inlet and sample inlet (never mixed). Delivery is split into a **Phase 1 sensor logger** and a **Phase 2 pneumatic platform**, with a go/no-go fallback to the logger if the gas-path parts cannot be verified. Validation is planned as experiments **E1–E7** (warm-up, valve isolation, carryover, humidity robustness, drift, ML ablation, reliability stress cases).
+
+> [!NOTE]
+> **Evidence boundary.** Prior breast-cancer breath studies report encouraging results, but small cohorts, inconsistent collection protocols, and limited external validation mean those accuracies cannot be transferred to this design. The novelty claim is a *measurably improved low-cost integration*, not a new diagnostic. The report keeps unverified items explicitly tagged as open rather than guessing.
+
+### 2 · CBC research model: blood-count-based cancer-risk score
 
 📄 [`model-api/README.md`](model-api/README.md) · Based on a [published Indian CBC study](https://www.nature.com/articles/s41598-023-27548-w)
 
@@ -181,7 +213,7 @@ A frozen, India-only **logistic regression** pipeline that scores a complete blo
 | | |
 |---|---|
 | **Inputs** | WBC, RBC, neutrophil %, lymphocyte %, monocyte % (derived: NLR, LMR) |
-| **Model** | `india-cbc-logistic-c87ec8485159` · 7 features · fixed cutoff `0.626816` |
+| **Model** | `india-cbc-logistic-c87ec8485159` · 7 features · fixed cutoff `0.6268` |
 | **Evaluation** | Internal nested cross-validation on 752 published records with reconstructed labels |
 | **AUC** | 0.713 (95% CI 0.677–0.749) |
 | **Accuracy / Sensitivity / Specificity** | 63.2% / 35.9% / 90.4% |
@@ -341,7 +373,7 @@ npx wrangler deploy
 - Treat every current flow as development or demonstration software unless a specific feature has been reviewed and approved for clinical use.
 - Do not enter real patient identifiers or records into synthetic demo flows, screenshots, issue reports, model requests, or third-party services.
 - Persistence varies by route. Some HER, Vitalis, intake, and demo flows still use in-memory stores or seeded data, which is not durable or suitable for multi-instance production.
-- The isolated CBC model is research-only. Its output is neither a diagnosis nor a calibrated disease probability.
+- Both cancer-detection research tracks are research-only. Their outputs are neither diagnoses nor calibrated disease probabilities.
 - Before handling real health data, complete security, access-control, consent, retention, audit, privacy, clinical-safety, backup, and disaster-recovery reviews. Do not claim regulatory compliance based on this README or a technical design alone.
 - Financial amounts use **integer paise**. Tenant-scoped data access and input validation follow the architecture rules in [`AGENTS.md`](AGENTS.md) and [`docs/PRD.md`](docs/PRD.md).
 
@@ -379,6 +411,7 @@ npx wrangler deploy
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Known setup and deployment issues |
 | [`docs/PROGRESS.md`](docs/PROGRESS.md) | Project progress notes |
 | [`model-api/README.md`](model-api/README.md) | CBC research model API |
+| [`Breath_Sense_Career_Detection_Research/`](Breath_Sense_Career_Detection_Research/) | BreathSense X cancer-detection research report and figures |
 
 ## 👥 Team Sudarshan
 
