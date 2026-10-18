@@ -1,33 +1,33 @@
 <div align="center">
 
-# AYUSETU · आयुसेतु
+<img src="docs/images/banner-ayusetu.svg" alt="AYUSETU · आयुसेतु — The Continuity-of-Care Operating System" width="100%"/>
 
-### The Continuity-of-Care Operating System
+<br/>
 
-**Intake → Clinic Operations → Home Follow-up → back to Intake.**
-One connected loop for patients, clinicians, and pharmacies, driven by deterministic, reviewable algorithms.
+**One thread from first symptom to full recovery.**
+Intake → Clinic Operations → Home Follow-up → back to Intake, joined by deterministic, reviewable algorithms,
+plus an independent **cancer-detection research** programme.
 
 <br/>
 
 [![CI](https://github.com/potlasrisharan/hackshift-sudarshan/actions/workflows/ci.yml/badge.svg)](https://github.com/potlasrisharan/hackshift-sudarshan/actions/workflows/ci.yml)
-![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers%20%C2%B7%20D1%20%C2%B7%20KV%20%C2%B7%20DO-F38020?logo=cloudflare&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1%20%2B%20KV%20%2B%20DO-F38020?logo=cloudflare&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Hono](https://img.shields.io/badge/API-Hono-E36002?logo=hono&logoColor=white)
 ![React](https://img.shields.io/badge/Web-React%20%2B%20Vite-61DAFB?logo=react&logoColor=black)
-![Flutter](https://img.shields.io/badge/Patient%20app-Flutter-02569B?logo=flutter&logoColor=white)
-![Expo](https://img.shields.io/badge/Mobile-Expo%20%2F%20React%20Native-000020?logo=expo&logoColor=white)
+![Flutter](https://img.shields.io/badge/Kiosk-Flutter-02569B?logo=flutter&logoColor=white)
+![Expo](https://img.shields.io/badge/Mobile-Expo%20React%20Native-000020?logo=expo&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/Research%20API-FastAPI-009688?logo=fastapi&logoColor=white)
+![Research](https://img.shields.io/badge/Research-Cancer%20Detection-C084FC)
 ![Status](https://img.shields.io/badge/status-hackathon%20prototype-orange)
 
-**Built by Team Sudarshan for HackShift 2026 · IIIT Delhi · Theme: Healthcare & Well-being**
-
-[Overview](#-overview) ·
-[Architecture](#-architecture) ·
-[Algorithms](#-deterministic-algorithms) ·
-[Cancer-Detection Research](#-cancer-detection-research) ·
-[Quick Start](#-quick-start) ·
-[Deployment](#-cloudflare-deployment) ·
-[Docs](#-project-documents)
+[**Overview**](#-overview) &nbsp;·&nbsp;
+[**Architecture**](#-architecture) &nbsp;·&nbsp;
+[**Algorithms**](#-deterministic-algorithms) &nbsp;·&nbsp;
+[**🔬 Research**](#-cancer-detection-research) &nbsp;·&nbsp;
+[**Quick Start**](#-quick-start) &nbsp;·&nbsp;
+[**Status**](#-project-status) &nbsp;·&nbsp;
+[**Docs**](#-project-documents)
 
 </div>
 
@@ -36,43 +36,55 @@ One connected loop for patients, clinicians, and pharmacies, driven by determini
 > [!WARNING]
 > **Prototype software, not a medical device.** Some API paths use in-memory stores or synthetic demonstration records. Do **not** use this application for real patient care, and do **not** send real patient information to demo or research services. Read [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and [`docs/PRD.md`](docs/PRD.md) before making implementation or deployment decisions.
 
-## ✨ Overview
+<table align="center">
+  <tr>
+    <td align="center"><h2>24</h2><sub><b>deterministic engines</b><br/>4 core · 5 HER · 15 Vitalis</sub></td>
+    <td align="center"><h2>4</h2><sub><b>interface languages</b><br/>English · हिन्दी · ਪੰਜਾਬੀ · தமிழ்</sub></td>
+    <td align="center"><h2>0</h2><sub><b>unsafe stock picks</b><br/>500-case synthetic benchmark</sub></td>
+    <td align="center"><h2>2</h2><sub><b>cancer-detection tracks</b><br/>BreathSense X · CBC model</sub></td>
+  </tr>
+</table>
 
-AYUSETU unifies two earlier codebases into a single closed-loop ecosystem:
+## 🧭 What's Inside
 
-| Origin | Scope |
-|---|---|
-| **AarogyaNidhi (ClinicOS)** | Multi-clinic operations, role isolation, POS, batch/expiry inventory radar, double-entry ledger |
-| **MediKiosk** | Multilingual voice intake, adaptive triage questioning, red-flag detection, prescription OCR, SOAP note generation |
+| | **Pillar 1 · Care Platform** | **Pillar 2 · Cancer-Detection Research** |
+|---|---|---|
+| **What** | AYUSETU: patient intake, clinic operations, and home follow-up on one consented Patient Thread | **BreathSense X** (breast-cancer breath VOC e-nose) and a **CBC blood-count research model** |
+| **Stack** | Cloudflare Workers · Hono · D1 · React · Flutter · Expo · TypeScript engines | ESP32 + BME688 / SGP40 sensing · Python · FastAPI · scikit-learn |
+| **Principle** | *Algorithms decide; AI may translate or format.* | *Measure, don't assume.* Every claim is tagged and bounded |
+| **Go to** | [Overview](#-overview) · [Architecture](#-architecture) · [Algorithms](#-deterministic-algorithms) | [Research programme](#-cancer-detection-research) · [BreathSense X](#1--breathsense-x--breast-cancer-breath-voc-research) · [CBC model](#2--cbc-research-model--blood-count-cancer-risk-score) |
 
-```mermaid
-flowchart LR
-  I["🩺 Intake<br/>Sentinel triage"] -->|"prescription"| O["🏥 Operations<br/>Rx-to-Shelf"]
-  O -->|"refill hazard"| H["🏠 Home follow-up<br/>Drift Radar"]
-  H -->|"drift alerts + context"| I
-```
+<details>
+<summary><b>🎯 HackShift 2026 requirement coverage (PS-1 to PS-7)</b></summary>
 
-- **Intake → Ops (Rx-to-Shelf):** prescriptions match in-stock, course-valid, lowest-cost batches.
-- **Ops → Home (refill hazard):** inventory and prescription timelines drive proactive refill nudges.
-- **Home → Intake (closed loop):** monitoring drift alerts feed nurse queues and pre-load context for the next visit.
+<br/>
 
-> **Core product rule: _algorithms decide; AI may translate or format._**
-> Safety gates and ranking rules stay deterministic and reviewable. Language services never diagnose and never override a safety decision.
-
-### Hackathon requirement coverage
+**Event:** HackShift 2026 · IIIT Delhi · Theme *Healthcare & Well-being: Reimagining Healthcare Through Technology*
 
 | ID | Area | How AYUSETU approaches it |
 |---|---|---|
-| PS-1 | Accessibility | Voice-first Indic UX, WhatsApp-native flows, offline-capable kiosk |
-| PS-2 | Affordability | Generic-substitution savings, FEFO expiry-aware allocation |
-| PS-3 | Quality of care | Hard-rule red-flag bypass, course-valid batch dispensing |
-| PS-4 | AI-assisted guidance | Adaptive questioning, clinician SOAP note generation |
+| PS-1 | Accessibility | Voice-first Indic UX, WhatsApp-native flows, offline-capable kiosk and algorithm lab |
+| PS-2 | Affordability | Generic-substitution savings, FEFO expiry-aware allocation, integer-paise cost model |
+| PS-3 | Quality of care | Hard-rule red-flag bypass, course-valid batch dispensing, tested safety gates |
+| PS-4 | AI-assisted guidance | Adaptive questioning, source-cited clinician summaries |
 | PS-5 | Remote monitoring | Home check-ins and baseline-aware Drift Radar |
-| PS-6 | Digital health management | Single Patient Thread, FHIR R4 mappers, multi-clinic inventory and ledger |
-| PS-7 | Responsible AI & privacy | PHI redaction gate, consent receipts, hash-chained audit logs |
+| PS-6 | Digital health management | Single Patient Thread, FHIR R4 collection export, multi-clinic inventory and ledger |
+| PS-7 | Responsible AI and privacy | PHI redaction gate, consent receipts with revoke/delete, tamper-evident audit chain |
 
-> [!NOTE]
-> The table above describes design intent from the [hackathon brief](docs/HACKATHON_BRIEF.md). Feature coverage varies by client and module; see [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) for traceability and [`docs/PROGRESS.md`](docs/PROGRESS.md) for current status.
+Design intent comes from the [hackathon brief](docs/HACKATHON_BRIEF.md). Coverage varies by client and module: see [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) for traceability, [`docs/PILLARS.md`](docs/PILLARS.md) for shipped slices mapped to evidence, and [`docs/PROGRESS.md`](docs/PROGRESS.md) for current status.
+
+</details>
+
+<details>
+<summary><b>👩 The demo story: Sunita, 52</b></summary>
+
+<br/>
+
+Sunita (diabetes and hypertension, Hindi speaker, low literacy) taps "हिंदी" at a clinic kiosk. **Sentinel** asks adaptive questions and screens for red flags. A source-cited clinician brief is ready for the doctor. The prescription flows to **Rx-to-Shelf**, which rejects the cheapest batch that would expire mid-course and the wrong-strength batch, then proposes the cheapest *feasible* plan across clinics for a pharmacist to confirm. At home, **Drift Radar** compares her blood-pressure readings against her *own* baseline and flags a sustained upward shift that a fixed population threshold would miss. Every step is consented, auditable, and revocable.
+
+The scripted six-minute and two-minute journeys are in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md). All demo data is synthetic.
+
+</details>
 
 ## 🖼️ Screenshots
 
@@ -93,11 +105,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  APP["Patient app<br/>Flutter"] --> API
+  APP["Patient / kiosk app<br/>Flutter"] --> API
   WEB["Clinician & ops web<br/>React / Vite"] --> API
   RN["Mobile client<br/>Expo / React Native"] --> API
 
-  subgraph CF["Cloudflare"]
+  subgraph CF["☁️ Cloudflare"]
     API["Worker API<br/>Hono · /api/v1"]
     D1[("D1")]
     KV[("KV")]
@@ -108,18 +120,18 @@ flowchart LR
   API --> KV
   API --> DO
   API --> ENGINE["packages/engine<br/>deterministic algorithms"]
-  CONTRACTS["packages/shared<br/>Zod contracts"] --> API
+  CONTRACTS["packages/shared<br/>Zod contracts · FHIR mappers"] --> API
   CONTRACTS --> WEB
   MODEL["model-api<br/>research-only CBC model"] -.->|"not called by the main app"| API
 ```
 
-Cloudflare is the deployment target. The Worker entry point is `backend/src/index.ts`; the root `wrangler.jsonc` configures the Worker, D1, KV, and Durable Object bindings. GitHub Actions builds the web app, applies D1 migrations, publishes the Pages artifact, and deploys the Worker once verification jobs pass.
+Cloudflare is the deployment target. The Worker entry point is `backend/src/index.ts`; the root `wrangler.jsonc` configures the Worker, D1, KV, and Durable Object bindings. GitHub Actions builds the web app, applies D1 migrations, publishes the Pages artifact, and deploys the Worker on the configured branches once verification passes.
 
-The repository has two web build paths and two mobile codebases:
+The repository has **two web build paths** and **two mobile codebases**:
 
 - `apps/web` is the lightweight web build used by the root build and Cloudflare Pages workflow. It compiles source from `frontend/website/src`.
 - `frontend/website` also has a standalone Vite project and lockfile.
-- `frontend/app` is the Flutter patient and kiosk client; `apps/mobile` is the Expo / React Native client.
+- `frontend/app` is the Flutter patient and kiosk client (Dhaaga); `apps/mobile` is the Expo / React Native client.
 
 Check the workflow and app configuration before assuming the clients have identical feature coverage.
 
@@ -127,34 +139,37 @@ Check the workflow and app configuration before assuming the clients have identi
 
 | Path | Technology | Purpose |
 |---|---|---|
-| `backend/` | TypeScript, Hono, Cloudflare Workers | Shared `/api/v1` API, module routes, migrations, Durable Objects |
+| `backend/` | TypeScript, Hono, Cloudflare Workers | Shared `/api/v1` API, module routes, D1 migrations, Durable Objects |
 | `frontend/website/` | React, Vite, Tailwind CSS | Clinician and operations portal |
 | `apps/web/` | Vite | Root build and Pages entry points |
 | `frontend/app/` | Flutter, Dart, Riverpod, GoRouter | Patient and kiosk application |
-| `apps/mobile/` | Expo, React Native, TypeScript | Native mobile app and Android build config |
+| `apps/mobile/` | Expo, React Native, TypeScript | Native mobile app and Android build configuration |
 | `packages/engine/` | TypeScript | Deterministic triage, pharmacy, follow-up, HER, and Vitalis algorithms |
 | `packages/shared/` | TypeScript, Zod | Shared contracts, models, interoperability helpers |
 | `services/` | TypeScript, Python | Language gateway and local privacy node |
 | `model-api/` | Python, FastAPI, scikit-learn | Isolated, research-only CBC model API |
+| `Breath_Sense_Cancer_Detection_Research/` | PDF, figures | BreathSense X research and engineering report |
 
 **API route prefixes:** `/api/v1/intake` · `/ops` · `/bridge` · `/home` · `/her` · `/vitalis`. Consult each module's route file for request schemas and current behavior.
 
 ## 🧠 Deterministic Algorithms
 
-The core decision logic lives in [`packages/engine`](packages/engine). Specifications live in [`docs/PRD.md`](docs/PRD.md) and [`docs/algorithms/`](docs/algorithms/). Read them before changing any clinical or operational rule.
+The core decision logic lives in [`packages/engine`](packages/engine). Specifications are in [`docs/PRD.md`](docs/PRD.md) and [`docs/algorithms/`](docs/algorithms/). Read them before changing any clinical or operational rule.
 
-| Engine | What it does |
-|---|---|
-| 🚨 **Sentinel** | Selects intake questions and evaluates defined red-flag conditions |
-| 💊 **Rx-to-Shelf** | Plans medicine allocation against stock, expiry, and prescription constraints |
-| 📈 **Drift Radar** | Compares observations with a patient's baseline and flags defined changes |
-| 🔁 **ThreadPulse** | Estimates demand from refill and cohort probabilities |
-| 🌸 **HER A0–A4** | Women's health safety checks, cycle patterns, evidence-based screening, wellness ranking, trends |
-| 🌿 **Vitalis V0–V14** | Safety checks, healthspan progress, preventive ranking, exercise progression, biomarker and behavior analysis |
+| Engine | What it does | How |
+|---|---|---|
+| 🚨 **Sentinel** | Selects intake questions, evaluates red flags | Bayesian posterior over latent classes; next question maximizes expected entropy reduction *after* mandatory danger screens. An affirmative chest-pain, breathlessness, or fainting screen returns emergency |
+| 💊 **Rx-to-Shelf** | Plans medicine allocation | Exact integer optimization of course cost plus transfer cost. Salt, strength, form, quantity, and expiry must hold (stock must outlive the course by 14 days). No fuzzy drug match is auto-accepted; every plan needs a pharmacist |
+| 📈 **Drift Radar** | Flags sustained change from a patient's own baseline | Robust baseline (median and MAD of first 7 days) with one-sided CUSUM. An independent absolute-limit alert (systolic ≥ 180) always fires, even during cold start |
+| 🔁 **ThreadPulse** | Estimates demand and stock-out risk | Exact demand distribution by convolving per-patient refill probabilities; reorder quantity from a service-level quantile |
+| 🌸 **HER A0–A4** | Women's health | A0 safety gate · A1 cycle deviation detector · A2 screening evidence routing · A3 wellness ranker with contraindications · A4 longitudinal trend analyzer |
+| 🌿 **Vitalis V0–V14** | Longevity and preventive health | Safety gate, healthspan index, preventive ranker, exercise progression, biomarker trends, lifestyle correlations, readiness, functional capacity, deduplication, eligibility, behavior simulator |
+
+Each engine returns explanatory payloads (inputs, constraints, intermediate values, rejection reasons), so every decision can be inspected. The algorithms produce software outputs, **not** a medical diagnosis or a substitute for clinician judgment.
 
 ### Measured mechanisms (synthetic benchmark)
 
-Seed `26047` · 500 synthetic cases · reproduce with `make bench`. Raw output: [`docs/benchmarks/`](docs/benchmarks/).
+Seed `26047` · 500 synthetic cases · reproduce with `make bench` · raw output in [`docs/benchmarks/`](docs/benchmarks/).
 
 | Measure | AYUSETU | Naive baseline |
 |---|---:|---:|
@@ -169,55 +184,189 @@ Seed `26047` · 500 synthetic cases · reproduce with `make bench`. Raw output: 
 | Drift Radar | 0.031 ms |
 | ThreadPulse | 0.040 ms |
 
+A real k6 transport test against the health route (5 virtual users, 15 s) completed 117,589 iterations; see [`docs/benchmarks/k6-health.txt`](docs/benchmarks/k6-health.txt).
+
 > [!IMPORTANT]
-> These numbers demonstrate **mechanisms on hand-constructed synthetic cases**, not clinical performance. The baseline ignores clinical constraints, so its lower cost is not a valid saving, and no independent clinical dataset was used. See [`docs/benchmarks/RESULTS.md`](docs/benchmarks/RESULTS.md) for the full list of limitations.
+> These numbers show **mechanisms on hand-constructed synthetic cases**, not clinical performance. The naive baseline ignores clinical constraints, so its lower cost is not a valid saving. The load test is not an authenticated or database workload. No independent clinical dataset was used. See [`docs/benchmarks/RESULTS.md`](docs/benchmarks/RESULTS.md).
+
+---
 
 ## 🔬 Cancer-Detection Research
 
-Alongside the care platform, the team is exploring **cancer detection research** along two independent tracks. Both are **research-only**, are **not clinically validated**, and are **not used by the main application** to make care decisions.
+<div align="center">
+
+<img src="docs/images/banner-breathsense.svg" alt="BreathSense X — Breast-cancer breath VOC research" width="100%"/>
+
+</div>
+
+<br/>
+
+Alongside the care platform, Team Sudarshan runs a **cancer-detection research programme** with two independent tracks. Both are **research-only**, **not clinically validated**, and **never used by the main application to make care decisions**.
+
+| | **BreathSense X** | **CBC research model** |
+|---|---|---|
+| **Cancer focus** | Breast cancer | Cancer-risk scoring from routine blood counts |
+| **Signal** | Breath volatile organic compounds (VOCs) via a low-cost e-nose | Complete blood count (WBC, RBC, differentials, NLR, LMR) |
+| **Stage** | Research concept, nonclinical V1 hardware plan (report v2.0) | Frozen exploratory model served by an isolated API |
+| **Evidence** | Experiments E1–E7 planned; no patient data | Internal nested cross-validation, AUC 0.713 |
+| **Read** | [Research report (PDF)](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf) | [`model-api/README.md`](model-api/README.md) |
 
 ### 1 · BreathSense X: breast-cancer breath VOC research
 
-📄 [Research & engineering report (v2.0)](Breath_Sense_Career_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)
+📄 **[BreathSense X: Research and Engineering Report, v2.0](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)** · revised 18 October 2026
 
-A low-cost electronic-nose platform for investigating breath volatile-organic-compound (VOC) patterns associated with breast cancer. The present deliverable is a **nonclinical sensing and reliability platform**: it asks whether an affordable e-nose can produce reproducible signatures, flag compromised measurements, and reduce environmental drift *before* any biomedical signal question is attempted. No patients are involved in the V1 hardware.
+Exhaled air carries numerous VOCs shaped by metabolism, oxidative stress, diet, medication, smoking, and environment. There is **no accepted single breast-cancer-specific breath biomarker**, so BreathSense X asks a deliberately narrower, testable question first:
+
+> *Can an affordable electronic nose obtain reproducible gas-response signatures, identify compromised measurements, and reduce environmental and day-to-day drift on held-out nonclinical sessions?*
+
+Only after that instrument question is answered should biomedical and clinical partners assess whether breath profiles carry a robust breast-cancer-related signal. **V1 involves no patients and tests no disease hypothesis.**
 
 <table>
   <tr>
-    <td align="center"><img src="Breath_Sense_Career_Detection_Research/Conventional_model.png" alt="Conventional single-path e-nose baseline" width="100%"/><br/><sub><b>Simplified conventional baseline</b></sub></td>
-    <td align="center"><img src="Breath_Sense_Career_Detection_Research/Proposed_Model_Prototype.jpeg" alt="Proposed BreathSense X prototype" width="100%"/><br/><sub><b>Proposed BreathSense X prototype</b></sub></td>
+    <td align="center"><img src="Breath_Sense_Cancer_Detection_Research/Conventional_model.png" alt="Simplified conventional single-path e-nose baseline" width="100%"/><br/><sub><b>Simplified conventional baseline</b><br/>single air path, no reference, no drift awareness</sub></td>
+    <td align="center"><img src="Breath_Sense_Cancer_Detection_Research/Proposed_Model_Prototype.jpeg" alt="Proposed BreathSense X prototype" width="100%"/><br/><sub><b>Proposed BreathSense X prototype</b><br/>concept visualization, not a built device</sub></td>
   </tr>
 </table>
 
-**Five researched concepts, one assessable platform**
+#### Five researched concepts, one assessable platform
 
-| # | Concept | Status |
+| # | Concept | What must be demonstrated | Status |
+|---|---|---|---|
+| 1 | **Ambient-reference measurement** | Lower environmental sensitivity than a sample-only baseline on held-out days | Proposed |
+| 2 | **Drift monitoring and recalibration flags** | Drift detected and stability improved on later unseen sessions, without hiding sensor failure | Proposed |
+| 3 | **Sample-quality gate with abstain / retest** | Known poor runs rejected; false-reject rate and coverage reported | Proposed |
+| 4 | **Multi-heater gas-sensing features** | Held-out gain over single-resistance features, weighed against power and time | Proposed |
+| 5 | **Clinical multimodal fusion** | Added predictive value over a clinical-only baseline in ethics-approved cohorts | Future clinical phase |
+
+The novelty claim is a **measurably improved low-cost integration**, not the invention of e-noses, and **not** diagnostic effectiveness. Ambient-air purge already exists in prior work, and the report says so explicitly.
+
+#### Proposed instrument
+
+```mermaid
+flowchart LR
+  A["🌬️ Ambient reference inlet (A)<br/>room air"] --> V{{"3-way selector valve<br/>one source active at a time"}}
+  S["🧪 Nonclinical sample inlet (S)<br/>benign bench gas only"] --> V
+  V --> C["Common sensing chamber<br/>2× BME688 · SGP40 · SHT31-D"]
+  C --> P["Downstream pump"] --> X["Safe exhaust"]
+  C --> E["ESP32 data logger"] --> M["PC pipeline<br/>quality gate · drift monitor · research-only model"]
+```
+
+A **single switched chamber** (rather than two parallel chambers) lets ambient and sample streams visit the *same* sensors at different times, avoiding sensor-to-sensor manufacturing variability. The trade-off is carryover and a longer cycle, which the experiments measure. Sources are **never mixed**.
+
+<details>
+<summary><b>⚙️ Control sequence (state machine)</b></summary>
+
+<br/>
+
+```mermaid
+stateDiagram-v2
+  direction LR
+  state "PURGE / RECOVERY" as PURGE_A
+  state "PURGE / RECOVERY" as PURGE_B
+  state "QUALITY CHECK" as QC
+  [*] --> BOOT
+  BOOT --> REFERENCE: sensors respond
+  REFERENCE --> PURGE_A: stable baseline
+  PURGE_A --> SAMPLE
+  SAMPLE --> PURGE_B
+  PURGE_B --> QC
+  QC --> SAVE: pass
+  QC --> REFERENCE: fail, retest
+  SAVE --> [*]
+```
+
+Any state can drop to **FAULT / FAILSAFE**: pump off, valve to its verified safe default, acquisition stopped, fault flag logged, manual reset required. This is proposed logic, not yet implemented.
+
+</details>
+
+<details>
+<summary><b>🧰 Hardware envelope: ≈ INR 15,000 (nonclinical, USB-powered)</b></summary>
+
+<br/>
+
+| Phase | Contents | INR |
+|---|---|---:|
+| **Phase 1: sensor logger** (always deliverable) | 2× BME688, SGP40, ESP32, optional SHT31-D, wiring, status screen | 6,600 |
+| **Phase 2: pneumatic platform** | Valve, pump, drivers and power, PTFE and fittings, chamber and enclosure, consumables | 5,900 |
+| **Reserve** | Shipping, spares, price and GST uncertainty | 2,500 |
+| **Total** | | **15,000** |
+
+**Go / no-go rule:** if the exact valve and pump cannot be sourced and verified within budget, the deliverable becomes a reliable ESP32 + BME688 + SGP40 logger with raw-data integrity (Phase 1). Pump, valve, and flow sensor are marked *procurement not approved* until verified. A passive 3D render is never presented as a working fluidic subsystem. Prices are V1 planning allowances and were not re-verified; GC-MS, ethics approval, and regulatory validation are excluded.
+
+</details>
+
+<details>
+<summary><b>🧪 Validation plan: phases A–E and experiments E1–E7</b></summary>
+
+<br/>
+
+| Phase | Purpose |
+|---|---|
+| **A** · Electrical and data integrity | Stable reads, traceable logs, versioned hardware config, raw-data hashes |
+| **B** · Instrument repeatability | Within-session, between-session, and between-device (BME688 A vs B) variation |
+| **C** · Environmental correction ablation | Raw → fused → + ambient reference → + drift correction → + quality rejection, on the same held-out sessions |
+| **D** · Carryover assessment | Reference after a test condition vs a reference-only baseline; recovery time; never claim zero carryover without evidence |
+| **E** · Future clinical validation | Ethics-approved recruitment, benign-disease controls, independent sites, GC-MS where feasible. *Separate future stage* |
+
+| ID | Experiment |
+|---|---|
+| E1 | Warm-up and baseline stabilization |
+| E2 | Valve isolation and leakage |
+| E3 | Purge and carryover |
+| E4 | Humidity robustness |
+| E5 | Drift and sensor duplication |
+| E6 | ML ablation (linear vs Random Forest vs SVM; no deep learning by default) |
+| E7 | Reliability stress cases |
+
+**Methodology guardrails:** split by independent session or held-out day (never randomly across correlated readings), include humidity-only controls to expose label leakage, fit pipelines on training folds only, pre-register thresholds before final testing, report paired differences with confidence intervals, and publish a model card with forbidden medical uses. Engineered ambient-air conditions are **never** labelled cancer-positive or cancer-negative.
+
+</details>
+
+<details>
+<summary><b>📚 Evidence base and honesty tags</b></summary>
+
+<br/>
+
+The report keeps every claim visibly tagged so nothing is overstated:
+
+| Tag | Meaning |
+|---|---|
+| `[SUPPORTED IN V1]` | Stated in the original report and its cited sources; full-text re-verification pending |
+| `[PROPOSED]` | Design intent added in v2.0; not yet built or measured |
+| `[EXPERIMENTALLY UNVERIFIED]` | A performance claim that only the planned bench experiments can confirm |
+| `[OPEN ITEM]` | Could not be verified; left open instead of guessed |
+| `[FUTURE CLINICAL PHASE]` | Belongs to a separate, ethics-approved clinical stage |
+
+Core literature carried into the report (figures as quoted there; re-verification against full texts is a listed open task):
+
+| Source | Design | Takeaway |
 |---|---|---|
-| 1 | Ambient-reference measurements (switched reference vs. sample path) | Proposed |
-| 2 | Drift monitoring and recalibration flags | Proposed |
-| 3 | Sample-quality rejection with abstain / retest | Proposed |
-| 4 | Multi-heater gas-sensing features | Proposed |
-| 5 | Clinical multimodal fusion | Future clinical phase |
+| Leemans et al., 2022 | Systematic review, 32 breast-cancer VOC studies | VOC candidates are inconsistent across specimens and methods; supports standardized collection |
+| Chemical Nose study, 2025 | 267 women (131 breast cancer, 136 healthy); Cyranose 320 + SVM | 91% accuracy for *its* design; not transferable to a BME688 system |
+| JAMA Oncology review, 2018 | 63 publications across cancers | Pooled sensitivity 79%, specificity 89%; methods and physiology affect estimates |
+| Clinical Biochemistry meta-analysis, 2025 | 125 datasets, 8,768 cancer patients | Pooled sensitivity 87%, specificity 81%; cross-cancer, not breast-specific |
 
-**Hardware envelope (≈ INR 15,000):** 2 × Bosch BME688 + Sensirion SGP40 + optional SHT31-D, ESP32 controller, and a single switched sensing chamber with an isolated ambient inlet and sample inlet (never mixed). Delivery is split into a **Phase 1 sensor logger** and a **Phase 2 pneumatic platform**, with a go/no-go fallback to the logger if the gas-path parts cannot be verified. Validation is planned as experiments **E1–E7** (warm-up, valve isolation, carryover, humidity robustness, drift, ML ablation, reliability stress cases).
+Key gaps the project targets: poor reproducibility of named VOC biomarkers, scarce comparable benign-disease controls, under-handled humidity and ambient effects, sensor drift and carryover, and limited external validation.
+
+</details>
 
 > [!NOTE]
-> **Evidence boundary.** Prior breast-cancer breath studies report encouraging results, but small cohorts, inconsistent collection protocols, and limited external validation mean those accuracies cannot be transferred to this design. The novelty claim is a *measurably improved low-cost integration*, not a new diagnostic. The report keeps unverified items explicitly tagged as open rather than guessing.
+> **Evidence boundary.** Breast-cancer breath studies report encouraging classifications, but small cohorts, varying collection practices, and weak external validation prevent transferring those accuracies to this design. BreathSense X claims no diagnostic performance. **V1 is an ambient-air / benign bench demonstrator and must not be used for patient sampling or clinical testing.**
 
-### 2 · CBC research model: blood-count-based cancer-risk score
+### 2 · CBC research model: blood-count cancer-risk score
 
 📄 [`model-api/README.md`](model-api/README.md) · Based on a [published Indian CBC study](https://www.nature.com/articles/s41598-023-27548-w)
 
-A frozen, India-only **logistic regression** pipeline that scores a complete blood count (CBC) result. Served by an isolated FastAPI service that the main app does **not** call.
+A frozen, **India-only logistic regression** that scores a complete blood count. It is served by an isolated FastAPI service that the main Cloudflare application does **not** call.
 
 | | |
 |---|---|
-| **Inputs** | WBC, RBC, neutrophil %, lymphocyte %, monocyte % (derived: NLR, LMR) |
-| **Model** | `india-cbc-logistic-c87ec8485159` · 7 features · fixed cutoff `0.6268` |
+| **Inputs** | WBC, RBC, neutrophil %, lymphocyte %, monocyte % (derived: NLR and LMR, 7 model features) |
+| **Model** | `india-cbc-logistic-c87ec8485159` · fixed cutoff `0.6268` |
 | **Evaluation** | Internal nested cross-validation on 752 published records with reconstructed labels |
 | **AUC** | 0.713 (95% CI 0.677–0.749) |
-| **Accuracy / Sensitivity / Specificity** | 63.2% / 35.9% / 90.4% |
-| **Output** | A research score and `above_cutoff` flag, always marked `research_only` |
+| **Accuracy · Sensitivity · Specificity** | 63.2% · 35.9% · 90.4% |
+| **Output** | `score`, `cutoff`, `above_cutoff`, always flagged `research_only` |
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict \
@@ -225,18 +374,29 @@ curl -X POST http://127.0.0.1:8000/predict \
   -d '{"wbc":8.95,"rbc":4.41,"neutrophils":65,"lymphocytes":25,"monocytes":9}'
 ```
 
+Units: WBC in 10⁹/L, RBC in 10¹²/L, differentials in **percentages**. All five values are required and the three differentials must total at most 100.
+
 > [!CAUTION]
-> The score is **not** a diagnosis and **not** a calibrated cancer probability. Sensitivity is low (35.9%), the metrics come from internal validation rather than independent validation, and labels, hospital-source confounding, and measurement precision all limit interpretation. Never use it to guide patient care, and never send identifiable patient data to it. The API has no authentication or application-level rate limiting.
+> The score is **not** a diagnosis and **not** a calibrated cancer probability. Sensitivity is low (35.9%), the metrics come from internal validation rather than independent validation, and labels, hospital-source confounding, and measurement precision all limit interpretation. Haemoglobin is excluded because source units are uncertain. Never use this to guide patient care, and never send identifiable patient data to it. The API currently has no authentication or application-level rate limiting.
+
+### Research integrity commitments
+
+- **No claim without a measurement.** Unverified parts, prices, and literature are left tagged *open*, never guessed.
+- **No patient data** in either track. Do not send identifiers to the model API or to the e-nose pipeline.
+- **No integration into care decisions.** Any future link goes through the shared Cloudflare backend and must honour tenant and consent boundaries.
+- **Clinical translation is a separate, ethics-approved stage** with independent-site validation, calibration, and benign-disease controls.
+
+---
 
 ## 🚀 Quick Start
 
 ### Requirements
 
 - **Node.js** `>=22.13` and **npm** `>=10` (root TypeScript project and Cloudflare tooling)
-- **Flutter / Dart** compatible with `frontend/app/pubspec.yaml` (patient app)
+- **Flutter / Dart** compatible with `frontend/app/pubspec.yaml` (patient and kiosk app)
 - **Android Studio / SDK** for Android builds; **Xcode** for iOS builds on macOS
 - **Python 3.12** for the isolated `model-api` service
-- A **Cloudflare account** and GitHub Actions secrets for deployment only; local development needs no Cloudflare credentials
+- A **Cloudflare account** and GitHub Actions secrets for deployment only. Local development needs no Cloudflare credentials
 
 ### Clone and install
 
@@ -265,7 +425,7 @@ The root `build` installs the website package from its lockfile before compiling
 </details>
 
 <details>
-<summary><b>📱 Flutter patient app</b></summary>
+<summary><b>📱 Flutter patient and kiosk app</b></summary>
 
 ```bash
 cd frontend/app
@@ -291,7 +451,7 @@ For local Android native generation, run `npm run prebuild` and `npm run android
 </details>
 
 <details>
-<summary><b>🧪 Research model API (Python)</b></summary>
+<summary><b>🧪 CBC research model API (Python)</b></summary>
 
 ```bash
 cd model-api
@@ -302,7 +462,7 @@ python -m unittest discover -s tests -v
 python -m uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-access-log
 ```
 
-Interactive schema at `http://127.0.0.1:8000/docs` · health at `GET /health`.
+Interactive schema at `http://127.0.0.1:8000/docs` · health at `GET /health`. Hosting notes and the Render migration steps are in [`model-api/README.md`](model-api/README.md).
 
 </details>
 
@@ -312,11 +472,11 @@ Interactive schema at `http://127.0.0.1:8000/docs` · health at `GET /health`.
 |---|---|
 | `make setup` | `npm ci` |
 | `make dev` | Build, then start the dev server |
-| `make test` / `make e2e` | Vitest suite / Playwright browser suite |
+| `make test` · `make e2e` | Vitest suite · Playwright browser suite |
 | `make bench` | Reproduce the synthetic benchmark |
 | `make eval` | Safety-focused evaluation tests |
 | `make privacy` | Run the local privacy node |
-| `make up` / `make down` | Docker Compose stack up / down |
+| `make up` · `make down` | Docker Compose stack up · down |
 
 ## ✅ Build and Verification
 
@@ -336,7 +496,7 @@ Interactive schema at `http://127.0.0.1:8000/docs` · health at `GET /health`.
 | `cd frontend/app && flutter analyze` | Analyze Flutter / Dart sources |
 | `cd frontend/app && flutter test` | Flutter tests |
 
-GitHub Actions runs the broader pipeline: builds, browser and integration checks, a secret scan, and a container smoke check. A green local build does **not** confirm a successful Cloudflare deployment. Inspect the Actions run and the deployed app separately.
+GitHub Actions runs the broader pipeline: builds, browser and integration checks, a secret scan, a container smoke check, and a mobile typecheck. A green local build does **not** confirm a successful Cloudflare deployment. Inspect the Actions run and the deployed app separately.
 
 ## ☁️ Cloudflare Deployment
 
@@ -359,7 +519,7 @@ npx wrangler deploy
 ```
 
 > [!CAUTION]
-> Production migrations and deployments are external side effects. Review the target account, project, branch, migration status, and CI results before running them manually. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
+> Production migrations and deployments are external side effects. Review the target account, project, branch, migration status, and CI results before running them manually. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md). An AWS CloudFormation template exists in `infra/aws` but has only been statically validated, never applied.
 
 ## 🔐 Configuration and Secrets
 
@@ -374,17 +534,64 @@ npx wrangler deploy
 - Do not enter real patient identifiers or records into synthetic demo flows, screenshots, issue reports, model requests, or third-party services.
 - Persistence varies by route. Some HER, Vitalis, intake, and demo flows still use in-memory stores or seeded data, which is not durable or suitable for multi-instance production.
 - Both cancer-detection research tracks are research-only. Their outputs are neither diagnoses nor calibrated disease probabilities.
-- Before handling real health data, complete security, access-control, consent, retention, audit, privacy, clinical-safety, backup, and disaster-recovery reviews. Do not claim regulatory compliance based on this README or a technical design alone.
+- Before handling real health data, complete security, access-control, consent, retention, audit, privacy, clinical-safety, backup, and disaster-recovery reviews. Do not claim regulatory compliance (including ABDM or DPDP) based on this README or a technical design alone.
+- A security-clean production release is **not** claimed: dependency audit findings remain in the Expo build-tool graph and in inherited upstream code.
 - Financial amounts use **integer paise**. Tenant-scoped data access and input validation follow the architecture rules in [`AGENTS.md`](AGENTS.md) and [`docs/PRD.md`](docs/PRD.md).
 
-<details>
-<summary><b>Known gaps (from module notes)</b></summary>
+## 📊 Project Status
 
-- **Privacy node:** end-to-end-encrypted sync, an encrypted durable health store, and UI connection are pending.
-- **Language and voice:** a live provider key is required; speech-to-text, clinical translation, glossary review, and the full language set are pending.
-- **Wearables:** only labelled simulated heart-rate ingestion is tested; real Health Connect / HealthKit / BLE integration is pending.
+A completed checkpoint, **not** a finished product. "Done" means only the verified slice described. Full detail in [`docs/PROGRESS.md`](docs/PROGRESS.md) and [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md).
 
-</details>
+| Area | State | Notes |
+|---|:---:|---|
+| Hono + Zod API, tenant-scoped D1 slice, hashed expiring sessions, role checks | ✅ | Local synthetic slice; production login disabled |
+| Intake → clinician flow with replay protection and consent revoke | ✅ | Verified API and browser flows |
+| Consent, provenance, FHIR R4 collection export, hash-chained audit | ✅ | Demo boundary; not an ABDM Bundle |
+| Four core engines + benchmarks | ✅ | Property and exhaustive tests; no clinical calibration |
+| HER (A0–A4) and Vitalis (V0–V14) engines and routes | ✅ | Some flows use seeded or in-memory data |
+| Responsive PWA: 4 languages, elder mode, dark mode, offline algorithm lab | ✅ | Clinical translations are draft |
+| Flutter kiosk (synthetic encounter intake, speech input on Android) | ✅ | Staff-assisted; OPD token and QR unavailable |
+| Cloudflare CI/CD (verify, mobile typecheck, deploy) | ✅ | Later commits need their own CI run |
+| Local privacy node (offline recall proof) | ✅ | Standalone proof; not connected to app records |
+| Expo native app | 🚧 | Typecheck and JS export pass; no APK or device verification yet |
+| **BreathSense X** (report v2.0, figures, validation plan) | 🚧 | Research concept; Phase 1 logger first, then Phase 2 pneumatics |
+| **CBC research model** API | 🚧 | Exploratory; independent validation pending |
+| Production SSO / MPI / RBAC, durable events and outbox | ⏳ | Pending |
+| End-to-end-encrypted sync, wearables (Health Connect / HealthKit / BLE) | ⏳ | Simulated source only today |
+| Prescription OCR, full multilingual voice and clinical translation | ⏳ | Needs provider keys and clinical glossary review |
+| Clinical validation, calibrated models, regulatory review | ⏳ | Required before any real use |
+
+## 🗂️ Repository Layout
+
+```text
+.
+├── apps/
+│   ├── mobile/                  # Expo / React Native client
+│   └── web/                     # Vite build entry points for Pages
+├── backend/
+│   ├── migrations/              # D1 SQL migrations
+│   └── src/
+│       ├── do/                  # Cloudflare Durable Objects
+│       ├── db/                  # Tenant-aware database helpers
+│       └── modules/             # intake · ops · bridge · home · platform · her · vitalis
+├── Breath_Sense_Cancer_Detection_Research/   # 🔬 BreathSense X report + figures
+├── docs/                        # PRD, design, algorithms, benchmarks, modules
+├── frontend/
+│   ├── app/                     # Flutter patient and kiosk app
+│   └── website/                 # Clinician web portal source
+├── infra/                       # Dockerfile, Compose, AWS template (validated only)
+├── model-api/                   # 🔬 Research-only CBC model service
+├── packages/
+│   ├── engine/                  # Sentinel · Rx-to-Shelf · Drift Radar · ThreadPulse · HER · Vitalis
+│   └── shared/                  # Zod contracts, models, FHIR mappers
+├── scripts/                     # Benchmarks, load test, secret scan
+├── services/                    # lang-gateway, privacy-node
+├── tests/                       # Root Vitest and browser tests
+├── .github/workflows/ci.yml     # Verification and Cloudflare deployment
+├── Makefile                     # Developer shortcuts
+├── package.json                 # Root build and developer commands
+└── wrangler.jsonc               # Main Cloudflare Worker configuration
+```
 
 ## 🤝 Contributing
 
@@ -400,29 +607,37 @@ npx wrangler deploy
 
 | Document | What it covers |
 |---|---|
-| [`docs/PRD.md`](docs/PRD.md) | Product requirements; primary source of truth |
+| [`docs/PRD.md`](docs/PRD.md) | Product requirements and blueprint; primary source of truth |
 | [`docs/HACKATHON_BRIEF.md`](docs/HACKATHON_BRIEF.md) | HackShift 2026 problem statement and requirement mapping |
+| [`docs/INTEGRATION_DESIGN.md`](docs/INTEGRATION_DESIGN.md) | Patient Thread design, contracts, and provenance |
 | [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Deployment status and operational constraints |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Architecture decisions |
-| [`docs/algorithms/`](docs/algorithms/) | Algorithm specifications and notes |
-| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Requirement traceability |
+| [`docs/algorithms/`](docs/algorithms/) | Algorithm specifications (Sentinel, Rx-to-Shelf, Drift Radar, ThreadPulse) |
+| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) · [`docs/PILLARS.md`](docs/PILLARS.md) | Requirement traceability and evidence mapping |
 | [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) | Controls and compliance notes |
-| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | The tested demo journey |
+| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · [`docs/JUDGE_QA.md`](docs/JUDGE_QA.md) | Tested demo journeys and honest Q&A |
+| [`docs/benchmarks/`](docs/benchmarks/) | Reproducible benchmark outputs and limitations |
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Known setup and deployment issues |
-| [`docs/PROGRESS.md`](docs/PROGRESS.md) | Project progress notes |
+| [`docs/PROGRESS.md`](docs/PROGRESS.md) · [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md) | Progress notes and checkpoint report |
 | [`model-api/README.md`](model-api/README.md) | CBC research model API |
-| [`Breath_Sense_Career_Detection_Research/`](Breath_Sense_Career_Detection_Research/) | BreathSense X cancer-detection research report and figures |
+| [`Breath_Sense_Cancer_Detection_Research/`](Breath_Sense_Cancer_Detection_Research/) | BreathSense X research report and figures |
 
 ## 👥 Team Sudarshan
 
-**Saksham Goswami** · **Paarth Goswami** · **Rohan Singh** · **Potla Sri Sharan**
+<div align="center">
+
+**Saksham Goswami** &nbsp;·&nbsp; **Paarth Goswami** &nbsp;·&nbsp; **Rohan Singh** &nbsp;·&nbsp; **Potla Sri Sharan**
+
+</div>
 
 ---
 
 <div align="center">
 
-**Built for HackShift 2026.**
+**Built for HackShift 2026 · IIIT Delhi**
+
 AYUSETU is a software prototype for improving continuity across healthcare workflows.
-It is not a medical device and not a substitute for professional care.
+BreathSense X and the CBC model are research concepts, not clinically validated.
+None of it is a medical device or a substitute for professional care.
 
 </div>
