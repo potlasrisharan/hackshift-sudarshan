@@ -53,41 +53,6 @@ class AyuSetuLogoBadge extends StatelessWidget {
               ),
             ),
           ),
-          if (showText) ...[
-            const SizedBox(width: 6),
-            RichText(
-              text: const TextSpan(
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.3,
-                ),
-                children: [
-                  TextSpan(
-                    text: "Ayu",
-                    style: TextStyle(
-                      color: Color(0xFF0F172A),
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "+",
-                    style: TextStyle(
-                      color: Color(0xFFEF4444),
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "सेतु",
-                    style: TextStyle(
-                      color: Color(0xFFE11D48),
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       ),
     );

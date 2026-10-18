@@ -125,71 +125,22 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Flexible(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  "assets/images/ayusetu_logo.png",
-                  height: 32,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE6F7F2),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFF087D71).withValues(alpha: 0.2)),
-                    ),
-                    child: const Icon(
-                      Icons.spa_rounded,
-                      size: 18,
-                      color: Color(0xFF087D71),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Ayu",
-                          style: TextStyle(
-                            color: Color(0xFF0F172A),
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "+",
-                          style: TextStyle(
-                            color: Color(0xFFEF4444),
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "सेतु",
-                          style: TextStyle(
-                            color: Color(0xFFE11D48),
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        Image.asset(
+          "assets/images/ayusetu_logo.png",
+          height: 38,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => Container(
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6F7F2),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFF087D71).withValues(alpha: 0.2)),
+            ),
+            child: const Icon(
+              Icons.spa_rounded,
+              size: 18,
+              color: Color(0xFF087D71),
+            ),
           ),
         ),
         const SizedBox(width: 8),
