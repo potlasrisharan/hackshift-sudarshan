@@ -667,6 +667,61 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
   // Typed symptom
   const [typedSymptom, setTypedSymptom] = useState<string>('');
 
+  const updateSymptomAndTranslate = (text: string) => {
+    setTypedSymptom(text);
+    setCurrentPatient((previous) => ({
+      ...previous,
+      selectedSymptom: text,
+      englishTranslation: '',
+    }));
+    translationAbort.current?.abort();
+    if (translationTimer.current) clearTimeout(translationTimer.current);
+
+    const normalizedText = text.trim();
+    if (!normalizedText) {
+      setTranslationStatus('idle');
+      return;
+    }
+
+    setTranslationStatus('translating');
+    translationTimer.current = setTimeout(async () => {
+      const controller = new AbortController();
+      translationAbort.current = controller;
+      try {
+        const response = await fetch(`${CLOUDFLARE_API_BASE}/intake/translate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: normalizedText,
+            sourceLanguageCode: currentLanguage,
+          }),
+          signal: controller.signal,
+        });
+        const result = await response.json() as {
+          clinicalTranslation?: string;
+        };
+        const clinicalTranslation = result.clinicalTranslation?.trim();
+        if (!response.ok || !clinicalTranslation) {
+          setTranslationStatus('unavailable');
+          return;
+        }
+        setCurrentPatient((previous) => ({
+          ...previous,
+          englishTranslation: clinicalTranslation,
+        }));
+        setTranslationStatus('translated');
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setTranslationStatus('unavailable');
+      }
+    }, 300);
+  };
+
+  useEffect(() => () => {
+    if (translationTimer.current) clearTimeout(translationTimer.current);
+    translationAbort.current?.abort();
+  }, []);
+
   // Patient state (initialized matching screenshot)
   const [currentPatient, setCurrentPatient] = useState<PatientRecord>({
     id: 'pat-048291',

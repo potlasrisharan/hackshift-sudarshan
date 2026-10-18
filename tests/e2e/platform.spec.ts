@@ -66,6 +66,16 @@ test("mobile viewport and accessibility controls on patient intake", async ({
 test("real-time clinical translation converts vernacular input into clinical English", async ({
   page,
 }) => {
+  await page.route("**/api/v1/intake/translate", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        clinicalTranslation:
+          "Severe acute epigastric and abdominal pain with visceral tenderness and gastrointestinal irritation.",
+      }),
+    }),
+  );
   await start(page);
   await page
     .getByRole("navigation", { name: "Intake progress" })
@@ -92,12 +102,22 @@ test("real-time clinical translation converts vernacular input into clinical Eng
 test("patient intake updates doctor consultation queue and emergency triage in real time", async ({
   page,
 }) => {
+  await page.route("**/api/v1/intake/encounter", (route) =>
+    route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        encounter: { token: "E-045", token_number: "E-045" },
+      }),
+    }),
+  );
   await start(page);
 
   // Trigger emergency override at kiosk
   await page.getByRole("button", { name: /EMERGENCY \/ STAT/ }).click();
   await expect(page.locator(".ayu-kiosk")).toHaveAttribute("data-screen", "4");
-  await expect(page.getByText("#E-045").first()).toBeVisible();
+  await expect(page.getByText("E-045").first()).toBeVisible();
 
   // Navigate to Doctor Consultation Cockpit
   await page.goto("/erp.html#/app?view=doctor-consultation");
@@ -106,7 +126,7 @@ test("patient intake updates doctor consultation queue and emergency triage in r
   ).toBeVisible();
 
   // Verify the intake patient appears in Doctor queue and is active with STAT alert
-  await expect(page.getByText("#E-045").first()).toBeVisible();
+  await expect(page.getByText("E-045").first()).toBeVisible();
   await expect(
     page
       .getByText("Priority 1 Acute Undifferentiated Medical Emergency")
@@ -118,5 +138,5 @@ test("patient intake updates doctor consultation queue and emergency triage in r
   await expect(
     page.getByRole("heading", { name: "Casualty Resus Bay 1" }),
   ).toBeVisible();
-  await expect(page.getByText("#E-045").first()).toBeVisible();
+  await expect(page.getByText("E-045").first()).toBeVisible();
 });
