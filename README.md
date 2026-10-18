@@ -1,379 +1,235 @@
-<div align="center">
+# AYUSETU
 
-# 🩺 AYUSETU (आयुसेतु)
-### *The Continuity-of-Care Operating System*
-**"One continuous thread from first symptom to full recovery."**
+AYUSETU is a healthcare workflow project that connects patient intake, clinic operations, follow-up, and preventive health features. Its repository contains a Cloudflare Worker API, a clinician web portal, patient-facing mobile clients, and deterministic TypeScript health and operations algorithms.
 
-[![Hackathon](https://img.shields.io/badge/HackShift%202026-IIIT%20Delhi-0F766E?style=for-the-badge&logo=medscape&logoColor=white)](https://github.com/potlasrisharan/hackshift-sudarshan)
-[![Theme](https://img.shields.io/badge/Theme-Healthcare%20%26%20Well--being-F59E0B?style=for-the-badge)](https://github.com/potlasrisharan/hackshift-sudarshan)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Flutter](https://img.shields.io/badge/Flutter-3.35+-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1%20%2B%20DO-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
-[![Tests](https://img.shields.io/badge/Unit%20Tests-50%2B%20Passing-10B981?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
-[![FHIR](https://img.shields.io/badge/Standard-FHIR%20R4%20Aligned-E11D48?style=for-the-badge)](https://hl7.org/fhir/R4/)
-[![Compliance](https://img.shields.io/badge/Privacy-DPDP%20Act%202023-8B5CF6?style=for-the-badge)](https://www.meity.gov.in)
+> **Project status:** This repository is under active development. Some API paths use in-memory stores or synthetic demonstration records. Do not use the current application for real patient care or send real patient information to demo or research services. See [deployment notes](docs/DEPLOYMENT.md) and [the product requirements](docs/PRD.md) before making implementation or deployment decisions.
 
-<p align="center">
-  <a href="#-executive-summary">Executive Summary</a> •
-  <a href="#-the-problem--our-solution">Problem & Solution</a> •
-  <a href="#-system-architecture">Architecture</a> •
-  <a href="#-the-4-core-modules">Core Modules</a> •
-  <a href="#-the-deterministic-algorithms">Algorithms</a> •
-  <a href="#-specialized-clinical-intelligence">HER & Vitalis</a> •
-  <a href="#-client-applications">Client Apps</a> •
-  <a href="#-security-privacy--dpdp-compliance">Privacy & Security</a> •
-  <a href="#-benchmarks--performance">Benchmarks</a> •
-  <a href="#-quickstart--local-setup">Quickstart</a>
-</p>
+## Contents
 
----
+- [Architecture](#architecture)
+- [Applications and services](#applications-and-services)
+- [Deterministic algorithms](#deterministic-algorithms)
+- [Repository layout](#repository-layout)
+- [Requirements](#requirements)
+- [Run locally](#run-locally)
+- [Build and verification commands](#build-and-verification-commands)
+- [Cloudflare deployment](#cloudflare-deployment)
+- [Configuration and secrets](#configuration-and-secrets)
+- [Data, privacy, and clinical limitations](#data-privacy-and-clinical-limitations)
+- [Model API](#model-api)
+- [Contributing](#contributing)
+- [Project documents](#project-documents)
 
-</div>
-
-## 📌 Executive Summary
-
-In healthcare systems across India and emerging economies, **care breaks at the hand-offs**:
-1. **Intake Barrier:** Patients speaking regional dialects face ~2-minute hurried consultations in crowded OPDs; medical history is fragmented and paper slips are routinely lost.
-2. **Prescription to Dispensing Disconnect:** Clinicians prescribe without real-time shelf stock visibility or generic alternatives, forcing patients to make repeat visits or buy expensive branded drugs.
-3. **The Post-Discharge Black Box:** Once discharged, patients stop adherence or silently deteriorate until they land in the emergency ICU.
-4. **Neglected Longitudinal Care:** Women's hormonal health, menstrual patterns, and preventive healthspan are ignored in acute OPD visits.
-
-**AYUSETU (आयुसेतु)** unifies this fragmented journey into an unbroken, consented, digital **Patient Thread** connecting **Voice Triage**, **Clinic Operations & FEFO Pharmacy**, **Remote Patient Monitoring**, and **Preventive Longitudinal Intelligence** into a closed-loop operating system powered by **pure deterministic mathematical engines**.
-
----
-
-## 🎯 The Problem & Our Solution
+## Architecture
 
 ```mermaid
-journey
-    title The Patient Journey: Broken Care vs. AYUSETU Closed-Loop Care
-    section 1. Triage & Intake
-      Traditional Care: 1: Hurried 2-min triage, language barrier, lost paper slips
-      AYUSETU Experience: 5: Indic voice kiosk, adaptive SOCRATES history, <3ms emergency red-flag bypass
-    section 2. Consultation
-      Traditional Care: 2: Illegible handwriting, manual interrogations, no pre-visit timeline
-      AYUSETU Experience: 5: Source-linked bilingual SOAP draft & FHIR R4 bundle ready before consult
-    section 3. Pharmacy & Billing
-      Traditional Care: 1: "Medicine out of stock", costly branded drugs, expired batches
-      AYUSETU Experience: 5: Atomic FEFO allocation, expiry >= courseEnd + 14d, generic Savings Meter
-    section 4. Home RPM & Follow-Up
-      Traditional Care: 1: Zero post-discharge tracking, silent BP spike, preventable ICU readmission
-      AYUSETU Experience: 5: WhatsApp check-in, camera OCR, personalized CUSUM Drift Radar alerts nurse
-    section 5. Preventive Health
-      Traditional Care: 1: Episodic acute treatment only; lifestyle & hormonal health neglected
-      AYUSETU Experience: 5: AyuSetu HER cycle anomaly detection & Vitalis healthspan progression
+flowchart LR
+  APP[Patient app: Flutter] --> API[Cloudflare Worker API: Hono]
+  WEB[Clinician and operations web: React / Vite] --> API
+  RN[Mobile client: Expo / React Native] --> API
+  API --> D1[(Cloudflare D1)]
+  API --> KV[(Cloudflare KV)]
+  API --> DO[Cloudflare Durable Objects]
+  API --> ENGINE[packages/engine]
+  CONTRACTS[packages/shared] --> API
+  CONTRACTS --> WEB
 ```
 
----
+Cloudflare is the deployment target for the main application. The Worker entry point is `backend/src/index.ts`; the root `wrangler.jsonc` configures the Worker, D1, KV, and Durable Object bindings. GitHub Actions builds the web app, applies D1 migrations, publishes the Pages artifact, and deploys the Worker on the configured branches when its verification jobs pass.
 
-## 🏗️ System Architecture
+The repository includes two web build paths and two mobile codebases. `apps/web` is the lightweight web build used by the root build and Cloudflare Pages workflow; it uses source code from `frontend/website/src`. `frontend/website` also has a standalone Vite project and lockfile. `frontend/app` is the Flutter patient/kiosk client; `apps/mobile` is an Expo/React Native client. Check the corresponding workflow and app configuration before assuming the clients have identical feature coverage.
 
-AYUSETU is built on a **Cloudflare-first edge architecture** designed for sub-millisecond algorithmic latency, zero-floating-point financial integrity, and strict multi-tenant isolation.
+## Applications and services
 
-```mermaid
-flowchart TB
-    subgraph CLIENTS["🌐 Front-Door Client Surfaces"]
-        FLUTTER["📲 Flutter Patient Kiosk & Tablet\n(Android / Web / iOS)\n• 4 Indic Languages + Elder Mode\n• Clean Architecture + Riverpod 2\n• 60s Auto-Reset & Receipt"]
-        WEB["💻 Clinician & ERP Portal\n(React + Vite + Tailwind CSS)\n• OPD Queues • SOAP Viewer\n• FEFO Pharmacy POS • Inventory Matrix"]
-        WA["💬 Remote Patient Interface\n(WhatsApp Simulator / Mobile PWA)\n• Daily Voice Notes & Photo OCR\n• Proactive Refill Warnings"]
-    end
+| Path | Technology | Purpose |
+|---|---|---|
+| `backend/` | TypeScript, Hono, Cloudflare Workers | Shared `/api/v1` API, module routes, migrations, and Durable Objects |
+| `frontend/website/` | React, Vite, Tailwind CSS | Clinician and operations portal source and standalone web project |
+| `apps/web/` | Vite | Root build and Pages entry points, backed by `frontend/website/src` |
+| `frontend/app/` | Flutter, Dart, Riverpod, GoRouter | Patient and kiosk application |
+| `apps/mobile/` | Expo, React Native, TypeScript | Native mobile application and Android build configuration |
+| `packages/engine/` | TypeScript | Deterministic triage, pharmacy, follow-up, HER, and Vitalis algorithms |
+| `packages/shared/` | TypeScript, Zod | Shared contracts, models, and interoperability helpers |
+| `model-api/` | Python, FastAPI, scikit-learn | Isolated research-only CBC model API; not called by the main app |
 
-    subgraph EDGE_API["⚡ Unified Cloudflare Edge Gateway (/api/v1)"]
-        HONO["Hono Router & Middleware (Workers)"]
-        AUTH["Bearer Token Auth & Ephemeral Session Isolator"]
-        GATE["🛡️ Edge PHI Redaction Gate\n(Strips Aadhaar, Phone & Names before LLMs)"]
-        AUDIT["🔗 SHA-256 Tamper-Evident Ledger\n(Cryptographic Block Hash Chaining)"]
-    end
+The Worker modules currently include intake, operations, bridge, home follow-up, platform, HER, and Vitalis routes. Common route prefixes include `/api/v1/intake`, `/api/v1/ops`, `/api/v1/bridge`, `/api/v1/home`, `/api/v1/her`, and `/api/v1/vitalis`. Consult each module's route file for request schemas and current behavior.
 
-    subgraph ENGINES["🧠 Pure Deterministic Algorithms (Zero External Deps, < 0.1ms)"]
-        ALG1["1️⃣ Triage Sentinel\n(Sparse Bayesian Info Gain + Red Flag Override)"]
-        ALG2["2️⃣ Rx-to-Shelf\n(Course-Valid FEFO Multi-Clinic Allocation)"]
-        ALG3["3️⃣ Drift Radar\n(Robust Median/MAD CUSUM Deterioration Alert)"]
-        ALG4["4️⃣ ThreadPulse\n(Exact Poisson-Binomial Convolution Demand Sensing)"]
-        HER["🌸 AyuSetu HER (A0–A4)\n(Cycle Deviation, Screening Evidence, Diet Ranker)"]
-        VITALIS["⚡ AyuSetu Vitalis (V0–V14)\n(Healthspan Progress, Exertion Safety, Biomarker Trends)"]
-    end
+## Deterministic algorithms
 
-    subgraph STORAGE["💾 Multi-Tenant Storage & Durable Coordination"]
-        D1[("Cloudflare D1 SQL\n• Scoped by org_id\n• Integer-Paise Balances")]
-        KV[("Cloudflare KV\n• Session Tokens & Rate Limits")]
-        R2[("Cloudflare R2\n• Encrypted Prescription & Lab Vault")]
-        
-        subgraph DO["Cloudflare Durable Objects"]
-            DO_INV["ClinicInventory DO\n(Atomic FEFO Stock Reservation)"]
-            DO_HUB["ClinicHub DO\n(Live WebSocket Triage Broadcast)"]
-            DO_AUDIT["OrgAudit DO\n(Serialized Immutable Hash Log)"]
-        end
-    end
+The core decision logic lives in `packages/engine`. The product rule is **algorithms decide; AI may translate or format**. Safety gates and ranking rules should remain deterministic and reviewable; language services must not make diagnoses or override safety decisions.
 
-    CLIENTS --> HONO
-    HONO --> AUTH
-    AUTH --> GATE
-    GATE --> AUDIT
-    HONO --> ENGINES
-    HONO --> D1
-    HONO --> KV
-    HONO --> R2
-    HONO --> DO
+| Engine | Purpose |
+|---|---|
+| Sentinel | Selects intake questions and evaluates defined red-flag conditions |
+| Rx-to-Shelf | Plans medicine allocation against stock, expiry, and prescription constraints |
+| Drift Radar | Compares observations with a patient's baseline and flags defined changes |
+| ThreadPulse | Estimates demand from refill and cohort probabilities |
+| HER A0–A4 | Women's health safety checks, cycle patterns, evidence-based screening, wellness ranking, and trends |
+| Vitalis V0–V14 | Safety checks, healthspan progress, preventive ranking, exercise progression, biomarker and behavior analysis |
+
+Algorithm specifications and product requirements are maintained in [`docs/PRD.md`](docs/PRD.md) and supporting files in `docs/algorithms/`. Read those specifications before changing a clinical or operational rule. The algorithms provide software outputs, not a medical diagnosis or substitute for clinician judgment.
+
+## Repository layout
+
+```text
+.
+├── apps/
+│   ├── mobile/                 # Expo / React Native patient application
+│   └── web/                    # Vite build entry points for Pages
+├── backend/
+│   ├── migrations/             # D1 SQL migrations
+│   └── src/
+│       ├── do/                  # Cloudflare Durable Objects
+│       ├── db/                  # Tenant-aware database helpers
+│       └── modules/             # Intake, ops, home, HER, Vitalis, and API routes
+├── docs/                       # PRD, deployment, algorithms, and project notes
+├── frontend/
+│   ├── app/                     # Flutter patient and kiosk app
+│   └── website/                 # Clinician web portal source
+├── model-api/                  # Separate research CBC model service
+├── packages/
+│   ├── engine/                  # Deterministic algorithms
+│   └── shared/                  # Shared types and schemas
+├── tests/                       # Root Vitest and browser tests
+├── .github/workflows/ci.yml    # Verification and Cloudflare deployment
+├── package.json                # Root build and developer commands
+└── wrangler.jsonc              # Main Cloudflare Worker configuration
 ```
 
----
+## Requirements
 
-## 📦 The 4 Core Modules
+- Node.js `>=22.13` and npm `>=10` for the root TypeScript project and Cloudflare tooling.
+- Flutter and Dart versions compatible with `frontend/app/pubspec.yaml` to work on the Flutter client.
+- Android Studio/Android SDK for Android builds; Xcode is required for iOS builds on macOS.
+- Python 3.12 for the isolated `model-api` service.
+- Cloudflare account and GitHub Actions secrets for deployment. Local development does not require Cloudflare credentials.
 
-```mermaid
-graph LR
-    M1["1. AYUSETU INTAKE\n(Voice & Multimodal Door)"] -->|"Prescription & Encounter"| M2["2. AYUSETU OPS\n(Clinic ERP & Pharmacy)"]
-    M2 -->|"Dispense & Refill Window"| M3["3. AYUSETU HOME\n(Remote Patient Monitoring)"]
-    M3 -->|"Deterioration Alerts"| M1
-    M4["4. AYUSETU ENGINE\n(Shared Algorithmic Brain)"] -. Powers .-> M1
-    M4 -. Powers .-> M2
-    M4 -. Powers .-> M3
+## Run locally
 
-    classDef intake fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#fff;
-    classDef ops fill:#7c3aed,stroke:#6d28d9,stroke-width:2px,color:#fff;
-    classDef home fill:#059669,stroke:#047857,stroke-width:2px,color:#fff;
-    classDef engine fill:#ea580c,stroke:#c2410c,stroke-width:2px,color:#fff;
+Clone the project and install the root dependencies:
 
-    class M1 intake;
-    class M2 ops;
-    class M3 home;
-    class M4 engine;
+```bash
+git clone https://github.com/potlasrisharan/hackshift-sudarshan.git
+cd hackshift-sudarshan
+npm ci
 ```
 
-### 1. 🎙️ AyuSetu Intake — Multilingual Voice & Multimodal Front Door
-* **Voice-First Indic UX:** Built for low-literacy patients with large-target touch controls and voice navigation in **Hindi, English, Tamil, Telugu, and Punjabi**.
-* **Adaptive Clinical History (SOCRATES):** Dynamically selects high-yield questions using Sparse Bayesian Information Gain, reducing intake questions from 20 down to 6–8 without diagnostic loss.
-* **Instant Red-Flag Emergency Bypass:** Hard deterministic rules (< 3ms) override all conversational flows immediately on identifying red flags (chest pain, acute dyspnea, syncope, severe hemorrhage).
-* **Prescription & Lab OCR:** Extracts active salts, dosages, frequency, and duration with field-level confidence badges.
-* **Clinician SOAP Draft:** Compiles structured Subjective, Objective, Assessment, and Plan notes with interactive citation chips linking directly back to audio timestamps and document segments.
+### Web and API integration demo
 
-### 2. 🏥 AyuSetu Ops — Multi-Clinic Hub & Spoke ERP
-* **Atomic FEFO Pharmacy POS:** First-Expiry-First-Out dispensing serialized through Cloudflare Durable Objects to guarantee zero overselling during peak clinic rushes.
-* **Course-Validity Guard:** Enforces that allocated medicine batches have an expiry date strictly exceeding `courseEnd + 14 days`, eliminating mid-course expired drug ingestion.
-* **Savings Meter (Generic Optimization):** Identifies therapeutically bioequivalent generic salts, slashing medication bills by up to 60% with one-click doctor approval.
-* **Double-Entry Financial Ledger:** Every financial transaction logs immutable debit and credit entries stored in **Integer Paise** (`₹100.50` = `10050 paise`) with real-time balance sheets and audit locks.
-* **Inter-Clinic Transfer Routing:** Calculates batch logistics fees against expiry risk when pooling inventory across satellite clinics.
+Install the standalone website dependencies before building the integration Vite project:
 
-### 3. 🏡 AyuSetu Home — Zero-Hardware Remote Patient Monitoring
-* **WhatsApp-Native Daily Check-ins:** Patients or family members submit quick voice notes, plain numbers, or simple photos of blood pressure and glucometer monitors.
-* **Camera OCR Display Reader:** Automatically extracts numeric vitals from standard household meters without requiring costly Bluetooth hardware.
-* **Personalized Drift Radar:** Replaces rigid universal thresholds with an individualized baseline using non-parametric Median/MAD CUSUM to eliminate false-alarm fatigue.
-* **Nurse Triage Prioritization:** Dynamically surfaces deteriorating patients to the top of the clinical care coordinator's queue with plain-language diagnostic rationale.
-* **Proactive Refill Warnings:** Predicts stock-out dates 3 days in advance and automatically reserves the next batch at the patient's nearest clinic.
+```bash
+npm ci --prefix frontend/website --ignore-scripts
+npm run integration:dev
+```
 
-### 4. 🧠 AyuSetu Engine — Pure Deterministic Algorithms
-> **Architectural Rule:** *"Algorithms decide, AI translates."*  
-> All medical triaging, stock allocations, deterioration alerts, and inventory forecasts are computed by provable, deterministic math; LLMs are strictly confined to language translation and text formatting with deterministic fallbacks.
+The integration server starts at `http://127.0.0.1:8790` (the exact local ports are printed by the command). For the root Pages build and bundled API build, run:
 
----
+```bash
+npm run build
+```
 
-## 🔬 The Deterministic Algorithms
-
-| Algorithm | Mathematical Method | Clinical & Operational Impact | Execution Latency |
-|---|---|---|---|
-| **1. Triage Sentinel** | **Sparse Bayesian Updating + Information Gain:**<br>$\text{Gain} = H(P) - \sum P(y) \cdot H(P \mid y)$<br>with deterministic emergency red-flag override | Cuts intake questioning fatigue by ~60%; guarantees emergency escalation in < 3ms without hallucination risk. | **0.0068 ms** |
-| **2. Rx-to-Shelf** | **Multi-Constraint Exact Optimization:**<br>$\min \sum (\text{units}_i \cdot \text{price}_i) + \text{transfer\_fee}$<br>s.t. $\text{expiry}_i \ge \text{courseEnd} + 14\text{d}$ | Completely prevents mid-course drug expiration; automatically substitutes expensive brands with identical generic salts. | **0.0118 ms** |
-| **3. Drift Radar** | **Non-Parametric Median/MAD Baseline + Robust CUSUM:**<br>$\text{Baseline} = \text{Median}(X_{0..7}), \; \sigma = 1.4826 \cdot \text{MAD}$<br>$S_t = \max(0, S_{t-1} + (x_t - \text{baseline})/\sigma - 0.5)$ | Detects subtle physiological deterioration against the patient's *own* baseline rather than static population cutoffs. | **0.0330 ms** |
-| **4. ThreadPulse** | **Exact Poisson-Binomial Convolution:**<br>$P(D=k) = P(D=k)(1 - p_j) + P(D=k-1)p_j$<br>in $O(n^2)$ time | Forecasts clinic inventory demand from scheduled patient refill cohorts rather than lagging historical sales. | **0.0400 ms** |
-
----
-
-## 🌸 Specialized Clinical Intelligence
-
-### AyuSetu HER — Women's Preventive Health & Hormonal Intelligence
-Isolated under `/api/v1/her` and `frontend/app/lib/features/her/` with zero cross-domain data leakage:
-* **A0 Safety Gate:** Deterministic triage for ectopic pregnancy signs, severe hemorrhage, acute pelvic pain, or syncope.
-* **A1 Menstrual Deviation Detector:** Tracks cycle regularity, standard deviation, coefficient of variation, and uncertainty-bounded ovulation forecasting.
-* **A2 Deterministic Screening Engine:** Evidence-grounded rule categorization for PCOS, Endometriosis, Heavy Menstrual Bleeding, Thyroid context, and PMS/PMDD.
-* **A3 Personalized Wellness Ranker:** Evaluates therapeutic utility scores for Indian nutrition, restorative yoga postures, and contraindications.
-* **A4 Longitudinal Trend Analyzer:** Rolling multi-window moving averages tracking biomarker and symptom progression over time.
-
-### AyuSetu Vitalis — Longevity & Healthspan Intelligence
-Integrated under `/api/v1/vitalis` and `packages/engine/vitalis/`:
-* **V0 Exertion Safety Gate:** Blocks high-intensity exercise recommendations upon detecting cardiovascular red flags.
-* **V1 Healthspan Progress Index:** Normalized $[0, 100]$ behavioral progress metric across 8 modifiable lifestyle domains (sleep, cardiorespiratory fitness, nutrition, strength, stress, metabolic health, recovery, substance habits).
-* **V2 Preventive Priority Ranker:** Multi-objective weighted ranker $P(a) = \alpha E + \beta R + \gamma F - \delta B$ prioritizing actionable interventions.
-* **V3 Adaptive Exercise Progression:** Step and cardiovascular progression guarded against overtraining and fatigue spikes.
-* **V4 Biomarker Trend Analyzer:** Rate-of-change ($\Delta x / \Delta t$) and rolling variance analyzer with unit-quarantine guards.
-
----
-
-## 📱 Client Applications
-
-### 1. Flutter Patient Kiosk & Tablet (`frontend/app`)
-* **Framework:** Flutter 3.35+ (Dart 3.9+ null safety), Clean Architecture (`core/`, `features/`).
-* **State Management:** Riverpod 2 with code generation (`@riverpod`).
-* **Routing:** GoRouter declarative navigation.
-* **Accessibility:** Full **Elder Mode** (font scaling 20px+, touch targets $\ge 48$dp, high-contrast dark theme).
-* **Multilingual:** Hindi, English, Tamil, Telugu, Punjabi with Indic typography.
-* **Safety & Privacy:** Visible 60-second inactivity reset, biometric lock, server-issued cryptographic encounter receipt.
-* **Test Coverage:** **49 Flutter unit/widget tests**, zero analyzer issues, **91.1% domain/data line coverage**.
+### Flutter patient app
 
 ```bash
 cd frontend/app
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs
-flutter test --coverage
+flutter run -d chrome
 ```
 
-### 2. Clinician & ERP Portal (`frontend/website` & `apps/web`)
-* **Framework:** React + Vite + Tailwind CSS / Vanilla TS PWA.
-* **Features:** Real-time OPD triage queue, source-linked SOAP editor, FHIR R4 export, POS dispensing terminal, interactive Algorithm Lab.
-* **Local Run:** `npm ci && npm run integration:dev` at `http://127.0.0.1:8790`.
+Use `flutter devices` to select a connected Android or iOS device. Flutter tests can be run from this directory with `flutter test`.
 
----
+### Expo / React Native app
 
-## 🔒 Security, Privacy & DPDP Compliance
-
-AYUSETU strictly complies with the **Digital Personal Data Protection (DPDP) Act 2023** and Indian healthcare data standards:
-
-```mermaid
-flowchart LR
-    A["Patient Raw Input\n(Audio / Image / Text)"] --> B["Edge PHI Redaction Gate\n(Strips Aadhaar, Phone, Names)"]
-    B --> C["Redacted Evidence Struct\n(Symptom IDs + Measurement Floats)"]
-    C --> D["Deterministic Engine &\nLocal Citation Template"]
-    D --> E["Source-Linked SOAP Note\n(Provenance chips linked to timestamps)"]
-    E --> F["SHA-256 Chained Audit Hash\n(Tamper-evident verification)"]
-```
-
-* **Zero-Floating-Point Financials:** All medication prices, billing line items, and ledger balances are strictly stored as **Integer Paise** (`₹100.50` = `10050 paise`), completely eliminating IEEE-754 floating-point drift.
-* **SHA-256 Cryptographic Audit Chain:** Every sensitive state transition generates a block $\text{hash}_n = \text{SHA256}(\text{hash}_{n-1} + \text{payload})$. Tampering with a single byte in D1 immediately invalidates the cryptographic chain.
-* **Edge PHI Redaction Gate:** Strips government IDs, telephone numbers, patient names, and addresses before passing clinical context to external formatting layers.
-* **Granular Consent Receipts:** Users grant explicit permission across 4 distinct scopes (*Care Delivery, Pharmacy Sharing, Remote Monitoring, Research*), revocable with one tap.
-* **FHIR R4 Aligned:** Generates standards-compliant FHIR R4 Bundles containing `Patient`, `Observation` (LOINC-coded), and `MedicationRequest` resources.
-
----
-
-## 📊 Benchmarks & Performance
-
-Evaluated across 500 clinical test scenarios (Reproducible with `make bench`):
-
-<div align="center">
-
-![Benchmark Results](docs/benchmarks/measured-results.png)
-
-</div>
-
-### 1. Safety & Optimization Comparison
-| Metric | AYUSETU Engine | Naive / Baseline Approach | Improvement |
-|---|:---:|:---:|:---:|
-| **Unsafe Stock Selections** *(Expired before course end / allergy clash)* | **0** | 276 | **100% Elimination of Unsafe Dispensing** |
-| **Average Prescription Cost** | **₹78.93** | ₹51.06 *(Unusable/Expired)* | **Cost-optimized & 100% course-valid** |
-| **Subtle BP Deterioration Ramps Detected** | **250 / 250 (100%)** | 0 / 250 (0%) | **Early detection of silent clinical shifts** |
-| **False Alarms on Stable Patients** | **4 / 250 (1.6%)** | 0 / 250 (0%) | **98.4% reduction in nurse alert fatigue** |
-
-### 2. High-Concurrency Stress Test (k6)
-* **Requests Completed:** `117,589 requests` in 15 seconds across virtual users.
-* **Transport Latency:** `< 1.2ms` on local edge loopback.
-* **Memory Footprint:** `< 42 MB` RSS.
-
----
-
-## 💻 UI/UX Showcase
-
-<div align="center">
-
-### Desktop Clinician & Operations Console
-*OPD queue management, live FEFO stock allocation, and interactive algorithm verification*
-
-![AYUSETU Desktop Console](docs/images/dashboard-desktop.png)
-
-<br/>
-
-### Mobile Kiosk & Remote Patient Monitoring
-*High-contrast Indic interface, elder accessibility, and proactive WhatsApp vital check-ins*
-
-![AYUSETU Mobile PWA](docs/images/dashboard-mobile.png)
-
-</div>
-
----
-
-## 🗂️ Repository Structure
-
-```
-hackshift-sudarshan/
-├── backend/                    # Unified Cloudflare Worker (Hono API at /api/v1)
-│   ├── src/
-│   │   ├── do/                 # Durable Objects (ClinicInventory, ClinicHub, OrgAudit)
-│   │   ├── modules/            # API Modules (intake, ops, bridge, home, her, vitalis)
-│   │   └── database.ts         # Multi-tenant D1 SQLite connector with org_id isolation
-│   └── wrangler.jsonc          # Cloudflare Worker, D1 database & KV bindings
-├── frontend/
-│   ├── app/                    # 📱 Flutter Patient Kiosk & Mobile Tablet App
-│   │   ├── lib/core/           # Theme, routing (GoRouter), API client, constants
-│   │   └── lib/features/       # Triage, Kiosk, HER, Vitalis, Reminders (Riverpod)
-│   └── website/                # 💻 React Clinician & Admin Portal (Vite + Tailwind)
-├── packages/
-│   ├── engine/                 # 🧠 Pure TS Deterministic Algorithms (Zero Deps)
-│   │   ├── index.ts            # Sentinel, Rx-to-Shelf, DriftRadar, ThreadPulse
-│   │   ├── her/                # A0-A4 Women's Health & Hormonal Intelligence
-│   │   └── vitalis/            # V0-V14 Longevity & Healthspan Progression
-│   └── shared/                 # Zod contracts, TypeScript types, FHIR R4 mappers
-├── apps/
-│   ├── web/                    # Lightweight Vanilla TS Client (PWA)
-│   └── mobile/                 # React Native / Expo Native Patient App
-├── docs/                       # PRD, Architecture Specs, Benchmark Reports
-│   ├── PRD.md                  # Master Product Requirements Document
-│   ├── images/                 # Console and mobile interface screenshots
-│   └── benchmarks/             # k6 scripts, raw datasets, and benchmark plots
-├── tests/                      # Vitest test suites (contracts, engines, safety, APIs)
-├── Makefile                    # Developer orchestration shortcuts
-└── package.json                # Root monorepo configuration
-```
-
----
-
-## 🚀 Quickstart & Local Setup
-
-### Prerequisites
-* **Node.js:** `>= 22.13.0`
-* **npm:** `>= 10.0.0`
-* **Flutter:** `>= 3.35.0` *(for kiosk app)*
-* **Docker:** *(Optional, for containerized deployment)*
-
-### 1. One-Command Demo
 ```bash
-# Clone the repository
-git clone https://github.com/potlasrisharan/hackshift-sudarshan.git
-cd hackshift-sudarshan
-
-# Run the complete verified demo (Installs dependencies, builds & starts API + Web)
-make demo
+cd apps/mobile
+npm ci
+npm run start
 ```
-Open **`http://127.0.0.1:8787`** in your browser.
+
+For local Android native generation, use `npm run prebuild` and `npm run android` on a machine with the Android toolchain installed.
+
+## Build and verification commands
+
+| Command | Purpose |
+|---|---|
+| `npm run typecheck` | TypeScript checks for root and backend projects |
+| `npm run check:frontend` | TypeScript check for the Pages frontend configuration |
+| `npm run build` | Typecheck, build the Pages web assets, and bundle the Node API demo |
+| `npm run build:worker` | Wrangler Worker dry-run build |
+| `npm run integration:build` | Build the standalone website integration app |
+| `npm run integration:worker:build` | Build the integration Worker with Wrangler |
+| `npm test` | Run the root Vitest suite |
+| `npm run eval` | Run the safety-focused evaluation tests |
+| `npm run e2e` | Run the Playwright browser suite |
+| `npm run lint` | Run Biome checks on configured source paths |
+| `cd apps/mobile && npm run typecheck` | Check Expo / React Native TypeScript |
+| `cd frontend/app && flutter analyze` | Analyze Flutter/Dart sources |
+| `cd frontend/app && flutter test` | Run Flutter tests |
+
+GitHub Actions runs the broader verification pipeline, including builds, browser/integration checks, a secret scan, and a container smoke check. A green local build alone does not confirm successful Cloudflare deployment; inspect the Actions run and deployed application separately.
+
+## Cloudflare deployment
+
+The repository workflow uses Wrangler to apply D1 migrations, publish `dist/web` to the Pages project `ayuseva`, and deploy the Worker described by `wrangler.jsonc`. It is triggered by pushes to `main` (and the configured feature branch) after verification jobs pass.
+
+Required GitHub Actions secrets:
+
+- `CLOUDFLARE_API_TOKEN` — token with the permissions needed for the configured Pages, Worker, and D1 deployment actions.
+- `CLOUDFLARE_ACCOUNT_ID` — Cloudflare account identifier.
+
+Do not place these values in source files, commit them, or expose them to frontend code. Configure them in the repository's Actions secrets. For local Worker development, use Wrangler's local bindings and ignored `.dev.vars` files; see [Cloudflare's Wrangler documentation](https://developers.cloudflare.com/workers/wrangler/).
+
+Useful deployment commands:
+
+```bash
+npm run build:worker
+npx wrangler d1 migrations apply dhaaga-db --local --config wrangler.jsonc
+npx wrangler pages deploy dist/web --project-name=ayuseva --branch=main
+npx wrangler deploy
+```
+
+Production migrations and deployment are external side effects. Review the target account, project, branch, migration status, and CI results before running commands manually. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for current operational guidance; update those documents if deployment behavior changes.
+
+## Configuration and secrets
+
+- `wrangler.jsonc` contains non-secret Worker configuration and Cloudflare resource identifiers.
+- `.dev.vars` and `.env*` are ignored by Git. Keep local credentials there and use `.env.example` for variable names only.
+- Optional AI or speech providers must be configured as server-side Worker secrets. Never embed provider keys in Flutter, React, or static web bundles.
+- The build should work from a clean root `npm ci`; Tailwind and Autoprefixer used by the Pages Vite config are declared in the root package manifest for Cloudflare's root-only install.
+
+## Data, privacy, and clinical limitations
+
+- Treat all current flows as development or demonstration software unless a specific feature has been reviewed and approved for clinical use.
+- Do not enter real patient identifiers or clinical records into synthetic demo flows, screenshots, issue reports, model requests, or third-party services.
+- The main Worker is configured for Cloudflare D1, KV, and Durable Objects, but route-level persistence varies. Some HER, Vitalis, intake, and demo flows still include in-memory stores or seeded data; process memory is not durable or suitable for multi-instance production storage.
+- The isolated CBC model is research-only. Its output is neither a diagnosis nor a calibrated disease probability and must not guide patient care.
+- Before handling real health data, complete security, access-control, consent, retention, audit, privacy, clinical-safety, backup, and disaster-recovery reviews. Do not claim regulatory compliance based only on this README or a technical design.
+- Financial amounts should use integer paise. Tenant-scoped data access and input validation should follow the repository's architecture rules in `AGENTS.md` and `docs/PRD.md`.
+
+## Model API
+
+`model-api/` is an optional, separate Python service containing a frozen CBC research model. The primary application does not call it. It has its own dependencies, API docs, limitations, and deployment notes in [`model-api/README.md`](model-api/README.md). Do not send personally identifiable or patient-level information to this prototype.
+
+## Contributing
+
+1. Read [`AGENTS.md`](AGENTS.md), [`docs/PRD.md`](docs/PRD.md), and relevant architecture decisions before making changes.
+2. Keep a change focused and preserve unrelated working-tree changes.
+3. Update schemas, migrations, docs, and clients together when a shared API contract changes.
+4. Use deterministic rules for clinical or operational decisions; do not let generated text override a safety rule.
+5. Run the checks relevant to your change and report any checks that could not run.
+6. Keep secrets, generated build outputs, release packages, and real patient data out of commits.
+7. Use clear, scoped commit messages that describe the effect, for example `fix(web): resolve Pages Tailwind dependency` or `docs: refresh repository setup guide`.
+
+## Project documents
+
+- [`docs/PRD.md`](docs/PRD.md) — product requirements and specifications; primary product source of truth.
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — deployment status and operational constraints.
+- [`docs/DECISIONS.md`](docs/DECISIONS.md) — architecture decisions.
+- [`docs/algorithms/`](docs/algorithms/) — algorithm specifications and supporting notes.
+- [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) — known setup and deployment troubleshooting.
+- [`docs/PROGRESS.md`](docs/PROGRESS.md) — project progress notes.
 
 ---
 
-### 2. Common Developer Workflows
-
-| Command | Action | Description |
-|---|---|---|
-| `npm run integration:dev` | **Clinic Workspace** | Starts the interactive clinical & intake portal at `http://127.0.0.1:8790` |
-| `make test` | **Run Test Suite** | Runs all unit, contract, and safety test suites |
-| `make bench` | **Benchmark Harness** | Executes the 500-scenario algorithmic benchmark |
-| `make eval` | **Safety Triage Evals** | Validates red-flag override latency and clinical bounds |
-| `make lint` | **Lint & Typecheck** | Runs Biome and strict TypeScript typechecking |
-| `make up` | **Docker Container** | Launches the hardened, non-root container deployment |
-| `cd frontend/app && flutter run -d chrome` | **Flutter Kiosk** | Runs the Flutter patient kiosk in Chrome or connected Android tablet |
-
----
-
-## 👥 HackShift 2026 Team
-
-Developed with ❤️ for **HackShift 2026 at IIIT Delhi**  
-**Theme:** *Healthcare & Well-being — "Reimagining Healthcare Through Technology"*
-
-* **Frontend & Mobile:** Potla Sri Sharan & Team — Flutter Kiosk, Indic Voice UX, Elder Mode, React Clinician Portal
-* **Edge & Cloud Backend:** Cloudflare Workers, Durable Objects, D1 SQL, Hono Framework
-* **Algorithms & Mathematical Engines:** Information-Gain Triage, CUSUM Drift Radar, Poisson-Binomial Convolution
-* **Compliance & Data Privacy:** DPDP-Aligned Consent Flows, Zero-Floating-Point Financials, SHA-256 Chained Audits
-
----
-
-<div align="center">
-  <sub>Built with engineering rigor, clinical safety guards, and empathy for every patient.</sub>
-  <br/>
-  <b>AYUSETU — One continuous bridge from first symptom to full recovery.</b>
-</div>
+Built for HackShift 2026. AYUSETU is a software prototype for improving continuity across healthcare workflows; it is not a medical device or a substitute for professional care.
