@@ -1,6 +1,12 @@
 import { z } from "zod";
-import { cbcCapabilitiesSchema, cbcCreateSchema, cbcConfirmSchema, cbcPredictSchema,
-  cbcReportSchema, cbcListSchema } from "./cbc_contracts";
+import {
+  cbcCapabilitiesSchema,
+  cbcConfirmSchema,
+  cbcCreateSchema,
+  cbcListSchema,
+  cbcPredictSchema,
+  cbcReportSchema,
+} from "./cbc_contracts";
 import {
   encounterListSchema,
   encounterSchema,
@@ -73,24 +79,141 @@ export const integrationOpenapi = {
     },
   },
   paths: {
-    "/api/v1/cbc/capabilities": { get: operation("CBC synthetic workspace availability", cbcCapabilitiesSchema, undefined, false) },
-    "/api/v1/cbc/reports": {
-      get: { ...operation("Doctor-only CBC reports for a consented encounter", cbcListSchema), parameters: [
-        { name: "encounterId", in: "query", required: true, schema: { type: "string" } },
-        { name: "cursor", in: "query", required: false, schema: { type: "string" } },
-      ] },
-      post: { ...operation("Create a synthetic CBC draft with recorded processing permission", cbcReportSchema, cbcCreateSchema, true, "201"), parameters: [{ name: "Idempotency-Key", in: "header", required: true, schema: { type: "string", format: "uuid" } }] },
+    "/api/v1/cbc/capabilities": {
+      get: operation(
+        "CBC synthetic workspace availability",
+        cbcCapabilitiesSchema,
+        undefined,
+        false,
+      ),
     },
-    "/api/v1/cbc/reports/{id}": { parameters: [id], get: operation("Read report revisions and research results", cbcReportSchema), delete: operation("Delete measurements and private source", z.object({ deleted: z.boolean() })) },
-    "/api/v1/cbc/reports/{id}/confirm": { parameters: [id], post: { ...operation("Confirm an immutable normalized measurement revision", cbcReportSchema, cbcConfirmSchema), parameters: [{ name: "Idempotency-Key", in: "header", required: true, schema: { type: "string", format: "uuid" } }] } },
-    "/api/v1/cbc/reports/{id}/predict": { parameters: [id], post: { ...operation("Execute frozen research model on a saved revision", cbcReportSchema, cbcPredictSchema), parameters: [{ name: "Idempotency-Key", in: "header", required: true, schema: { type: "string", format: "uuid" } }] } },
+    "/api/v1/cbc/reports": {
+      get: {
+        ...operation(
+          "Doctor-only CBC reports for a consented encounter",
+          cbcListSchema,
+        ),
+        parameters: [
+          {
+            name: "encounterId",
+            in: "query",
+            required: true,
+            schema: { type: "string" },
+          },
+          {
+            name: "cursor",
+            in: "query",
+            required: false,
+            schema: { type: "string" },
+          },
+        ],
+      },
+      post: {
+        ...operation(
+          "Create a synthetic CBC draft with recorded processing permission",
+          cbcReportSchema,
+          cbcCreateSchema,
+          true,
+          "201",
+        ),
+        parameters: [
+          {
+            name: "Idempotency-Key",
+            in: "header",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+      },
+    },
+    "/api/v1/cbc/reports/{id}": {
+      parameters: [id],
+      get: operation(
+        "Read report revisions and research results",
+        cbcReportSchema,
+      ),
+      delete: operation(
+        "Delete measurements and private source",
+        z.object({ deleted: z.boolean() }),
+      ),
+    },
+    "/api/v1/cbc/reports/{id}/confirm": {
+      parameters: [id],
+      post: {
+        ...operation(
+          "Confirm an immutable normalized measurement revision",
+          cbcReportSchema,
+          cbcConfirmSchema,
+        ),
+        parameters: [
+          {
+            name: "Idempotency-Key",
+            in: "header",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+      },
+    },
+    "/api/v1/cbc/reports/{id}/predict": {
+      parameters: [id],
+      post: {
+        ...operation(
+          "Execute frozen research model on a saved revision",
+          cbcReportSchema,
+          cbcPredictSchema,
+        ),
+        parameters: [
+          {
+            name: "Idempotency-Key",
+            in: "header",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+      },
+    },
     "/api/v1/cbc/reports/{id}/document": {
       parameters: [id],
-      put: { summary: "Retain a bounded original in private R2 with explicit source permission", security: [{ bearerAuth: [] }],
-        parameters: [{ name: "X-Source-Retention-Consent", in: "header", required: true, schema: { type: "string", const: "true" } }],
-        requestBody: { required: true, content: Object.fromEntries(["application/pdf", "image/png", "image/jpeg"].map(type => [type, { schema: { type: "string", format: "binary", maxLength: 10485760 } }])) },
-        responses: { "200": { description: "Original retained", content: content(cbcReportSchema) } } },
-      get: { summary: "Download an authorized private original", security: [{ bearerAuth: [] }], responses: { "200": { description: "Private no-store binary source" } } },
+      put: {
+        summary:
+          "Retain a bounded original in private R2 with explicit source permission",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "X-Source-Retention-Consent",
+            in: "header",
+            required: true,
+            schema: { type: "string", const: "true" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: Object.fromEntries(
+            ["application/pdf", "image/png", "image/jpeg"].map((type) => [
+              type,
+              {
+                schema: {
+                  type: "string",
+                  format: "binary",
+                  maxLength: 10485760,
+                },
+              },
+            ]),
+          ),
+        },
+        responses: {
+          "200": {
+            description: "Original retained",
+            content: content(cbcReportSchema),
+          },
+        },
+      },
+      get: {
+        summary: "Download an authorized private original",
+        security: [{ bearerAuth: [] }],
+        responses: { "200": { description: "Private no-store binary source" } },
+      },
     },
     "/api/v1/auth/login": {
       post: operation(
