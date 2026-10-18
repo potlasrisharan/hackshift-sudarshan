@@ -62,4 +62,3 @@ export function getIntakeQuestion(
         : allopathyQuestions;
   return questions[stepIndex] ?? null;
 }
-
