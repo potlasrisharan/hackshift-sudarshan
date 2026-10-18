@@ -123,7 +123,7 @@ npm ci --prefix frontend/website --ignore-scripts
 npm run integration:dev
 ```
 
-The integration server starts at `http://127.0.0.1:8790` (the exact local ports are printed by the command). For the root Pages build and bundled API build, run:
+The integration server starts at `http://127.0.0.1:8790` (the exact local ports are printed by the command). The root `build` command installs the website package from its lockfile before compiling. This lets Cloudflare Pages use a root `npm ci` followed by `npm run build` without requiring a separate dashboard build command. For the root Pages build and bundled API build, run:
 
 ```bash
 npm run build
