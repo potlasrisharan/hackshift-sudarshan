@@ -141,7 +141,10 @@ test("patient intake updates doctor consultation queue and emergency triage in r
   ).toBeVisible();
 
   // Verify the intake patient appears in Doctor queue and is active with STAT alert
-  const emergencyQueueCard = page.getByText("E-045").first().locator("xpath=../../..");
+  const emergencyQueueCard = page
+    .getByText("E-045")
+    .first()
+    .locator("xpath=../../..");
   await expect(emergencyQueueCard).toBeVisible();
   await expect(emergencyQueueCard.getByText("STAT Alert")).toBeVisible();
 

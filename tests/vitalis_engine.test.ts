@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   estimateNonExerciseVO2max,
-  evaluateVO2maxRecord,
   vitalisBehaviorSimulator,
   vitalisBiomarkerTrends,
   vitalisDailyReadiness,
@@ -286,8 +285,8 @@ describe("AyuSetu Vitalis — Algorithm V12: Dedup and Units", () => {
     const res = vitalisIngestAndDeduplicate(raw);
     expect(res.duplicateCount).toBe(1);
     expect(res.deduplicatedSamples.length).toBe(1);
-    expect(res.deduplicatedSamples[0]!.unit).toBe("mg/dL");
-    expect(res.deduplicatedSamples[0]!.value).toBe(99.1);
+    expect(res.deduplicatedSamples[0]?.unit).toBe("mg/dL");
+    expect(res.deduplicatedSamples[0]?.value).toBe(99.1);
   });
 });
 
