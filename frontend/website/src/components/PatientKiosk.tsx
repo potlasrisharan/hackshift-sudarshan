@@ -666,6 +666,12 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
 
   // Typed symptom
   const [typedSymptom, setTypedSymptom] = useState<string>('');
+  const [intakePrompt, setIntakePrompt] = useState<string>('');
+  const [intakeStep, setIntakeStep] = useState<number>(0);
+  const [intakeTurns, setIntakeTurns] = useState<Array<{ question: string; answer: string }>>([]);
+  const [intakeComplete, setIntakeComplete] = useState<boolean>(false);
+  const [isSubmittingIntake, setIsSubmittingIntake] = useState<boolean>(false);
+  const [intakeTriage, setIntakeTriage] = useState<Record<string, unknown> | null>(null);
 
   const updateSymptomAndTranslate = (text: string) => {
     setTypedSymptom(text);
@@ -740,6 +746,57 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
     isVerified: true,
     isEmergency: false
   });
+
+  const submitIntakeTurn = async (input: string) => {
+    const responseText = input.trim();
+    if (!responseText || isSubmittingIntake || intakeComplete) return;
+    setIsSubmittingIntake(true);
+    updateSymptomAndTranslate(responseText);
+    try {
+      const response = await fetch(`${CLOUDFLARE_API_BASE}/intake/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          encounter_id: currentPatient.id || undefined,
+          current_input: responseText,
+          system_type: 'ALLOPATHY',
+          language: currentLanguage,
+          step_index: intakeStep,
+          turns: intakeTurns,
+        }),
+      });
+      const result = await response.json() as {
+        error?: string;
+        reply_text?: string;
+        step_completed?: boolean;
+        red_flag?: { is_triggered?: boolean };
+        triage?: Record<string, unknown>;
+      };
+      if (!response.ok || !result.reply_text) {
+        throw new Error(result.error || 'The intake service could not process this response.');
+      }
+
+      const updatedTurns = [...intakeTurns, {
+        question: intakePrompt || 'Chief complaint',
+        answer: responseText,
+      }];
+      setIntakeTurns(updatedTurns);
+      setIntakePrompt(result.reply_text);
+      setIntakeStep((step) => step + 1);
+      setIntakeComplete(Boolean(result.step_completed));
+      setIntakeTriage(result.triage ?? null);
+      if (result.red_flag?.is_triggered) {
+        setShowRedFlagBanner(true);
+        setCurrentPatient((patient) => ({ ...patient, isEmergency: true }));
+      }
+      setTypedSymptom('');
+      speakText(result.reply_text);
+    } catch (error) {
+      setTokenError(error instanceof Error ? error.message : 'The intake service could not process this response.');
+    } finally {
+      setIsSubmittingIntake(false);
+    }
+  };
 
   // Scanned documents
   interface ScannedDocItem {
@@ -959,7 +1016,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
       isEmergency: true
     };
     setCurrentPatient(emergPatient);
-    speakText('Emergency Triage Activated! Please do not move. Nursing and ER staff has been alerted.');
+    speakText('Emergency intake started. Please alert clinic staff immediately.');
     try {
       const encounterData = {
         id: `enc_${crypto.randomUUID()}`,
@@ -970,62 +1027,26 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
         patientId: emergPatient.id || `pat_${Date.now()}`,
         patient_name: emergPatient.name,
         name: emergPatient.name,
-        age: emergPatient.age || 52,
-        gender: (emergPatient.gender || 'MALE').toUpperCase(),
-        phone: emergPatient.phone,
-        abha_id: emergPatient.abhaId || '91-4829-1029-4821',
-        abhaId: emergPatient.abhaId || '91-4829-1029-4821',
+        age: emergPatient.age || 0,
+        gender: (emergPatient.gender || 'UNKNOWN').toUpperCase(),
+        phone: emergPatient.phone || '',
+        abha_id: emergPatient.abhaId || '',
+        abhaId: emergPatient.abhaId || '',
         pmjay_eligible: false,
         pmjayEligible: false,
-        chief_complaint: emergPatient.englishTranslation,
+        chief_complaint: 'Emergency assistance requested by patient or attendant.',
         intake_audio_snippet: emergPatient.selectedSymptom,
-        intake_audio_translation: emergPatient.englishTranslation,
-        symptoms: ['Priority 1 Acute Undifferentiated Medical Emergency', 'Severe Autonomic / Cardiac Distress', 'Chest Pain', 'Shortness of Breath'],
+        intake_audio_translation: '',
+        symptoms: [],
         triage_priority: 'EMERGENCY_RED',
         status: 'STAT_ALERT',
         is_emergency: true,
-        bay: 'Casualty Resus Bay 1',
-        bay_assigned: 'Casualty Resus Bay 1',
-        trigger_condition: 'Emergency Override Activated: Acute Resuscitation Required',
-        recommended_action: 'STAT 12-lead ECG (<5 min), Dual Antiplatelet loading, Casualty Bay 1 preparation, Crash Cart standby',
         check_in_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        vitals: { bp: '162/100 mmHg', pulse: 112, spo2: 94, temp: '98.6°F' },
         soap: {
-          subjective: 'Emergency override activated at Patient Intake Kiosk. Immediate casualty bed needed.',
-          objective: 'BP 162/100 mmHg. Pulse 112 bpm regular. SpO2 94% on room air. Diaphoretic.',
-          assessment: 'STAT Acute Cardiorespiratory Medical Emergency (Rule-out STEMI / Acute Collapse).',
-          icd11Code: 'BA41 (Acute Myocardial Infarction) / MC82 (Syncope and collapse)',
-          icd11Description: 'Acute Medical Emergency / Resuscitation Priority',
-          namasteCode: 'AHA/ACC 2023 NSTE-ACS Guideline (Class I, Level A)',
-          namasteDescription: 'STAT Dual Antiplatelet (DAPT) + High-Intensity Statin + Rapid Cath Lab Transfer',
-          plan: [
-            {
-              drug: 'Aspirin 300mg (Soluble Dispersible)',
-              dosage: '300mg',
-              frequency: 'STAT',
-              duration: '1 Day',
-              availableInClinic: true,
-              instructions: 'Dissolve in water immediately',
-              shelfLocation: 'Shelf A-01 (Emergency Tray)',
-              brandName: 'Ecosprin 300',
-              brandPrice: 45,
-              genericName: 'Aspirin Dispersible 300mg',
-              genericPrice: 6
-            },
-            {
-              drug: 'Clopidogrel 300mg (Loading Dose)',
-              dosage: '300mg',
-              frequency: 'STAT',
-              duration: '1 Day',
-              availableInClinic: true,
-              instructions: 'Swallow with water STAT',
-              shelfLocation: 'Shelf A-02 (Emergency Tray)',
-              brandName: 'Plavix 300',
-              brandPrice: 130,
-              genericName: 'Clopidogrel 300mg',
-              genericPrice: 18
-            }
-          ]
+          subjective: 'Emergency assistance requested by patient or attendant at the kiosk.',
+          objective: null,
+          assessment: null,
+          plan: null,
         }
       };
       const response = await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter`, {
@@ -1214,53 +1235,11 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
     if (isIssuingToken) return;
     setIsIssuingToken(true);
     setTokenError('');
-    const isEmerg = currentPatient.isEmergency || false;
-
-    const chiefComplaint = currentPatient.englishTranslation || currentPatient.selectedSymptom || 'General OPD consultation';
-    const medsExtracted = scannedDocs.map(d => d.meds).filter(Boolean).join(' • ');
-    const labsExtracted = scannedDocs.map(d => d.labs).filter(Boolean).join(' • ');
-
-    const lower = (chiefComplaint + ' ' + (currentPatient.selectedSymptom || '')).toLowerCase();
-    const isChestPain = lower.includes('chest') || lower.includes('seene') || lower.includes('sine') || lower.includes('chhati') || lower.includes('angina') || lower.includes('cardiac');
-    const isBreathless = lower.includes('breath') || lower.includes('saans') || lower.includes('shortness') || lower.includes('dyspnea') || lower.includes('dam ghut');
-    const isCardiac = isEmerg || isChestPain || isBreathless;
-    const isJointPain = lower.includes('knee') || lower.includes('joint') || lower.includes('pain') || lower.includes('stiffness') || lower.includes('ghutne');
-    const isFever = lower.includes('fever') || lower.includes('bukhar') || lower.includes('chills');
-
-    const triagePriority = isCardiac ? 'EMERGENCY_RED' : (isFever ? 'URGENT_YELLOW' : 'ROUTINE_GREEN');
-    const encounterStatus = isCardiac ? 'STAT_ALERT' : 'WAITING';
-
-    const plan = [
-      {
-        drug: isCardiac ? 'Aspirin 300mg (Soluble Dispersible)' : (isJointPain ? 'Aceclofenac 100mg + Paracetamol 325mg' : 'Paracetamol 650mg'),
-        dosage: isCardiac ? '300mg' : (isJointPain ? '1 tab' : '650mg'),
-        frequency: isCardiac ? 'STAT' : '1-0-1',
-        duration: isCardiac ? '1 Day' : '5 Days',
-        availableInClinic: true,
-        instructions: isCardiac ? 'Dissolve in water immediately' : 'After meals',
-        shelfLocation: isCardiac ? 'Shelf A-01 (Emergency Tray)' : 'Shelf B-04 (Analgesics)',
-        brandName: isCardiac ? 'Ecosprin 300' : (isJointPain ? 'Zerodol-P' : 'Dolo 650'),
-        brandPrice: isCardiac ? 45 : 75,
-        genericName: isCardiac ? 'Aspirin Dispersible 300mg' : (isJointPain ? 'Aceclofenac + Paracetamol' : 'Paracetamol 650mg'),
-        genericPrice: isCardiac ? 6 : 12
-      }
-    ];
-
-    if (isJointPain) {
-      plan.push({
-        drug: 'Yograj Guggulu 2 tab BD',
-        dosage: '2 Tablets',
-        frequency: '1-0-1',
-        duration: '15 Days',
-        availableInClinic: true,
-        instructions: 'Take with warm water after meals',
-        shelfLocation: 'AYUSH Shelf D-02 (Vata Shaman)',
-        brandName: 'Baidyanath Yograj Guggulu',
-        brandPrice: 195,
-        genericName: 'Yograj Guggulu (Ayurvedic Pharmacopoeia of India)',
-        genericPrice: 48
-      });
-    }
+    const chiefComplaint = intakeTurns[0]?.answer || currentPatient.selectedSymptom || 'General OPD consultation';
+    const intakeTranscript = intakeTurns
+      .map(({ question, answer }) => `${question}: ${answer}`)
+      .join('\n');
+    const isEmergency = currentPatient.isEmergency || intakeTriage?.tier === 'emergency';
 
     try {
       const encounterData = {
@@ -1281,46 +1260,22 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
         pmjay_eligible: currentPatient.hasPmjay,
         pmjayEligible: currentPatient.hasPmjay,
         chief_complaint: chiefComplaint,
-        selected_symptom: currentPatient.selectedSymptom || chiefComplaint,
-        intake_audio_snippet: currentPatient.selectedSymptom,
-        intake_audio_translation: chiefComplaint,
-        symptoms: [
-          chiefComplaint,
-          ...(isChestPain ? ['Retrosternal Chest Pain', 'Radiation to left arm'] : []),
-          ...(isBreathless ? ['Shortness of Breath', 'Dyspnea'] : []),
-          ...(isFever ? ['High Grade Fever', 'Chills'] : [])
-        ],
-        triage_priority: triagePriority,
-        status: encounterStatus,
-        is_emergency: isCardiac,
-        bay: isCardiac ? 'Casualty Resus Bay 1' : null,
-        trigger_condition: isCardiac ? 'Acute Coronary Syndrome / Acute Respiratory Emergency' : '',
-        recommended_action: isCardiac ? 'STAT 12-lead ECG (<5 min), Dual Antiplatelet loading, Casualty Bay 1 preparation, Crash Cart standby' : 'Routine OPD consultation',
+        selected_symptom: intakeTranscript || currentPatient.selectedSymptom || chiefComplaint,
+        intake_audio_snippet: intakeTranscript || currentPatient.selectedSymptom,
+        intake_audio_translation: currentPatient.englishTranslation || '',
+        intake_history: intakeTurns,
+        triage: intakeTriage,
+        triage_priority: isEmergency ? 'EMERGENCY_RED' : 'ROUTINE',
+        status: isEmergency ? 'STAT_ALERT' : 'WAITING',
+        is_emergency: isEmergency,
+        bay: null,
         check_in_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        citations: [
-          { id: 1, timestamp: '00:10', transcriptSnippet: currentPatient.selectedSymptom || chiefComplaint, clinicalFinding: chiefComplaint }
-        ],
-        vitals: isCardiac
-          ? { bp: '158/96 mmHg', pulse: 104, spo2: 95, temp: '98.6°F' }
-          : (isFever
-              ? { bp: '128/84 mmHg', pulse: 92, spo2: 97, temp: '101.4°F' }
-              : { bp: '124/80 mmHg', pulse: 74, spo2: 98, temp: '98.4°F' }
-            ),
         soap: {
-          subjective: `${currentPatient.age}y ${currentPatient.gender} presents with ${chiefComplaint}.${medsExtracted ? ` Prior medications: ${medsExtracted}.` : ''} Reported via Vernacular Kiosk.`,
-          objective: isCardiac
-            ? 'Elevated BP 158/96 mmHg, pulse 104 regular, SpO2 95% on room air.'
-            : `Normotensive (BP 124/80 mmHg), pulse 74 regular, SpO2 98%. ${labsExtracted ? `Extracted labs: ${labsExtracted}` : 'Vitals stable.'}`,
-          assessment: isCardiac
-            ? 'Emergency triage alert: acute cardiorespiratory symptoms.'
-            : (isJointPain ? 'Primary Osteoarthritis with active joint stiffness.' : (isFever ? 'Acute febrile illness.' : 'Clinical OPD evaluation.')),
-          icd11Code: isCardiac ? 'BA41' : (isJointPain ? 'FA00 (Osteoarthritis)' : (isFever ? 'MG22 (Pyrexia of unknown origin)' : 'MG30')),
-          icd11Description: isCardiac ? 'Acute Coronary Syndrome' : (isJointPain ? 'Bilateral knee osteoarthritis' : 'Clinical evaluation indicated'),
-          namasteCode: isJointPain ? 'NAMASTE-AYUSH-SANDHIVATA-01' : 'AHA/ACC Standard Care',
-          namasteDescription: isJointPain ? 'Integrative Sandhivata protocol with anti-inflammatory therapy' : 'Standard clinical care protocol',
-          plan
-        },
-        scanned_docs: scannedDocs
+          subjective: intakeTranscript || chiefComplaint,
+          objective: null,
+          assessment: null,
+          plan: null,
+        }
       };
       const response = await fetch(`${CLOUDFLARE_API_BASE}/intake/encounter`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(encounterData),
@@ -1332,7 +1287,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
       setCurrentPatient(prev => ({ ...prev, tokenNumber: tokenStr }));
       setCurrentScreenIndex(4);
       speakText(`Your intake is complete. Your token number is ${tokenStr}.`);
-      if (onTokenGenerated) onTokenGenerated({ hasRedFlag: isCardiac, token: tokenStr });
+      if (onTokenGenerated) onTokenGenerated({ hasRedFlag: isEmergency, token: tokenStr });
     } catch (error) {
       setTokenError(error instanceof Error ? error.message : 'Could not issue a clinic token.');
     } finally {
@@ -1954,7 +1909,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
                 <span className="text-xs font-bold text-[#223D79] tracking-wide uppercase">AI Scribe & Triage Ready</span>
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-slate-900">
-                "{dict.aiQuestion}"
+                "{intakePrompt || dict.aiQuestion}"
               </h3>
               <p className="text-xs text-slate-600">{dict.aiQuestionSub}</p>
             </div>
@@ -2052,12 +2007,11 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
                     <div className="flex justify-end pt-1">
                       <button
                         type="button"
-                        onClick={() => {
-                          updateSymptomAndTranslate(typedSymptom);
-                        }}
+                        onClick={() => void submitIntakeTurn(typedSymptom)}
+                        disabled={isSubmittingIntake || intakeComplete}
                         className="px-3 py-1.5 bg-[#223D79] hover:bg-[#1a2f5e] text-white rounded-lg text-xs font-bold transition shadow-sm"
                       >
-                        {dict.typeTranslateBtn || '⚡ Translate & Analyze ➔'}
+                        {isSubmittingIntake ? 'Processing…' : intakeComplete ? 'Intake complete' : dict.typeTranslateBtn || '⚡ Translate & Analyze ➔'}
                       </button>
                     </div>
                   </div>
@@ -2377,7 +2331,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
                 <span>📥 Download / Print OPD Slip & Prescription (PDF)</span>
               </button>
 
-              <button onClick={() => { setCurrentPatient(prev => ({ ...prev, tokenNumber: '' })); setTokenError(''); setCurrentScreenIndex(0); }} className="w-full bg-slate-900 hover:bg-[#1a2f5e] text-white border border-[#D9CDBA]/30 font-bold py-3.5 px-4 rounded-xl text-sm transition">
+              <button onClick={() => { setCurrentPatient(prev => ({ ...prev, tokenNumber: '', selectedSymptom: '', englishTranslation: '', isEmergency: false })); setTypedSymptom(''); setTranslationStatus('idle'); setTokenError(''); setIntakePrompt(''); setIntakeStep(0); setIntakeTurns([]); setIntakeComplete(false); setIntakeTriage(null); setShowRedFlagBanner(false); setCurrentScreenIndex(0); }} className="w-full bg-slate-900 hover:bg-[#1a2f5e] text-white border border-[#D9CDBA]/30 font-bold py-3.5 px-4 rounded-xl text-sm transition">
                 {dict.nextPatBtn || 'Start Next Patient'}
               </button>
             </div>

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { sentinel } from "../../../../packages/engine";
+import { getClinicalRedFlags, getIntakeQuestion } from "../../../../packages/engine/clinicalIntake";
 import { savePatientToStore, type PatientRecord } from "../../index";
 import type { Database } from "../../database";
 import { tokenHash } from "../../security";
@@ -117,82 +118,83 @@ intakeRouter.post("/soap", async (c) => {
 });
 
 intakeRouter.post("/chat", async (c) => {
-  let encounterId = "enc-0042";
-  let currentInput = "";
-  let systemType = "ALLOPATHY";
-
-  try {
-    const raw = (await c.req.json()) as {
-      encounter_id?: string;
-      current_input?: string;
-      system_type?: string;
-    };
-    if (raw && typeof raw === "object") {
-      if (raw.encounter_id) encounterId = raw.encounter_id;
-      if (raw.current_input) currentInput = raw.current_input;
-      if (raw.system_type) systemType = raw.system_type;
-    }
-  } catch {
-    // empty body fallback
+  const kioskLanguages = ["en-IN", "hi-IN", "pa-IN", "ta-IN", "te-IN", "kn-IN", "mr-IN", "bn-IN", "gu-IN"] as const;
+  const bodySchema = z.object({
+    encounter_id: z.string().min(1).max(100).optional(),
+    current_input: z.string().trim().min(1).max(1000),
+    system_type: z.enum(["ALLOPATHY", "AYURVEDA", "COMBINED"]).default("ALLOPATHY"),
+    language: z.enum(kioskLanguages).default("en-IN"),
+    step_index: z.number().int().min(0).max(10).default(0),
+    turns: z.array(z.object({
+      question: z.string().max(300),
+      answer: z.string().min(1).max(1000),
+    })).max(10).default([]),
+  });
+  const parsed = bodySchema.safeParse(await c.req.json().catch(() => null));
+  if (!parsed.success) {
+    return c.json({ error: "Provide a patient response and a valid intake step." }, 400);
   }
 
-  const text = currentInput.toLowerCase();
-  const hasChestPain =
-    text.includes("chest") ||
-    text.includes("seene") ||
-    text.includes("chhati") ||
-    text.includes("angina") ||
-    (text.includes("pain") && (text.includes("chest") || text.includes("heart") || text.includes("cardiac")));
-  const hasBreathless =
-    text.includes("breath") ||
-    text.includes("saans") ||
-    text.includes("shortness") ||
-    text.includes("dam ghut");
-  const hasFainting =
-    text.includes("faint") ||
-    text.includes("chakkar") ||
-    text.includes("behosh") ||
-    text.includes("syncope");
-  const hasFever = text.includes("fever") || text.includes("bukhar") || text.includes("taap");
-  const hasCough = text.includes("cough") || text.includes("khansi");
-
-  const answers: Record<string, "yes" | "no"> = {};
-  if (hasChestPain) answers.chestPain = "yes";
-  if (hasBreathless) answers.breathless = "yes";
-  if (hasFainting) answers.fainting = "yes";
-  if (hasFever) answers.fever = "yes";
-  if (hasCough) answers.cough = "yes";
+  const { current_input: currentInput, system_type: systemType, language, step_index: stepIndex, turns } = parsed.data;
+  const transcript = [
+    ...turns.map(({ answer }) => answer),
+    currentInput,
+  ].join(" ");
+  const redFlags = getClinicalRedFlags(transcript);
+  const answers: Record<string, "yes" | "no" | "unsure"> = {};
+  if (redFlags.includes("chest_pain")) answers.chestPain = "yes";
+  if (redFlags.includes("breathlessness")) answers.breathless = "yes";
+  if (redFlags.includes("fainting")) answers.fainting = "yes";
+  if (/\b(fever|bukhar|taap|बुखार|జ్వరం|காய்ச்சல்|ಜ್ವರ|તાવ|জ্বর)\b/i.test(transcript)) answers.fever = "yes";
+  if (/\b(cough|khansi|खांसी|దగ్గు|இருமல்|ಕೆಮ್ಮು|ઉધરસ|কাশি)\b/i.test(transcript)) answers.cough = "yes";
 
   const start = performance.now();
   const triageResult = sentinel({ answers });
   const latencyMs = Number((performance.now() - start).toFixed(1));
-
-  const isRedFlag = triageResult.tier === "emergency" || hasChestPain || hasBreathless || hasFainting;
-  const triggerSymptoms: string[] = [];
-  if (hasChestPain) triggerSymptoms.push("chest pain");
-  if (hasBreathless) triggerSymptoms.push("breathlessness");
-  if (hasFainting) triggerSymptoms.push("fainting");
-
-  const replyText = isRedFlag
-    ? "EMERGENCY ALERT: Acute symptoms identified. Triage notified."
-    : "Kya aapko thand lag kar bukhar aa raha hai ya sharir mein jakdan hai?";
-
-  const suggestedOptions = isRedFlag
-    ? ["Immediate assistance", "Nurse desk call"]
-    : ["Haan, thand lagti hai", "Nahi, sirf dard hai", "Subah ke waqt zyada"];
+  const isRedFlag = redFlags.length > 0 || triageResult.tier === "emergency";
+  const nextQuestion = isRedFlag ? null : getIntakeQuestion(systemType, stepIndex);
+  const complete = isRedFlag || nextQuestion === null;
+  let replyText = nextQuestion ?? "Thank you. Your answers have been recorded for the clinician.";
+  if (isRedFlag) {
+    replyText = "Urgent symptoms need immediate in-person clinical assessment. Please alert the clinic staff now.";
+  } else if (nextQuestion && language !== "en-IN" && c.env.SARVAM_API_KEY) {
+    try {
+      const translation = await fetch("https://api.sarvam.ai/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-subscription-key": c.env.SARVAM_API_KEY,
+        },
+        body: JSON.stringify({
+          input: nextQuestion,
+          source_language_code: "en-IN",
+          target_language_code: language,
+          model: "mayura:v1",
+          mode: "formal",
+        }),
+      });
+      if (translation.ok) {
+        const translated = z.object({ translated_text: z.string().trim().min(1).max(500) })
+          .safeParse(await translation.json());
+        if (translated.success) replyText = translated.data.translated_text;
+      }
+    } catch {
+      // The English question remains usable when translation is unavailable.
+    }
+  }
 
   return c.json({
-    encounter_id: encounterId,
+    encounter_id: parsed.data.encounter_id ?? null,
     system_type: systemType,
     reply_text: replyText,
-    suggested_options: suggestedOptions,
-    step_completed: isRedFlag,
+    suggested_options: [],
+    step_completed: complete,
     red_flag: {
       is_triggered: isRedFlag,
-      trigger_symptoms: triggerSymptoms,
-      latency_ms: latencyMs > 0 ? latencyMs : 14.2
+      trigger_symptoms: redFlags,
+      latency_ms: latencyMs,
     },
-    triage: triageResult
+    triage: triageResult,
   });
 });
 
@@ -215,12 +217,7 @@ export interface EncounterRecord {
   status: "WAITING" | "STAT_ALERT" | "IN_CONSULT" | "DISPENSED" | string;
   is_emergency: boolean;
   triage: any;
-  vitals: {
-    bp: string;
-    pulse: number;
-    spo2: number;
-    temp: string;
-  };
+  vitals: Record<string, unknown>;
   soap: any;
   bay?: string | null;
   assigned_doctor?: string | null;
@@ -299,7 +296,19 @@ intakeRouter.post("/encounter", async (c) => {
   const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
   const rawAnswers = (body.answers && typeof body.answers === "object" ? body.answers : {}) as Record<string, "yes" | "no">;
   const answers: Record<string, "yes" | "no"> = { ...rawAnswers };
-  const symptomText = String(body.chief_complaint || body.selectedSymptom || body.symptom || "").toLowerCase();
+  const intakeHistory = z.array(z.object({ answer: z.string().max(1000) })).max(10)
+    .safeParse(body.intake_history);
+  const historyText = intakeHistory.success
+    ? intakeHistory.data.map(({ answer }) => answer).join(" ")
+    : "";
+  const symptomText = [body.chief_complaint, body.selected_symptom, body.selectedSymptom, body.symptom, historyText]
+    .filter((value): value is string => typeof value === "string")
+    .join(" ")
+    .toLowerCase();
+  const detectedFlags = getClinicalRedFlags(symptomText);
+  if (detectedFlags.includes("chest_pain")) answers.chestPain = "yes";
+  if (detectedFlags.includes("breathlessness")) answers.breathless = "yes";
+  if (detectedFlags.includes("fainting")) answers.fainting = "yes";
 
   if (
     symptomText.includes("chest") ||
@@ -417,7 +426,9 @@ intakeRouter.post("/encounter", async (c) => {
     status: initialStatus,
     is_emergency: isEmergency,
     triage: triageResult,
-    vitals: (typeof body.vitals === "object" && body.vitals !== null ? body.vitals : (isEmergency ? { bp: "158/96 mmHg", pulse: 104, spo2: 95, temp: "98.6°F" } : { bp: "120/80 mmHg", pulse: 76, spo2: 98, temp: "98.4°F" })) as any,
+    vitals: typeof body.vitals === "object" && body.vitals !== null && !Array.isArray(body.vitals)
+      ? body.vitals as Record<string, unknown>
+      : {},
     soap: body.soap || null,
     bay: body.bay ? String(body.bay) : body.bay_assigned ? String(body.bay_assigned) : (isEmergency ? "Emergency Bay 1" : null),
     assigned_doctor: body.assigned_doctor ? String(body.assigned_doctor) : body.doctor_name ? String(body.doctor_name) : null,
