@@ -85,19 +85,21 @@ patientAuthRouter.post("/signup", async (c) => {
   // Create patient record
   const patientData: PatientRecord = {
     id: patientId,
+    orgId,
     name: input.name,
     phone: cleanPhone,
     phoneHash: pHash,
     dob: input.dob,
-    sex: input.sex,
+    gender: input.sex,
     preferredLang: input.preferredLang,
-    abhaNumber: input.abhaNumber || null,
-    bloodGroup: input.bloodGroup || null,
-    emergencyContact: input.emergencyContact || null,
-    address: input.address || null,
+    abhaNumber: input.abhaNumber || undefined,
+    bloodGroup: input.bloodGroup || undefined,
+    emergencyContact: input.emergencyContact || undefined,
+    address: input.address || undefined,
     allergies: [],
     chronicConditions: [],
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   savePatientToStore(patientData);
 

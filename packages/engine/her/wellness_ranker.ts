@@ -179,7 +179,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Restorative resting posture with knees wide, forehead on mat or cushion, and long smooth breaths to release spinal and pelvic tension.",
     evidenceGrade: "A",
-    evidenceSource: "Harvard Health Publishing: Yoga for Chronic Pelvic Pain & Stress",
+    evidenceSource:
+      "Harvard Health Publishing: Yoga for Chronic Pelvic Pain & Stress",
     contraindications: ["severe_knee_injury", "third_trimester_pregnancy_flat"],
     dietaryTags: [],
     disclaimer:
@@ -193,8 +194,13 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Passive inversion elevating the legs against a wall to facilitate venous and lymphatic return, soothe heavy legs, and balance autonomic tone.",
     evidenceGrade: "B",
-    evidenceSource: "Journal of Clinical & Diagnostic Research: Inverted Yoga Postures & Venous Return",
-    contraindications: ["glaucoma", "uncontrolled_hypertension", "menstruation_heavy_flow_day1"],
+    evidenceSource:
+      "Journal of Clinical & Diagnostic Research: Inverted Yoga Postures & Venous Return",
+    contraindications: [
+      "glaucoma",
+      "uncontrolled_hypertension",
+      "menstruation_heavy_flow_day1",
+    ],
     dietaryTags: [],
     disclaimer:
       "Restorative circulation booster. Lower legs immediately if experiencing tingling or discomfort.",
@@ -207,7 +213,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Gentle sacral support using a block under the pelvis. Opens chest and hip flexors while resting parasympathetic nervous system.",
     evidenceGrade: "B",
-    evidenceSource: "International Journal of Yoga: Hatha Yoga Effects on Lumbopelvic Pain",
+    evidenceSource:
+      "International Journal of Yoga: Hatha Yoga Effects on Lumbopelvic Pain",
     contraindications: ["acute_neck_injury", "severe_lumbar_disc_herniation"],
     dietaryTags: [],
     disclaimer:
@@ -222,7 +229,10 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
       "Low prone extension strengthening the erector spinae and opening the anterior thoracic cage without compressing the lumbar spine.",
     evidenceGrade: "B",
     evidenceSource: "Complementary Therapies in Clinical Practice",
-    contraindications: ["active_abdominal_surgery", "pregnancy_second_third_trimester"],
+    contraindications: [
+      "active_abdominal_surgery",
+      "pregnancy_second_third_trimester",
+    ],
     dietaryTags: [],
     disclaimer:
       "Keep elbows bent and shoulders relaxed away from ears. Avoid pressing high if lower back feels pinched.",
@@ -235,7 +245,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Standing unilateral balance grounding through the sole of the standing foot to stimulate proprioception, ankle stability, and mental focus.",
     evidenceGrade: "B",
-    evidenceSource: "Gait & Posture: Proprioceptive Training via Asana Practice",
+    evidenceSource:
+      "Gait & Posture: Proprioceptive Training via Asana Practice",
     contraindications: ["severe_vertigo", "acute_ankle_sprain"],
     dietaryTags: [],
     disclaimer:
@@ -263,7 +274,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "One-legged seated forward fold with pelvis anchored. Gently stretches hamstrings and calms mental agitation without straining the lower back.",
     evidenceGrade: "C",
-    evidenceSource: "Yoga & Science in Health: Hamstring Flexibility and Autonomic Response",
+    evidenceSource:
+      "Yoga & Science in Health: Hamstring Flexibility and Autonomic Response",
     contraindications: ["hamstring_tear", "sacroiliac_joint_instability"],
     dietaryTags: [],
     disclaimer:
@@ -306,7 +318,10 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
       "Wide-legged lateral stance building quadriceps and pelvic floor endurance while enhancing postural grounding and diaphragmatic control.",
     evidenceGrade: "A",
     evidenceSource: "Medicine & Science in Sports & Exercise",
-    contraindications: ["acute_hip_bursitis", "uncontrolled_hypertension_extended_holds"],
+    contraindications: [
+      "acute_hip_bursitis",
+      "uncontrolled_hypertension_extended_holds",
+    ],
     dietaryTags: [],
     disclaimer:
       "Ensure front knee tracks over the second toe and does not buckle inward past the ankle.",
@@ -319,7 +334,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Deep conscious physiological decompression lying supine with bolsters under knees and eye pillow. Lowers cortisol and heart rate variability recovery.",
     evidenceGrade: "A",
-    evidenceSource: "Annals of the New York Academy of Sciences: The Neurobiology of Yogic Relaxation",
+    evidenceSource:
+      "Annals of the New York Academy of Sciences: The Neurobiology of Yogic Relaxation",
     contraindications: ["third_trimester_supine_hypotensive_syndrome"],
     dietaryTags: [],
     disclaimer:
@@ -333,8 +349,12 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Supine hip and groin mobilizer gently decompressing the sacrum and relaxing hypertonic pelvic floor musculature.",
     evidenceGrade: "B",
-    evidenceSource: "International Urogynecology Journal: Pelvic Floor Muscle Relaxation in Yoga",
-    contraindications: ["acute_groin_strain", "second_third_trimester_pregnancy"],
+    evidenceSource:
+      "International Urogynecology Journal: Pelvic Floor Muscle Relaxation in Yoga",
+    contraindications: [
+      "acute_groin_strain",
+      "second_third_trimester_pregnancy",
+    ],
     dietaryTags: [],
     disclaimer:
       "Hold shins or backs of thighs if reaching the feet causes neck strain or lifts the tailbone off the floor.",
@@ -347,7 +367,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Slow, unforced alternate nostril breathing without breath retention. Proven to rebalance parasympathetic tone and reduce sympathetic arousal.",
     evidenceGrade: "A",
-    evidenceSource: "Frontiers in Neuroscience: Autonomic Regulation via Unilateral Nostril Breathing",
+    evidenceSource:
+      "Frontiers in Neuroscience: Autonomic Regulation via Unilateral Nostril Breathing",
     contraindications: ["deviated_septum_complete_obstruction"],
     dietaryTags: [],
     disclaimer:
@@ -361,7 +382,8 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Gentle low-frequency hum during exhalation with fingers lightly over ears. Enhances endogenous nasal nitric oxide release and induces vagal activation.",
     evidenceGrade: "A",
-    evidenceSource: "American Journal of Respiratory and Critical Care Medicine: Nitric Oxide & Bhramari",
+    evidenceSource:
+      "American Journal of Respiratory and Critical Care Medicine: Nitric Oxide & Bhramari",
     contraindications: ["acute_severe_otitis_media"],
     dietaryTags: [],
     disclaimer:
@@ -375,8 +397,12 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Inhaling through rolled tongue or teeth (Sitkari) and exhaling slowly through the nose to soothe hot flashes and heat irritability.",
     evidenceGrade: "B",
-    evidenceSource: "International Journal of Yoga: Thermoregulatory and Cardiorespiratory Effects",
-    contraindications: ["severe_respiratory_infection", "chronic_bronchitis_in_cold_weather"],
+    evidenceSource:
+      "International Journal of Yoga: Thermoregulatory and Cardiorespiratory Effects",
+    contraindications: [
+      "severe_respiratory_infection",
+      "chronic_bronchitis_in_cold_weather",
+    ],
     dietaryTags: [],
     disclaimer:
       "If unable to roll tongue, practice Sitkari (teeth lightly touching, tongue behind upper front teeth).",
@@ -389,8 +415,12 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Chair-supported outer hip and piriformis stretch ideal for desk workers and those with limited floor mobility to alleviate sciatica.",
     evidenceGrade: "B",
-    evidenceSource: "Spine Journal: Piriformis Stretching & Lumbosacral Mobility",
-    contraindications: ["acute_hip_replacement_precautions", "severe_knee_torsion"],
+    evidenceSource:
+      "Spine Journal: Piriformis Stretching & Lumbosacral Mobility",
+    contraindications: [
+      "acute_hip_replacement_precautions",
+      "severe_knee_torsion",
+    ],
     dietaryTags: [],
     disclaimer:
       "Keep ankle flexed to protect knee ligament integrity. Sit tall and hinge forward only from hips.",
@@ -403,8 +433,12 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     description:
       "Gentle 3-cycle breath-linked flow connecting Mountain, Gentle Crescent Lunges, and Cobra to lubricate major joints and stimulate circulation.",
     evidenceGrade: "A",
-    evidenceSource: "Journal of Bodywork and Movement Therapies: Cardiovascular and Joint Benefits of Surya Namaskar",
-    contraindications: ["uncontrolled_hypertension", "acute_lumbar_radiculopathy"],
+    evidenceSource:
+      "Journal of Bodywork and Movement Therapies: Cardiovascular and Joint Benefits of Surya Namaskar",
+    contraindications: [
+      "uncontrolled_hypertension",
+      "acute_lumbar_radiculopathy",
+    ],
     dietaryTags: [],
     disclaimer:
       "Move at a calm, conversational pace. Step rather than jump, and drop knees to mat during transitions.",

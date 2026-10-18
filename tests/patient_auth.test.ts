@@ -10,7 +10,10 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
   it("registers a new patient via /api/v1/auth/patient/signup", async () => {
     const res = await backendApp.request("/api/v1/auth/patient/signup", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Tenant-Id": "org_test" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Tenant-Id": "org_test",
+      },
       body: JSON.stringify({
         phone: testPhone,
         password: testPassword,
@@ -23,7 +26,7 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
     });
 
     expect(res.status).toBe(201);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
     expect(data.token).toBeDefined();
     expect(data.patient.name).toBe("Sunita Devi");
@@ -37,7 +40,10 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
   it("rejects duplicate phone signup", async () => {
     const res = await backendApp.request("/api/v1/auth/patient/signup", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Tenant-Id": "org_test" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Tenant-Id": "org_test",
+      },
       body: JSON.stringify({
         phone: testPhone,
         password: testPassword,
@@ -48,14 +54,17 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
     });
 
     expect(res.status).toBe(409);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(false);
   });
 
   it("authenticates via /api/v1/auth/patient/login with phone and password", async () => {
     const res = await backendApp.request("/api/v1/auth/patient/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Tenant-Id": "org_test" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Tenant-Id": "org_test",
+      },
       body: JSON.stringify({
         identifier: testPhone,
         password: testPassword,
@@ -63,7 +72,7 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
     expect(data.token).toBeDefined();
     expect(data.patient.id).toBe(patientId);
@@ -72,7 +81,10 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
   it("rejects invalid password", async () => {
     const res = await backendApp.request("/api/v1/auth/patient/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Tenant-Id": "org_test" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Tenant-Id": "org_test",
+      },
       body: JSON.stringify({
         identifier: testPhone,
         password: "WrongPassword!",
@@ -80,7 +92,7 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
     });
 
     expect(res.status).toBe(401);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(false);
   });
 
@@ -94,76 +106,103 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
     expect(data.patient.id).toBe(patientId);
     expect(data.patient.name).toBe("Sunita Devi");
   });
 
   it("updates extended profile via /api/v1/patient/:id/profile", async () => {
-    const res = await backendApp.request(`/api/v1/patient/${patientId}/profile`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        bloodGroup: "B+",
-        allergies: ["Peanuts", "Dust"],
-        chronicConditions: ["PCOS"],
-        emergencyContact: "+919876543210",
-      }),
-    });
+    const res = await backendApp.request(
+      `/api/v1/patient/${patientId}/profile`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bloodGroup: "B+",
+          allergies: ["Peanuts", "Dust"],
+          chronicConditions: ["PCOS"],
+          emergencyContact: "+919876543210",
+        }),
+      },
+    );
 
     expect(res.status).toBe(200);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
     expect(data.patient.allergies).toContain("Peanuts");
     expect(data.patient.chronicConditions).toContain("PCOS");
   });
 
   it("updates app preferences via /api/v1/patient/:id/preferences", async () => {
-    const res = await backendApp.request(`/api/v1/patient/${patientId}/preferences`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Tenant-Id": "org_test" },
-      body: JSON.stringify({
-        primaryFocus: "womens_health",
-        primaryModules: ["her", "prescriptions", "yoga"],
-        themeMode: "dark",
-        colorAccent: "her_rose",
-        language: "hi",
-      }),
-    });
+    const res = await backendApp.request(
+      `/api/v1/patient/${patientId}/preferences`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Tenant-Id": "org_test",
+        },
+        body: JSON.stringify({
+          primaryFocus: "womens_health",
+          primaryModules: ["her", "prescriptions", "yoga"],
+          themeMode: "dark",
+          colorAccent: "her_rose",
+          language: "hi",
+        }),
+      },
+    );
 
     expect(res.status).toBe(200);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
     expect(data.preferences.primaryFocus).toBe("womens_health");
     expect(data.preferences.themeMode).toBe("dark");
   });
 
   it("saves and retrieves Ayurvedic Prakriti profile via /api/v1/patient/:id/ayurveda", async () => {
-    const res = await backendApp.request(`/api/v1/patient/${patientId}/ayurveda`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Tenant-Id": "org_test" },
-      body: JSON.stringify({
-        primaryDosha: "PITTA_KAPHA",
-        secondaryDosha: "VATA",
-        prakritiSummary: "Pitta-dominant constitution with strong metabolic fire and steady stamina.",
-        agniType: "TIKSHNAGNI",
-        koshthaType: "MRIDU",
-        dietaryGuidelines: ["Cooling foods", "Avoid excess chili", "Fresh coconut water"],
-        yogaRecommendations: ["Sheetali Pranayama", "Moon Salutations", "Sitali Breath"],
-      }),
-    });
+    const res = await backendApp.request(
+      `/api/v1/patient/${patientId}/ayurveda`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Tenant-Id": "org_test",
+        },
+        body: JSON.stringify({
+          primaryDosha: "PITTA_KAPHA",
+          secondaryDosha: "VATA",
+          prakritiSummary:
+            "Pitta-dominant constitution with strong metabolic fire and steady stamina.",
+          agniType: "TIKSHNAGNI",
+          koshthaType: "MRIDU",
+          dietaryGuidelines: [
+            "Cooling foods",
+            "Avoid excess chili",
+            "Fresh coconut water",
+          ],
+          yogaRecommendations: [
+            "Sheetali Pranayama",
+            "Moon Salutations",
+            "Sitali Breath",
+          ],
+        }),
+      },
+    );
 
     expect(res.status).toBe(200);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
     expect(data.ayurveda.primaryDosha).toBe("PITTA_KAPHA");
 
-    const getRes = await backendApp.request(`/api/v1/patient/${patientId}/ayurveda`, {
-      method: "GET",
-    });
+    const getRes = await backendApp.request(
+      `/api/v1/patient/${patientId}/ayurveda`,
+      {
+        method: "GET",
+      },
+    );
     expect(getRes.status).toBe(200);
-    const getData = await getRes.json() as any;
+    const getData = (await getRes.json()) as any;
     expect(getData.ayurveda.primaryDosha).toBe("PITTA_KAPHA");
   });
 
@@ -177,7 +216,7 @@ describe("Mobile Patient Auth & Profile Customization API", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data.success).toBe(true);
 
     // Verifying session after logout should fail
