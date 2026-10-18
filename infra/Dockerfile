@@ -2,7 +2,8 @@ FROM node:22-bookworm-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-COPY tsconfig.json ./
+COPY tsconfig.json tsconfig.cbc.json ./
+COPY scripts/cbc-assets.ts ./scripts/cbc-assets.ts
 COPY packages ./packages
 COPY apps/api ./apps/api
 COPY services/lang-gateway ./services/lang-gateway
