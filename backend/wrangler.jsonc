@@ -12,7 +12,7 @@
   "d1_databases": [{
     "binding": "DB",
     "database_name": "dhaaga-integration",
-    "migrations_dir": "migrations"
+    "migrations_dir": "../.local/integration-migrations"
   }],
   "vars": { "ENVIRONMENT": "production" }
 }

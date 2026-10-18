@@ -13,6 +13,8 @@ import { platformRouter } from "./modules/platform/routes";
 import { herRouter } from "./modules/her/routes";
 import { vitalisRouter } from "./modules/vitalis/routes";
 import { patientAuthRouter, patientProfileRouter } from "./modules/patient_auth/routes";
+import { cbcRouter } from "./modules/cbc/routes";
+import { pruneCbcSources } from "./modules/cbc/maintenance";
 import { createApp } from "../../apps/api/app";
 
 import {
@@ -70,6 +72,10 @@ export type Env = {
   DB: D1Database;
   KV: KVNamespace;
   R2?: R2Bucket;
+  CBC_DOCUMENTS?: R2Bucket;
+  CBC_ENABLED?: string;
+  CBC_INFERENCE_ENABLED?: string;
+  CBC_MAINTENANCE_ORGS?: string;
   CLINIC_INVENTORY: DurableObjectNamespace;
   CLINIC_HUB: DurableObjectNamespace;
   TRIAGE_SESSION: DurableObjectNamespace;
@@ -254,10 +260,11 @@ export function createIntegrationApp() {
     secureHeaders({
       contentSecurityPolicy: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "'wasm-unsafe-eval'"],
+        workerSrc: ["'self'"],
         styleSrc: ["'self'"],
         connectSrc: ["'self'"],
-        imgSrc: ["'self'", "data:"],
+        imgSrc: ["'self'", "data:", "blob:"],
         frameAncestors: ["'none'"],
       },
       referrerPolicy: "no-referrer",
@@ -274,7 +281,11 @@ export function createIntegrationApp() {
       });
     await next();
   });
-  integrationApp.use("/api/*", bodyLimit({ maxSize: 32000 }));
+  integrationApp.use("/api/*", async (c, next) => {
+    // Only the bounded CBC binary upload has a larger route-specific limit.
+    if (c.req.method === "PUT" && /^\/api\/v1\/cbc\/reports\/[^/]+\/document$/.test(c.req.path)) return next();
+    return bodyLimit({ maxSize: 32000 })(c, next);
+  });
   integrationApp.onError((error, c) => {
     const isZod =
       error instanceof z.ZodError ||
@@ -285,7 +296,7 @@ export function createIntegrationApp() {
         ? error.status
         : 500;
     if (status === 500) {
-      console.error("[INTEGRATION ERROR]", error);
+      console.error("[INTEGRATION ERROR]", c.req.path.startsWith("/api/v1/cbc") ? "CBC request failed" : error);
     }
     return c.json(
       {
@@ -387,7 +398,12 @@ export function createIntegrationApp() {
     if (c.req.path === "/api/v1/auth/login") {
       return next();
     }
-    if (!c.req.path.startsWith("/api/v1/encounters") && !c.req.path.startsWith("/api/v1/auth")) {
+    if (c.req.path === "/api/v1/cbc/capabilities") return next();
+    if (c.req.path.startsWith("/api/v1/cbc") &&
+        (!["development", "test"].includes(c.env.ENVIRONMENT) || c.env.CBC_ENABLED === "false")) {
+      throw new HTTPException(503, { message: "CBC clinical workspace is not enabled" });
+    }
+    if (!c.req.path.startsWith("/api/v1/encounters") && !c.req.path.startsWith("/api/v1/auth") && !c.req.path.startsWith("/api/v1/cbc")) {
       return next();
     }
     const authorization = c.req.header("Authorization") ?? "";
@@ -418,6 +434,7 @@ export function createIntegrationApp() {
     await next();
   });
   integrationApp.get("/api/v1/auth/me", (c) => c.json(c.get("principal")));
+  integrationApp.route("/api/v1/cbc", cbcRouter);
   integrationApp.post("/api/v1/auth/logout", async (c) => {
     const token = c.req.header("Authorization")?.slice(7) ?? "";
     const p = c.get("principal");
@@ -667,7 +684,7 @@ app.use(
       return null;
     },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization", "X-Tenant-Id", "X-Patient-Id"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Tenant-Id", "X-Patient-Id", "Idempotency-Key", "X-Source-Retention-Consent"],
     credentials: false,
   })
 );
@@ -1700,4 +1717,13 @@ app.get("*", async (c) =>
     : c.json({ error: { message: "Website assets not built" } }, 404),
 );
 
-export default app;
+export default Object.assign(app, {
+  async scheduled(_controller: ScheduledController, env: Env) {
+    // Explicit configured tenant inventory: maintenance never issues an unscoped
+    // organization-discovery query. R2/cron provisioning is an optional operator step.
+    for (const orgId of (env.CBC_MAINTENANCE_ORGS ?? "").split(",").filter(Boolean)) {
+      if (!/^[a-z0-9-]{1,80}$/.test(orgId)) throw new Error("Invalid CBC maintenance organization");
+      await pruneCbcSources(env, orgId);
+    }
+  },
+});

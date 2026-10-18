@@ -1,3 +1,4 @@
+export * from "./cbc_contracts";
 export * from "./contracts";
 export * from "./integration";
 

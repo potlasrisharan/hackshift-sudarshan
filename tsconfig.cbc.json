@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@/*": [
+        "./frontend/website/src/*"
+      ]
+    }
+  },
+  "include": [
+    "frontend/website/src/features/cbc/**/*.ts",
+    "frontend/website/src/features/cbc/**/*.tsx",
+    "packages/engine/cbc/**/*.ts",
+    "packages/shared/cbc_contracts.ts",
+    "frontend/website/src/components/DoctorConsultation.tsx"
+  ]
+}

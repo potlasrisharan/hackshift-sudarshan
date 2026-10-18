@@ -6,7 +6,9 @@
       "packages/**",
       "tests/**",
       "scripts/**",
-      "services/lang-gateway/**"
+      "services/lang-gateway/**",
+      "backend/src/modules/cbc/**",
+      "frontend/website/src/features/cbc/**"
     ]
   },
   "formatter": {

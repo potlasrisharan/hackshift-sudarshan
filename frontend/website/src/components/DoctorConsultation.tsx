@@ -1,4 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { lazy, Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { DoctorCbcAccess } from '../features/cbc/DoctorCbcAccess';
+import { CbcBoundary } from '../features/cbc/CbcBoundary';
+import type { DoctorSession } from '../features/cbc/api';
+import type { Encounter } from '../../../../packages/shared/integration';
+const CbcConsultationPanel = lazy(() => import('../features/cbc/CbcConsultationPanel'));
+const queueIdentity = (item: PatientQueueItem) => item.cbcEncounterId ?? item.patientId;
 import {
   Users, RefreshCw, Code2, Download, CheckCircle2,
   Languages, Activity, Stethoscope, Pill, AlertTriangle,
@@ -27,10 +33,12 @@ export interface PrescriptionItem {
 }
 
 export interface PatientQueueItem {
+  cbcEncounterId?: string;
+  encounterId?: string;
   token: string;
   patientId: string;
   name: string;
-  age: number;
+  age: number | null;
   gender: string;
   abhaId: string;
   pmjayEligible: boolean;
@@ -63,7 +71,7 @@ export interface PatientQueueItem {
   };
 }
 
-const INITIAL_QUEUE: PatientQueueItem[] = [
+const INITIAL_QUEUE: [PatientQueueItem, ...PatientQueueItem[]] = [
   {
     token: 'TOKEN #042',
     patientId: 'pat-048291',
@@ -875,6 +883,9 @@ interface DoctorConsultationProps {
 
 export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsultationProps) {
   const { hospital } = useHospital();
+  const [cbcSession, setCbcSession] = useState<DoctorSession | null>(null);
+  const [cbcDirty, setCbcDirty] = useState(false);
+  const cbcSessionToken = useRef<string | null>(null);
   const [queue, setQueue] = useState<PatientQueueItem[]>(INITIAL_QUEUE);
   const [selectedPatientId, setSelectedPatientId] = useState<string>(INITIAL_QUEUE[0].patientId);
   const [filter, setFilter] = useState<'all' | 'stat' | 'waiting' | 'in_consult' | 'dispensed' | 'pmjay'>('all');
@@ -948,6 +959,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
             return {
               token: enc.token_number || enc.token || '#042',
               patientId: enc.patient_id || enc.id,
+              encounterId: typeof enc.id === 'string' ? enc.id : undefined,
               name: enc.patient_name || enc.name || 'Patient',
               age: enc.age || 45,
               gender: (enc.gender || 'MALE').toUpperCase(),
@@ -984,8 +996,9 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
             };
           });
 
-          setQueue(() => {
-            const combined = [...mappedQueue];
+          setQueue(previous => {
+            const clinical = previous.filter(item => item.cbcEncounterId);
+            const combined = [...clinical, ...mappedQueue.filter(item => !clinical.some(row => row.cbcEncounterId === item.encounterId))];
             for (const initial of INITIAL_QUEUE) {
               if (!combined.some(c => c.patientId === initial.patientId || c.token === initial.token)) {
                 combined.push(initial);
@@ -994,8 +1007,9 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
             return combined;
           });
 
-          if (mappedQueue[0]) {
-            setSelectedPatientId(mappedQueue[0].patientId);
+          const first = mappedQueue[0];
+          if (first) {
+            setSelectedPatientId(previous => previous || first.patientId);
           }
         }
       } catch (err) {
@@ -1010,7 +1024,26 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     return () => unsub();
   }, []);
 
-  const activePatient = queue.find(p => p.patientId === selectedPatientId) || queue[0];
+  const activePatient = queue.find(p => queueIdentity(p) === selectedPatientId) ?? queue[0] ?? INITIAL_QUEUE[0];
+
+  const connectCbc = useCallback((session: DoctorSession | null, encounters: Encounter[]) => {
+    const sameSession = cbcSessionToken.current === (session?.token ?? null);
+    cbcSessionToken.current = session?.token ?? null;
+    setCbcSession(session);
+    if (!sameSession || !session) setCbcDirty(false);
+    setQueue(previous => {
+      const clinical: PatientQueueItem[] = encounters.map(enc => (sameSession ? previous.find(item => item.cbcEncounterId === enc.id && item.patientId === enc.patientId) : undefined) ?? ({
+        cbcEncounterId: enc.id, encounterId: enc.id, patientId: enc.patientId, name: enc.patientName,
+        token: `Clinical ${enc.id.slice(0, 8)}`, age: null, gender: 'UNRECORDED', abhaId: '', pmjayEligible: false,
+        status: enc.status === 'emergency' ? 'STAT_ALERT' : 'WAITING',
+        checkInTime: new Date(enc.createdAt).toLocaleTimeString(), symptoms: [enc.chiefComplaint],
+        vitals: { bp: 'Not recorded', pulse: 0, spo2: 0, temp: 'Not recorded' },
+        soap: { subjective: enc.chiefComplaint, objective: 'No measurements recorded. CBC review is separate.',
+          assessment: 'Clinical assessment pending', icd11Code: '', plan: [] },
+      }));
+      return [...clinical, ...previous.filter(item => !item.cbcEncounterId && !clinical.some(row => row.cbcEncounterId === item.encounterId))];
+    });
+  }, []);
 
   // Filtered queue with search
   const filteredQueue = useMemo(() => {
@@ -1038,11 +1071,12 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
 
   // Vitals Status Evaluator
   const getVitalStatus = (type: 'bp' | 'pulse' | 'spo2' | 'temp', value: string | number) => {
+    if (activePatient.cbcEncounterId && (value === 0 || String(value) === 'Not recorded')) return { status: 'unknown', tag: 'Not recorded', border: 'border-slate-200 bg-slate-50 text-slate-600' };
     if (type === 'bp') {
       const match = String(value).match(/(\d+)\/(\d+)/);
       if (match) {
-        const sys = parseInt(match[1], 10);
-        const dia = parseInt(match[2], 10);
+        const sys = parseInt(match[1] ?? '', 10);
+        const dia = parseInt(match[2] ?? '', 10);
         if (sys >= 160 || dia >= 100) return { status: 'critical', tag: 'Stage 2 HTN', border: 'border-rose-400 bg-rose-50 text-rose-700' };
         if (sys >= 140 || dia >= 90) return { status: 'warning', tag: 'Stage 1 HTN', border: 'border-amber-400 bg-amber-50 text-amber-700' };
         if (sys < 90) return { status: 'warning', tag: 'Hypotension', border: 'border-amber-400 bg-amber-50 text-amber-700' };
@@ -1086,7 +1120,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     setIsGenericSwapped(willSubstitute);
 
     setQueue(prev => prev.map(patient => {
-      if (patient.patientId !== activePatient.patientId) return patient;
+      if (queueIdentity(patient) !== queueIdentity(activePatient)) return patient;
       return {
         ...patient,
         soap: {
@@ -1116,7 +1150,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
     };
 
     setQueue(prev => prev.map(patient => {
-      if (patient.patientId !== activePatient.patientId) return patient;
+      if (queueIdentity(patient) !== queueIdentity(activePatient)) return patient;
       return {
         ...patient,
         soap: {
@@ -1146,7 +1180,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   // Remove Medication
   const handleRemoveMedication = (index: number) => {
     setQueue(prev => prev.map(patient => {
-      if (patient.patientId !== activePatient.patientId) return patient;
+      if (queueIdentity(patient) !== queueIdentity(activePatient)) return patient;
       return {
         ...patient,
         soap: {
@@ -1160,10 +1194,10 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   // Quick-Add Western Clinical Recommendation
   const handleQuickAddRecommendation = (item: PrescriptionItem) => {
     setQueue(prev => prev.map(patient => {
-      if (patient.patientId !== activePatient.patientId) return patient;
+      if (queueIdentity(patient) !== queueIdentity(activePatient)) return patient;
       // Avoid duplicate adds
       const isDuplicate = patient.soap.plan.some(p =>
-        p.drug.toLowerCase().includes(item.drug.toLowerCase().split(' ')[0]) ||
+        p.drug.toLowerCase().includes((item.drug.toLowerCase().split(' ')[0] ?? '')) ||
         (item.genericName && p.genericName?.toLowerCase() === item.genericName.toLowerCase())
       );
       if (isDuplicate) return patient;
@@ -1183,13 +1217,22 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
   };
 
   // Select Patient Encounter and transition status to IN_CONSULT
-  const handleSelectPatient = async (patientId: string) => {
-    setSelectedPatientId(patientId);
+  const handleSelectPatient = async (selectionId: string) => {
+    if (cbcDirty && selectionId === selectedPatientId) return;
+    if (cbcDirty && !window.confirm('Discard the unsaved CBC draft and switch consultation?')) return;
+    setCbcDirty(false);
+    const selected = queue.find(item => queueIdentity(item) === selectionId);
+    if (!selected) return;
+    const patientId = selected.patientId;
+    setSelectedPatientId(selectionId);
     setIsPrescriptionSent(false);
     setIsIpdAdmitted(false);
     setActiveCitationId(null);
     setIsGenericSwapped(false);
     setAlgorithmResult(null);
+
+    // Persisted clinical encounters have a different status contract; do not send legacy writes.
+    if (selected.cbcEncounterId) return;
 
     // Update status to IN_CONSULT in local queue
     setQueue(prev => prev.map(p => p.patientId === patientId ? { ...p, status: 'IN_CONSULT' } : p));
@@ -1657,7 +1700,10 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
           </div>
           <button
             onClick={() => {
-              setQueue(INITIAL_QUEUE);
+              if (cbcDirty && !window.confirm('Discard the unsaved CBC draft and reset the queue?')) return;
+              setCbcDirty(false);
+              setSelectedPatientId(INITIAL_QUEUE[0].patientId);
+              setQueue(previous => [...previous.filter(item => item.cbcEncounterId), ...INITIAL_QUEUE]);
               setIsPrescriptionSent(false);
               setIsIpdAdmitted(false);
               setAlgorithmResult(null);
@@ -1669,6 +1715,8 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
           </button>
         </div>
       </div>
+
+      <DoctorCbcAccess onConnect={connectCbc} />
 
       {/* Main Grid: Left Sidebar Queue (4 cols) + Right Clinical Pad (8 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -1759,13 +1807,13 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 </div>
               ) : (
                 filteredQueue.map(item => {
-                  const isSelected = item.patientId === activePatient.patientId;
+                  const isSelected = queueIdentity(item) === queueIdentity(activePatient);
                   const isStat = item.status === 'STAT_ALERT';
 
                   return (
                     <div
-                      key={item.patientId}
-                      onClick={() => handleSelectPatient(item.patientId)}
+                      key={queueIdentity(item)}
+                      onClick={() => handleSelectPatient(queueIdentity(item))}
                       className={`p-3.5 rounded-xl border-2 transition cursor-pointer relative group ${
                         isSelected
                           ? 'border-blue-600 bg-blue-50/70 shadow-md ring-1 ring-blue-500/20'
@@ -1793,7 +1841,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                         <h3 className="font-bold text-sm text-slate-900 group-hover:text-blue-700 transition">
                           {item.name}
                         </h3>
-                        <span className="text-xs text-slate-500 font-medium">{item.age}Y • {item.gender}</span>
+                        <span className="text-xs text-slate-500 font-medium">{item.age === null ? 'Age not recorded' : `${item.age}Y`} • {item.gender}</span>
                       </div>
 
                       {/* Symptoms tags */}
@@ -1866,7 +1914,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                       {activePatient.name}
                     </h2>
                     <span className="text-xs text-slate-500 font-bold">
-                      ({activePatient.age}Y • {activePatient.gender})
+                      ({activePatient.age === null ? 'Age not recorded' : `${activePatient.age}Y`} • {activePatient.gender})
                     </span>
                     <span className="text-xs bg-slate-900 text-amber-400 font-black px-2.5 py-0.5 rounded-full shadow-sm">
                       {activePatient.token}
@@ -2023,6 +2071,15 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 })()}
               </div>
             </div>
+
+            <CbcBoundary key={`${cbcSession?.token ?? 'none'}:${activePatient.patientId}:${activePatient.cbcEncounterId ?? 'unverified'}`}>
+              <Suspense fallback={<div className="p-4 text-sm">Loading CBC reports…</div>}>
+                <CbcConsultationPanel session={cbcSession} patientId={activePatient.patientId}
+                  patientName={activePatient.name}
+                  encounterId={queueIdentity(activePatient) === selectedPatientId ? activePatient.cbcEncounterId ?? null : null}
+                  onDirty={setCbcDirty} />
+              </Suspense>
+            </CbcBoundary>
 
             {/* Intelligent AI SOAP Console */}
             <div className="space-y-4 pt-1">
@@ -2288,7 +2345,7 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                 )}
 
                 {/* Evidence-Based Western Clinical Pharmacotherapy Recommendations */}
-                {WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId]?.length > 0 && (
+                {(WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId]?.length ?? 0) > 0 && (
                   <div className="p-3.5 bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50 border border-sky-200/90 rounded-xl space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5 text-xs font-black text-sky-950 uppercase tracking-wide">
@@ -2300,9 +2357,9 @@ export function DoctorConsultation({ onSendToPos, onAdmitToIpd }: DoctorConsulta
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId].map((rec, rIdx) => {
+                      {(WESTERN_CLINICAL_RECOMMENDATIONS[activePatient.patientId] ?? []).map((rec, rIdx) => {
                         const isAlreadyAdded = activePatient.soap.plan.some(p =>
-                          p.drug.toLowerCase().includes(rec.drug.toLowerCase().split(' ')[0]) ||
+                          p.drug.toLowerCase().includes((rec.drug.toLowerCase().split(' ')[0] ?? '')) ||
                           (rec.genericName && p.genericName?.toLowerCase() === rec.genericName.toLowerCase())
                         );
                         return (
