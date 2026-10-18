@@ -287,7 +287,7 @@ describe("Unified Cloudflare Worker API & Frontends Integration", () => {
     expect(redFlagData.red_flag.trigger_symptoms).toEqual(
       expect.arrayContaining(["chest_pain", "breathlessness"]),
     );
-    expect(redFlagData.reply_text).toContain("EMERGENCY ALERT");
+    expect(redFlagData.reply_text).toContain("alert the clinic staff now");
   });
 
   it("extracts structured medications and lab results from documents/ocr", async () => {
