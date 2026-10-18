@@ -15,6 +15,9 @@ class HerState {
   final List<HerWellnessItemModel> wellnessItems;
   final List<HerWearableModel> wearableRecords;
   final HerDoctorSummaryModel? doctorSummary;
+  final HerCyclePhaseDetailModel? todayPhase;
+  final List<HerMonthPhaseEntryModel> monthPhases;
+  final HerPcodAssessmentModel? pcodAssessment;
   final String? errorMessage;
 
   const HerState({
@@ -29,6 +32,9 @@ class HerState {
     this.wellnessItems = const [],
     this.wearableRecords = const [],
     this.doctorSummary,
+    this.todayPhase,
+    this.monthPhases = const [],
+    this.pcodAssessment,
     this.errorMessage,
   });
 
@@ -45,6 +51,9 @@ class HerState {
     List<HerWellnessItemModel>? wellnessItems,
     List<HerWearableModel>? wearableRecords,
     HerDoctorSummaryModel? doctorSummary,
+    HerCyclePhaseDetailModel? todayPhase,
+    List<HerMonthPhaseEntryModel>? monthPhases,
+    HerPcodAssessmentModel? pcodAssessment,
     String? errorMessage,
   }) {
     return HerState(
@@ -59,6 +68,9 @@ class HerState {
       wellnessItems: wellnessItems ?? this.wellnessItems,
       wearableRecords: wearableRecords ?? this.wearableRecords,
       doctorSummary: doctorSummary ?? this.doctorSummary,
+      todayPhase: todayPhase ?? this.todayPhase,
+      monthPhases: monthPhases ?? this.monthPhases,
+      pcodAssessment: pcodAssessment ?? this.pcodAssessment,
       errorMessage: errorMessage,
     );
   }
@@ -81,20 +93,52 @@ class HerNotifier extends StateNotifier<HerState> {
       final findings = await _apiService.evaluateScreening();
       final wellness = await _apiService.fetchWellness();
       final wearables = await _wearableAdapter.fetchRecentMetrics(days: 30);
+      final todayPhase = await _apiService.fetchTodayPhase();
+      final now = DateTime.now();
+      final monthPhases = await _apiService.fetchMonthPhases(now.year, now.month);
+      final pcod = await _apiService.fetchPcodAssessment();
+
+      final resolvedCycles = cycles.isNotEmpty ? cycles : state.cycles;
+      final resolvedSymptoms = symptoms.isNotEmpty ? symptoms : state.symptoms;
+      final resolvedAnalysis = cycles.isNotEmpty ? analysis : state.cycleAnalysis;
 
       state = state.copyWith(
         isLoading: false,
         profile: profile,
-        cycles: cycles,
-        cycleAnalysis: analysis,
-        symptoms: symptoms,
-        findings: findings,
+        cycles: resolvedCycles,
+        cycleAnalysis: resolvedAnalysis,
+        symptoms: resolvedSymptoms,
+        findings: findings.isNotEmpty ? findings : state.findings,
         wellnessItems: wellness,
         wearableRecords: wearables,
+        todayPhase: todayPhase,
+        monthPhases: monthPhases,
+        pcodAssessment: pcod,
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
+  }
+
+  Future<void> selectDatePhase(String date) async {
+    try {
+      final detail = await _apiService.fetchTodayPhase(date: date);
+      state = state.copyWith(todayPhase: detail);
+    } catch (_) {}
+  }
+
+  Future<void> loadMonthPhases(int year, int month) async {
+    try {
+      final entries = await _apiService.fetchMonthPhases(year, month);
+      state = state.copyWith(monthPhases: entries);
+    } catch (_) {}
+  }
+
+  Future<void> refreshPcod() async {
+    try {
+      final pcod = await _apiService.fetchPcodAssessment();
+      state = state.copyWith(pcodAssessment: pcod);
+    } catch (_) {}
   }
 
   Future<void> seedScenario(String scenarioKey) async {
@@ -110,13 +154,17 @@ class HerNotifier extends StateNotifier<HerState> {
       final (cycles, analysis) = await _apiService.fetchCycles();
       final findings = await _apiService.evaluateScreening();
       final wellness = await _apiService.fetchWellness();
+      final todayPhase = await _apiService.fetchTodayPhase();
+      final pcod = await _apiService.fetchPcodAssessment();
       state = state.copyWith(
         isLoading: false,
         profile: saved,
-        cycles: cycles,
+        cycles: cycles.isNotEmpty ? cycles : state.cycles,
         cycleAnalysis: analysis,
-        findings: findings,
+        findings: findings.isNotEmpty ? findings : state.findings,
         wellnessItems: wellness,
+        todayPhase: todayPhase,
+        pcodAssessment: pcod,
       );
     } catch (_) {
       state = state.copyWith(isLoading: false, profile: updated);
@@ -129,7 +177,7 @@ class HerNotifier extends StateNotifier<HerState> {
     final (cycles, analysis) = await _apiService.fetchCycles();
     state = state.copyWith(
       isLoading: false,
-      cycles: cycles,
+      cycles: cycles.isNotEmpty ? cycles : [cycle, ...state.cycles],
       cycleAnalysis: analysis,
     );
   }
@@ -137,12 +185,21 @@ class HerNotifier extends StateNotifier<HerState> {
   Future<void> logSymptom(Map<String, Object?> payload) async {
     state = state.copyWith(isLoading: true);
     final (sym, safety) = await _apiService.logSymptom(payload);
-    final symptoms = [sym, ...state.symptoms];
+    final symptoms = [sym, ...state.symptoms.where((s) => s.id != sym.id)];
 
     state = state.copyWith(
       isLoading: false,
       symptoms: symptoms,
       activeSafetyAlert: safety.isUrgent ? safety : null,
+    );
+  }
+
+  Future<void> evaluateScreening({Map<String, Object?>? answers}) async {
+    state = state.copyWith(isLoading: true);
+    final findings = await _apiService.evaluateScreening(answers: answers);
+    state = state.copyWith(
+      isLoading: false,
+      findings: findings,
     );
   }
 

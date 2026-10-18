@@ -297,7 +297,11 @@ export function threadPulse(raw: unknown) {
 }
 
 export { dispensingPlan } from "./dispensing";
-export { herCycleDetector } from "./her/cycle_detector";
+export {
+  herCycleDetector,
+  herCyclePhaseDetector,
+  herMonthPhaseMap,
+} from "./her/cycle_detector";
 // AyuSetu HER Deterministic Algorithms
 export { herSafetyGate } from "./her/safety_gate";
 export { herScreeningEngine } from "./her/screening_engine";

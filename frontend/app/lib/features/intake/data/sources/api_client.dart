@@ -54,20 +54,27 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> sendChat(String text, String systemType) async {
+    final normalized = systemType.trim().toUpperCase();
+    final validSystemType = switch (normalized) {
+      "COMBINED" || "HYBRID" => "COMBINED",
+      "AYURVEDA" || "AYURVEDIC" => "AYURVEDA",
+      "ALLOPATHY" || "ALLOPATHIC" => "ALLOPATHY",
+      _ => "ALLOPATHY",
+    };
+
     try {
       final res = await http.post(
         Uri.parse("$baseUrl/intake/chat"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "encounter_id": "enc-0042",
-          "patient_id": "pat-048291",
-          "system_type": systemType,
           "current_input": text,
-          "messages": [],
+          "system_type": validSystemType,
+          "step_index": 0,
+          "turns": const <Map<String, String>>[],
         }),
       );
       if (res.statusCode == 200) {
-        return jsonDecode(res.body);
+        return jsonDecode(res.body) as Map<String, dynamic>;
       }
     } catch (_) {}
     
@@ -148,26 +155,24 @@ class ApiClient {
   }) async {
     try {
       final res = await http.post(
-        Uri.parse("$baseUrl/encounters"),
+        Uri.parse("$baseUrl/intake/encounter"),
         headers: {
           "Content-Type": "application/json",
-          "Idempotency-Key": "00000000-0000-0000-0000-${DateTime.now().millisecondsSinceEpoch.toString().padLeft(12, '0').substring(0, 12)}",
         },
         body: jsonEncode({
-          "patient": {
-            "name": name,
-            "birthDate": "1974-06-15",
-            "gender": "male",
-            "language": "hi",
-          },
-          "chiefComplaint": chiefComplaint,
-          "answers": {
-            "chestPain": isEmergency ? "yes" : "no",
-          },
+          "patient_name": name,
+          "patient_id": "pat-048291",
+          "phone": phone,
+          "abha_id": abhaNumber,
+          "chief_complaint": chiefComplaint,
+          "token": tokenNumber,
+          "token_number": tokenNumber,
+          "is_emergency": isEmergency,
+          "pmjay_eligible": pmjayEligible,
         }),
       );
       if (res.statusCode == 200 || res.statusCode == 201) {
-        return jsonDecode(res.body);
+        return jsonDecode(res.body) as Map<String, dynamic>;
       }
     } catch (_) {}
     return {

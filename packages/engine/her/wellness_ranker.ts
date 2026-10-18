@@ -173,6 +173,244 @@ const WELLNESS_CATALOG: WellnessCatalogItem[] = [
     utilityWeight: 78,
   },
   {
+    id: "yoga-07-balasana",
+    category: "yoga_movement",
+    title: "Balasana (Child's Pose)",
+    description:
+      "Restorative resting posture with knees wide, forehead on mat or cushion, and long smooth breaths to release spinal and pelvic tension.",
+    evidenceGrade: "A",
+    evidenceSource: "Harvard Health Publishing: Yoga for Chronic Pelvic Pain & Stress",
+    contraindications: ["severe_knee_injury", "third_trimester_pregnancy_flat"],
+    dietaryTags: [],
+    disclaimer:
+      "Gentle restorative decompression. Use cushions beneath hips or forehead if knees or neck feel compressed.",
+    utilityWeight: 84,
+  },
+  {
+    id: "yoga-08-viparita-karani",
+    category: "yoga_movement",
+    title: "Viparita Karani (Legs-Up-The-Wall Pose)",
+    description:
+      "Passive inversion elevating the legs against a wall to facilitate venous and lymphatic return, soothe heavy legs, and balance autonomic tone.",
+    evidenceGrade: "B",
+    evidenceSource: "Journal of Clinical & Diagnostic Research: Inverted Yoga Postures & Venous Return",
+    contraindications: ["glaucoma", "uncontrolled_hypertension", "menstruation_heavy_flow_day1"],
+    dietaryTags: [],
+    disclaimer:
+      "Restorative circulation booster. Lower legs immediately if experiencing tingling or discomfort.",
+    utilityWeight: 86,
+  },
+  {
+    id: "yoga-09-setu-bandhasana",
+    category: "yoga_movement",
+    title: "Setu Bandhasana (Supported Bridge Pose)",
+    description:
+      "Gentle sacral support using a block under the pelvis. Opens chest and hip flexors while resting parasympathetic nervous system.",
+    evidenceGrade: "B",
+    evidenceSource: "International Journal of Yoga: Hatha Yoga Effects on Lumbopelvic Pain",
+    contraindications: ["acute_neck_injury", "severe_lumbar_disc_herniation"],
+    dietaryTags: [],
+    disclaimer:
+      "Keep head and neck still while in bridge. Use low or medium block height for restorative benefit.",
+    utilityWeight: 82,
+  },
+  {
+    id: "yoga-10-bhujangasana",
+    category: "yoga_movement",
+    title: "Bhujangasana (Gentle Cobra Pose)",
+    description:
+      "Low prone extension strengthening the erector spinae and opening the anterior thoracic cage without compressing the lumbar spine.",
+    evidenceGrade: "B",
+    evidenceSource: "Complementary Therapies in Clinical Practice",
+    contraindications: ["active_abdominal_surgery", "pregnancy_second_third_trimester"],
+    dietaryTags: [],
+    disclaimer:
+      "Keep elbows bent and shoulders relaxed away from ears. Avoid pressing high if lower back feels pinched.",
+    utilityWeight: 79,
+  },
+  {
+    id: "yoga-11-vrikshasana",
+    category: "yoga_movement",
+    title: "Vrikshasana (Tree Pose with Wall Support)",
+    description:
+      "Standing unilateral balance grounding through the sole of the standing foot to stimulate proprioception, ankle stability, and mental focus.",
+    evidenceGrade: "B",
+    evidenceSource: "Gait & Posture: Proprioceptive Training via Asana Practice",
+    contraindications: ["severe_vertigo", "acute_ankle_sprain"],
+    dietaryTags: [],
+    disclaimer:
+      "Place foot on calf or inner thigh, never directly on the knee joint. Use a wall for hand support when needed.",
+    utilityWeight: 81,
+  },
+  {
+    id: "yoga-12-ardha-matsyendrasana",
+    category: "yoga_movement",
+    title: "Ardha Matsyendrasana (Gentle Seated Spinal Twist)",
+    description:
+      "Gentle seated rotational mobility that compresses and releases abdominal viscera, stimulating digestive agni and thoracic spinal rotation.",
+    evidenceGrade: "B",
+    evidenceSource: "Journal of Bodywork and Movement Therapies",
+    contraindications: ["acute_disc_herniation", "pregnancy_deep_twist"],
+    dietaryTags: [],
+    disclaimer:
+      "Twist from the upper back and ribs, not by forcing the lumbar spine. Stop if any sharp nerve pain occurs.",
+    utilityWeight: 80,
+  },
+  {
+    id: "yoga-13-janu-sirsasana",
+    category: "yoga_movement",
+    title: "Janu Sirsasana (Head-to-Knee Forward Bend with Strap)",
+    description:
+      "One-legged seated forward fold with pelvis anchored. Gently stretches hamstrings and calms mental agitation without straining the lower back.",
+    evidenceGrade: "C",
+    evidenceSource: "Yoga & Science in Health: Hamstring Flexibility and Autonomic Response",
+    contraindications: ["hamstring_tear", "sacroiliac_joint_instability"],
+    dietaryTags: [],
+    disclaimer:
+      "Maintain length through the spine rather than rounding the upper back to touch the foot.",
+    utilityWeight: 77,
+  },
+  {
+    id: "yoga-14-paschimottanasana",
+    category: "yoga_movement",
+    title: "Paschimottanasana (Supported Seated Forward Bend)",
+    description:
+      "Restorative seated fold over bolsters or pillows. Cools excess Pitta and calms Vata nervous agitation.",
+    evidenceGrade: "B",
+    evidenceSource: "Ayurvedic Yoga Therapy: Pitta & Vata Pacifying Modalities",
+    contraindications: ["acute_sciatica", "lumbar_herniation"],
+    dietaryTags: [],
+    disclaimer:
+      "Support thighs and abdomen with folded blankets to avoid straining the hamstrings or lumbar ligaments.",
+    utilityWeight: 79,
+  },
+  {
+    id: "yoga-15-trikonasana",
+    category: "yoga_movement",
+    title: "Utthita Trikonasana (Triangle Pose with Block)",
+    description:
+      "Lateral trunk extension that lengthens the obliques, strengthens the hip abductors, and expands chest breathing volume.",
+    evidenceGrade: "B",
+    evidenceSource: "Journal of Physical Therapy Science",
+    contraindications: ["migraine_acute", "cervical_spondylosis_unsupported"],
+    dietaryTags: [],
+    disclaimer:
+      "Rest the lower hand on a yoga block or shin. Keep gaze straight ahead if turning neck upwards causes tension.",
+    utilityWeight: 82,
+  },
+  {
+    id: "yoga-16-virabhadrasana-ii",
+    category: "yoga_movement",
+    title: "Virabhadrasana II (Warrior II Pose)",
+    description:
+      "Wide-legged lateral stance building quadriceps and pelvic floor endurance while enhancing postural grounding and diaphragmatic control.",
+    evidenceGrade: "A",
+    evidenceSource: "Medicine & Science in Sports & Exercise",
+    contraindications: ["acute_hip_bursitis", "uncontrolled_hypertension_extended_holds"],
+    dietaryTags: [],
+    disclaimer:
+      "Ensure front knee tracks over the second toe and does not buckle inward past the ankle.",
+    utilityWeight: 83,
+  },
+  {
+    id: "yoga-17-shavasana",
+    category: "yoga_movement",
+    title: "Shavasana (Supported Corpse Pose with Bolster)",
+    description:
+      "Deep conscious physiological decompression lying supine with bolsters under knees and eye pillow. Lowers cortisol and heart rate variability recovery.",
+    evidenceGrade: "A",
+    evidenceSource: "Annals of the New York Academy of Sciences: The Neurobiology of Yogic Relaxation",
+    contraindications: ["third_trimester_supine_hypotensive_syndrome"],
+    dietaryTags: [],
+    disclaimer:
+      "For third trimester pregnancy or severe acid reflux, modify into left side-lying restorative pose.",
+    utilityWeight: 87,
+  },
+  {
+    id: "yoga-18-ananda-balasana",
+    category: "yoga_movement",
+    title: "Ananda Balasana (Happy Baby Pose)",
+    description:
+      "Supine hip and groin mobilizer gently decompressing the sacrum and relaxing hypertonic pelvic floor musculature.",
+    evidenceGrade: "B",
+    evidenceSource: "International Urogynecology Journal: Pelvic Floor Muscle Relaxation in Yoga",
+    contraindications: ["acute_groin_strain", "second_third_trimester_pregnancy"],
+    dietaryTags: [],
+    disclaimer:
+      "Hold shins or backs of thighs if reaching the feet causes neck strain or lifts the tailbone off the floor.",
+    utilityWeight: 81,
+  },
+  {
+    id: "yoga-19-nadi-shodhana",
+    category: "yoga_movement",
+    title: "Nadi Shodhana (Alternate Nostril Pranayama)",
+    description:
+      "Slow, unforced alternate nostril breathing without breath retention. Proven to rebalance parasympathetic tone and reduce sympathetic arousal.",
+    evidenceGrade: "A",
+    evidenceSource: "Frontiers in Neuroscience: Autonomic Regulation via Unilateral Nostril Breathing",
+    contraindications: ["deviated_septum_complete_obstruction"],
+    dietaryTags: [],
+    disclaimer:
+      "Perform smoothly without forceful breath holding. Keep facial muscles relaxed throughout.",
+    utilityWeight: 88,
+  },
+  {
+    id: "yoga-20-bhramari",
+    category: "yoga_movement",
+    title: "Bhramari Pranayama (Humming Bee Breath)",
+    description:
+      "Gentle low-frequency hum during exhalation with fingers lightly over ears. Enhances endogenous nasal nitric oxide release and induces vagal activation.",
+    evidenceGrade: "A",
+    evidenceSource: "American Journal of Respiratory and Critical Care Medicine: Nitric Oxide & Bhramari",
+    contraindications: ["acute_severe_otitis_media"],
+    dietaryTags: [],
+    disclaimer:
+      "Comfortable pitch only. Do not press inward into ear canal; light tragus contact is sufficient.",
+    utilityWeight: 86,
+  },
+  {
+    id: "yoga-21-sheetali",
+    category: "yoga_movement",
+    title: "Sheetali Pranayama (Cooling Breath)",
+    description:
+      "Inhaling through rolled tongue or teeth (Sitkari) and exhaling slowly through the nose to soothe hot flashes and heat irritability.",
+    evidenceGrade: "B",
+    evidenceSource: "International Journal of Yoga: Thermoregulatory and Cardiorespiratory Effects",
+    contraindications: ["severe_respiratory_infection", "chronic_bronchitis_in_cold_weather"],
+    dietaryTags: [],
+    disclaimer:
+      "If unable to roll tongue, practice Sitkari (teeth lightly touching, tongue behind upper front teeth).",
+    utilityWeight: 80,
+  },
+  {
+    id: "yoga-22-chair-pigeon",
+    category: "yoga_movement",
+    title: "Seated Chair Pigeon (Figure Four Stretch)",
+    description:
+      "Chair-supported outer hip and piriformis stretch ideal for desk workers and those with limited floor mobility to alleviate sciatica.",
+    evidenceGrade: "B",
+    evidenceSource: "Spine Journal: Piriformis Stretching & Lumbosacral Mobility",
+    contraindications: ["acute_hip_replacement_precautions", "severe_knee_torsion"],
+    dietaryTags: [],
+    disclaimer:
+      "Keep ankle flexed to protect knee ligament integrity. Sit tall and hinge forward only from hips.",
+    utilityWeight: 82,
+  },
+  {
+    id: "yoga-23-surya-namaskar",
+    category: "yoga_movement",
+    title: "Surya Namaskar (Slow Restorative Sun Salutations)",
+    description:
+      "Gentle 3-cycle breath-linked flow connecting Mountain, Gentle Crescent Lunges, and Cobra to lubricate major joints and stimulate circulation.",
+    evidenceGrade: "A",
+    evidenceSource: "Journal of Bodywork and Movement Therapies: Cardiovascular and Joint Benefits of Surya Namaskar",
+    contraindications: ["uncontrolled_hypertension", "acute_lumbar_radiculopathy"],
+    dietaryTags: [],
+    disclaimer:
+      "Move at a calm, conversational pace. Step rather than jump, and drop knees to mat during transitions.",
+    utilityWeight: 85,
+  },
+  {
     id: "sleep-01-morning-light",
     category: "sleep_circadian",
     title: "Morning 15-Minute Solar Retinal Exposure",
@@ -316,7 +554,13 @@ export function herWellnessRanker(
       reasons.push("fatigue or heavy-bleeding screening flags");
     if (
       (context.hasHeavyBleedingFeatures || context.hasFatigue) &&
-      ["yoga-04-supported-rest", "yoga-06-restorative-breath"].includes(item.id)
+      [
+        "yoga-04-supported-rest",
+        "yoga-06-restorative-breath",
+        "yoga-07-balasana",
+        "yoga-08-viparita-karani",
+        "yoga-17-shavasana",
+      ].includes(item.id)
     )
       reasons.push(
         "a lower-effort option based on your recent health information",
@@ -332,5 +576,5 @@ export function herWellnessRanker(
 
   ranked.sort((a, b) => b.calculatedUtility - a.calculatedUtility);
 
-  return ranked.slice(0, context.categoryFocus === "yoga_movement" ? 6 : 5);
+  return ranked.slice(0, context.categoryFocus === "yoga_movement" ? 25 : 5);
 }

@@ -260,7 +260,7 @@ class _VitalisDashboardScreenState extends ConsumerState<VitalisDashboardScreen>
         Row(children: [
           const Icon(Icons.spa_rounded, color: Color(0xFF059669), size: 19),
           const SizedBox(width: 8),
-          const Expanded(child: Text("Healthspan Progress", style: TextStyle(fontSize: 15, color: Color(0xFF334155), fontWeight: FontWeight.w700))),
+          const Expanded(child: Text(AppStrings.healthspanIndex, style: TextStyle(fontSize: 15, color: Color(0xFF334155), fontWeight: FontWeight.w700))),
           Text(hpi.algorithmVersion, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
         ]),
         const SizedBox(height: 16),

@@ -2,6 +2,7 @@ import "dart:convert";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:http/http.dart" as http;
+import "package:shared_preferences/shared_preferences.dart";
 import "../../../../core/services/medicine_reminder_service.dart";
 import "../../../../core/network/api_config.dart";
 import "../../data/models/prescription_models.dart";
@@ -124,34 +125,34 @@ class PrescriptionState {
 
 const mockDoctorAdvice = DoctorAdvice(
   doctorName: "Dr. Ananya Sharma",
-  specialty: "Senior Physician · Rheumatology & Integrative Ayurveda",
-  hospital: "All India Institute of Ayurveda (AIIA)",
+  specialty: "Senior Physician · Rheumatology & Internal Medicine",
+  hospital: "AIIMS New Delhi / Central OPD Clinic",
   opdRoom: "OPD-3",
   rxId: "#RX-2026-A8921",
   prescriptionDate: "18 Oct 2026",
   validTillDate: "01 Nov 2026",
   dietRestrictions: [
-    "Avoid fermented curds, refrigerated foods, and carbonated beverages",
-    "Restrict high-purine lentils (toor dal, black gram) during acute flare-ups",
-    "Prefer warm moong soup, boiled vegetables with cow's ghee and roasted cumin",
+    "Low-purine diet (limit organ meats and lentils during acute pain)",
+    "Avoid excess sodium and carbonated beverages",
+    "Maintain balanced hydration",
   ],
-  hydrationTarget: "2.8L of warm water or CCF (Cumin-Coriander-Fennel) infusion daily",
+  hydrationTarget: "3.0L water daily",
   followUpDate: "Nov 02, 2026 · OPD-3 · In 14 Days",
   doctorNotes:
-      "Vata-shamana & Rasayana protocol: Continue medication consistently for 14 days. If knee stiffness flares up in morning, apply warm castor oil pack for 15 mins.",
+      "Evidence-based allopathic regimen for inflammatory arthritis and joint stiffness: Follow medication schedule with meals. Avoid high-purine foods and maintain adequate hydration.",
 );
 
 const mockMedicines = [
   MedicineItem(
     id: "med-01",
     prescriptionId: "rx-98124a-2026",
-    name: "Yograj Guggulu",
+    name: "Febuxostat 40mg",
     dosageForm: "Tablet",
-    strength: "500 mg",
+    strength: "40 mg",
     timeSlot: MedicineTimeSlot.morning,
     scheduledTime: "08:00 AM",
-    instructions: "1 tablet with lukewarm water 15 mins after breakfast",
-    batchNumber: "BAT-2026-Y89",
+    instructions: "1 tablet with water after breakfast for uric acid control",
+    batchNumber: "BAT-2026-F40",
     expiryDate: "11/2027",
     isTaken: true,
     reminderEnabled: true,
@@ -159,13 +160,13 @@ const mockMedicines = [
   MedicineItem(
     id: "med-02",
     prescriptionId: "rx-98124a-2026",
-    name: "Dashamularishta",
-    dosageForm: "Asava / Elixir",
-    strength: "20 ml",
+    name: "Colchicine 0.5mg",
+    dosageForm: "Tablet",
+    strength: "0.5 mg",
     timeSlot: MedicineTimeSlot.afternoon,
     scheduledTime: "01:00 PM",
-    instructions: "20 ml mixed with 20 ml equal warm water after lunch",
-    batchNumber: "BAT-2026-D12",
+    instructions: "1 tablet after lunch for anti-inflammatory prophylaxis",
+    batchNumber: "BAT-2026-C05",
     expiryDate: "04/2028",
     isTaken: false,
     reminderEnabled: true,
@@ -173,13 +174,13 @@ const mockMedicines = [
   MedicineItem(
     id: "med-03",
     prescriptionId: "rx-98124a-2026",
-    name: "Shatavari Churna",
-    dosageForm: "Churna / Powder",
-    strength: "3 g",
-    timeSlot: MedicineTimeSlot.night,
-    scheduledTime: "08:30 PM",
-    instructions: "3 grams with warm almond/cow milk 30 mins before sleep",
-    batchNumber: "BAT-2026-S44",
+    name: "Pantoprazole 40mg",
+    dosageForm: "Tablet",
+    strength: "40 mg",
+    timeSlot: MedicineTimeSlot.morning,
+    scheduledTime: "07:30 AM",
+    instructions: "1 tablet with water 30 mins before breakfast for gastro-protection",
+    batchNumber: "BAT-2026-P40",
     expiryDate: "09/2027",
     isTaken: false,
     reminderEnabled: true,
@@ -187,13 +188,13 @@ const mockMedicines = [
   MedicineItem(
     id: "med-04",
     prescriptionId: "rx-98124a-2026",
-    name: "Triphala Churna",
-    dosageForm: "Churna / Powder",
-    strength: "5 g",
+    name: "Paracetamol 650mg",
+    dosageForm: "Tablet",
+    strength: "650 mg",
     timeSlot: MedicineTimeSlot.night,
-    scheduledTime: "09:30 PM",
-    instructions: "1 teaspoon with hot water right before bedtime",
-    batchNumber: "BAT-2026-T10",
+    scheduledTime: "09:00 PM",
+    instructions: "1 tablet after dinner SOS/regular for joint analgesia",
+    batchNumber: "BAT-2026-PCM",
     expiryDate: "12/2027",
     isTaken: false,
     reminderEnabled: true,
@@ -224,9 +225,47 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
         debugPrint("Service init: $e");
       }
 
-      DoctorAdvice? advice = state.doctorAdvice;
-      List<MedicineItem> medicines = state.medicines;
+      final prefs = await SharedPreferences.getInstance();
 
+      // 1. Restore cached routine from SharedPreferences
+      ReminderRoutine currentRoutine = state.routine;
+      if (prefs.containsKey("routine_morning_hour")) {
+        currentRoutine = ReminderRoutine(
+          morningTime: TimeOfDay(
+            hour: prefs.getInt("routine_morning_hour") ?? 8,
+            minute: prefs.getInt("routine_morning_minute") ?? 0,
+          ),
+          afternoonTime: TimeOfDay(
+            hour: prefs.getInt("routine_afternoon_hour") ?? 13,
+            minute: prefs.getInt("routine_afternoon_minute") ?? 0,
+          ),
+          nightTime: TimeOfDay(
+            hour: prefs.getInt("routine_night_hour") ?? 20,
+            minute: prefs.getInt("routine_night_minute") ?? 30,
+          ),
+        );
+      }
+
+      // 2. Load locally persisted values first so state remains intact offline
+      DoctorAdvice? advice = state.doctorAdvice;
+      List<MedicineItem> medicines = state.medicines.map((m) {
+        final localTaken = prefs.getBool("adherence_${m.id}");
+        final localReminder = prefs.getBool("reminder_${m.id}");
+        final localTakenAt = prefs.getString("taken_at_${m.id}");
+        return m.copyWith(
+          isTaken: localTaken ?? m.isTaken,
+          reminderEnabled: localReminder ?? m.reminderEnabled,
+          takenAt: localTakenAt != null ? DateTime.tryParse(localTakenAt) : m.takenAt,
+        );
+      }).toList();
+
+      state = state.copyWith(
+        routine: currentRoutine,
+        medicines: medicines,
+        doctorAdvice: advice,
+      );
+
+      // 3. Fetch backend and merge
       try {
         final uri = Uri.parse("$_prescriptionApiBaseUrl/prescriptions/patient/$patientId");
         final res = await http.get(uri).timeout(const Duration(seconds: 3));
@@ -237,7 +276,20 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
               : data;
           advice = _parseDoctorAdvice(rxData);
           final rawMeds = rxData["medicines"] as List<dynamic>?;
-          medicines = _parseMedicines(rawMeds, advice.rxId);
+          final remoteMeds = _parseMedicines(rawMeds, advice.rxId);
+
+          if (remoteMeds.isNotEmpty) {
+            medicines = remoteMeds.map((m) {
+              final localTaken = prefs.getBool("adherence_${m.id}");
+              final localReminder = prefs.getBool("reminder_${m.id}");
+              final localTakenAt = prefs.getString("taken_at_${m.id}");
+              return m.copyWith(
+                isTaken: localTaken ?? m.isTaken,
+                reminderEnabled: localReminder ?? m.reminderEnabled,
+                takenAt: localTakenAt != null ? DateTime.tryParse(localTakenAt) : m.takenAt,
+              );
+            }).toList();
+          }
         }
       } catch (netErr) {
         debugPrint("Prescription fetch from backend fallback to offline: $netErr");
@@ -247,6 +299,7 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
         isLoading: false,
         doctorAdvice: advice,
         medicines: medicines,
+        routine: currentRoutine,
       );
 
       // Schedule active reminders
@@ -287,6 +340,18 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
     state = state.copyWith(medicines: updatedList);
 
     if (toggled != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("adherence_$medicineId", toggled!.isTaken);
+        if (toggled!.isTaken && toggled!.takenAt != null) {
+          await prefs.setString("taken_at_$medicineId", toggled!.takenAt!.toIso8601String());
+        } else {
+          await prefs.remove("taken_at_$medicineId");
+        }
+      } catch (e) {
+        debugPrint("Error saving adherence to SharedPreferences: $e");
+      }
+
       final rxId = state.doctorAdvice?.rxId ?? "pat-048291";
       final cleanRxId = Uri.encodeComponent(rxId);
       try {
@@ -307,9 +372,11 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
   }
 
   Future<void> toggleReminder(String medicineId) async {
+    MedicineItem? toggled;
     final updatedList = state.medicines.map((med) {
       if (med.id == medicineId) {
         final updated = med.copyWith(reminderEnabled: !med.reminderEnabled);
+        toggled = updated;
         if (updated.reminderEnabled && !updated.isTaken) {
           _reminderService.scheduleMedicationReminders(updated.toScheduledMedication());
         } else {
@@ -321,6 +388,15 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
     }).toList();
 
     state = state.copyWith(medicines: updatedList);
+
+    if (toggled != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("reminder_$medicineId", toggled!.reminderEnabled);
+      } catch (e) {
+        debugPrint("Error saving reminder to SharedPreferences: $e");
+      }
+    }
   }
 
   Future<void> markSlotDone(MedicineTimeSlot slot) async {
@@ -336,6 +412,18 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
     }).toList();
 
     state = state.copyWith(medicines: updatedList);
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      for (final item in itemsToggled) {
+        await prefs.setBool("adherence_${item.id}", true);
+        if (item.takenAt != null) {
+          await prefs.setString("taken_at_${item.id}", item.takenAt!.toIso8601String());
+        }
+      }
+    } catch (e) {
+      debugPrint("Error saving slot adherence to SharedPreferences: $e");
+    }
 
     final rxId = state.doctorAdvice?.rxId ?? "pat-048291";
     final cleanRxId = Uri.encodeComponent(rxId);
@@ -359,6 +447,18 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
 
   Future<void> updateRoutine(ReminderRoutine routine) async {
     state = state.copyWith(routine: routine);
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt("routine_morning_hour", routine.morningTime.hour);
+      await prefs.setInt("routine_morning_minute", routine.morningTime.minute);
+      await prefs.setInt("routine_afternoon_hour", routine.afternoonTime.hour);
+      await prefs.setInt("routine_afternoon_minute", routine.afternoonTime.minute);
+      await prefs.setInt("routine_night_hour", routine.nightTime.hour);
+      await prefs.setInt("routine_night_minute", routine.nightTime.minute);
+    } catch (e) {
+      debugPrint("Error saving routine to SharedPreferences: $e");
+    }
 
     _reminderService.slotTimes[DoseSlot.morning] = (
       hour: routine.morningTime.hour,
@@ -390,12 +490,31 @@ class PrescriptionNotifier extends StateNotifier<PrescriptionState> {
       await _reminderService.cancelAllReminders();
     } catch (_) {}
 
-    state = state.copyWith(
-      doctorAdvice: advice,
-      medicines: medicines,
-    );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final synced = medicines.map((m) {
+        final localTaken = prefs.getBool("adherence_${m.id}");
+        final localReminder = prefs.getBool("reminder_${m.id}");
+        final localTakenAt = prefs.getString("taken_at_${m.id}");
+        return m.copyWith(
+          isTaken: localTaken ?? m.isTaken,
+          reminderEnabled: localReminder ?? m.reminderEnabled,
+          takenAt: localTakenAt != null ? DateTime.tryParse(localTakenAt) : m.takenAt,
+        );
+      }).toList();
 
-    final active = medicines
+      state = state.copyWith(
+        doctorAdvice: advice,
+        medicines: synced,
+      );
+    } catch (_) {
+      state = state.copyWith(
+        doctorAdvice: advice,
+        medicines: medicines,
+      );
+    }
+
+    final active = state.medicines
         .where((m) => m.reminderEnabled && !m.isTaken)
         .map((m) => m.toScheduledMedication())
         .toList();

@@ -3,6 +3,9 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../prescription/presentation/providers/prescription_provider.dart";
+import "../../../auth/presentation/providers/auth_provider.dart";
+import "../../../onboarding/presentation/providers/user_profile_provider.dart";
+import "../../../onboarding/data/models/user_profile_model.dart";
 
 /// Subagent 2: Home Dashboard & App Shell for AyuSetu
 /// Reference fidelity implementation with botanical accents, 2x2 quick action grid,
@@ -61,6 +64,8 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final prescription = ref.watch(prescriptionProvider);
+    final userProfileState = ref.watch(userProfileProvider);
+    final profile = userProfileState.profile;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -85,10 +90,12 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTopHeader(context),
+                  _buildTopHeader(context, profile),
                   const SizedBox(height: 20),
-                  _buildGreeting(),
+                  _buildGreeting(profile),
                   const SizedBox(height: 18),
+                  _buildDynamicHeroCard(context, profile),
+                  const SizedBox(height: 14),
                   _buildGetMyReportsCard(context, prescription),
                   const SizedBox(height: 14),
                   _buildMedicinesPrescribedCard(context, prescription),
@@ -120,7 +127,7 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
   // ---------------------------------------------------------------------------
   // TOP HEADER: AyuSetu Logo + Status
   // ---------------------------------------------------------------------------
-  Widget _buildTopHeader(BuildContext context) {
+  Widget _buildTopHeader(BuildContext context, UserProfile profile) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,18 +161,18 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
             ),
             InkWell(
               borderRadius: BorderRadius.circular(20),
-              onTap: () => _openProfileSheet(context),
+              onTap: () => _openProfileSheet(context, profile),
               child: Container(
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: const Color(0xFF087D71).withValues(alpha: 0.3)),
                 ),
                 child: const Icon(
                   Icons.person_outline_rounded,
-                  size: 16,
-                  color: Color(0xFF475569),
+                  size: 18,
+                  color: Color(0xFF087D71),
                 ),
               ),
             ),
@@ -176,7 +183,7 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
   }
 
   // ---------------------------------------------------------------------------
-  // GREETING (DYNAMIC TIME-BASED)
+  // GREETING (DYNAMIC TIME-BASED & PERSONALIZED)
   // ---------------------------------------------------------------------------
   MapEntry<String, IconData> _getTimeGreeting() {
     final hour = DateTime.now().hour;
@@ -191,8 +198,10 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
     }
   }
 
-  Widget _buildGreeting() {
+  Widget _buildGreeting(UserProfile profile) {
     final greeting = _getTimeGreeting();
+    final firstName = profile.name.trim().split(" ").first;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -204,39 +213,288 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
               color: const Color(0xFF087D71),
             ),
             const SizedBox(width: 6),
-            Text(
-              greeting.key,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF087D71),
-                letterSpacing: 0.2,
+            Flexible(
+              child: Text(
+                "${greeting.key} $firstName",
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF087D71),
+                  letterSpacing: 0.2,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
         const SizedBox(height: 6),
         RichText(
-          text: const TextSpan(
-            style: TextStyle(
-              fontSize: 27,
+          text: TextSpan(
+            style: const TextStyle(
+              fontSize: 26,
               fontWeight: FontWeight.w800,
               color: Color(0xFF0F172A),
               height: 1.18,
               letterSpacing: -0.6,
             ),
             children: [
-              TextSpan(text: "Your health journey\n"),
-              TextSpan(text: "matters"),
-              TextSpan(
+              TextSpan(text: "Your ${profile.primaryFocus == 'womens_health' ? 'hormonal balance' : profile.primaryFocus == 'yoga' ? 'ayush & recovery' : profile.primaryFocus == 'opd' ? 'clinical care' : 'health journey'}\n"),
+              const TextSpan(text: "matters"),
+              const TextSpan(
                 text: ".",
                 style: TextStyle(color: Color(0xFF087D71)),
               ),
             ],
           ),
         ),
+        const SizedBox(height: 8),
+        // Prakriti Pill
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: const Color(0xFF087D71).withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xFF087D71).withValues(alpha: 0.2)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.eco_rounded, size: 14, color: Color(0xFF087D71)),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  profile.prakritiBadgeLabel,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF087D71)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // DYNAMIC HERO CARD (ADAPTS TO USER'S SELECTED PRIMARY HEALTH FOCUS)
+  // ---------------------------------------------------------------------------
+  Widget _buildDynamicHeroCard(BuildContext context, UserProfile profile) {
+    switch (profile.primaryFocus) {
+      case "womens_health":
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFF1F2), Color(0xFFFCE7EC)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFFDA4AF)),
+            boxShadow: [
+              BoxShadow(color: const Color(0xFFE11D48).withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: const Color(0xFFE11D48), borderRadius: BorderRadius.circular(8)),
+                    child: const Text("HER COMPASS", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.5)),
+                  ),
+                  const Icon(Icons.spa_rounded, color: Color(0xFFE11D48), size: 22),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text("Follicular Phase · Day 8", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF881337))),
+              const SizedBox(height: 4),
+              const Text("Estrogen rising. Optimal window for aerobic activity and metabolic conditioning.", style: TextStyle(fontSize: 12, color: Color(0xFF9F1239))),
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 38,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push("/her"),
+                  icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                  label: const Text("Open Women's Health Studio", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE11D48),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case "yoga":
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFEF3C7), Color(0xFFFDE68A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFFCD34D)),
+            boxShadow: [
+              BoxShadow(color: const Color(0xFFD97706).withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: const Color(0xFFD97706), borderRadius: BorderRadius.circular(8)),
+                    child: const Text("AYUSH & YOGA", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.5)),
+                  ),
+                  const Icon(Icons.self_improvement_rounded, color: Color(0xFFD97706), size: 24),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text("Daily ${profile.primaryDosha} Routine", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF78350F))),
+              const SizedBox(height: 4),
+              const Text("Sheetali Pranayama & Moon Salutations · 15 minutes of Dosha-balancing flow.", style: TextStyle(fontSize: 12, color: Color(0xFF92400E))),
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 38,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push("/yoga"),
+                  icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                  label: const Text("Start Today's Yoga Routine", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD97706),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case "opd":
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFF93C5FD)),
+            boxShadow: [
+              BoxShadow(color: const Color(0xFF2563EB).withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: const Color(0xFF2563EB), borderRadius: BorderRadius.circular(8)),
+                    child: const Text("CLINICAL OPD", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.5)),
+                  ),
+                  const Icon(Icons.local_hospital_rounded, color: Color(0xFF2563EB), size: 22),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text("Central OPD Clinic · Room 3", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1E3A8A))),
+              const SizedBox(height: 4),
+              const Text("Dr. Ananya Sharma · Live Token Queue #14 · 2 Prescriptions active.", style: TextStyle(fontSize: 12, color: Color(0xFF1E40AF))),
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 38,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push("/doctor"),
+                  icon: const Icon(Icons.medical_services_rounded, size: 16),
+                  label: const Text("Open Doctor Consultation", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case "longevity":
+      default:
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFE6F7F2), Color(0xFFD1FAE5)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFA7F3D0)),
+            boxShadow: [
+              BoxShadow(color: const Color(0xFF087D71).withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: const Color(0xFF087D71), borderRadius: BorderRadius.circular(8)),
+                    child: const Text("VITALIS HEALTHSPAN", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.5)),
+                  ),
+                  const Icon(Icons.favorite_rounded, color: Color(0xFF087D71), size: 22),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text("Biological Age Delta: -2.8 Years", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF064E3B))),
+              const SizedBox(height: 4),
+              const Text("Healthspan Progress Index: 84/100 · Optimal zone 2 cardio & insulin sensitivity.", style: TextStyle(fontSize: 12, color: Color(0xFF065F46))),
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 38,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push("/vitalis"),
+                  icon: const Icon(Icons.speed_rounded, size: 16),
+                  label: const Text("View Longevity Radar", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF087D71),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -817,125 +1075,189 @@ class _PortalSelectionScreenState extends ConsumerState<PortalSelectionScreen> {
   }
 
   // c) Health Insights Card
-  void _openProfileSheet(BuildContext context) {
+  void _openProfileSheet(BuildContext context, UserProfile profile) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
-                    borderRadius: BorderRadius.circular(2),
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE6F7F2),
-                      shape: BoxShape.circle,
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE6F7F2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          profile.name.isNotEmpty ? profile.name[0].toUpperCase() : "P",
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF087D71)),
+                        ),
+                      ),
                     ),
-                    child: const Icon(Icons.person_rounded, color: Color(0xFF087D71), size: 26),
-                  ),
-                  const SizedBox(width: 14),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Aarav Sharma",
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF0F172A),
-                            ),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  profile.name,
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF0F172A),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.verified_rounded, color: Color(0xFF10B981), size: 16),
+                            ],
                           ),
-                          SizedBox(width: 6),
-                          Icon(Icons.verified_rounded, color: Color(0xFF10B981), size: 16),
+                          Text(
+                            profile.abhaNumber ?? profile.phone,
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+                          ),
                         ],
                       ),
-                      Text(
-                        "ABHA: 91-2024-5839-2041@abdm",
-                        style: TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: const Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Hospital Center", style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-                        Text("AyuSetu Health Center", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Health & Metabolic Profile", style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-                        Text("Calibrated · Optimal Balance", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF087D71))),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Active Medications", style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-                        Text("2 Prescriptions (FEFO Tracked)", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFEA580C))),
-                      ],
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 46,
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.sync_rounded, size: 18),
-                  label: const Text("Manage Patient Health Profile"),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF087D71),
-                    side: const BorderSide(color: Color(0xFF087D71)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    context.push("/vitalis");
-                  },
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Blood Group", style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                          Text(profile.bloodGroup ?? "B+", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Ayurvedic Prakriti", style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                          Text(profile.primaryDosha, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF087D71))),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("BMI & Healthspan", style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                          Text("BMI ${profile.bmi ?? 22.7} · Optimal", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0D9488))),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                const Text("Switch Primary Health Focus", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF0F172A))),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildFocusChoiceChip(ctx, "longevity", "🌿 Vitalis", profile.primaryFocus),
+                    _buildFocusChoiceChip(ctx, "womens_health", "🌸 HER", profile.primaryFocus),
+                    _buildFocusChoiceChip(ctx, "yoga", "🧘 Yoga", profile.primaryFocus),
+                    _buildFocusChoiceChip(ctx, "opd", "🏥 OPD", profile.primaryFocus),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.tune_rounded, size: 16),
+                        label: const Text("Edit Onboarding", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF087D71),
+                          side: const BorderSide(color: Color(0xFF087D71)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          context.push("/onboarding");
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.logout_rounded, size: 16, color: Color(0xFFDC2626)),
+                        label: const Text("Sign Out", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFFDC2626))),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFFFCA5A5)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          await ref.read(authProvider.notifier).logout();
+                          if (context.mounted) {
+                            context.go("/login");
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
+      },
+    );
+  }
+
+  Widget _buildFocusChoiceChip(BuildContext ctx, String focusKey, String label, String currentFocus) {
+    final isSelected = currentFocus == focusKey;
+    return ChoiceChip(
+      label: Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: isSelected ? Colors.white : const Color(0xFF334155))),
+      selected: isSelected,
+      selectedColor: const Color(0xFF087D71),
+      backgroundColor: Colors.white,
+      onSelected: (val) {
+        if (val) {
+          ref.read(userProfileProvider.notifier).updatePrimaryFocus(focusKey);
+          Navigator.pop(ctx);
+        }
       },
     );
   }

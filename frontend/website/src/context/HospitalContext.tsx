@@ -169,13 +169,15 @@ export function HospitalProvider({ children }: { children: ReactNode }) {
         if (demoRaw) {
             try {
                 const demoData = JSON.parse(demoRaw);
-                setSession(demoData.user);
-                setProfile(demoData.profile);
-                setHospital(demoData.hospital);
-                setClinics(demoData.clinics || []);
-                setInventory(demoData.inventory || []);
-                setLoading(false);
-                return true;
+                if (demoData.clinics?.length >= 5 && demoData.inventory?.length >= 10 && localStorage.getItem('cf_d1_store_sales')) {
+                    setSession(demoData.user);
+                    setProfile(demoData.profile);
+                    setHospital(demoData.hospital);
+                    setClinics(demoData.clinics || []);
+                    setInventory(demoData.inventory || []);
+                    setLoading(false);
+                    return true;
+                }
             } catch (e) {
                 console.error("Error loading demo session:", e);
             }

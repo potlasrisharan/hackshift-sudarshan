@@ -1,5 +1,9 @@
 import "package:go_router/go_router.dart";
 import "../../features/portal/presentation/screens/portal_selection_screen.dart";
+import "../../features/auth/presentation/screens/login_screen.dart";
+import "../../features/auth/presentation/screens/signup_screen.dart";
+import "../../features/onboarding/presentation/screens/onboarding_wizard_screen.dart";
+import "../../features/doctor/presentation/screens/doctor_consultation_screen.dart";
 import "../../features/nurse/presentation/screens/nurse_triage_screen.dart";
 import "../../features/headquarters/presentation/screens/headquarters_screen.dart";
 import "../../features/clinical_mgmt/presentation/screens/clinical_management_screen.dart";
@@ -40,6 +44,19 @@ final appRouter = GoRouter(
     GoRoute(
       path: "/",
       builder: (context, state) => const PortalSelectionScreen(),
+    ),
+    // Patient Authentication
+    GoRoute(
+      path: "/login",
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: "/signup",
+      builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
+      path: "/doctor",
+      builder: (context, state) => const DoctorConsultationScreen(),
     ),
     // Patient Prescription & Medicine Reminder
     GoRoute(
@@ -135,10 +152,10 @@ final appRouter = GoRouter(
       builder: (context, state) => const HerWearableScreen(),
     ),
 
-    // AyuSetu General & Vitalis Onboarding
+    // AyuSetu Patient Onboarding Wizard (Customization & Dosha)
     GoRoute(
       path: "/onboarding",
-      builder: (context, state) => const VitalisOnboardingScreen(),
+      builder: (context, state) => const OnboardingWizardScreen(),
     ),
     GoRoute(
       path: "/vitalis",

@@ -16,7 +16,7 @@ class IntakeState {
 
   IntakeState({
     this.selectedLanguage = "Hindi (हिन्दी)",
-    this.systemType = "HYBRID",
+    this.systemType = "COMBINED",
     this.patient,
     this.isPmjayActive = true,
     this.chatMessages = const [],

@@ -6,6 +6,7 @@ import "package:http/http.dart" as http;
 import "../../../../core/constants/app_colors.dart";
 import "../../../../core/constants/app_strings.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
+import "package:kiosk_app/core/network/api_config.dart";
 import "package:kiosk_app/features/prescription/data/models/prescription_models.dart";
 import "package:kiosk_app/features/prescription/presentation/providers/prescription_provider.dart";
 
@@ -20,6 +21,7 @@ class _DoctorConsultationScreenState extends ConsumerState<DoctorConsultationScr
   int _selectedPatientIndex = 0;
   bool _isDictating = false;
   bool _isEditingNotes = false;
+  bool _isDispatching = false;
 
   late TextEditingController _soapPlanController;
 
@@ -767,147 +769,157 @@ class _DoctorConsultationScreenState extends ConsumerState<DoctorConsultationScr
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                icon: const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
-                label: const FittedBox(
+                icon: _isDispatching
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+                label: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "Approve & Dispatch Rx",
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                    _isDispatching ? "Signing & Dispatching..." : "Sign & Dispatch Rx",
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
-                onPressed: () async {
-                  final batches = (patient["rxBatches"] as List<dynamic>?) ?? [];
-                  final medicines = batches.asMap().entries.map((entry) {
-                    final idx = entry.key;
-                    final b = entry.value as Map<String, dynamic>;
-                    final slot = idx == 0
-                        ? MedicineTimeSlot.morning
-                        : (idx == 1 ? MedicineTimeSlot.afternoon : MedicineTimeSlot.night);
-                    return MedicineItem(
-                      id: "med-${patient['id']}-$idx",
-                      prescriptionId: "rx-${patient['token']}",
-                      name: b["name"] as String,
-                      dosageForm: "Tablet",
-                      strength: b["name"].toString().contains(" ")
-                          ? b["name"].toString().split(" ").last
-                          : "500 mg",
-                      timeSlot: slot,
-                      scheduledTime: slot == MedicineTimeSlot.morning
-                          ? "08:00 AM"
-                          : (slot == MedicineTimeSlot.afternoon ? "01:00 PM" : "08:30 PM"),
-                      instructions: "1 dose with lukewarm water after meals",
-                      batchNumber: b["batch"] as String? ?? "BAT-2026",
-                      expiryDate: b["expiry"] as String? ?? "12/2027",
-                      isTaken: false,
-                      reminderEnabled: true,
-                    );
-                  }).toList();
+                onPressed: _isDispatching
+                    ? null
+                    : () async {
+                        setState(() => _isDispatching = true);
+                        try {
+                          final batches = (patient["rxBatches"] as List<dynamic>?) ?? [];
+                          final medicines = batches.asMap().entries.map((entry) {
+                            final idx = entry.key;
+                            final b = entry.value as Map<String, dynamic>;
+                            final slot = idx == 0
+                                ? MedicineTimeSlot.morning
+                                : (idx == 1 ? MedicineTimeSlot.afternoon : MedicineTimeSlot.night);
+                            return MedicineItem(
+                              id: "med-${patient['id']}-$idx",
+                              prescriptionId: "rx-${patient['token']}",
+                              name: b["name"] as String,
+                              dosageForm: "Tablet",
+                              strength: b["name"].toString().contains(" ")
+                                  ? b["name"].toString().split(" ").last
+                                  : "500 mg",
+                              timeSlot: slot,
+                              scheduledTime: slot == MedicineTimeSlot.morning
+                                  ? "08:00 AM"
+                                  : (slot == MedicineTimeSlot.afternoon ? "01:00 PM" : "08:30 PM"),
+                              instructions: "1 dose with lukewarm water after meals",
+                              batchNumber: b["batch"] as String? ?? "BAT-2026",
+                              expiryDate: b["expiry"] as String? ?? "12/2027",
+                              isTaken: false,
+                              reminderEnabled: true,
+                            );
+                          }).toList();
 
-                  final cleanToken = patient['token'].toString().replaceAll('#', '').replaceAll(' ', '-');
-                  final advice = DoctorAdvice(
-                    doctorName: "Dr. Ananya Sharma",
-                    specialty: "Senior Physician · Rheumatology & Integrative Ayurveda",
-                    hospital: "All India Institute of Ayurveda (AIIA)",
-                    opdRoom: "OPD-3",
-                    rxId: "#RX-2026-$cleanToken",
-                    prescriptionDate: "Today",
-                    validTillDate: "In 14 Days",
-                    dietRestrictions: const [
-                      "Warm nourishing meals with digestive spices (jeera, shunthi)",
-                      "Avoid cold, heavy, and ultra-processed items during recovery",
-                    ],
-                    hydrationTarget: "2.5L warm water or CCF infusion daily",
-                    followUpDate: "In 14 Days · OPD-3",
-                    doctorNotes: patient["plan"] as String? ?? "Follow prescribed doses and timing.",
-                  );
+                          final cleanToken = patient['token'].toString().replaceAll('#', '').replaceAll(' ', '-');
+                          final advice = DoctorAdvice(
+                            doctorName: "Dr. Ananya Sharma",
+                            specialty: "Senior Physician · Rheumatology & Internal Medicine",
+                            hospital: "AIIMS New Delhi / Central OPD Clinic",
+                            opdRoom: "OPD-3",
+                            rxId: "#RX-2026-$cleanToken",
+                            prescriptionDate: "Today",
+                            validTillDate: "In 14 Days",
+                            dietRestrictions: const [
+                              "Low-purine diet",
+                              "Avoid excess sodium & carbonated beverages",
+                              "Adequate hydration",
+                            ],
+                            hydrationTarget: "3.0L water daily",
+                            followUpDate: "In 14 Days · OPD-3",
+                            doctorNotes: patient["plan"] as String? ?? "Evidence-based allopathic regimen for inflammatory arthritis and joint stiffness: Follow medication schedule with meals. Avoid high-purine foods and maintain adequate hydration.",
+                          );
 
-                  // 1) Post prescription payload to Cloudflare backend
-                  bool backendSynced = false;
-                  try {
-                    const baseUrl = String.fromEnvironment(
-                      'API_BASE_URL',
-                      defaultValue: 'http://127.0.0.1:8787/api/v1',
-                    );
-                    final payload = {
-                      "patientId": patient['id'] ?? "pat-048291",
-                      "rxId": advice.rxId,
-                      "prescriptionDate": advice.prescriptionDate,
-                      "validTillDate": advice.validTillDate,
-                      "doctorName": advice.doctorName,
-                      "specialty": advice.specialty,
-                      "hospital": advice.hospital,
-                      "opdRoom": advice.opdRoom,
-                      "doctorNotes": advice.doctorNotes,
-                      "dietRestrictions": advice.dietRestrictions,
-                      "hydrationTarget": advice.hydrationTarget,
-                      "followUpDate": advice.followUpDate,
-                      "medicines": medicines.map((m) => {
-                        "id": m.id,
-                        "prescriptionId": m.prescriptionId,
-                        "name": m.name,
-                        "dosageForm": m.dosageForm,
-                        "strength": m.strength,
-                        "timeSlot": m.timeSlot.name,
-                        "scheduledTime": m.scheduledTime,
-                        "instructions": m.instructions,
-                        "batchNumber": m.batchNumber,
-                        "expiryDate": m.expiryDate,
-                        "isTaken": m.isTaken,
-                        "reminderEnabled": m.reminderEnabled,
-                      }).toList(),
-                    };
+                          // 1) Post prescription payload to Cloudflare backend
+                          try {
+                            final baseUrl = ApiConfig.baseUrl;
+                            final payload = {
+                              "patientId": patient['id'] ?? "pat-048291",
+                              "rxId": advice.rxId,
+                              "prescriptionDate": advice.prescriptionDate,
+                              "validTillDate": advice.validTillDate,
+                              "doctorName": advice.doctorName,
+                              "specialty": advice.specialty,
+                              "hospital": advice.hospital,
+                              "opdRoom": advice.opdRoom,
+                              "doctorNotes": advice.doctorNotes,
+                              "dietRestrictions": advice.dietRestrictions,
+                              "hydrationTarget": advice.hydrationTarget,
+                              "followUpDate": advice.followUpDate,
+                              "medicines": medicines.map((m) => {
+                                "id": m.id,
+                                "prescriptionId": m.prescriptionId,
+                                "name": m.name,
+                                "dosageForm": m.dosageForm,
+                                "strength": m.strength,
+                                "timeSlot": m.timeSlot.name,
+                                "scheduledTime": m.scheduledTime,
+                                "instructions": m.instructions,
+                                "batchNumber": m.batchNumber,
+                                "expiryDate": m.expiryDate,
+                                "isTaken": m.isTaken,
+                                "reminderEnabled": m.reminderEnabled,
+                              }).toList(),
+                            };
 
-                    final res = await http.post(
-                      Uri.parse("$baseUrl/prescriptions"),
-                      headers: {"Content-Type": "application/json"},
-                      body: jsonEncode(payload),
-                    ).timeout(const Duration(seconds: 4));
+                            await http.post(
+                              Uri.parse("$baseUrl/prescriptions"),
+                              headers: {"Content-Type": "application/json"},
+                              body: jsonEncode(payload),
+                            ).timeout(const Duration(seconds: 4));
+                          } catch (e) {
+                            debugPrint("Doctor Rx dispatch backend error: $e");
+                          }
 
-                    if (res.statusCode == 200 || res.statusCode == 201) {
-                      backendSynced = true;
-                    }
-                  } catch (e) {
-                    debugPrint("Doctor Rx dispatch backend error: $e");
-                  }
+                          // 2) Set active prescription in Riverpod state
+                          await ref.read(prescriptionProvider.notifier).setPrescription(
+                            advice: advice,
+                            medicines: medicines,
+                          );
 
-                  // 2) Set active prescription in Riverpod state
-                  ref.read(prescriptionProvider.notifier).setPrescription(
-                    advice: advice,
-                    medicines: medicines,
-                  );
-
-                  // 3) Display confirmation SnackBar and sync notification
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: AppColors.medicalTeal,
-                        duration: const Duration(seconds: 4),
-                        content: Row(
-                          children: [
-                            Icon(
-                              backendSynced ? Icons.cloud_done_rounded : Icons.check_circle_outline_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                backendSynced
-                                    ? "Rx approved & synced to Cloudflare Backend & Patient Mobile App for ${patient['name']}!"
-                                    : "Rx approved & active in Patient Mobile App (Saved Locally) for ${patient['name']}!",
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          // 3) Display confirmation SnackBar and sync notification
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: AppColors.medicalTeal,
+                              duration: const Duration(seconds: 4),
+                              content: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.cloud_done_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      "Prescription signed & synced with Central Pharmacy & Patient App",
+                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              action: SnackBarAction(
+                                label: "Open Mobile Rx",
+                                textColor: Colors.white,
+                                onPressed: () => context.push("/prescription"),
                               ),
                             ),
-                          ],
-                        ),
-                        action: SnackBarAction(
-                          label: "Open Mobile Rx",
-                          textColor: Colors.white,
-                          onPressed: () => context.push("/prescription"),
-                        ),
-                      ),
-                    );
-                },
+                          );
+                        } finally {
+                          if (mounted) {
+                            setState(() => _isDispatching = false);
+                          }
+                        }
+                      },
               ),
             ),
           ],

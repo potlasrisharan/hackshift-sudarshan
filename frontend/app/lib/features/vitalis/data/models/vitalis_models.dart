@@ -117,6 +117,14 @@ class DomainScoreModel {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        "score": score,
+        "weight": weight,
+        "observed": observed,
+        "provenance": provenance,
+        "rationale": rationale,
+      };
+
   static String _formatDomainTitle(String key) {
     switch (key) {
       case "physical_activity": return "Physical Activity";
@@ -164,6 +172,17 @@ class VitalisHpiResultModel {
       limitations: (json["limitations"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "hpiScore": hpiScore,
+        "coverage": coverage,
+        "status": status,
+        "algorithmVersion": algorithmVersion,
+        "limitations": limitations,
+        "domains": {
+          for (final d in domains) d.domainKey: d.toJson(),
+        },
+      };
 }
 
 class BiomarkerDataPoint {
@@ -328,9 +347,9 @@ class YogaAsanaItem {
 
   factory YogaAsanaItem.fromJson(Map<String, dynamic> json) {
     return YogaAsanaItem(
-      asana: json["asana"] as String? ?? "",
-      durationMins: (json["durationMins"] as num?)?.toInt() ?? 5,
-      focus: json["focus"] as String? ?? "",
+      asana: json["asana"] as String? ?? json["pose"] as String? ?? "",
+      durationMins: (json["durationMins"] as num?)?.toInt() ?? (json["durationMinutes"] as num?)?.toInt() ?? 5,
+      focus: json["focus"] as String? ?? json["benefit"] as String? ?? "",
       contraindications: (json["contraindications"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }

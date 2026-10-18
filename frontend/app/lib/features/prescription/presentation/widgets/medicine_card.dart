@@ -46,23 +46,28 @@ class MedicineCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
+                InkWell(
                   onTap: () => onToggleTaken(!isTaken),
+                  borderRadius: BorderRadius.circular(24),
                   child: Container(
-                    width: 28,
-                    height: 28,
-                    margin: const EdgeInsets.only(top: 2, right: 12),
-                    decoration: BoxDecoration(
-                      color: isTaken ? const Color(0xFF059669) : Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isTaken ? const Color(0xFF059669) : const Color(0xFFCBD5E1),
-                        width: 2,
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: isTaken ? const Color(0xFF059669) : Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isTaken ? const Color(0xFF059669) : const Color(0xFFCBD5E1),
+                          width: 2,
+                        ),
                       ),
+                      child: isTaken
+                          ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
+                          : null,
                     ),
-                    child: isTaken
-                        ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
-                        : null,
                   ),
                 ),
                 Expanded(
@@ -188,7 +193,9 @@ class MedicineCard extends StatelessWidget {
                       onTap: () => onToggleTaken(!isTaken),
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                         decoration: BoxDecoration(
                           color: isTaken ? const Color(0xFFE6F7F2) : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(8),
@@ -201,14 +208,14 @@ class MedicineCard extends StatelessWidget {
                           children: [
                             Icon(
                               isTaken ? Icons.check_circle_rounded : Icons.radio_button_unchecked,
-                              size: 12,
+                              size: 13,
                               color: isTaken ? const Color(0xFF059669) : const Color(0xFF64748B),
                             ),
                             const SizedBox(width: 4),
                             Text(
                               isTaken ? "Taken" : "Mark Done",
                               style: TextStyle(
-                                fontSize: 10.5,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: isTaken ? const Color(0xFF059669) : const Color(0xFF475569),
                               ),
@@ -217,27 +224,41 @@ class MedicineCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      medicine.reminderEnabled
-                          ? Icons.notifications_active_rounded
-                          : Icons.notifications_off_rounded,
-                      size: 15,
-                      color: medicine.reminderEnabled
-                          ? const Color(0xFF087D71)
-                          : const Color(0xFF94A3B8),
-                    ),
-                    const SizedBox(width: 2),
-                    SizedBox(
-                      height: 24,
-                      width: 36,
-                      child: Transform.scale(
-                        scale: 0.75,
-                        child: Switch(
-                          value: medicine.reminderEnabled,
-                          activeTrackColor: const Color(0xFF087D71),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          onChanged: onToggleReminder,
+                    const SizedBox(width: 6),
+                    InkWell(
+                      onTap: () => onToggleReminder(!medicine.reminderEnabled),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              medicine.reminderEnabled
+                                  ? Icons.notifications_active_rounded
+                                  : Icons.notifications_off_rounded,
+                              size: 16,
+                              color: medicine.reminderEnabled
+                                  ? const Color(0xFF087D71)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(width: 2),
+                            SizedBox(
+                              height: 32,
+                              width: 38,
+                              child: Transform.scale(
+                                scale: 0.8,
+                                child: Switch(
+                                  value: medicine.reminderEnabled,
+                                  activeTrackColor: const Color(0xFF087D71),
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  onChanged: onToggleReminder,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

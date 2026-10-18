@@ -36,8 +36,18 @@ export const herProfileSchema = z.object({
     ])
     .default("vegetarian"),
   allergies: z.array(z.string()).default([]).optional(),
-  goals: z.array(z.string()).default([]).optional(),
   lifestyleGoals: z.array(z.string()).optional(),
+  lastPeriodStartDate: z.string().optional(),
+  typicalCycleDays: z.number().int().min(15).max(60).default(28).optional(),
+  typicalPeriodDays: z.number().int().min(1).max(15).default(5).optional(),
+  cycleRegularity: z
+    .enum(["regular", "mostly_regular", "irregular", "unknown"])
+    .default("regular")
+    .optional(),
+  primaryGoal: z.string().optional(),
+  pcodSymptoms: z.array(z.string()).default([]).optional(),
+  periodFlowIntensity: z.string().optional(),
+  crampSeverity: z.number().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 });

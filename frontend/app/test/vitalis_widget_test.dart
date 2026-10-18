@@ -18,8 +18,15 @@ import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_copilot_
 import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_summary_screen.dart";
 import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_settings_screen.dart";
 import "package:kiosk_app/features/vitalis/presentation/screens/vitalis_onboarding_screen.dart";
+import "package:kiosk_app/features/vitalis/data/models/vitalis_models.dart";
+import "package:kiosk_app/features/vitalis/data/services/vitalis_api_service.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group("AyuSetu Vitalis Widget & Responsive Tests", () {
     Future<void> testScreen(WidgetTester tester, Widget screen) async {
       tester.view.physicalSize = const Size(360, 640);
@@ -163,6 +170,40 @@ void main() {
       expect(find.text("Height (cm)"), findsOneWidget);
       expect(find.text("Weight (kg)"), findsOneWidget);
       expect(find.text("Calculated BMI: 26.4 kg/m²"), findsOneWidget);
+    });
+
+    test("Vitalis check-in and profile persist locally and compute HPI offline", () async {
+      const api = VitalisApiService(patientId: "test_persist_vit");
+      const profile = VitalisProfileModel(
+        patientId: "test_persist_vit",
+        yearOfBirth: 1985,
+        sex: "FEMALE",
+        heightCm: 165.0,
+        weightKg: 62.0,
+        diagnosedConditions: ["Pre-diabetes"],
+      );
+
+      final savedProfile = await api.updateProfile(profile);
+      expect(savedProfile.yearOfBirth, 1985);
+
+      final fetchedProfile = await api.fetchProfile();
+      expect(fetchedProfile.yearOfBirth, 1985);
+      expect(fetchedProfile.sex, "FEMALE");
+
+      final checkInSuccess = await api.recordHealthspanCheckIn(
+        weeklyActivityMinutes: 180,
+        weeklyStrengthSessions: 3,
+        averageSleepHours: 7.5,
+        activityAdherencePercent: 88,
+        fatigueRating: 2,
+        symptomsDuringExercise: false,
+      );
+      expect(checkInSuccess, isTrue);
+
+      final hpi = await api.fetchHealthspanIndex();
+      expect(hpi.hpiScore, isNotNull);
+      expect(hpi.hpiScore!, greaterThanOrEqualTo(75));
+      expect(hpi.domains.length, 8);
     });
   });
 }

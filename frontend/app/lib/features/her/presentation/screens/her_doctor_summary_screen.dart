@@ -83,7 +83,7 @@ class HerDoctorSummaryScreen extends ConsumerWidget {
                   onPressed: () => ref.read(herProvider.notifier).generateDoctorSummary(),
                 )
               else
-                _buildSummaryDetailsCard(context, ref, summary),
+                _buildSummaryDetailsCard(context, ref, state, summary),
               const SizedBox(height: 24),
             ],
           ),
@@ -92,7 +92,7 @@ class HerDoctorSummaryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSummaryDetailsCard(BuildContext context, WidgetRef ref, dynamic summary) {
+  Widget _buildSummaryDetailsCard(BuildContext context, WidgetRef ref, HerState state, dynamic summary) {
     final isRevoked = summary.isRevoked as bool;
 
     return Container(
@@ -180,6 +180,18 @@ class HerDoctorSummaryScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           const Text(
+            "Patient Baseline Parameters:",
+            style: TextStyle(color: Color(0xFF9F1239), fontSize: 13, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          _summaryParamRow("Typical Cycle Length", "${state.profile.typicalCycleDays} days"),
+          _summaryParamRow("Period Duration", "${state.profile.typicalPeriodDays} days"),
+          _summaryParamRow("Cycle Regularity", state.profile.cycleRegularity),
+          _summaryParamRow("Primary Health Focus", state.profile.primaryGoal.replaceAll("_", " ")),
+          if (state.pcodAssessment != null)
+            _summaryParamRow("Rotterdam PCOD Risk Level", state.pcodAssessment!.riskLevel),
+          const SizedBox(height: 14),
+          const Text(
             "Packet Contents Included:",
             style: TextStyle(color: Color(0xFF9F1239), fontSize: 13, fontWeight: FontWeight.bold),
           ),
@@ -202,6 +214,19 @@ class HerDoctorSummaryScreen extends ConsumerWidget {
               "Valid for 7 days. End-to-end encrypted under Indian Personal Data Protection standards.",
               style: TextStyle(color: Color(0xFF64748B), fontSize: 11),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryParamRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
+          Text(value, style: const TextStyle(color: Color(0xFF0F172A), fontSize: 12, fontWeight: FontWeight.w700)),
         ],
       ),
     );

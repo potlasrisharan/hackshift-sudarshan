@@ -142,7 +142,7 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
     final recommendations = await apiService.fetchRecommendations();
     state = state.copyWith(
       profile: profile,
-      hpiResult: hpi,
+      hpiResult: (hpi.hpiScore != null || state.hpiResult.hpiScore == null) ? hpi : state.hpiResult,
       biomarkerTrend: trends,
       cardio: cardio,
       readiness: readiness,
@@ -172,6 +172,7 @@ class VitalisNotifier extends StateNotifier<VitalisState> {
 
   void updateProfile(VitalisProfileModel updated) {
     state = state.copyWith(profile: updated);
+    saveProfile(updated);
   }
 
   Future<void> saveProfile(VitalisProfileModel updated) async {

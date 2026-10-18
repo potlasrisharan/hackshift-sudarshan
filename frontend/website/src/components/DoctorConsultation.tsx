@@ -342,6 +342,313 @@ const INITIAL_QUEUE: PatientQueueItem[] = [
         }
       ]
     }
+  },
+  {
+    token: 'TOKEN #046',
+    patientId: 'pat-048295',
+    name: 'Aarav Patel',
+    age: 8,
+    gender: 'MALE',
+    abhaId: '91-8843-2019-3312',
+    pmjayEligible: true,
+    status: 'STAT_ALERT',
+    checkInTime: '10:35 AM',
+    symptoms: ['Acute Pediatric Asthma Exacerbation', 'Subcostal Retractions', 'Bilateral Wheezing'],
+    intakeAudioSnippet: 'Bachhe ko do ghante se saans lene mein bohot takleef ho rahi hai aur seene se seeti ki aawaz aa rahi hai...',
+    intakeAudioTranslation: 'Child experiencing severe acute respiratory distress since 2 hours with audible expiratory wheeze and chest retractions...',
+    citations: [
+      { id: 1, timestamp: '00:09', transcriptSnippet: 'सीने से सीटी की आवाज', clinicalFinding: 'Audible diffuse expiratory polyphonic wheeze' },
+      { id: 2, timestamp: '00:24', transcriptSnippet: 'सांस लेने में पसलियां खिंचना', clinicalFinding: 'Tachypnea (RR 34/min) with marked intercostal indrawing' },
+      { id: 3, timestamp: '00:41', transcriptSnippet: 'ऑक्सीजन की कमी', clinicalFinding: 'Hypoxia (SpO2 91% on ambient air)' }
+    ],
+    vitals: { bp: '102/68 mmHg', pulse: 128, spo2: 91, temp: '99.1°F' },
+    soap: {
+      subjective: '8yo male brought by parents with acute breathlessness, nocturnal dry cough, and wheezing unresponsive to home salbutamol inhaler.',
+      objective: 'Tachypneic (RR 34/min), subcostal retractions, bilateral diffuse high-pitched expiratory wheeze. SpO2 91% on room air. Alert but anxious.',
+      assessment: 'Severe Acute Bronchial Asthma Exacerbation (GINA 2024 Pediatric Step-3 / IAP Protocol).',
+      icd11Code: 'CA23.3 (Acute Exacerbation of Asthma)',
+      icd11Description: 'Acute exacerbation of moderate to severe asthma, pediatric',
+      namasteCode: 'GINA 2024 / IAP Pediatric Emergency Asthma Guideline',
+      namasteDescription: 'Immediate Dual Bronchodilator Nebulization (Salbutamol + Ipratropium) + Systemic Corticosteroids',
+      plan: [
+        {
+          drug: 'Nebulized Salbutamol 2.5mg + Ipratropium 250mcg',
+          dosage: '2.5ml Respule',
+          frequency: 'STAT q20min x 3 doses',
+          duration: '1 Day',
+          availableInClinic: true,
+          instructions: 'Administer via oxygen-driven face mask nebulizer immediately',
+          shelfLocation: 'Shelf A-04 (Emergency Inhalation)',
+          brandName: 'Duolin Respules',
+          brandPrice: 95,
+          genericName: 'Salbutamol + Ipratropium Respule',
+          genericPrice: 16
+        },
+        {
+          drug: 'Oral Prednisolone Syrup (15mg/5ml)',
+          dosage: '20mg (6.6ml)',
+          frequency: '1-0-0',
+          duration: '3 Days',
+          availableInClinic: true,
+          instructions: 'Give immediately after morning feed to abort inflammatory cascade',
+          shelfLocation: 'Shelf D-08 (Pediatric Suspensions)',
+          brandName: 'Omnacortil 15 Oral Sol',
+          brandPrice: 75,
+          genericName: 'Prednisolone 15mg/5ml Syrup',
+          genericPrice: 14
+        },
+        {
+          drug: 'Budesonide 100mcg Inhaler with Pediatric Spacer',
+          dosage: '100mcg (2 Puffs)',
+          frequency: '1-0-1',
+          duration: '30 Days',
+          availableInClinic: true,
+          instructions: 'Rinse mouth with water after inhalation to prevent oral candidiasis',
+          shelfLocation: 'Shelf D-10 (Respiratory)',
+          brandName: 'Budecort 100 Inhaler',
+          brandPrice: 220,
+          genericName: 'Budesonide 100mcg MDI',
+          genericPrice: 38
+        }
+      ]
+    }
+  },
+  {
+    token: 'TOKEN #047',
+    patientId: 'pat-048296',
+    name: 'Pooja Hegde',
+    age: 28,
+    gender: 'FEMALE',
+    abhaId: '91-5521-7784-9014',
+    pmjayEligible: true,
+    status: 'WAITING',
+    checkInTime: '10:48 AM',
+    symptoms: ['Antenatal 28-Week Routine Check', 'Mild Dependent Pedal Edema', 'GDM Screening Review'],
+    intakeAudioSnippet: 'Saat mahine ka garbh hai, pairon mein thodi sujan aayi hai aur blood sugar test karwana hai...',
+    intakeAudioTranslation: '28 weeks primigravida presenting for routine third-trimester antenatal checkup, mild bilateral ankle edema, and OGTT screening review...',
+    citations: [
+      { id: 1, timestamp: '00:12', transcriptSnippet: 'पैरों में हल्की सूजन', clinicalFinding: 'Bilateral pitting dependent pedal edema Grade 1' },
+      { id: 2, timestamp: '00:30', transcriptSnippet: 'गर्भ की नियमित जांच', clinicalFinding: 'Fundal height 28cm concordant with gestational age, FHR 144 bpm regular' }
+    ],
+    vitals: { bp: '118/74 mmHg', pulse: 82, spo2: 99, temp: '98.4°F' },
+    soap: {
+      subjective: '28yo Primigravida at 28+2 weeks gestational age. Reports good fetal kicks (>10/day). Mild ankle swelling after standing.',
+      objective: 'BP 118/74 normotensive. Fundal height 28cm. Cephalic presentation. FHR 144 bpm regular. Urine albumin negative. Hb 11.2 g/dL.',
+      assessment: 'Intrauterine Single Live Gestation at 28 Weeks GA; Physiological Pregnancy Edema; Low-Risk Antenatal Care.',
+      icd11Code: 'JA00 (Normal Pregnancy Supervision)',
+      icd11Description: 'Supervision of normal pregnancy, third trimester',
+      namasteCode: 'FOGSI / MoHFW PMSMA Antenatal Standard',
+      namasteDescription: 'Standard Nutritional Prophylaxis (Iron-Folic Acid + Calcium-D3) + Tdap Immunization',
+      plan: [
+        {
+          drug: 'Ferrous Ascorbate 100mg + Folic Acid 1.5mg',
+          dosage: '1 Tab',
+          frequency: '0-1-0',
+          duration: '60 Days',
+          availableInClinic: true,
+          instructions: 'Take 2 hours after lunch with citrus juice; avoid tea/milk within 2h',
+          shelfLocation: 'Shelf E-08 (Maternal & Child Health)',
+          brandName: 'Orofer-XT',
+          brandPrice: 185,
+          genericName: 'Ferrous Ascorbate + Folic Acid',
+          genericPrice: 24
+        },
+        {
+          drug: 'Calcium Carbonate 500mg + Vitamin D3 250IU',
+          dosage: '1 Tab',
+          frequency: '1-0-1',
+          duration: '60 Days',
+          availableInClinic: true,
+          instructions: 'Take strictly separated from iron supplement (after breakfast & dinner)',
+          shelfLocation: 'Shelf E-09 (Supplements)',
+          brandName: 'Shelcal 500',
+          brandPrice: 140,
+          genericName: 'Calcium Carbonate + Vit D3',
+          genericPrice: 22
+        }
+      ]
+    }
+  },
+  {
+    token: 'TOKEN #048',
+    patientId: 'pat-048297',
+    name: 'Mohammed Rafiq',
+    age: 64,
+    gender: 'MALE',
+    abhaId: '91-3142-6689-1052',
+    pmjayEligible: false,
+    status: 'IN_CONSULT',
+    checkInTime: '10:52 AM',
+    symptoms: ['Chronic Kidney Disease Stage 3b', 'Resistant Hypertension', 'Generalized Uremic Pruritus'],
+    intakeAudioSnippet: 'Pichle do saal se kidney ki bimari hai, BP ki do goli lene par bhi 160 rehta hai aur sharir mein khujli hoti hai...',
+    intakeAudioTranslation: 'Known CKD Stage 3b with refractory hypertension despite dual antihypertensive regimen, elevated serum creatinine (2.38 mg/dL), and uremic pruritus...',
+    citations: [
+      { id: 1, timestamp: '00:14', transcriptSnippet: 'किडनी की पुरानी बीमारी', clinicalFinding: 'CKD Stage 3b (eGFR 38 mL/min/1.73m², Serum Creatinine 2.38 mg/dL)' },
+      { id: 2, timestamp: '00:35', transcriptSnippet: 'बीपी 160 से कम नहीं होता', clinicalFinding: 'Stage-2 Essential Resistant Hypertension (BP 162/98 mmHg)' }
+    ],
+    vitals: { bp: '162/98 mmHg', pulse: 68, spo2: 97, temp: '98.2°F' },
+    soap: {
+      subjective: '64yo male with 8-year history of Type-2 DM and diabetic nephropathy. Complains of persistent morning headache, bilateral ankle puffiness, and dry skin pruritus.',
+      objective: 'BP 162/98 mmHg sitting. eGFR 38 mL/min. Serum K+ 4.6 mEq/L (normal). Trace pedal edema. Fundus: Grade 2 Hypertensive Retinopathy.',
+      assessment: 'Diabetic Kidney Disease (CKD Stage 3b) with Resistant Stage-2 Hypertension.',
+      icd11Code: 'GB61.3 (Chronic kidney disease, stage 3) / BA00 (Essential hypertension)',
+      icd11Description: 'Chronic kidney disease, stage 3b with systemic hypertension',
+      namasteCode: 'KDIGO 2024 Clinical Practice Guideline for CKD Management',
+      namasteDescription: 'Renoprotective ARB Titration (Telmisartan) + Thiazide-like Diuretic (Chlorthalidone) + Serum K+ Surveillance',
+      plan: [
+        {
+          drug: 'Telmisartan 40mg (Renoprotective ARB)',
+          dosage: '40mg',
+          frequency: '1-0-0',
+          duration: '30 Days',
+          availableInClinic: true,
+          instructions: 'Take once daily at 8 AM. Monitor Serum K+ & Creatinine in 14 days',
+          shelfLocation: 'Shelf C-02 (Cardio-Renal)',
+          brandName: 'Telma 40',
+          brandPrice: 160,
+          genericName: 'Telmisartan 40mg',
+          genericPrice: 22
+        },
+        {
+          drug: 'Chlorthalidone 12.5mg (Long-Acting Thiazide)',
+          dosage: '12.5mg',
+          frequency: '1-0-0',
+          duration: '30 Days',
+          availableInClinic: true,
+          instructions: 'Take with morning meal to avoid nocturia',
+          shelfLocation: 'Shelf C-03 (Cardio-Renal)',
+          brandName: 'Thalidone 12.5',
+          brandPrice: 110,
+          genericName: 'Chlorthalidone 12.5mg',
+          genericPrice: 15
+        },
+        {
+          drug: 'Sodium Bicarbonate 500mg (Metabolic Acidosis Buffer)',
+          dosage: '500mg',
+          frequency: '1-0-1',
+          duration: '30 Days',
+          availableInClinic: true,
+          instructions: 'Swallow whole with water after meals',
+          shelfLocation: 'Shelf C-05 (Nephrology)',
+          brandName: 'Sodamint 500',
+          brandPrice: 65,
+          genericName: 'Sodium Bicarbonate 500mg',
+          genericPrice: 9
+        }
+      ]
+    }
+  },
+  {
+    token: 'TOKEN #049',
+    patientId: 'pat-048298',
+    name: 'Devaki Amma',
+    age: 72,
+    gender: 'FEMALE',
+    abhaId: '91-7712-4409-8831',
+    pmjayEligible: true,
+    status: 'WAITING',
+    checkInTime: '11:04 AM',
+    symptoms: ['Generalized Osteoporosis', 'Lumbar Spine Achiness', 'High Fragility Fracture Risk'],
+    intakeAudioSnippet: 'Kamar mein bahut dard rehta hai, seedhe baithne mein dikkat hoti hai aur girne ka darr lagta hai...',
+    intakeAudioTranslation: 'Severe lower back pain on prolonged sitting or walking, progressive dorsal kyphosis, high risk of fragility fractures...',
+    citations: [
+      { id: 1, timestamp: '00:10', transcriptSnippet: 'कमर में लगातार दर्द', clinicalFinding: 'Lumbar paraspinal tenderness L2-L4, no radicular deficit' },
+      { id: 2, timestamp: '00:32', transcriptSnippet: 'गिरने का डर', clinicalFinding: 'DEXA T-score -3.1 (Severe Osteoporosis), high fall risk' }
+    ],
+    vitals: { bp: '138/80 mmHg', pulse: 72, spo2: 98, temp: '98.0°F' },
+    soap: {
+      subjective: '72yo postmenopausal female with progressive chronic lower thoracic & lumbar spine achiness over 2 years. Loss of height ~3cm. No motor weakness.',
+      objective: 'Mild dorsal kyphosis. Lumbar flexion restricted by 30%. Neurological exam normal. DEXA spine T-score: -3.1, femoral neck T-score: -2.6.',
+      assessment: 'Severe Postmenopausal Osteoporosis with High Fracture Risk (FRAX 24%).',
+      icd11Code: 'FB83.1 (Postmenopausal Osteoporosis without Pathological Fracture)',
+      icd11Description: 'Postmenopausal osteoporosis without current pathological fracture',
+      namasteCode: 'ISBMR / Endocrine Society Osteoporosis Pharmacotherapy',
+      namasteDescription: 'Weekly Oral Bisphosphonate (Alendronate 70mg) + High-Dose Cholecalciferol Repletion',
+      plan: [
+        {
+          drug: 'Alendronate Sodium 70mg (Once-Weekly Bisphosphonate)',
+          dosage: '70mg',
+          frequency: 'Once a Week (Every Sunday)',
+          duration: '12 Weeks',
+          availableInClinic: true,
+          instructions: 'Take first thing in morning with full glass of plain water. Remain strictly upright for 30 mins',
+          shelfLocation: 'Shelf E-02 (Metabolic Bone)',
+          brandName: 'Fosamax 70',
+          brandPrice: 280,
+          genericName: 'Alendronate Sodium 70mg',
+          genericPrice: 42
+        },
+        {
+          drug: 'Cholecalciferol 60,000 IU (Vitamin D3 Sachet)',
+          dosage: '60,000 IU',
+          frequency: 'Once a Week with Milk',
+          duration: '8 Weeks',
+          availableInClinic: true,
+          instructions: 'Dissolve in half glass of warm milk after Sunday lunch',
+          shelfLocation: 'Shelf E-09 (Supplements)',
+          brandName: 'Calcirol 60K Sachet',
+          brandPrice: 110,
+          genericName: 'Cholecalciferol Granules 60K',
+          genericPrice: 18
+        }
+      ]
+    }
+  },
+  {
+    token: 'TOKEN #050',
+    patientId: 'pat-048299',
+    name: 'Vikramaditya Rao',
+    age: 39,
+    gender: 'MALE',
+    abhaId: '91-4091-6632-1178',
+    pmjayEligible: false,
+    status: 'DISPENSED',
+    checkInTime: '09:50 AM',
+    symptoms: ['Acute Acid Peptic Disease', 'Retrosternal Epigastric Burning', 'Nocturnal Acid Regurgitation'],
+    intakeAudioSnippet: 'Khaane ke baad seene mein tez jalan hoti hai aur muh mein khatta paani aata hai...',
+    intakeAudioTranslation: 'Burning postprandial epigastric pain radiating retrosternally, nocturnal acid regurgitation, aggravated by spicy meals and stress...',
+    citations: [
+      { id: 1, timestamp: '00:08', transcriptSnippet: 'मुंह में खट्टा पानी आना', clinicalFinding: 'Water brash & acid regurgitation post-meals' },
+      { id: 2, timestamp: '00:26', transcriptSnippet: 'सीने के बीच में तेज जलन', clinicalFinding: 'Epigastric tenderness without guarding or peritoneal signs' }
+    ],
+    vitals: { bp: '120/78 mmHg', pulse: 76, spo2: 99, temp: '98.4°F' },
+    soap: {
+      subjective: '39yo corporate manager with 3-week history of severe postprandial retrosternal heartburn and acid regurgitation. Aggravated by late dinners and coffee.',
+      objective: 'Mild epigastric discomfort on palpation. Cardiorespiratory and abdomen exams otherwise unremarkable. H. pylori stool antigen negative.',
+      assessment: 'Gastroesophageal Reflux Disease (GERD) with Non-Ulcer Dyspepsia (LA Grade A).',
+      icd11Code: 'DA22 (Gastro-oesophageal reflux disease)',
+      icd11Description: 'Gastro-oesophageal reflux disease with esophagitis',
+      namasteCode: 'ACG Clinical Guideline for the Diagnosis and Management of GERD',
+      namasteDescription: 'High-Potency PPI + Prokinetic Combination (Rabeprazole + Domperidone) + Mucosal Barrier Antacid',
+      plan: [
+        {
+          drug: 'Rabeprazole 20mg + Domperidone 30mg SR',
+          dosage: '1 Capsule',
+          frequency: '1-0-0',
+          duration: '14 Days',
+          availableInClinic: true,
+          instructions: 'Take 30 minutes before morning breakfast with plain water',
+          shelfLocation: 'Shelf B-02 (Gastroenterology)',
+          brandName: 'Razo-D Capsule',
+          brandPrice: 195,
+          genericName: 'Rabeprazole 20mg + Domperidone 30mg SR',
+          genericPrice: 26
+        },
+        {
+          drug: 'Magaldrate 480mg + Simethicone 20mg Suspension',
+          dosage: '10ml',
+          frequency: '0-1-1 (After Food)',
+          duration: '7 Days',
+          availableInClinic: true,
+          instructions: 'Take 10ml strictly 1 hour after lunch and dinner for rapid mucosal barrier defense',
+          shelfLocation: 'Shelf B-06 (Antacids)',
+          brandName: 'Mucaine Gel 200ml',
+          brandPrice: 165,
+          genericName: 'Magaldrate + Simethicone Oral Gel',
+          genericPrice: 28
+        }
+      ]
+    }
   }
 ];
 
@@ -456,6 +763,107 @@ const WESTERN_CLINICAL_RECOMMENDATIONS: Record<string, PrescriptionItem[]> = {
       brandPrice: 210,
       genericName: 'Tramadol + Paracetamol',
       genericPrice: 35
+    }
+  ],
+  'pat-048295': [
+    {
+      drug: 'Salbutamol Inhaler 100mcg (Reliever MDI)',
+      dosage: '100mcg (2 Puffs)',
+      frequency: 'SOS (Every 4-6h)',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Inhale with pediatric spacer device when acute wheeze or chest tightness occurs',
+      shelfLocation: 'Shelf D-09 (Pediatric Inhalation)',
+      brandName: 'Asthalin 100 Inhaler',
+      brandPrice: 165,
+      genericName: 'Salbutamol 100mcg MDI',
+      genericPrice: 24
+    },
+    {
+      drug: 'Montelukast Sodium 4mg Chewable Tablet',
+      dosage: '4mg',
+      frequency: '0-0-1',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Chew 1 tablet every evening before bedtime for nighttime symptom suppression',
+      shelfLocation: 'Shelf D-12 (Pediatric Respiratory)',
+      brandName: 'Singulair 4mg',
+      brandPrice: 145,
+      genericName: 'Montelukast Sodium 4mg Chewable',
+      genericPrice: 18
+    }
+  ],
+  'pat-048296': [
+    {
+      drug: 'Doxylamine Succinate 10mg + Pyridoxine 10mg (Vitamin B6)',
+      dosage: '1 Tab',
+      frequency: '0-0-1',
+      duration: '14 Days',
+      availableInClinic: true,
+      instructions: 'Take at bedtime if nocturnal nausea or morning sickness recurs (ACOG Class A)',
+      shelfLocation: 'Shelf E-07 (Maternal Care)',
+      brandName: 'Doxinate 10mg',
+      brandPrice: 120,
+      genericName: 'Doxylamine + Pyridoxine Tab',
+      genericPrice: 16
+    }
+  ],
+  'pat-048297': [
+    {
+      drug: 'Torsemide 10mg (Renal-Sparing Loop Diuretic)',
+      dosage: '10mg',
+      frequency: '1-0-0',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Take in morning after light breakfast to control hypervolemia',
+      shelfLocation: 'Shelf C-04 (Nephrology & Cardio)',
+      brandName: 'Dytor 10',
+      brandPrice: 135,
+      genericName: 'Torsemide 10mg',
+      genericPrice: 19
+    },
+    {
+      drug: 'Calcitriol 0.25mcg (Active Vitamin D3)',
+      dosage: '0.25mcg',
+      frequency: '1-0-0',
+      duration: '30 Days',
+      availableInClinic: true,
+      instructions: 'Take with meal for secondary hyperparathyroidism prevention in CKD',
+      shelfLocation: 'Shelf C-07 (Endocrine/Renal)',
+      brandName: 'Rocaltrol 0.25',
+      brandPrice: 190,
+      genericName: 'Calcitriol 0.25mcg',
+      genericPrice: 25
+    }
+  ],
+  'pat-048298': [
+    {
+      drug: 'Calcium Citrate Malate 250mg + Vit D3 + Zinc',
+      dosage: '1 Tab',
+      frequency: '1-0-1',
+      duration: '60 Days',
+      availableInClinic: true,
+      instructions: 'Superior absorption in elderly; take after morning and evening meals',
+      shelfLocation: 'Shelf E-09 (Supplements)',
+      brandName: 'Calcimax 500',
+      brandPrice: 180,
+      genericName: 'Calcium Citrate Malate + D3',
+      genericPrice: 25
+    }
+  ],
+  'pat-048299': [
+    {
+      drug: 'Sucralfate 1g / 5ml Oral Suspension',
+      dosage: '10ml',
+      frequency: '1-0-1 (Empty Stomach)',
+      duration: '7 Days',
+      availableInClinic: true,
+      instructions: 'Take 1 hour before breakfast and bedtime to coat mucosal ulcerations',
+      shelfLocation: 'Shelf B-05 (Gastroenterology)',
+      brandName: 'Sucrafil Suspension 200ml',
+      brandPrice: 215,
+      genericName: 'Sucralfate Suspension 1g/5ml',
+      genericPrice: 32
     }
   ]
 };

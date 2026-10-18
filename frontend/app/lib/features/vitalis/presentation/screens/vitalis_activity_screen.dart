@@ -40,20 +40,106 @@ class VitalisActivityScreen extends ConsumerWidget {
               const SizedBox(height: 10),
               _buildActivitiesList(plan.contraindicatedActivities, false),
             ],
-            const SizedBox(height: 20),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.self_improvement_rounded, color: AppColors.primary),
-                title: const Text("Personalized yoga"),
-                subtitle: const Text("Open the safety-screened recommendations from the HER wellness algorithm."),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                onTap: () => context.push("/yoga"),
+            if (plan.yogaRoutine.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Prescribed Mobility & Asana Sequence",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => context.push("/yoga"),
+                    icon: const Icon(Icons.open_in_new_rounded, size: 14),
+                    label: const Text("Full Studio", style: TextStyle(fontSize: 12)),
+                  ),
+                ],
               ),
-            ),
+              const SizedBox(height: 10),
+              ...plan.yogaRoutine.map((routine) => _buildAsanaCard(routine)),
+            ] else ...[
+              const SizedBox(height: 20),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.self_improvement_rounded, color: AppColors.primary),
+                  title: const Text("Personalized Yoga & Mobility"),
+                  subtitle: const Text("Open the safety-screened recommendations from the AyuSetu wellness engine."),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                  onTap: () => context.push("/yoga"),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             _buildLogExerciseButton(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAsanaCard(YogaAsanaItem routine) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.surfaceElevated),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.vitalisTeal.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.self_improvement_rounded, color: AppColors.vitalisTeal, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      routine.asana,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                    ),
+                    Text(
+                      "${routine.durationMins} minutes · Restorative / Longevity",
+                      style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (routine.focus.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              routine.focus,
+              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.3),
+            ),
+          ],
+          if (routine.contraindications.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.yogaAmber.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                "Precautions: ${routine.contraindications.join(', ')}",
+                style: const TextStyle(fontSize: 10, color: AppColors.yogaAmber, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

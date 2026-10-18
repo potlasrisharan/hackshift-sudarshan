@@ -101,10 +101,39 @@ class _VitalisQuestionnaireScreenState extends ConsumerState<VitalisQuestionnair
     String result = "wellness_plan_available";
     String msg = "Your preventive health profile has been analyzed. Modifiable wellness recommendations are available.";
 
-    if (_answers["Q18"] == true || _answers["Q19"] == true) {
+    final bool exertionRestricted = _answers["Q18"] == true || _answers["Q19"] == true;
+    if (exertionRestricted) {
       result = "clinician_review";
       msg = "Clinician review recommended prior to escalating exercise intensity.";
     }
+
+    final currentProfile = ref.read(vitalisProvider).profile;
+    final birthYear = (_answers["Q01"] as num?)?.toInt() ?? currentProfile.yearOfBirth;
+    final conditionsSelected = (_answers["Q04"] as List<dynamic>?)?.map((e) => e.toString()).toList();
+    final chronicConditions = conditionsSelected != null && !conditionsSelected.contains("None / Unsure")
+        ? conditionsSelected
+        : currentProfile.diagnosedConditions;
+
+    final updatedProfile = VitalisProfileModel(
+      patientId: currentProfile.patientId,
+      yearOfBirth: birthYear,
+      sex: currentProfile.sex,
+      heightCm: currentProfile.heightCm,
+      weightKg: currentProfile.weightKg,
+      waistCircumferenceCm: currentProfile.waistCircumferenceCm,
+      diagnosedConditions: chronicConditions,
+      medications: currentProfile.medications,
+      allergies: currentProfile.allergies,
+      dietPreference: currentProfile.dietPreference,
+      activityLimitations: currentProfile.activityLimitations,
+      goals: currentProfile.goals,
+      smokingStatus: currentProfile.smokingStatus,
+      alcoholIntake: currentProfile.alcoholIntake,
+      clinicianRestrictedExertion: exertionRestricted || currentProfile.clinicianRestrictedExertion,
+      onboardingVersion: currentProfile.onboardingVersion,
+    );
+
+    ref.read(vitalisProvider.notifier).saveProfile(updatedProfile);
 
     setState(() {
       _isCompleted = true;

@@ -142,8 +142,25 @@ class CloudflareAuthService implements AuthService {
                 name: 'AYUSH Integrated Holistic Center',
                 status: 'active' as const,
                 address: 'East Wing, Wellness Pavilion'
+            },
+            {
+                id: 'clinic-south-004',
+                hospital_id: demoHospital.id,
+                name: 'Bengaluru Metro Health Hub',
+                status: 'active' as const,
+                address: 'Plot 12, Outer Ring Road, Bengaluru'
+            },
+            {
+                id: 'clinic-west-005',
+                hospital_id: demoHospital.id,
+                name: 'Mumbai Satellite Day-Care Hospital',
+                status: 'active' as const,
+                address: 'SV Road, Andheri West, Mumbai'
             }
         ];
+
+        const nearExpiryDate1 = new Date(Date.now() + 12 * 86400000).toISOString().split('T')[0];
+        const nearExpiryDate2 = new Date(Date.now() + 22 * 86400000).toISOString().split('T')[0];
 
         const demoInventory = [
             {
@@ -155,17 +172,21 @@ class CloudflareAuthService implements AuthService {
                 threshold: 30,
                 clinic_id: 'clinic-opd-001',
                 hospital_id: demoHospital.id,
+                expiry_date: '2027-11-30',
+                batch_number: 'BAT-OPD-DOL',
                 is_active: true
             },
             {
                 id: 'inv-2',
                 item_name: 'Amoxicillin + Clavulanic 625mg',
-                quantity: 90,
+                quantity: 18,
                 mrp: 185,
                 units_per_pack: 10,
                 threshold: 25,
                 clinic_id: 'clinic-opd-001',
                 hospital_id: demoHospital.id,
+                expiry_date: nearExpiryDate1,
+                batch_number: 'BAT-OPD-AMX',
                 is_active: true
             },
             {
@@ -177,6 +198,8 @@ class CloudflareAuthService implements AuthService {
                 threshold: 10,
                 clinic_id: 'clinic-triage-002',
                 hospital_id: demoHospital.id,
+                expiry_date: '2027-01-31',
+                batch_number: 'BAT-TRG-ATR',
                 is_active: true
             },
             {
@@ -188,6 +211,164 @@ class CloudflareAuthService implements AuthService {
                 threshold: 15,
                 clinic_id: 'clinic-ayush-003',
                 hospital_id: demoHospital.id,
+                expiry_date: '2027-10-31',
+                batch_number: 'BAT-AYU-ASH',
+                is_active: true
+            },
+            {
+                id: 'inv-5',
+                item_name: 'Aspirin 300mg Soluble Dispersible',
+                quantity: 12,
+                mrp: 45,
+                units_per_pack: 14,
+                threshold: 20,
+                clinic_id: 'clinic-opd-001',
+                hospital_id: demoHospital.id,
+                expiry_date: nearExpiryDate2,
+                batch_number: 'BAT-ASP-01',
+                is_active: true
+            },
+            {
+                id: 'inv-6',
+                item_name: 'Aspirin 300mg Soluble Dispersible',
+                quantity: 180,
+                mrp: 45,
+                units_per_pack: 14,
+                threshold: 20,
+                clinic_id: 'clinic-triage-002',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-09-30',
+                batch_number: 'BAT-TRG-ASP',
+                is_active: true
+            },
+            {
+                id: 'inv-7',
+                item_name: 'Clopidogrel 300mg (Loading Dose)',
+                quantity: 85,
+                mrp: 130,
+                units_per_pack: 10,
+                threshold: 15,
+                clinic_id: 'clinic-triage-002',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-07-31',
+                batch_number: 'BAT-TRG-CLO',
+                is_active: true
+            },
+            {
+                id: 'inv-8',
+                item_name: 'Atorvastatin 80mg High-Intensity',
+                quantity: 110,
+                mrp: 145,
+                units_per_pack: 10,
+                threshold: 20,
+                clinic_id: 'clinic-opd-001',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-10-15',
+                batch_number: 'BAT-ATO-01',
+                is_active: true
+            },
+            {
+                id: 'inv-9',
+                item_name: 'Metformin 500mg Extended Release',
+                quantity: 14,
+                mrp: 110,
+                units_per_pack: 15,
+                threshold: 25,
+                clinic_id: 'clinic-opd-001',
+                hospital_id: demoHospital.id,
+                expiry_date: nearExpiryDate1,
+                batch_number: 'BAT-MET-01',
+                is_active: true
+            },
+            {
+                id: 'inv-10',
+                item_name: 'Metformin 500mg Extended Release',
+                quantity: 260,
+                mrp: 110,
+                units_per_pack: 15,
+                threshold: 25,
+                clinic_id: 'clinic-south-004',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-04-15',
+                batch_number: 'BAT-SOU-MET',
+                is_active: true
+            },
+            {
+                id: 'inv-11',
+                item_name: 'Telmisartan 40mg Cardio-Renal',
+                quantity: 95,
+                mrp: 160,
+                units_per_pack: 15,
+                threshold: 20,
+                clinic_id: 'clinic-opd-001',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-12-31',
+                batch_number: 'BAT-TEL-01',
+                is_active: true
+            },
+            {
+                id: 'inv-12',
+                item_name: 'Ceftriaxone 1g IV Injection',
+                quantity: 75,
+                mrp: 65,
+                units_per_pack: 1,
+                threshold: 20,
+                clinic_id: 'clinic-triage-002',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-03-31',
+                batch_number: 'BAT-TRG-CEF',
+                is_active: true
+            },
+            {
+                id: 'inv-13',
+                item_name: 'Salbutamol 100mcg Reliever Inhaler',
+                quantity: 50,
+                mrp: 165,
+                units_per_pack: 1,
+                threshold: 15,
+                clinic_id: 'clinic-opd-001',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-04-30',
+                batch_number: 'BAT-OPD-AST',
+                is_active: true
+            },
+            {
+                id: 'inv-14',
+                item_name: 'Pantoprazole 40mg Gastroprotective',
+                quantity: 190,
+                mrp: 155,
+                units_per_pack: 15,
+                threshold: 30,
+                clinic_id: 'clinic-west-005',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-05-30',
+                batch_number: 'BAT-WST-PAN',
+                is_active: true
+            },
+            {
+                id: 'inv-15',
+                item_name: 'Triphala Guggulu 500mg Tab',
+                quantity: 80,
+                mrp: 145,
+                units_per_pack: 60,
+                threshold: 20,
+                clinic_id: 'clinic-ayush-003',
+                hospital_id: demoHospital.id,
+                expiry_date: '2027-12-31',
+                batch_number: 'BAT-AYU-TRI',
+                is_active: true
+            },
+            {
+                id: 'inv-16',
+                item_name: 'Normal Saline 0.9% 500ml IV',
+                quantity: 140,
+                mrp: 42,
+                units_per_pack: 1,
+                threshold: 35,
+                clinic_id: 'clinic-triage-002',
+                hospital_id: demoHospital.id,
+                expiry_date: '2028-02-28',
+                batch_number: 'BAT-TRG-NS',
                 is_active: true
             }
         ];
@@ -257,7 +438,192 @@ class CloudflareAuthService implements AuthService {
             inventory: demoInventory
         };
 
+        // Seed comprehensive sales transactions for HQ analytical visualizer & finance radar
+        const nowMs = Date.now();
+        const demoSales = [
+            {
+                id: 'sale-001',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-opd-001',
+                amount: 850,
+                amount_paise: 85000,
+                payment_mode: 'UPI',
+                sale_type: 'CONSULTATION',
+                patient_name: 'Sunita Sharma',
+                doctor_name: 'Dr. A. Sen, MD',
+                timestamp: new Date(nowMs - 1200000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-002',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-opd-001',
+                amount: 1420,
+                amount_paise: 142000,
+                payment_mode: 'Cash',
+                sale_type: 'PHARMACY',
+                patient_name: 'Harpreet Singh',
+                doctor_name: 'Dr. A. Sen, MD',
+                timestamp: new Date(nowMs - 2800000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-003',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-triage-002',
+                amount: 3500,
+                amount_paise: 350000,
+                payment_mode: 'CARD',
+                sale_type: 'SERVICE',
+                patient_name: 'Ramesh Chandra',
+                doctor_name: 'Dr. Ananya Sharma',
+                timestamp: new Date(nowMs - 4200000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-004',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-triage-002',
+                amount: 15000,
+                amount_paise: 1500000,
+                payment_mode: 'UPI',
+                sale_type: 'IPD_ADMISSION_ADVANCE',
+                patient_name: 'Aarav Patel',
+                doctor_name: 'Dr. Ananya Sharma',
+                timestamp: new Date(nowMs - 6400000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-005',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-ayush-003',
+                amount: 1200,
+                amount_paise: 120000,
+                payment_mode: 'UPI',
+                sale_type: 'CONSULTATION',
+                patient_name: 'Kavita Menon',
+                doctor_name: 'Vaidya R. K. Shastri',
+                timestamp: new Date(nowMs - 8900000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-006',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-south-004',
+                amount: 4850,
+                amount_paise: 485000,
+                payment_mode: 'CARD',
+                sale_type: 'PHARMACY',
+                patient_name: 'Suresh Reddy',
+                doctor_name: 'Dr. P. Hegde',
+                timestamp: new Date(nowMs - 12000000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-007',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-south-004',
+                amount: 22000,
+                amount_paise: 2200000,
+                payment_mode: 'UPI',
+                sale_type: 'IPD_SETTLEMENT',
+                patient_name: 'Anandi Bai',
+                doctor_name: 'Dr. P. Hegde',
+                timestamp: new Date(nowMs - 15000000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-008',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-west-005',
+                amount: 2600,
+                amount_paise: 260000,
+                payment_mode: 'Cash',
+                sale_type: 'CONSULTATION',
+                patient_name: 'Farooq Merchant',
+                doctor_name: 'Dr. Z. Khan',
+                timestamp: new Date(nowMs - 18000000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-009',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-opd-001',
+                amount: 1100,
+                amount_paise: 110000,
+                payment_mode: 'UPI',
+                sale_type: 'PHARMACY',
+                patient_name: 'Vikramaditya Rao',
+                doctor_name: 'Dr. A. Sen, MD',
+                timestamp: new Date(nowMs - 22000000).toISOString(),
+                status: 'completed'
+            },
+            {
+                id: 'sale-010',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-ayush-003',
+                amount: 3200,
+                amount_paise: 320000,
+                payment_mode: 'Cash',
+                sale_type: 'PHARMACY',
+                patient_name: 'Meenakshi Iyer',
+                doctor_name: 'Vaidya R. K. Shastri',
+                timestamp: new Date(nowMs - 26000000).toISOString(),
+                status: 'completed'
+            }
+        ];
+
+        const demoIpdAdmissions = [
+            {
+                id: 'ipd-001',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-triage-002',
+                patient_name: 'Ramesh Chandra',
+                bed_number: 'ICU Bed 01',
+                admission_date: new Date(nowMs - 86400000).toISOString(),
+                status: 'admitted',
+                diagnosis: 'Acute Coronary Syndrome (NSTEMI) Post-Cath',
+                estimated_stay_days: 3
+            },
+            {
+                id: 'ipd-002',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-triage-002',
+                patient_name: 'Aarav Patel',
+                bed_number: 'Pediatric High-Dependency Bed 03',
+                admission_date: new Date(nowMs - 14400000).toISOString(),
+                status: 'admitted',
+                diagnosis: 'Severe Acute Asthma on Oxygen & Nebulization',
+                estimated_stay_days: 2
+            },
+            {
+                id: 'ipd-003',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-south-004',
+                patient_name: 'Suresh Reddy',
+                bed_number: 'Male Medical Ward Bed 08',
+                admission_date: new Date(nowMs - 172800000).toISOString(),
+                status: 'admitted',
+                diagnosis: 'Pneumonia with Pleural Effusion',
+                estimated_stay_days: 4
+            },
+            {
+                id: 'ipd-004',
+                hospital_id: demoHospital.id,
+                clinic_id: 'clinic-west-005',
+                patient_name: 'Farooq Merchant',
+                bed_number: 'Daycare Surgical Suite Bay 02',
+                admission_date: new Date(nowMs - 3600000).toISOString(),
+                status: 'admitted',
+                diagnosis: 'Laparoscopic Inguinal Herniorrhaphy Post-Op',
+                estimated_stay_days: 1
+            }
+        ];
+
         localStorage.setItem('ayusetu_demo_session', JSON.stringify(demoSession));
+        localStorage.setItem('cf_d1_store_inventory', JSON.stringify(demoInventory));
+        localStorage.setItem('cf_d1_store_sales', JSON.stringify(demoSales));
+        localStorage.setItem('cf_d1_store_ipd_admissions', JSON.stringify(demoIpdAdmissions));
         window.dispatchEvent(new Event('ayusetu_demo_login'));
         return demoSession.user;
     }

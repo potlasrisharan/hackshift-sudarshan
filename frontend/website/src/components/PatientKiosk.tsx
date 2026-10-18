@@ -809,7 +809,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
   const [scannedDocs, setScannedDocs] = useState<ScannedDocItem[]>([
     {
       name: 'Dr_Sharma_Prior_OPD.jpg',
-      meds: 'Telmisartan 40mg OD • Yograj Guggulu 2 tab BD',
+      meds: 'Telmisartan 40mg OD • Febuxostat 40mg OD',
       labs: 'Serum Uric Acid: 7.8 mg/dL (High) • HbA1c: 6.1%'
     }
   ]);
@@ -1066,15 +1066,6 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
     }
   };
 
-  // Deterministic emergency flags remain local; translation is handled by the Cloudflare API.
-  const getEmergencyFlag = (input: string): boolean => {
-    const lower = input.toLowerCase();
-    const isChest = ["chest", "seene", "sine", "chhati", "सीने", "छाती", "हार्ट", "heart", "angina", "గుండె", "மார்பு", "ಎದೆ", "छातीत", "বুক"].some(term => lower.includes(term));
-    const isBreathless = ["saans", "sans", "breath", "सांस", "साँस", "dam ghut", "दम", "శ్వాస", "மூச்சு"].some(term => lower.includes(term));
-    const isSevere = ["behosh", "unconscious", "faint", "बेहोश", "चक्कर", "chakkar"].some(term => lower.includes(term));
-    return isChest || (isBreathless && isSevere);
-  };
-
   // Clinical Entity Extraction from Prescriptions & Lab Documents
   const extractPrescriptionEntities = (fileName: string, textContent?: string): { meds: string; labs: string } => {
     const combined = `${fileName} ${textContent || ''}`.toLowerCase();
@@ -1099,7 +1090,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
     }
     if (combined.includes('ortho') || combined.includes('knee') || combined.includes('joint') || combined.includes('pain') || combined.includes('guggul') || combined.includes('bone') || combined.includes('arthritis')) {
       return {
-        meds: 'Tab. Aceclofenac 100mg + Paracetamol 325mg BD • Yograj Guggulu 2 tab BD • Shallaki 1 cap BD',
+        meds: 'Tab. Aceclofenac 100mg + Paracetamol 325mg BD • Febuxostat 40mg OD • Pantoprazole 40mg OD',
         labs: 'Serum Uric Acid: 7.2 mg/dL • RA Factor: Negative • Vitamin D3: 18.4 ng/mL (Deficient)'
       };
     }
@@ -1394,7 +1385,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
-      doc.text('ALL INDIA INSTITUTE OF AYURVEDA (AIIA)', 105, 12, { align: 'center' });
+      doc.text('All India Institute of Medical Sciences (AIIMS) • Central OPD', 105, 12, { align: 'center' });
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.text('Ministry of Ayush, Government of India | Central OPD Clinical Facility', 105, 18, { align: 'center' });
@@ -2255,7 +2246,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
                         <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wide">Current Medication / Active Regimen:</span>
                       </div>
                       <p className="text-slate-800 font-medium pl-5 leading-relaxed">
-                        {scannedDocs[activeDocIndex]?.meds || 'Telmisartan 40mg OD • Yograj Guggulu 2 tab BD'}
+                        {scannedDocs[activeDocIndex]?.meds || 'Telmisartan 40mg OD • Febuxostat 40mg OD'}
                       </p>
                     </div>
 
@@ -2305,7 +2296,7 @@ export function PatientKiosk({ onTokenGenerated, onNavigate: _onNavigate }: Pati
                 <h3 className={`font-black text-2xl ${currentPatient.isEmergency ? 'text-rose-800' : 'text-slate-900'}`}>
                   {currentPatient.isEmergency ? '🚨 STAT EMERGENCY TRIAGE ACTIVATED' : dict.tokenDone}
                 </h3>
-                <p className="text-xs text-slate-600">All India Institute of Ayurveda • OPD Room 4</p>
+                <p className="text-xs text-slate-600">All India Institute of Medical Sciences (AIIMS) • Central OPD • OPD Room 4</p>
               </div>
 
               <div className="py-4 border-y border-slate-200">

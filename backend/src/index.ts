@@ -12,6 +12,7 @@ import { homeRouter } from "./modules/home/routes";
 import { platformRouter } from "./modules/platform/routes";
 import { herRouter } from "./modules/her/routes";
 import { vitalisRouter } from "./modules/vitalis/routes";
+import { patientAuthRouter, patientProfileRouter } from "./modules/patient_auth/routes";
 import { createApp } from "../../apps/api/app";
 
 import {
@@ -775,7 +776,7 @@ documentsRouter.post("/ocr", async (c) => {
     document_id: "doc-09821",
     medications: [
       { name: "Telmisartan (Telma 40)", dosage: "40mg", frequency: "1-0-0", duration: "30 Days" },
-      { name: "Yograj Guggulu", dosage: "500mg", frequency: "1-0-1", duration: "15 Days" },
+      { name: "Febuxostat 40mg", dosage: "40mg", frequency: "1-0-0", duration: "30 Days" },
     ],
     lab_results: [
       { test_name: "Serum Uric Acid", value: "7.8", unit: "mg/dL", reference_range: "3.5 - 7.2", is_abnormal: true },
@@ -837,29 +838,29 @@ const defaultRameshPrescription: PrescriptionRecord = {
   prescriptionDate: "18 Oct 2026",
   validTillDate: "01 Nov 2026",
   doctorName: "Dr. Ananya Sharma",
-  specialty: "Senior Physician · Rheumatology & Integrative Ayurveda",
-  hospital: "All India Institute of Ayurveda (AIIA)",
+  specialty: "Senior Physician · Rheumatology & Internal Medicine",
+  hospital: "AIIMS New Delhi / Central OPD Clinic",
   opdRoom: "OPD-3",
   doctorNotes:
-    "Vata-shamana & Rasayana protocol: Continue medication consistently for 14 days. If knee stiffness flares up in morning, apply warm castor oil pack for 15 mins.",
+    "Evidence-based allopathic regimen for inflammatory arthritis and joint stiffness: Follow medication schedule with meals. Avoid high-purine foods and maintain adequate hydration.",
   dietRestrictions: [
-    "Avoid fermented curds, refrigerated foods, and carbonated beverages",
-    "Restrict high-purine lentils (toor dal, black gram) during acute flare-ups",
-    "Prefer warm moong soup, boiled vegetables with cow's ghee and roasted cumin",
+    "Low-purine diet (limit organ meats and lentils during acute pain)",
+    "Avoid excess sodium and carbonated beverages",
+    "Maintain balanced hydration",
   ],
-  hydrationTarget: "2.8L of warm water or CCF (Cumin-Coriander-Fennel) infusion daily",
+  hydrationTarget: "3.0L water daily",
   followUpDate: "Nov 02, 2026 · OPD-3 · In 14 Days",
   medicines: [
     {
       id: "med-01",
       prescriptionId: "rx-98124a-2026",
-      name: "Yograj Guggulu",
+      name: "Febuxostat 40mg",
       dosageForm: "Tablet",
-      strength: "500 mg",
+      strength: "40 mg",
       timeSlot: "morning",
       scheduledTime: "08:00 AM",
-      instructions: "1 tablet with lukewarm water 15 mins after breakfast",
-      batchNumber: "BAT-2026-Y89",
+      instructions: "1 tablet with water after breakfast for uric acid control",
+      batchNumber: "BAT-2026-F40",
       expiryDate: "11/2027",
       isTaken: true,
       reminderEnabled: true,
@@ -868,13 +869,13 @@ const defaultRameshPrescription: PrescriptionRecord = {
     {
       id: "med-02",
       prescriptionId: "rx-98124a-2026",
-      name: "Dashamularishta",
-      dosageForm: "Asava / Elixir",
-      strength: "20 ml",
+      name: "Colchicine 0.5mg",
+      dosageForm: "Tablet",
+      strength: "0.5 mg",
       timeSlot: "afternoon",
       scheduledTime: "01:00 PM",
-      instructions: "20 ml mixed with 20 ml equal warm water after lunch",
-      batchNumber: "BAT-2026-D12",
+      instructions: "1 tablet after lunch for anti-inflammatory prophylaxis",
+      batchNumber: "BAT-2026-C05",
       expiryDate: "04/2028",
       isTaken: false,
       reminderEnabled: true,
@@ -883,13 +884,13 @@ const defaultRameshPrescription: PrescriptionRecord = {
     {
       id: "med-03",
       prescriptionId: "rx-98124a-2026",
-      name: "Shatavari Churna",
-      dosageForm: "Churna / Powder",
-      strength: "3 g",
-      timeSlot: "night",
-      scheduledTime: "08:30 PM",
-      instructions: "3 grams with warm almond/cow milk 30 mins before sleep",
-      batchNumber: "BAT-2026-S44",
+      name: "Pantoprazole 40mg",
+      dosageForm: "Tablet",
+      strength: "40 mg",
+      timeSlot: "morning",
+      scheduledTime: "07:30 AM",
+      instructions: "1 tablet with water 30 mins before breakfast for gastro-protection",
+      batchNumber: "BAT-2026-P40",
       expiryDate: "09/2027",
       isTaken: false,
       reminderEnabled: true,
@@ -898,13 +899,13 @@ const defaultRameshPrescription: PrescriptionRecord = {
     {
       id: "med-04",
       prescriptionId: "rx-98124a-2026",
-      name: "Triphala Churna",
-      dosageForm: "Churna / Powder",
-      strength: "5 g",
+      name: "Paracetamol 650mg",
+      dosageForm: "Tablet",
+      strength: "650 mg",
       timeSlot: "night",
-      scheduledTime: "09:30 PM",
-      instructions: "1 teaspoon with hot water right before bedtime",
-      batchNumber: "BAT-2026-T10",
+      scheduledTime: "09:00 PM",
+      instructions: "1 tablet after dinner SOS/regular for joint analgesia",
+      batchNumber: "BAT-2026-PCM",
       expiryDate: "12/2027",
       isTaken: false,
       reminderEnabled: true,
@@ -1642,6 +1643,8 @@ v1.route("/prescriptions", prescriptionsRouter);
 v1.route("/patients", patientsRouter);
 v1.route("/her", herRouter);
 v1.route("/vitalis", vitalisRouter);
+v1.route("/auth/patient", patientAuthRouter);
+v1.route("/patient", patientProfileRouter);
 
 // Deterministic algorithm evaluation endpoint
 v1.post("/algorithms/:name", async (c) => {

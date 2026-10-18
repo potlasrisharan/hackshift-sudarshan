@@ -18,8 +18,82 @@ export interface PatientRecord {
   dob: string | null;
   sex: string | null;
   preferred_lang: string;
+  blood_group?: string | null;
+  address?: string | null;
+  emergency_contact?: string | null;
+  allergies_json?: string;
+  chronic_conditions_json?: string;
+  metadata_json?: string;
   created_at: string;
 }
+
+export interface PatientCredentialsRecord {
+  id: string;
+  org_id: string;
+  patient_id: string;
+  phone_number: string;
+  phone_hash: string;
+  email: string | null;
+  password_salt: string;
+  password_hash: string;
+  phone_verified: number;
+  status: string;
+  failed_attempts: number;
+  lockout_until: string | null;
+  last_login: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PatientSessionRecord {
+  org_id: string;
+  token_hash: string;
+  patient_id: string;
+  device_name: string | null;
+  platform: string | null;
+  fcm_token: string | null;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface PatientAyurvedicProfileRecord {
+  id: string;
+  org_id: string;
+  patient_id: string;
+  primary_dosha: string;
+  secondary_dosha: string;
+  prakriti_summary: string;
+  vikriti_aggravation: string | null;
+  agni_type: string;
+  koshtha_type: string;
+  dietary_guidelines_json: string;
+  yoga_recommendations_json: string;
+  assessed_by: string;
+  assessed_at: string;
+  updated_at: string;
+}
+
+export interface PatientAppPreferencesRecord {
+  id: string;
+  org_id: string;
+  patient_id: string;
+  primary_focus: string;
+  primary_modules_json: string;
+  theme_mode: string;
+  color_accent: string;
+  language: string;
+  notifications_enabled: number;
+  medicine_reminders_enabled: number;
+  cycle_reminders_enabled: number;
+  vitals_drift_alerts_enabled: number;
+  biometric_login_enabled: number;
+  reminder_morning_time: string;
+  reminder_afternoon_time: string;
+  reminder_night_time: string;
+  created_at: string;
+  updated_at: string;
+}
+
 
 export interface EncounterRecord {
   id: string;
@@ -357,6 +431,238 @@ export class TenantDb {
         .bind(this.orgId, limit)
         .all<AuditEventRecord>();
       return res.results;
+    }
+  };
+
+  // --- Scoped Mobile Patient Auth Methods ---
+  readonly patientAuth = {
+    createCredentials: async (data: {
+      id: string;
+      patientId: string;
+      phoneNumber: string;
+      phoneHash: string;
+      email?: string | null;
+      passwordSalt: string;
+      passwordHash: string;
+    }): Promise<D1Response> => {
+      return this.db
+        .prepare(
+          `INSERT INTO patient_credentials
+             (id, org_id, patient_id, phone_number, phone_hash, email, password_salt, password_hash)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          data.id,
+          this.orgId,
+          data.patientId,
+          data.phoneNumber,
+          data.phoneHash,
+          data.email ?? null,
+          data.passwordSalt,
+          data.passwordHash
+        )
+        .run();
+    },
+
+    findCredentialsByPhoneHash: async (phoneHash: string): Promise<PatientCredentialsRecord | null> => {
+      return this.db
+        .prepare(
+          "SELECT * FROM patient_credentials WHERE phone_hash = ? AND org_id = ?"
+        )
+        .bind(phoneHash, this.orgId)
+        .first<PatientCredentialsRecord>();
+    },
+
+    findCredentialsByEmail: async (email: string): Promise<PatientCredentialsRecord | null> => {
+      return this.db
+        .prepare(
+          "SELECT * FROM patient_credentials WHERE email = ? AND org_id = ?"
+        )
+        .bind(email, this.orgId)
+        .first<PatientCredentialsRecord>();
+    },
+
+    findCredentialsByPatientId: async (patientId: string): Promise<PatientCredentialsRecord | null> => {
+      return this.db
+        .prepare(
+          "SELECT * FROM patient_credentials WHERE patient_id = ? AND org_id = ?"
+        )
+        .bind(patientId, this.orgId)
+        .first<PatientCredentialsRecord>();
+    },
+
+    updateLastLogin: async (patientId: string): Promise<D1Response> => {
+      return this.db
+        .prepare(
+          "UPDATE patient_credentials SET last_login = CURRENT_TIMESTAMP, failed_attempts = 0 WHERE patient_id = ? AND org_id = ?"
+        )
+        .bind(patientId, this.orgId)
+        .run();
+    },
+
+    createSession: async (data: {
+      tokenHash: string;
+      patientId: string;
+      platform?: string;
+      deviceName?: string;
+      expiresAt: string;
+    }): Promise<D1Response> => {
+      return this.db
+        .prepare(
+          `INSERT INTO patient_sessions
+             (org_id, token_hash, patient_id, platform, device_name, expires_at)
+           VALUES (?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          this.orgId,
+          data.tokenHash,
+          data.patientId,
+          data.platform ?? "ANDROID",
+          data.deviceName ?? "Mobile",
+          data.expiresAt
+        )
+        .run();
+    },
+
+    validateSession: async (tokenHash: string): Promise<PatientSessionRecord | null> => {
+      return this.db
+        .prepare(
+          "SELECT * FROM patient_sessions WHERE token_hash = ? AND org_id = ? AND expires_at > CURRENT_TIMESTAMP"
+        )
+        .bind(tokenHash, this.orgId)
+        .first<PatientSessionRecord>();
+    },
+
+    deleteSession: async (tokenHash: string): Promise<D1Response> => {
+      return this.db
+        .prepare(
+          "DELETE FROM patient_sessions WHERE token_hash = ? AND org_id = ?"
+        )
+        .bind(tokenHash, this.orgId)
+        .run();
+    }
+  };
+
+  // --- Scoped Patient Customization Preferences ---
+  readonly patientPreferences = {
+    get: async (patientId: string): Promise<PatientAppPreferencesRecord | null> => {
+      return this.db
+        .prepare(
+          "SELECT * FROM patient_app_preferences WHERE patient_id = ? AND org_id = ?"
+        )
+        .bind(patientId, this.orgId)
+        .first<PatientAppPreferencesRecord>();
+    },
+
+    upsert: async (data: {
+      id: string;
+      patientId: string;
+      primaryFocus?: string;
+      primaryModulesJson?: string;
+      themeMode?: string;
+      colorAccent?: string;
+      language?: string;
+      notificationsEnabled?: number;
+      medicineRemindersEnabled?: number;
+      cycleRemindersEnabled?: number;
+      vitalsDriftAlertsEnabled?: number;
+      reminderMorningTime?: string;
+      reminderAfternoonTime?: string;
+      reminderNightTime?: string;
+    }): Promise<D1Response> => {
+      return this.db
+        .prepare(
+          `INSERT INTO patient_app_preferences
+             (id, org_id, patient_id, primary_focus, primary_modules_json, theme_mode, color_accent, language,
+              notifications_enabled, medicine_reminders_enabled, reminder_morning_time, reminder_afternoon_time, reminder_night_time, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+           ON CONFLICT(id) DO UPDATE SET
+             primary_focus = excluded.primary_focus,
+             primary_modules_json = excluded.primary_modules_json,
+             theme_mode = excluded.theme_mode,
+             color_accent = excluded.color_accent,
+             language = excluded.language,
+             notifications_enabled = excluded.notifications_enabled,
+             medicine_reminders_enabled = excluded.medicine_reminders_enabled,
+             reminder_morning_time = excluded.reminder_morning_time,
+             reminder_afternoon_time = excluded.reminder_afternoon_time,
+             reminder_night_time = excluded.reminder_night_time,
+             updated_at = CURRENT_TIMESTAMP`
+        )
+        .bind(
+          data.id,
+          this.orgId,
+          data.patientId,
+          data.primaryFocus ?? "longevity",
+          data.primaryModulesJson ?? '["prescriptions","vitalis","her","yoga"]',
+          data.themeMode ?? "light",
+          data.colorAccent ?? "botanical_teal",
+          data.language ?? "hi",
+          data.notificationsEnabled ?? 1,
+          data.medicineRemindersEnabled ?? 1,
+          data.reminderMorningTime ?? "08:00",
+          data.reminderAfternoonTime ?? "13:00",
+          data.reminderNightTime ?? "20:30"
+        )
+        .run();
+    }
+  };
+
+  // --- Scoped Patient Ayurvedic Profile ---
+  readonly patientAyurveda = {
+    get: async (patientId: string): Promise<PatientAyurvedicProfileRecord | null> => {
+      return this.db
+        .prepare(
+          "SELECT * FROM patient_ayurvedic_profiles WHERE patient_id = ? AND org_id = ?"
+        )
+        .bind(patientId, this.orgId)
+        .first<PatientAyurvedicProfileRecord>();
+    },
+
+    upsert: async (data: {
+      id: string;
+      patientId: string;
+      primaryDosha: string;
+      secondaryDosha?: string;
+      prakritiSummary: string;
+      vikritiAggravation?: string | null;
+      agniType?: string;
+      koshthaType?: string;
+      dietaryGuidelinesJson?: string;
+      yogaRecommendationsJson?: string;
+    }): Promise<D1Response> => {
+      return this.db
+        .prepare(
+          `INSERT INTO patient_ayurvedic_profiles
+             (id, org_id, patient_id, primary_dosha, secondary_dosha, prakriti_summary, vikriti_aggravation,
+              agni_type, koshtha_type, dietary_guidelines_json, yoga_recommendations_json, assessed_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+           ON CONFLICT(id) DO UPDATE SET
+             primary_dosha = excluded.primary_dosha,
+             secondary_dosha = excluded.secondary_dosha,
+             prakriti_summary = excluded.prakriti_summary,
+             vikriti_aggravation = excluded.vikriti_aggravation,
+             agni_type = excluded.agni_type,
+             koshtha_type = excluded.koshtha_type,
+             dietary_guidelines_json = excluded.dietary_guidelines_json,
+             yoga_recommendations_json = excluded.yoga_recommendations_json,
+             assessed_at = CURRENT_TIMESTAMP,
+             updated_at = CURRENT_TIMESTAMP`
+        )
+        .bind(
+          data.id,
+          this.orgId,
+          data.patientId,
+          data.primaryDosha,
+          data.secondaryDosha ?? "NONE",
+          data.prakritiSummary,
+          data.vikritiAggravation ?? null,
+          data.agniType ?? "SAMAGNI",
+          data.koshthaType ?? "MADHYAMA",
+          data.dietaryGuidelinesJson ?? "[]",
+          data.yogaRecommendationsJson ?? "[]"
+        )
+        .run();
     }
   };
 }

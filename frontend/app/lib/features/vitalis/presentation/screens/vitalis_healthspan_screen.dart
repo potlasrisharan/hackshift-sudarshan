@@ -14,7 +14,7 @@ class VitalisHealthspanScreen extends ConsumerWidget {
     final hasScore = hpi.hpiScore != null;
 
     return AppScaffoldShell(
-      title: "Healthspan Progress",
+      title: "Healthspan Progress Index (HPI)",
       subtitle: "A view of your health habits over time",
       child: RefreshIndicator(
         color: const Color(0xFF059669),

@@ -93,9 +93,8 @@ class _HerQuestionnaireScreenState extends ConsumerState<HerQuestionnaireScreen>
       }
     });
 
-    final api = ref.read(herApiServiceProvider);
-    await api.evaluateScreening(answers: parsedAnswers);
-    await ref.read(herProvider.notifier).loadAll();
+    await ref.read(herProvider.notifier).evaluateScreening(answers: parsedAnswers);
+    await ref.read(herProvider.notifier).refreshPcod();
 
     if (!mounted) return;
 

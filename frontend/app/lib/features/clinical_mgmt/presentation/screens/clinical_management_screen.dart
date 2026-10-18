@@ -95,12 +95,12 @@ class _ClinicalManagementScreenState extends State<ClinicalManagementScreen> wit
 
   void _simulateBarcodeScan() {
     setState(() {
-      _scannedItems.add("Yograj Guggulu (BAT-2026-Y01 · Shelf Y-01)");
+      _scannedItems.add("Febuxostat 40mg (BAT-2026-F40 · Shelf A-12)");
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         backgroundColor: AppColors.medicalTeal,
-        content: Text("Barcode 8901234567890 Scanned: Yograj Guggulu added to POS Cart."),
+        content: Text("Barcode 8901234567890 Scanned: Febuxostat 40mg (BAT-2026-F40 · Shelf A-12) added to POS Cart."),
       ),
     );
   }

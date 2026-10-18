@@ -195,4 +195,45 @@ describe("AyuSetu HER — API Endpoints (/api/v1/her)", () => {
     );
     expect(reViewRes.status).toBe(403);
   });
+
+  it("calculates Flo-like daily menstrual phase, hormone state, and calendar mapping", async () => {
+    // 1. Fetch today's phase detail
+    const todayRes = await backendApp.request("/api/v1/her/phases/today", {
+      headers: patientHeaders,
+    });
+    expect(todayRes.status).toBe(200);
+    const todayJson = (await todayRes.json()) as any;
+    expect(todayJson.data).toBeDefined();
+    expect(todayJson.data.cycleDay).toBeGreaterThanOrEqual(1);
+    expect(["MENSTRUAL", "FOLLICULAR", "OVULATION", "LUTEAL"]).toContain(
+      todayJson.data.phase,
+    );
+    expect(todayJson.data.hormoneSummary).toBeDefined();
+    expect(todayJson.data.dailyInsights).toBeDefined();
+
+    // 2. Fetch month phase calendar
+    const calRes = await backendApp.request(
+      "/api/v1/her/phases/calendar?year=2026&month=10",
+      {
+        headers: patientHeaders,
+      },
+    );
+    expect(calRes.status).toBe(200);
+    const calJson = (await calRes.json()) as any;
+    expect(calJson.data.entries.length).toBe(31);
+    expect(calJson.data.entries[0].phase).toBeDefined();
+  });
+
+  it("evaluates Rotterdam Consensus PCOD / PCOS assessment", async () => {
+    const pcodRes = await backendApp.request("/api/v1/her/pcod-assessment", {
+      headers: patientHeaders,
+    });
+    expect(pcodRes.status).toBe(200);
+    const pcodJson = (await pcodRes.json()) as any;
+    expect(pcodJson.data).toBeDefined();
+    expect(["LOW_RISK", "MODERATE_MONITOR", "HIGH_CLINICAL_REVIEW"]).toContain(
+      pcodJson.data.riskLevel,
+    );
+    expect(pcodJson.data.ayurvedicGuidance).toBeDefined();
+  });
 });

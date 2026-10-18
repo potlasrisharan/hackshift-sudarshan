@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../../../../core/widgets/app_scaffold_shell.dart";
+import "../../data/models/her_models.dart";
 import "../providers/her_provider.dart";
 
 class HerSymptomJournalScreen extends ConsumerStatefulWidget {
@@ -93,6 +94,9 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
 
   @override
   Widget build(BuildContext context) {
+    final herState = ref.watch(herProvider);
+    final todayPhase = herState.todayPhase;
+
     return AppScaffoldShell(
       title: "Daily Symptom Journal",
       subtitle: "Deterministic Wellbeing & Safety Check",
@@ -105,6 +109,12 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Flo Cycle Phase Context Card
+              if (todayPhase != null) ...[
+                _buildPhaseContextCard(todayPhase),
+                const SizedBox(height: 12),
+              ],
+
               // Energy Level
               _buildSliderCard(
                 title: "Energy & Vitality Level",
@@ -449,6 +459,91 @@ class _HerSymptomJournalScreenState extends ConsumerState<HerSymptomJournalScree
             title: const Text("Severe dizziness, lightheadedness or syncope", style: TextStyle(color: Color(0xFF0F172A), fontSize: 12, fontWeight: FontWeight.w500)),
             value: _faintingOrSyncope,
             onChanged: (val) => setState(() => _faintingOrSyncope = val ?? false),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhaseContextCard(HerCyclePhaseDetailModel phase) {
+    String phaseTitle;
+    Color phaseColor;
+    switch (phase.phase) {
+      case "MENSTRUAL":
+        phaseTitle = "Menstrual Phase · Day ${phase.cycleDay}";
+        phaseColor = const Color(0xFFE11D48);
+        break;
+      case "FOLLICULAR":
+        phaseTitle = "Follicular Phase · Day ${phase.cycleDay}";
+        phaseColor = const Color(0xFFDB2777);
+        break;
+      case "OVULATION":
+        phaseTitle = "Ovulation Window · Day ${phase.cycleDay}";
+        phaseColor = const Color(0xFF0D9488);
+        break;
+      case "LUTEAL":
+      default:
+        phaseTitle = "Luteal Phase · Day ${phase.cycleDay}";
+        phaseColor = const Color(0xFF7C3AED);
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: phaseColor.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: phaseColor.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: phaseColor, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  phaseTitle,
+                  style: TextStyle(
+                    color: phaseColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: phaseColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  phase.daysUntilNextPeriod == 0
+                      ? "Period starts today"
+                      : "${phase.daysUntilNextPeriod}d to period",
+                  style: TextStyle(color: phaseColor, fontSize: 10, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            phase.nutritionFocus,
+            style: const TextStyle(color: Color(0xFF475569), fontSize: 11, height: 1.35),
           ),
         ],
       ),

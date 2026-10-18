@@ -12,6 +12,12 @@ class HerProfileModel {
   final List<String> mobilityRestrictions;
   final List<String> allergies;
   final List<String> lifestyleGoals;
+  final String? lastPeriodStartDate;
+  final int typicalCycleDays;
+  final int typicalPeriodDays;
+  final String cycleRegularity;
+  final String primaryGoal;
+  final List<String> pcodSymptoms;
 
   const HerProfileModel({
     required this.patientId,
@@ -24,6 +30,12 @@ class HerProfileModel {
     this.mobilityRestrictions = const [],
     this.allergies = const [],
     this.lifestyleGoals = const [],
+    this.lastPeriodStartDate,
+    this.typicalCycleDays = 28,
+    this.typicalPeriodDays = 5,
+    this.cycleRegularity = "regular",
+    this.primaryGoal = "cycle_tracking",
+    this.pcodSymptoms = const [],
   });
 
   int get age => DateTime.now().year - yearOfBirth;
@@ -40,6 +52,12 @@ class HerProfileModel {
       mobilityRestrictions: (json["mobilityRestrictions"] as List<Object?>?)?.cast<String>() ?? const [],
       allergies: (json["allergies"] as List<Object?>?)?.cast<String>() ?? const [],
       lifestyleGoals: (json["lifestyleGoals"] as List<Object?>?)?.cast<String>() ?? const [],
+      lastPeriodStartDate: json["lastPeriodStartDate"] as String?,
+      typicalCycleDays: (json["typicalCycleDays"] as num?)?.toInt() ?? 28,
+      typicalPeriodDays: (json["typicalPeriodDays"] as num?)?.toInt() ?? 5,
+      cycleRegularity: json["cycleRegularity"] as String? ?? "regular",
+      primaryGoal: json["primaryGoal"] as String? ?? "cycle_tracking",
+      pcodSymptoms: (json["pcodSymptoms"] as List<Object?>?)?.cast<String>() ?? const [],
     );
   }
 
@@ -54,6 +72,12 @@ class HerProfileModel {
         "mobilityRestrictions": mobilityRestrictions,
         "allergies": allergies,
         "lifestyleGoals": lifestyleGoals,
+        "lastPeriodStartDate": lastPeriodStartDate,
+        "typicalCycleDays": typicalCycleDays,
+        "typicalPeriodDays": typicalPeriodDays,
+        "cycleRegularity": cycleRegularity,
+        "primaryGoal": primaryGoal,
+        "pcodSymptoms": pcodSymptoms,
       };
 }
 
@@ -153,6 +177,22 @@ class HerCycleAnalysisModel {
       caveats: (json["caveats"] as List<Object?>?)?.cast<String>() ?? const [],
     );
   }
+
+  Map<String, Object?> toJson() => {
+        "status": status,
+        "totalIntervals": totalIntervals,
+        "meanLengthDays": meanLengthDays,
+        "stdDevDays": stdDevDays,
+        "medianLengthDays": medianLengthDays,
+        "shortestCycleDays": shortestCycleDays,
+        "longestCycleDays": longestCycleDays,
+        "predictedNextWindowStart": predictedNextWindowStart,
+        "predictedNextWindowEnd": predictedNextWindowEnd,
+        "hasIrregularity": hasIrregularity,
+        "hasAmenorrhea": hasAmenorrhea,
+        "irregularityFlags": irregularityFlags,
+        "caveats": caveats,
+      };
 }
 
 @immutable
@@ -263,6 +303,12 @@ class HerEvidenceItemModel {
       verified: json["verified"] as bool? ?? false,
     );
   }
+
+  Map<String, Object?> toJson() => {
+        "source": source,
+        "label": label,
+        "verified": verified,
+      };
 }
 
 @immutable
@@ -308,6 +354,20 @@ class HerScreeningFindingModel {
       suggestedAction: json["suggestedAction"] as String? ?? "",
     );
   }
+
+  Map<String, Object?> toJson() => {
+        "domain": domain,
+        "category": category,
+        "isDiagnosis": isDiagnosis,
+        "title": title,
+        "rationale": rationale,
+        "supportingEvidence":
+            supportingEvidence.map((e) => e.toJson()).toList(),
+        "missingInformation": missingInformation,
+        "limitations": limitations,
+        "ruleVersion": ruleVersion,
+        "suggestedAction": suggestedAction,
+      };
 }
 
 @immutable
@@ -424,4 +484,154 @@ class HerWearableModel {
         "basalBodyTempCelsius": basalBodyTempCelsius,
         "source": source,
       };
+}
+
+@immutable
+class HerCyclePhaseDetailModel {
+  final String targetDate;
+  final int cycleDay;
+  final int totalCycleDays;
+  final String phase;
+  final String phaseTitle;
+  final String phaseSubtitle;
+  final String pregnancyChance;
+  final bool isOvulationDay;
+  final bool isFertileWindow;
+  final bool isPeriodDay;
+  final int daysUntilNextPeriod;
+  final String predictedNextPeriodDate;
+  final int periodLengthDays;
+  final String estrogenLevel;
+  final String progesteroneLevel;
+  final String lhLevel;
+  final String bodyAndEnergy;
+  final String nutritionFocus;
+  final String movementAdvice;
+  final String ayurvedicDosha;
+
+  const HerCyclePhaseDetailModel({
+    required this.targetDate,
+    required this.cycleDay,
+    required this.totalCycleDays,
+    required this.phase,
+    required this.phaseTitle,
+    required this.phaseSubtitle,
+    required this.pregnancyChance,
+    required this.isOvulationDay,
+    required this.isFertileWindow,
+    required this.isPeriodDay,
+    required this.daysUntilNextPeriod,
+    required this.predictedNextPeriodDate,
+    this.periodLengthDays = 5,
+    this.estrogenLevel = "MODERATE",
+    this.progesteroneLevel = "LOW",
+    this.lhLevel = "BASELINE",
+    this.bodyAndEnergy = "Listen to your body rhythm today.",
+    this.nutritionFocus = "Favor wholesome balanced nourishment.",
+    this.movementAdvice = "Gentle mindful movement.",
+    this.ayurvedicDosha = "Tridoshic balance.",
+  });
+
+  factory HerCyclePhaseDetailModel.fromJson(Map<String, Object?> json) {
+    final hormones = (json["hormoneSummary"] as Map<String, Object?>?) ?? const {};
+    final insights = (json["dailyInsights"] as Map<String, Object?>?) ?? const {};
+
+    return HerCyclePhaseDetailModel(
+      targetDate: json["targetDate"] as String? ?? "",
+      cycleDay: (json["cycleDay"] as num?)?.toInt() ?? 1,
+      totalCycleDays: (json["totalCycleDays"] as num?)?.toInt() ?? 28,
+      phase: json["phase"] as String? ?? "FOLLICULAR",
+      phaseTitle: json["phaseTitle"] as String? ?? "Follicular Phase",
+      phaseSubtitle: json["phaseSubtitle"] as String? ?? "",
+      pregnancyChance: json["pregnancyChance"] as String? ?? "LOW",
+      isOvulationDay: json["isOvulationDay"] as bool? ?? false,
+      isFertileWindow: json["isFertileWindow"] as bool? ?? false,
+      isPeriodDay: json["isPeriodDay"] as bool? ?? false,
+      daysUntilNextPeriod: (json["daysUntilNextPeriod"] as num?)?.toInt() ?? 14,
+      predictedNextPeriodDate: json["predictedNextPeriodDate"] as String? ?? "",
+      periodLengthDays: (json["periodLengthDays"] as num?)?.toInt() ?? 5,
+      estrogenLevel: hormones["estrogen"] as String? ?? "MODERATE",
+      progesteroneLevel: hormones["progesterone"] as String? ?? "LOW",
+      lhLevel: hormones["lh"] as String? ?? "BASELINE",
+      bodyAndEnergy: insights["bodyAndEnergy"] as String? ?? "Listen to your body rhythm today.",
+      nutritionFocus: insights["nutritionFocus"] as String? ?? "Favor wholesome balanced nourishment.",
+      movementAdvice: insights["movementAdvice"] as String? ?? "Gentle mindful movement.",
+      ayurvedicDosha: insights["ayurvedicDosha"] as String? ?? "Tridoshic balance.",
+    );
+  }
+}
+
+@immutable
+class HerMonthPhaseEntryModel {
+  final String date;
+  final int cycleDay;
+  final String phase;
+  final bool isPeriod;
+  final bool isFertile;
+  final bool isOvulation;
+  final String pregnancyChance;
+
+  const HerMonthPhaseEntryModel({
+    required this.date,
+    required this.cycleDay,
+    required this.phase,
+    required this.isPeriod,
+    required this.isFertile,
+    required this.isOvulation,
+    required this.pregnancyChance,
+  });
+
+  factory HerMonthPhaseEntryModel.fromJson(Map<String, Object?> json) {
+    return HerMonthPhaseEntryModel(
+      date: json["date"] as String? ?? "",
+      cycleDay: (json["cycleDay"] as num?)?.toInt() ?? 1,
+      phase: json["phase"] as String? ?? "FOLLICULAR",
+      isPeriod: json["isPeriod"] as bool? ?? false,
+      isFertile: json["isFertile"] as bool? ?? false,
+      isOvulation: json["isOvulation"] as bool? ?? false,
+      pregnancyChance: json["pregnancyChance"] as String? ?? "LOW",
+    );
+  }
+}
+
+@immutable
+class HerPcodAssessmentModel {
+  final String riskLevel;
+  final int rotterdamCriteriaMet;
+  final int maxCriteria;
+  final List<String> evidence;
+  final String summary;
+  final String clinicalAction;
+  final String doshaFocus;
+  final List<String> recommendedHerbs;
+  final String lifestyleAdvice;
+
+  const HerPcodAssessmentModel({
+    this.riskLevel = "LOW_RISK",
+    this.rotterdamCriteriaMet = 0,
+    this.maxCriteria = 3,
+    this.evidence = const [],
+    this.summary = "Hormonal baseline shows standard cyclic regularity.",
+    this.clinicalAction = "Continue regular tracking.",
+    this.doshaFocus = "Tridoshic Balance",
+    this.recommendedHerbs = const ["Shatavari", "Ashoka"],
+    this.lifestyleAdvice = "Balanced daily movement and circadian meals.",
+  });
+
+  factory HerPcodAssessmentModel.fromJson(Map<String, Object?> json) {
+    final ayurveda = (json["ayurvedicGuidance"] as Map<String, Object?>?) ?? const {};
+    final rawHerbs = ayurveda["herbs"] as List<Object?>?;
+
+    return HerPcodAssessmentModel(
+      riskLevel: json["riskLevel"] as String? ?? "LOW_RISK",
+      rotterdamCriteriaMet: (json["rotterdamCriteriaMet"] as num?)?.toInt() ?? 0,
+      maxCriteria: (json["maxCriteria"] as num?)?.toInt() ?? 3,
+      evidence: (json["evidence"] as List<Object?>?)?.cast<String>() ?? const [],
+      summary: json["summary"] as String? ?? "",
+      clinicalAction: json["clinicalAction"] as String? ?? "",
+      doshaFocus: ayurveda["doshaFocus"] as String? ?? "Tridoshic Balance",
+      recommendedHerbs: rawHerbs?.cast<String>() ?? const ["Shatavari", "Ashoka"],
+      lifestyleAdvice: ayurveda["lifestyle"] as String? ?? "Balanced daily movement.",
+    );
+  }
 }

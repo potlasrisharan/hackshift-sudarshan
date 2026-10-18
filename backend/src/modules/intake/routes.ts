@@ -292,6 +292,172 @@ encounterStore.set(defaultRameshEncounter.patient_id, defaultRameshEncounter);
 encounterStore.set(defaultSunitaEncounter.id, defaultSunitaEncounter);
 encounterStore.set(defaultSunitaEncounter.patient_id, defaultSunitaEncounter);
 
+const defaultHarpreetEncounter: EncounterRecord = {
+  id: "enc_harpreet_03",
+  token: "TOKEN #044",
+  token_number: "#044",
+  clinic_id: "clinic-delhi-01",
+  org_id: "org-ayusetu-primary",
+  patient_id: "pat-048293",
+  patient_name: "Harpreet Singh",
+  age: 36,
+  gender: "MALE",
+  phone: "+91 9876543212",
+  abha_id: "91-1029-4482-9912",
+  pmjay_eligible: false,
+  chief_complaint: "High Fever with Productive Cough and Purulent Sputum",
+  selected_symptom: "Fever & Cough",
+  triage_priority: "ROUTINE",
+  status: "IN_CONSULT",
+  is_emergency: false,
+  bay: "OPD Consultation Room 2",
+  assigned_doctor: "Dr. A. Sen, MD",
+  triage: { tier: "routine", redFlags: [] },
+  vitals: { bp: "122/78 mmHg", pulse: 92, spo2: 96, temp: "101.8°F" },
+  soap: {
+    subjective: "36yo Male presents with productive cough with yellow sputum for 3 days and fever spiking to 102F.",
+    objective: "Bilateral basal coarse crepitations on auscultation. Temp 101.8F. SpO2 96%.",
+    assessment: "Community-Acquired Acute Bronchitis / Lower Respiratory Tract Infection.",
+    plan: "Amoxicillin-Clav 625mg + Paracetamol 650mg + Ambroxol Syrup"
+  },
+  created_at: new Date(Date.now() - 2400000).toISOString(),
+  updated_at: new Date(Date.now() - 2400000).toISOString()
+};
+
+const defaultLakshmiEncounter: EncounterRecord = {
+  id: "enc_lakshmi_04",
+  token: "TOKEN #045",
+  token_number: "#045",
+  clinic_id: "clinic-delhi-01",
+  org_id: "org-ayusetu-primary",
+  patient_id: "pat-048294",
+  patient_name: "Lakshmi Devi",
+  age: 61,
+  gender: "FEMALE",
+  phone: "+91 9876543213",
+  abha_id: "91-6621-9943-1205",
+  pmjay_eligible: true,
+  chief_complaint: "Bilateral Knee Pain and Joint Crepitus on Weight Bearing",
+  selected_symptom: "Joint Pain",
+  triage_priority: "ROUTINE",
+  status: "DISPENSED",
+  is_emergency: false,
+  bay: null,
+  assigned_doctor: "Dr. A. Sen, MD",
+  triage: { tier: "routine", redFlags: [] },
+  vitals: { bp: "136/82 mmHg", pulse: 74, spo2: 97, temp: "98.2°F" },
+  soap: {
+    subjective: "61yo Female presents with bilateral knee pain exacerbated by walking.",
+    objective: "Bilateral knee joint line tenderness and coarse crepitus.",
+    assessment: "Primary Bilateral Osteoarthritis of Knees (Grade II-III).",
+    plan: "Aceclofenac + Paracetamol + Pantoprazole + Shelcal"
+  },
+  created_at: new Date(Date.now() - 4800000).toISOString(),
+  updated_at: new Date(Date.now() - 1200000).toISOString()
+};
+
+const defaultAaravEncounter: EncounterRecord = {
+  id: "enc_aarav_05",
+  token: "TOKEN #046",
+  token_number: "#046",
+  clinic_id: "clinic-delhi-01",
+  org_id: "org-ayusetu-primary",
+  patient_id: "pat-048295",
+  patient_name: "Aarav Patel",
+  age: 8,
+  gender: "MALE",
+  phone: "+91 9876543214",
+  abha_id: "91-8843-2019-3312",
+  pmjay_eligible: true,
+  chief_complaint: "Severe Acute Asthma Wheezing with Subcostal Retractions",
+  selected_symptom: "Wheezing & Dyspnea",
+  triage_priority: "EMERGENCY_RED",
+  status: "STAT_ALERT",
+  is_emergency: true,
+  bay: "Pediatric Emergency Bay 2",
+  assigned_doctor: "Dr. Ananya Sharma",
+  triage: { tier: "emergency", redFlags: ["pediatric_hypoxia", "chest_retractions"] },
+  vitals: { bp: "102/68 mmHg", pulse: 128, spo2: 91, temp: "99.1°F" },
+  soap: {
+    subjective: "8yo male brought with acute respiratory distress, tachypnea, and audible wheezing.",
+    objective: "RR 34/min, marked intercostal indrawing, bilateral polyphonic wheeze. SpO2 91%.",
+    assessment: "Severe Acute Bronchial Asthma Exacerbation (GINA 2024 Step-3).",
+    plan: "STAT Nebulized Salbutamol + Ipratropium; Oral Prednisolone Syrup"
+  },
+  created_at: new Date(Date.now() - 1500000).toISOString(),
+  updated_at: new Date(Date.now() - 1500000).toISOString()
+};
+
+const defaultPoojaEncounter: EncounterRecord = {
+  id: "enc_pooja_06",
+  token: "TOKEN #047",
+  token_number: "#047",
+  clinic_id: "clinic-delhi-01",
+  org_id: "org-ayusetu-primary",
+  patient_id: "pat-048296",
+  patient_name: "Pooja Hegde",
+  age: 28,
+  gender: "FEMALE",
+  phone: "+91 9876543215",
+  abha_id: "91-5521-7784-9014",
+  pmjay_eligible: true,
+  chief_complaint: "Antenatal 28-Week Routine Checkup and Mild Pedal Edema",
+  selected_symptom: "Antenatal Visit",
+  triage_priority: "ROUTINE",
+  status: "WAITING",
+  is_emergency: false,
+  bay: null,
+  assigned_doctor: null,
+  triage: { tier: "routine", redFlags: [] },
+  vitals: { bp: "118/74 mmHg", pulse: 82, spo2: 99, temp: "98.4°F" },
+  soap: null,
+  created_at: new Date(Date.now() - 900000).toISOString(),
+  updated_at: new Date(Date.now() - 900000).toISOString()
+};
+
+const defaultMohammedEncounter: EncounterRecord = {
+  id: "enc_mohammed_07",
+  token: "TOKEN #048",
+  token_number: "#048",
+  clinic_id: "clinic-delhi-01",
+  org_id: "org-ayusetu-primary",
+  patient_id: "pat-048297",
+  patient_name: "Mohammed Rafiq",
+  age: 64,
+  gender: "MALE",
+  phone: "+91 9876543216",
+  abha_id: "91-3142-6689-1052",
+  pmjay_eligible: false,
+  chief_complaint: "CKD Stage 3b with Refractory Hypertension and Pruritus",
+  selected_symptom: "Elevated BP & Kidney review",
+  triage_priority: "ROUTINE",
+  status: "IN_CONSULT",
+  is_emergency: false,
+  bay: "Nephrology Consultation Suite 1",
+  assigned_doctor: "Dr. Potla Sri Sharan",
+  triage: { tier: "routine", redFlags: [] },
+  vitals: { bp: "162/98 mmHg", pulse: 68, spo2: 97, temp: "98.2°F" },
+  soap: {
+    subjective: "64yo male with CKD 3b, morning headaches and generalized pruritus.",
+    objective: "BP 162/98 mmHg, Serum Creatinine 2.38 mg/dL, eGFR 38 mL/min.",
+    assessment: "Diabetic Kidney Disease with Resistant Stage-2 Hypertension.",
+    plan: "Telmisartan 40mg + Chlorthalidone 12.5mg + Sodamint 500mg"
+  },
+  created_at: new Date(Date.now() - 600000).toISOString(),
+  updated_at: new Date(Date.now() - 600000).toISOString()
+};
+
+encounterStore.set(defaultHarpreetEncounter.id, defaultHarpreetEncounter);
+encounterStore.set(defaultHarpreetEncounter.patient_id, defaultHarpreetEncounter);
+encounterStore.set(defaultLakshmiEncounter.id, defaultLakshmiEncounter);
+encounterStore.set(defaultLakshmiEncounter.patient_id, defaultLakshmiEncounter);
+encounterStore.set(defaultAaravEncounter.id, defaultAaravEncounter);
+encounterStore.set(defaultAaravEncounter.patient_id, defaultAaravEncounter);
+encounterStore.set(defaultPoojaEncounter.id, defaultPoojaEncounter);
+encounterStore.set(defaultPoojaEncounter.patient_id, defaultPoojaEncounter);
+encounterStore.set(defaultMohammedEncounter.id, defaultMohammedEncounter);
+encounterStore.set(defaultMohammedEncounter.patient_id, defaultMohammedEncounter);
+
 intakeRouter.post("/encounter", async (c) => {
   const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
   const rawAnswers = (body.answers && typeof body.answers === "object" ? body.answers : {}) as Record<string, "yes" | "no">;

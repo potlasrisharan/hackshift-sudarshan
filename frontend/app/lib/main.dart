@@ -5,6 +5,7 @@ import "core/services/medicine_reminder_service.dart";
 import "core/theme/app_theme.dart";
 import "core/router/app_router.dart";
 import "core/app_session.dart";
+import "features/onboarding/presentation/providers/user_profile_provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 void main() async {
@@ -19,17 +20,24 @@ void main() async {
   runApp(const ProviderScope(child: AyuSetuApp()));
 }
 
-class AyuSetuApp extends StatelessWidget {
+class AyuSetuApp extends ConsumerWidget {
   const AyuSetuApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userProfile = ref.watch(userProfileProvider).profile;
+    final themeMode = userProfile.themeMode == "dark"
+        ? ThemeMode.dark
+        : userProfile.themeMode == "system"
+            ? ThemeMode.system
+            : ThemeMode.light;
+
     return MaterialApp.router(
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: themeMode,
       routerConfig: appRouter,
     );
   }

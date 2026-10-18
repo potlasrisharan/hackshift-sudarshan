@@ -7,9 +7,15 @@ import "package:kiosk_app/features/her/presentation/screens/her_symptom_journal_
 import "package:kiosk_app/features/her/presentation/widgets/her_safety_banner.dart";
 import "package:kiosk_app/features/her/presentation/widgets/her_explainability_drawer.dart";
 import "package:kiosk_app/features/her/data/models/her_models.dart";
+import "package:kiosk_app/features/her/data/services/her_api_service.dart";
 import "package:kiosk_app/features/her/data/services/wearable_adapter.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets("AyuSetu HER Hub renders core navigation and header", (WidgetTester tester) async {
     await tester.pumpWidget(
       const ProviderScope(
@@ -21,8 +27,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("AyuSetu HER"), findsOneWidget);
-    expect(find.text("Cycle Dynamics & Rhythm"), findsOneWidget);
-    expect(find.text("Care & Intelligence Modules"), findsOneWidget);
+    expect(find.text("Your cycle at a glance"), findsOneWidget);
+    expect(find.text("A little care, when you need it"), findsOneWidget);
   });
 
   testWidgets("AyuSetu HER Safety Banner renders urgent alert and guidance", (WidgetTester tester) async {
@@ -123,5 +129,25 @@ void main() {
       expect(m.basalBodyTempCelsius, greaterThanOrEqualTo(36.0));
       expect(m.sleepDurationMinutes, greaterThan(300));
     }
+  });
+
+  test("HER cycle logging persists locally and survives re-fetch", () async {
+    const api = HerApiService(patientId: "test_persist_her");
+    const cycle = HerCycleModel(
+      id: "cyc_test_101",
+      startDate: "2026-10-18",
+      cycleLengthDays: 29,
+      periodLengthDays: 5,
+      flowIntensity: "medium",
+      crampsSeverity: 3,
+      notes: "Test cycle persistence",
+    );
+
+    await api.logCycle(cycle);
+    final (cycles, analysis) = await api.fetchCycles();
+
+    expect(cycles.isNotEmpty, isTrue);
+    expect(cycles.first.id, "cyc_test_101");
+    expect(analysis.status, isNotNull);
   });
 }

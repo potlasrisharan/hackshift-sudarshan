@@ -14,7 +14,7 @@ class VitalisTrajectoryScreen extends ConsumerWidget {
     final observedDomains = hpi.domains.where((domain) => domain.observed && domain.score != null).toList();
 
     return AppScaffoldShell(
-      title: "Healthspan signals",
+      title: "Longitudinal Healthspan Trajectory",
       subtitle: "Progress across observed health domains",
       child: RefreshIndicator(
         color: AppColors.vitalisTeal,

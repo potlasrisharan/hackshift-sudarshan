@@ -10,6 +10,8 @@ import { Hono } from "hono";
 import {
   herSafetyGate,
   herCycleDetector,
+  herCyclePhaseDetector,
+  herMonthPhaseMap,
   herScreeningEngine,
   herWellnessRanker,
   herTrendAnalyzer,
@@ -184,6 +186,177 @@ herRouter.post("/cycles", async (c) => {
   return c.json({
     cycle: newCycle,
     analysis,
+  });
+});
+
+// ----------------------------------------------------
+// 3b. Flo-Like Menstrual Phases & PCOD Tracking
+// ----------------------------------------------------
+herRouter.get("/phases/today", async (c) => {
+  const patientId = getPatientId(c);
+  const profile = store.profiles.get(patientId);
+  const cycles = store.cycles.get(patientId) || [];
+
+  let lastPeriodStartDate: string;
+  if (cycles.length > 0 && cycles[0]?.startDate) {
+    lastPeriodStartDate = cycles[0]!.startDate;
+  } else if (profile?.lastPeriodStartDate) {
+    lastPeriodStartDate = profile.lastPeriodStartDate;
+  } else {
+    const d = new Date();
+    d.setDate(d.getDate() - 8);
+    lastPeriodStartDate = d.toISOString().split("T")[0]!;
+  }
+
+  const cycleLengthDays = profile?.typicalCycleDays ?? 28;
+  const periodLengthDays = profile?.typicalPeriodDays ?? 5;
+  const targetDate = c.req.query("date") || new Date().toISOString().split("T")[0]!;
+
+  const phaseDetail = herCyclePhaseDetector({
+    lastPeriodStartDate,
+    cycleLengthDays,
+    periodLengthDays,
+    targetDate,
+  });
+
+  const symptoms = store.symptoms.get(patientId) || [];
+  const todaySymptom = symptoms.find((s) => s.date === targetDate);
+
+  return c.json({
+    data: {
+      ...phaseDetail,
+      todaySymptom: todaySymptom ?? null,
+      profile: {
+        cycleRegularity: profile?.cycleRegularity ?? "regular",
+        primaryGoal: profile?.primaryGoal ?? "cycle_tracking",
+        knownConditions: profile?.knownConditions ?? [],
+        pcodSymptoms: profile?.pcodSymptoms ?? [],
+      },
+    },
+  });
+});
+
+herRouter.get("/phases/calendar", async (c) => {
+  const patientId = getPatientId(c);
+  const profile = store.profiles.get(patientId);
+  const cycles = store.cycles.get(patientId) || [];
+
+  let lastPeriodStartDate: string;
+  if (cycles.length > 0 && cycles[0]?.startDate) {
+    lastPeriodStartDate = cycles[0]!.startDate;
+  } else if (profile?.lastPeriodStartDate) {
+    lastPeriodStartDate = profile.lastPeriodStartDate;
+  } else {
+    const d = new Date();
+    d.setDate(d.getDate() - 8);
+    lastPeriodStartDate = d.toISOString().split("T")[0]!;
+  }
+
+  const now = new Date();
+  const year = parseInt(c.req.query("year") || `${now.getFullYear()}`, 10);
+  const month = parseInt(c.req.query("month") || `${now.getMonth() + 1}`, 10);
+
+  const cycleLengthDays = profile?.typicalCycleDays ?? 28;
+  const periodLengthDays = profile?.typicalPeriodDays ?? 5;
+
+  const entries = herMonthPhaseMap({
+    lastPeriodStartDate,
+    cycleLengthDays,
+    periodLengthDays,
+    year,
+    month,
+  });
+
+  return c.json({
+    data: {
+      year,
+      month,
+      entries,
+    },
+  });
+});
+
+herRouter.get("/pcod-assessment", async (c) => {
+  const patientId = getPatientId(c);
+  const profile = store.profiles.get(patientId);
+  const cycles = store.cycles.get(patientId) || [];
+  const questionnaires = store.questionnaires.get(patientId) || [];
+
+  const answers: Record<string, any> = {};
+  for (const q of questionnaires) {
+    for (const [k, v] of Object.entries(q.answers)) {
+      answers[k] = v;
+    }
+  }
+
+  const pcodSymptoms = profile?.pcodSymptoms ?? [];
+  const cycleRegularity = profile?.cycleRegularity ?? "regular";
+
+  const hasIrregularCycles =
+    cycleRegularity === "irregular" ||
+    cycles.some(
+      (cy) => (cy.cycleLengthDays ?? 28) > 35 || (cy.cycleLengthDays ?? 28) < 21,
+    );
+  const hasHirsutism = pcodSymptoms.includes("facial_hair") || answers["P05"] === "yes";
+  const hasSevereAcne =
+    pcodSymptoms.includes("severe_acne") ||
+    answers["P03"] === "severe" ||
+    answers["P03"] === "moderate";
+  const hasHairThinning = pcodSymptoms.includes("hair_thinning");
+  const hasWeightDifficulty =
+    pcodSymptoms.includes("weight_gain") || answers["P04"] === "yes";
+
+  let rotterdamCriteriaMet = 0;
+  const evidenceList: string[] = [];
+
+  if (hasIrregularCycles) {
+    rotterdamCriteriaMet++;
+    evidenceList.push("Documented ovulatory irregularity (cycles >35 days or reported irregular rhythm)");
+  }
+  if (hasHirsutism || hasSevereAcne || hasHairThinning) {
+    rotterdamCriteriaMet++;
+    const signs: string[] = [];
+    if (hasHirsutism) signs.push("excess facial/body hair");
+    if (hasSevereAcne) signs.push("persistent cystic acne");
+    if (hasHairThinning) signs.push("androgenic hair thinning");
+    evidenceList.push(`Clinical hyperandrogenism markers identified (${signs.join(", ")})`);
+  }
+  if (answers["P06"] === "yes" || pcodSymptoms.includes("ultrasound_cysts")) {
+    rotterdamCriteriaMet++;
+    evidenceList.push("Sonographic polycystic ovarian morphology reported");
+  }
+
+  let riskLevel: "LOW_RISK" | "MODERATE_MONITOR" | "HIGH_CLINICAL_REVIEW" = "LOW_RISK";
+  let summary = "Hormonal baseline shows standard cyclic regularity with low clinical markers for PCOS.";
+  let clinicalAction = "Continue logging cycle rhythm and healthy lifestyle practices.";
+
+  if (rotterdamCriteriaMet >= 2) {
+    riskLevel = "HIGH_CLINICAL_REVIEW";
+    summary = "Meets Rotterdam Consensus diagnostic thresholds (≥2 key criteria detected). Clinical ultrasound and endocrine panel evaluation recommended.";
+    clinicalAction = "Schedule consultation with gynecologist or reproductive endocrinologist for confirmation.";
+  } else if (rotterdamCriteriaMet === 1 || hasWeightDifficulty) {
+    riskLevel = "MODERATE_MONITOR";
+    summary = "Isolated ovulatory or androgenic features noted. Recommend 3-month tracking and metabolic lifestyle optimization.";
+    clinicalAction = "Track basal body temperature, monitor fasting glucose, and focus on low-glycemic Ayurvedic nutrition.";
+  }
+
+  return c.json({
+    data: {
+      patientId,
+      riskLevel,
+      rotterdamCriteriaMet,
+      maxCriteria: 3,
+      evidence: evidenceList,
+      summary,
+      clinicalAction,
+      isDiagnosis: false,
+      disclaimer: "AyuSetu screening is decision support and does not constitute a formal medical diagnosis.",
+      ayurvedicGuidance: {
+        doshaFocus: "Kapha-Vata balancing",
+        herbs: ["Kanchnar Guggulu", "Shatavari", "Ashoka", "Cinnamon & Fenugreek infusion"],
+        lifestyle: "Daily 30-min moderate aerobic mobility, seed cycling, early light dinner before 8 PM",
+      },
+    },
   });
 });
 

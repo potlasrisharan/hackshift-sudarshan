@@ -24,8 +24,16 @@ import "package:kiosk_app/features/her/presentation/screens/her_wellness_studio_
 import "package:kiosk_app/features/her/presentation/screens/her_questionnaire_screen.dart";
 import "package:kiosk_app/features/her/presentation/screens/her_symptom_journal_screen.dart";
 import "package:kiosk_app/features/prescription/presentation/screens/medicine_reminder_screen.dart";
+import "package:kiosk_app/features/auth/presentation/screens/login_screen.dart";
+import "package:kiosk_app/features/auth/presentation/screens/signup_screen.dart";
+import "package:kiosk_app/features/onboarding/presentation/screens/onboarding_wizard_screen.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets("AyuSetu app initializes properly", (WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: AyuSetuApp()));
     expect(find.text(AppStrings.appName), findsOneWidget);
@@ -169,7 +177,26 @@ void main() {
       await testScreen(tester, const MedicineReminderScreen());
       expect(find.text(AppStrings.prescriptionHeader), findsOneWidget);
       expect(find.text("Dr. Ananya Sharma"), findsOneWidget);
-      expect(find.text("Yograj Guggulu"), findsOneWidget);
+      expect(find.text("Febuxostat 40mg"), findsOneWidget);
+    });
+
+    testWidgets("LoginScreen renders on 360px width with no overflow", (tester) async {
+      await testScreen(tester, const LoginScreen());
+      expect(find.text("Integrated Ayush & Modern Care · Patient Portal"), findsOneWidget);
+      expect(find.text("Instant Demo Patient"), findsOneWidget);
+    });
+
+    testWidgets("SignupScreen renders on 360px width with no overflow", (tester) async {
+      await testScreen(tester, const SignupScreen());
+      expect(find.text("Join AyuSetu Healthcare"), findsOneWidget);
+      expect(find.text("Create Patient Profile"), findsOneWidget);
+    });
+
+    testWidgets("OnboardingWizardScreen renders on 360px width with no overflow", (tester) async {
+      await testScreen(tester, const OnboardingWizardScreen());
+      expect(find.text("Personalized Care Setup"), findsOneWidget);
+      expect(find.text("Step 1 of 4"), findsOneWidget);
+      expect(find.text("Next Step →"), findsOneWidget);
     });
   });
 }

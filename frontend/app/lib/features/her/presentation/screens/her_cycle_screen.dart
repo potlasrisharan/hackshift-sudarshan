@@ -61,6 +61,10 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Flo Month Calendar Phase Map
+              _buildMonthCalendarView(state.monthPhases),
+              const SizedBox(height: 16),
+
               // Next Cycle Window Spread Card
               _buildWindowSpreadCard(analysis),
               const SizedBox(height: 16),
@@ -397,6 +401,177 @@ class _HerCycleScreenState extends ConsumerState<HerCycleScreen> {
             );
           },
         ),
+      ],
+    );
+  }
+
+  Widget _buildMonthCalendarView(List<HerMonthPhaseEntryModel> monthPhases) {
+    if (monthPhases.isEmpty) return const SizedBox.shrink();
+
+    final now = DateTime.now();
+    const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFFDA4AF)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFDA4AF).withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFF1F3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.calendar_month_rounded, color: Color(0xFFE11D48), size: 18),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  "Flo Month Phase Map (${now.year})",
+                  style: const TextStyle(
+                    color: Color(0xFF9F1239),
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Phase Legends
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              _legendDot(const Color(0xFFE11D48), "Menstrual"),
+              _legendDot(const Color(0xFFF472B6), "Follicular"),
+              _legendDot(const Color(0xFF0D9488), "Fertile/Ovulation"),
+              _legendDot(const Color(0xFF8B5CF6), "Luteal"),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Weekday Headers
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: weekdays
+                .map((w) => Expanded(
+                      child: Center(
+                        child: Text(
+                          w,
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: Color(0xFF64748B)),
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 8),
+
+          // Days Grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: monthPhases.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              crossAxisSpacing: 4,
+              mainAxisSpacing: 4,
+              childAspectRatio: 0.95,
+            ),
+            itemBuilder: (context, idx) {
+              final entry = monthPhases[idx];
+              final dayNum = idx + 1;
+              Color phaseBg;
+              Color phaseFg;
+
+              if (entry.isPeriod) {
+                phaseBg = const Color(0xFFFFF1F3);
+                phaseFg = const Color(0xFFE11D48);
+              } else if (entry.isFertile || entry.isOvulation) {
+                phaseBg = const Color(0xFFF0FDF4);
+                phaseFg = const Color(0xFF0D9488);
+              } else if (entry.phase == "LUTEAL") {
+                phaseBg = const Color(0xFFF5F3FF);
+                phaseFg = const Color(0xFF8B5CF6);
+              } else {
+                phaseBg = const Color(0xFFFDF2F8);
+                phaseFg = const Color(0xFFDB2777);
+              }
+
+              final isToday = dayNum == now.day;
+
+              return InkWell(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "${entry.date}: Cycle Day ${entry.cycleDay} · ${entry.phase.replaceAll('_', ' ')} · Pregnancy: ${entry.pregnancyChance}",
+                      ),
+                      duration: const Duration(seconds: 2),
+                      backgroundColor: phaseFg,
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: phaseBg,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isToday ? phaseFg : Colors.transparent,
+                      width: isToday ? 1.5 : 1.0,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "$dayNum",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: phaseFg,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: phaseFg),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _legendDot(Color color, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 4),
+        Text(text, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF475569))),
       ],
     );
   }
