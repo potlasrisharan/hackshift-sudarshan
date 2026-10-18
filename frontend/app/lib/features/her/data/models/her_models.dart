@@ -41,23 +41,28 @@ class HerProfileModel {
   int get age => DateTime.now().year - yearOfBirth;
 
   factory HerProfileModel.fromJson(Map<String, Object?> json) {
+    final hcRaw = json["hormonalContraception"];
+    final bool hc = hcRaw is bool
+        ? hcRaw
+        : (hcRaw is String && hcRaw.toLowerCase() != "none" && hcRaw.toLowerCase() != "false" && hcRaw.isNotEmpty);
+
     return HerProfileModel(
       patientId: json["patientId"] as String? ?? "demo_patient_her",
-      yearOfBirth: (json["yearOfBirth"] as num?)?.toInt() ?? 1999,
+      yearOfBirth: (json["yearOfBirth"] as num?)?.toInt() ?? (json["birthYear"] as num?)?.toInt() ?? 1999,
       menarcheAge: (json["menarcheAge"] as num?)?.toInt(),
       isPregnantOrLactating: json["isPregnantOrLactating"] as bool? ?? false,
-      hormonalContraception: json["hormonalContraception"] as bool? ?? false,
+      hormonalContraception: hc,
       dietPreference: json["dietPreference"] as String? ?? "vegetarian",
-      knownConditions: (json["knownConditions"] as List<Object?>?)?.cast<String>() ?? const [],
-      mobilityRestrictions: (json["mobilityRestrictions"] as List<Object?>?)?.cast<String>() ?? const [],
-      allergies: (json["allergies"] as List<Object?>?)?.cast<String>() ?? const [],
-      lifestyleGoals: (json["lifestyleGoals"] as List<Object?>?)?.cast<String>() ?? const [],
+      knownConditions: (json["knownConditions"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      mobilityRestrictions: (json["mobilityRestrictions"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      allergies: (json["allergies"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      lifestyleGoals: (json["lifestyleGoals"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       lastPeriodStartDate: json["lastPeriodStartDate"] as String?,
       typicalCycleDays: (json["typicalCycleDays"] as num?)?.toInt() ?? 28,
       typicalPeriodDays: (json["typicalPeriodDays"] as num?)?.toInt() ?? 5,
       cycleRegularity: json["cycleRegularity"] as String? ?? "regular",
       primaryGoal: json["primaryGoal"] as String? ?? "cycle_tracking",
-      pcodSymptoms: (json["pcodSymptoms"] as List<Object?>?)?.cast<String>() ?? const [],
+      pcodSymptoms: (json["pcodSymptoms"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
     );
   }
 

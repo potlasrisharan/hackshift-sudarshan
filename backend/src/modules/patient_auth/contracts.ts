@@ -6,12 +6,12 @@ export const patientSignupSchema = z.object({
   name: z.string().min(2),
   dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, expected YYYY-MM-DD"),
   sex: z.enum(["MALE", "FEMALE", "OTHER"]).default("FEMALE"),
-  email: z.string().email().optional(),
+  email: z.string().email().optional().nullable(),
   preferredLang: z.string().default("hi"),
-  abhaNumber: z.string().optional(),
-  bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "UNKNOWN"]).optional(),
-  emergencyContact: z.string().optional(),
-  address: z.string().optional(),
+  abhaNumber: z.string().optional().nullable(),
+  bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "UNKNOWN"]).optional().nullable(),
+  emergencyContact: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
 });
 
 export const patientLoginSchema = z.object({

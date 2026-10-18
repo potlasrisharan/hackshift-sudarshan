@@ -73,7 +73,7 @@ patientAuthRouter.post("/signup", async (c) => {
     patientId,
     phoneNumber: cleanPhone,
     phoneHash: pHash,
-    email: input.email,
+    email: input.email ?? undefined,
     passwordSalt: salt,
     passwordHash: hash,
   };
