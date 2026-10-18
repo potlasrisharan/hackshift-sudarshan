@@ -372,6 +372,28 @@ The saved model is `india-cbc-logistic-c87ec8485159`. Internal nested cross-vali
 
 BreathSense X explores low-cost, **nonclinical** volatile-organic-compound sensing. Version 1 is a proposed benign bench/ambient-air instrument, with no patient sampling. The central question is whether a shared sensor chamber, an ambient reference, quality rejection and drift monitoring improve repeatability on held-out sessions. It makes **no breast-cancer diagnostic-performance claim**. [Research and engineering report](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)
 
+<div align="center">
+  <img src="Breath_Sense_Cancer_Detection_Research/Proposed_Model_Prototype.jpeg" alt="Proposed BreathSense X exploded cutaway with numbered mouthpiece, sample inlet, flow control, chamber, sensor array, humidity sensing, processing, ESP32 and battery concepts" width="100%" />
+  <br />
+  <sub><b>Proposed design / invention map.</b> Concept visualization from the research report; not an assembled device, validated mechanical drawing, approved bill of materials or evidence of cancer detection.</sub>
+</div>
+
+**What the numbered cutaway proposes**
+
+| Label | Design element | Role and current boundary |
+|---|---|---|
+| **1** | Disposable mouthpiece | Hygienic, single-use breath entry in a **future human-sampling phase**; excluded from the nonclinical V1 bench plan. |
+| **2** | Filtered sample inlet | Proposed particle-filtered sample path. The blue breath channel is illustrative; V1 accepts only benign test gas or ambient-air comparisons. |
+| **3** | Flow control | Micro-pump and selector valve switch **one source at a time** between the sample and the separate green ambient-reference path, then purge through an isolated exhaust. Valve port layout, leaks and pump suitability still need verification. |
+| **4** | Shared sensor chamber | Both streams visit the same chamber sequentially for a reference-relative comparison; BME688 heater profiles are internal to the sensors, **not** chamber heating. |
+| **5** | Gas sensor array | Proposed **2 × BME688 + 1 × SGP40** broad-response sensors for multi-profile fingerprints; they do not identify a cancer-specific compound. |
+| **6** | Temperature and humidity | Environmental measurements, with an optional independent **SHT31-D**, to log conditions and test correction rather than assume it helps. |
+| **7** | Data processing / “AI engine” | Proposed drift analysis and sample-quality rejection. In V1, analysis runs on a **PC**, not as a proven onboard diagnostic model. |
+| **8** | ESP32 | Proposed Wi-Fi microcontroller for timestamped raw sensor, source, valve and quality logs. |
+| **9** | Rechargeable battery | Future portable-power concept; the V1 bench plan uses **USB power**. |
+
+The report's **five proposed, experimentally unverified innovations** are (1) switched ambient referencing, (2) repeated-reference drift awareness, (3) a baseline/noise/recovery quality gate, (4) supported BME688 multi-temperature heater-profile features and (5) **future** fusion with imaging, lab results and patient history. The fifth is a software research direction for a separate ethics-approved clinical phase, not a V1 hardware module or a patient-facing result. [Innovation evidence plan](Breath_Sense_Cancer_Detection_Research/Breath-Sense-Cancer-Detection-Literature-Review.pdf)
+
 ```mermaid
 flowchart LR
   classDef hardware fill:#e9f6ef,stroke:#087f68,color:#123d35,stroke-width:2px
@@ -390,7 +412,7 @@ flowchart LR
 | **C / D** | Ambient correction, drift ablation, carryover and recovery on unseen days |
 | **E** | Separate ethics-approved clinical collaboration with appropriate controls and independent sites |
 
-The full report specifies experiments E1–E7, an approximately ₹15,000 nonclinical hardware envelope, component contingencies and claim tags. A rendered concept image is **not** evidence that the pneumatic system has been built. [Conventional concept](Breath_Sense_Cancer_Detection_Research/Conventional_model.png) · [Proposed concept](Breath_Sense_Cancer_Detection_Research/Proposed_Model_Prototype.jpeg)
+The full report specifies experiments E1–E7, an approximately ₹15,000 nonclinical hardware envelope, component contingencies and claim tags. A rendered concept image is **not** evidence that the pneumatic system has been built. [Conventional concept](Breath_Sense_Cancer_Detection_Research/Conventional_model.png) · [Full-size proposed cutaway](Breath_Sense_Cancer_Detection_Research/Proposed_Model_Prototype.jpeg)
 
 <a id="stack"></a>
 ## Technology stack
